@@ -207,7 +207,10 @@ const LpSearchView = defineComponent({
         so: values.soNumber,
         po: values.poNumber,
       };
-      router.push({ name: "scan", params: params });
+      const args = params;
+      bridge.call("fetchLp", args, (res: any) => {
+        router.push({ name: "scan", params: params });
+      });
     };
     const changeType = () => {
       result.value.forEach((t: ProfileDeail) => {

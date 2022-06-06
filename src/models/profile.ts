@@ -1,3 +1,5 @@
+import { string } from "yup";
+
 export interface ProfileMaster {
   client: string;
   updateDate: string;
@@ -17,4 +19,12 @@ export interface ProfileDeail {
   key: any;
   verification: any;
   combo: any
+}
+
+export interface LpSearch {
+  profileName: string;
+  type: string;
+  mode: string;
+  so: string;
+  po: string
 }
