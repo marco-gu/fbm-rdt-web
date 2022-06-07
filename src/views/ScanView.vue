@@ -83,9 +83,15 @@ const ScanView = defineComponent({
       poNumber.value = route.params.po as string;
     });
     const scan = () => {
-      bridge.call("scan", (res: any) => {
+      const args = {
+        profileName: profileName.value,
+        so: soNumber.value,
+        po: poNumber.value,
+      };
+      bridge.call("scan", args, (res: any) => {
         console.log(res);
       });
+      router.push("/home");
     };
     return {
       router,
