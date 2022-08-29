@@ -13,18 +13,19 @@
           v-model="this.userInfo.password"
         />
         <button v-on:click="login">login</button>
-        <p class="message">
+        <!-- <p class="message">
           <a href="#">Forgot Password?</a>
-        </p>
+        </p> -->
+        <div style="margin-top: 20px; color: red">{{ errorMessage }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { User } from "../models/user";
 const LoginView = defineComponent({
   data() {
@@ -46,8 +47,16 @@ const LoginView = defineComponent({
   },
   setup() {
     const router = useRouter();
+    const route = useRoute();
+    const errorMessage = ref("");
+    onMounted(() => {
+      if (route.params.message != undefined) {
+        errorMessage.value = route.params.message as string;
+      }
+    });
     return {
       router,
+      errorMessage,
     };
   },
 });
