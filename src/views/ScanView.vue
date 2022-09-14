@@ -91,7 +91,7 @@ const ScanView = defineComponent({
       bridge.call("scan", args, (res: any) => {
         console.log(res);
       });
-      router.push("/home");
+      // router.push("/home");
     };
     return {
       router,

@@ -89,6 +89,8 @@
 <script lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import bridge from "dsbridge";
+import { ApiResponseDto } from "@/models/api.response";
 export default {
   name: "HomeView",
   components: {},
@@ -104,7 +106,9 @@ export default {
       router.push("/profileMgm");
     };
     const logout = () => {
-      router.push("/");
+      bridge.call("logout", null, () => {
+        router.push("/");
+      });
     };
     const back = () => {
       router.go(-1);

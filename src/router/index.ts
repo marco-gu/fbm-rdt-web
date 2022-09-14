@@ -5,6 +5,7 @@ import MainView from "../views/MainView.vue";
 import ProfileView from "../views/ProfileView.vue";
 import LpSearchView from "../views/LpSearchView.vue";
 import ScanView from "../views/ScanView.vue";
+import ChangePasswordView from "../views/ChangePasswordView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -17,6 +18,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "home",
     component: HomeView,
     children: [{ path: "", name: "main", component: MainView }],
+  },
+  {
+    path: "/changePassword",
+    name: "changePassword",
+    component: ChangePasswordView,
   },
   {
     path: "/profile",

@@ -16,6 +16,7 @@ import online from "../assets/images/online.png";
 import offline from "../assets/images/offline.png";
 import continueJob from "../assets/images/continue.png";
 import { useRouter } from "vue-router";
+import bridge from "dsbridge";
 export default {
   name: " MainView",
   components: {},
@@ -25,7 +26,16 @@ export default {
     const offlineLogo = offline;
     const continueLogo = continueJob;
     const goOnline = () => {
-      router.push("/profile");
+      const args = {
+        clientCode: "WOLV",
+        so: "CGP7649289",
+        po: "4700522258",
+      };
+
+      bridge.call("fetchLp", args, (res: string) => {
+        console.log(res);
+      });
+      // router.push("/profile");
     };
     return {
       router,
