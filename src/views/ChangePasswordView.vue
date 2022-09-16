@@ -1,92 +1,152 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <div style="width: 100%">
-        <q-item clickable>
-          <div v-if="isShowIcon">
-            <q-item-section avatar @click="back">
-              <q-icon name="arrow_back" />
-            </q-item-section>
-          </div>
-
-          <q-item-section>
-            <span style="font-size: 21px">Change Password</span></q-item-section
+      <q-item clickable>
+        <q-item-section avatar @click="cancel">
+          <q-icon name="arrow_back" />
+        </q-item-section>
+        <q-item-section>
+          <span class="header-title">Change Password</span></q-item-section
+        >
+      </q-item>
+    </div>
+    <q-separator />
+    <q-card class="content-card">
+      <q-form @submit="onSubmit">
+        <div class="content-input">
+          <q-input
+            v-model="currentPassword"
+            filled
+            :type="isPwd ? 'password' : 'text'"
+            placeholder="Current Password"
+            lazy-rules
+            :rules="[
+              (val) =>
+                (val && val.length > 0) || 'Please input current password',
+              val != password || 'Please input correct current password',
+            ]"
           >
-          <!-- <div v-if="isShowIcon">
-            <q-item-section avatar @click="home">
-              <q-icon name="home" />
-            </q-item-section>
-          </div> -->
-        </q-item>
-      </div>
-    </div>
-    <div style="width: 95%; margin: 0 auto">
-      <q-input
-        v-model="currentPassword"
-        filled
-        placeholder="Current Password"
-        lazy-rules
-        :rules="[
-          (val) => (val && val.length > 0) || 'Please input current password',
-        ]"
-      />
-      <q-input
-        v-model="newPassword"
-        filled
-        placeholder="New Password"
-        lazy-rules
-        :rules="[
-          (val) => (val && val.length > 0) || 'Please input new password',
-        ]"
-      />
-      <q-input
-        v-model="reNewPassword"
-        filled
-        placeholder="Retype New Password"
-        lazy-rules
-        :rules="[
-          (val) => (val && val.length > 0) || 'Please input new password again',
-        ]"
-      />
-    </div>
-    <div
-      style="
-        position: fixed;
-        bottom: 0px;
-        width: 100%;
-        display: flex;
-        background: #027be3;
-      "
-    >
-      <q-btn type="submit" color="primary" class="full-width" label="Cancel" />
-      <div style="border: 1px solid white"></div>
-      <q-btn type="submit" color="primary" class="full-width" label="Save" />
-    </div>
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+          <q-input
+            v-model="newPassword"
+            filled
+            :type="isPwd ? 'password' : 'text'"
+            placeholder="New Password"
+            lazy-rules
+            :rules="[
+              (val) => (val && val.length > 0) || 'Please input new password',
+            ]"
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+          <q-input
+            v-model="reNewPassword"
+            filled
+            :type="isPwd ? 'password' : 'text'"
+            placeholder="Retype New Password"
+            lazy-rules
+            :rules="[
+              (val) =>
+                (val && val.length > 0) || 'Please input new password again',
+            ]"
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+        </div>
+        <div class="bottom">
+          <q-btn style="width: 48%" flat push label="Cancel" @click="cancel" />
+          <q-separator vertical inset color="white" />
+          <q-btn style="width: 52%" flat type="submit" push label="Save" />
+        </div>
+      </q-form>
+    </q-card>
   </div>
 </template>
 <script lang="ts">
+import { ApiResponseDto } from "@/models/api.response";
+import { UpdateLoginUser } from "@/models/login.response";
 import bridge from "dsbridge";
+import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
-import { ProfileMaster } from "../models/profile";
+import { useRoute, useRouter } from "vue-router";
+import md5 from "md5";
+
 const ChangePasswordView = defineComponent({
   setup() {
     const route = useRoute();
+    const router = useRouter();
+    // username & password from Current Page
     const currentPassword = ref("");
     const newPassword = ref("");
     const reNewPassword = ref("");
-    const isShowIcon = ref(true);
+    const alertErrorMessage = (message: any) => {
+      $q.notify({
+        position: "center",
+        color: "red-5",
+        textColor: "white",
+        icon: "error",
+        timeout: 2000,
+        message: message,
+      });
+    };
+    // username & password from Login Page
+    const username = ref("");
+    const password = ref("");
+    const from = ref("");
+    const $q = useQuasar();
     onMounted(() => {
-      const from = route.params.from;
-      if (from == "Login") {
-        isShowIcon.value = false;
-      }
+      from.value = route.params.from as string;
+      username.value = route.params.username as string;
+      password.value = route.params.password as string;
     });
     return {
+      isPwd: ref(true),
+      cancel() {
+        if (from.value == "LoginView") {
+          // if return to login page, call jsbridge to logout
+        }
+      },
+      onSubmit() {
+        $q.loading.show({
+          delay: 400, // ms
+        });
+        const args: UpdateLoginUser = {
+          username: username.value,
+          password: md5(newPassword.value),
+          autoGeneratedPassword: false,
+        };
+        bridge.call("resetPassword", args, (res: string) => {
+          const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
+          $q.loading.hide();
+          if (apiResponse.statusCode == 200) {
+            router.push("/home");
+          } else {
+            alertErrorMessage(apiResponse.errorMessage);
+          }
+        });
+      },
       currentPassword,
       newPassword,
       reNewPassword,
-      isShowIcon,
     };
   },
 });
@@ -97,14 +157,35 @@ export default ChangePasswordView;
   height: 100vh;
   display: flex;
   flex-flow: column;
+  background-color: #dbdbdb;
 }
 .header {
-  background: #027be3;
   padding-top: 1px;
   padding-bottom: 1px;
+  width: 100%;
+  background-color: white;
+  color: gray;
+}
+.header-title {
+  font-size: 21px;
+  color: black;
+  margin-left: -10%;
+}
+.content-card {
+  padding-top: 20px;
+  padding-bottom: 5px;
+}
+.content-input {
+  width: 95%;
+  margin: 0 auto;
+}
+.bottom {
+  position: fixed;
+  bottom: 0px;
   display: flex;
-  color: #fff;
-  justify-content: space-around;
-  margin-bottom: 10px;
+  background: #42b0d5;
+  color: white;
+  width: 100%;
+  height: 50px;
 }
 </style>
