@@ -53,7 +53,7 @@
 <script lang="ts">
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import logo from "../assets/images/Maersk_Logo_RGB.svg";
 import { useQuasar } from "quasar";
 import { ApiResponseDto } from "../models/api.response";
@@ -77,6 +77,13 @@ const LoginView = defineComponent({
         message: message,
       });
     };
+    onMounted(() => {
+      bridge.call("checkUserUid", null, (res: string) => {
+        if (res) {
+          username.value = res.toUpperCase();
+        }
+      });
+    });
     return {
       username,
       password,

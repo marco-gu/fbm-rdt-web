@@ -91,6 +91,8 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
 import { ApiResponseDto } from "@/models/api.response";
+import { useQuasar } from "quasar";
+import { LogoutResponse } from "@/models/login.response";
 export default {
   name: "HomeView",
   components: {},
@@ -98,6 +100,7 @@ export default {
     const router = useRouter();
     const leftDrawerOpen = ref(false);
     const isBackShow = ref(false);
+    const $q = useQuasar();
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     };
@@ -106,8 +109,19 @@ export default {
       router.push("/profileMgm");
     };
     const logout = () => {
-      bridge.call("logout", null, () => {
-        router.push("/");
+      bridge.call("logout", null, (data: string) => {
+        const apiResponse = JSON.parse(data) as ApiResponseDto<LogoutResponse>;
+        if (apiResponse.data.isSuccess) {
+          $q.notify({
+            position: "center",
+            color: "blue-5",
+            textColor: "white",
+            icon: "info",
+            timeout: 2000,
+            message: "Logout success",
+          });
+          router.push("/");
+        }
       });
     };
     const back = () => {
