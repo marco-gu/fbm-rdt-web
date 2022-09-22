@@ -37,11 +37,17 @@
         <span>
           <a href="#">Help</a>
         </span>
-        <span>
+        <span @click="clickForgotPassword">
           <a href="#">Forgot Password?</a>
         </span>
       </div>
     </q-form>
+    <ForgotPasswordComponent
+      :dialogVisible="dialogVisible"
+      @confirm="onConfirmForgotPassword"
+      @close="onCloseForgotPassword"
+    >
+    </ForgotPasswordComponent>
     <div class="login-bottom">
       <q-badge transparent align="middle" color="orange" outline>
         Ver 0.1 Beta, Prod
@@ -59,13 +65,18 @@ import { useQuasar } from "quasar";
 import { ApiResponseDto } from "../models/api.response";
 import { LoginResponse } from "../models/login.response";
 import md5 from "md5";
+import ForgotPasswordComponent from "@/components/ForgotPassword.vue";
 
 const LoginView = defineComponent({
+  components: {
+    ForgotPasswordComponent,
+  },
   setup() {
     const router = useRouter();
     const maerskLogo = logo;
     const username = ref("");
     const password = ref("");
+    const dialogVisible = ref(false);
     const $q = useQuasar();
     const alertErrorMessage = (message: any) => {
       $q.notify({
@@ -83,6 +94,16 @@ const LoginView = defineComponent({
       isPwd: ref(true),
       router,
       maerskLogo,
+      dialogVisible,
+      clickForgotPassword() {
+        dialogVisible.value = true;
+      },
+      onCloseForgotPassword() {
+        dialogVisible.value = false;
+      },
+      onConfirmForgotPassword(mail: string) {
+        dialogVisible.value = false;
+      },
       onSubmit() {
         $q.loading.show({
           delay: 400, // ms

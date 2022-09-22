@@ -19,12 +19,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="Current Password"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) || 'Please input current password',
-              val != password || 'Please input correct current password',
-            ]"
+            :rules="[currentPasswordRule]"
           >
             <template v-slot:append>
               <q-icon
@@ -39,10 +34,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="New Password"
-            lazy-rules
-            :rules="[
-              (val) => (val && val.length > 0) || 'Please input new password',
-            ]"
+            :rules="[newPasswordRule]"
           >
             <template v-slot:append>
               <q-icon
@@ -57,11 +49,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="Retype New Password"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) || 'Please input new password again',
-            ]"
+            :rules="[reNewPasswordRule]"
           >
             <template v-slot:append>
               <q-icon
@@ -98,6 +86,67 @@ const ChangePasswordView = defineComponent({
     const currentPassword = ref("");
     const newPassword = ref("");
     const reNewPassword = ref("");
+    // username & password from Login Page
+    const username = ref("");
+    const oldPassword = ref();
+    const from = ref("");
+    const $q = useQuasar();
+    onMounted(() => {
+      from.value = route.params.from as string;
+      username.value = route.params.username as string;
+      oldPassword.value = route.params.password as string;
+    });
+    const currentPasswordRule = (val: any) => {
+      // simulating a delay
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (!val) {
+            resolve("Please input Old Password");
+          } else {
+            if (oldPassword.value != currentPassword.value) {
+              resolve("Password is not Correct");
+            }
+          }
+        }, 1000);
+      });
+    };
+    const newPasswordRule = (val: any) => {
+      // simulating a delay
+      return new Promise((resolve, reject) => {
+        const reg = /[A-Z]+/g;
+        setTimeout(() => {
+          if (!val) {
+            resolve("Please input New Password");
+          } else {
+            if (newPassword.value.length < 8) {
+              resolve("Please input at least eigth charactors");
+            } else {
+              if (!reg.test(newPassword.value)) {
+                resolve("Please input at least one upper");
+              } else {
+                resolve(true);
+              }
+            }
+          }
+        }, 500);
+      });
+    };
+    const reNewPasswordRule = (val: any) => {
+      // simulating a delay
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (!val) {
+            resolve("Please input New Password again");
+          } else {
+            if (newPassword.value != reNewPassword.value) {
+              resolve("Two Password is different");
+            } else {
+              resolve(true);
+            }
+          }
+        }, 500);
+      });
+    };
     const alertErrorMessage = (message: any) => {
       $q.notify({
         position: "center",
@@ -108,16 +157,6 @@ const ChangePasswordView = defineComponent({
         message: message,
       });
     };
-    // username & password from Login Page
-    const username = ref("");
-    const password = ref("");
-    const from = ref("");
-    const $q = useQuasar();
-    onMounted(() => {
-      from.value = route.params.from as string;
-      username.value = route.params.username as string;
-      password.value = route.params.password as string;
-    });
     return {
       isPwd: ref(true),
       cancel() {
@@ -147,6 +186,9 @@ const ChangePasswordView = defineComponent({
       currentPassword,
       newPassword,
       reNewPassword,
+      currentPasswordRule,
+      newPasswordRule,
+      reNewPasswordRule,
     };
   },
 });
