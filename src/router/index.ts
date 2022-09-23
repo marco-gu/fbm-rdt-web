@@ -6,6 +6,7 @@ import ProfileView from "../views/ProfileView.vue";
 import LpSearchView from "../views/LpSearchView.vue";
 import ScanView from "../views/ScanView.vue";
 import ChangePasswordView from "../views/ChangePasswordView.vue";
+import UserManualView from "../views/UserManualView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {

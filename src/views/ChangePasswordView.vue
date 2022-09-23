@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="header">
       <q-item clickable>
-        <q-item-section avatar @click="cancel">
+        <q-item-section avatar @click="back">
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
@@ -19,7 +19,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="Current Password"
-            :rules="[currentPasswordRule]"
+            :rules="[oldPasswordRule]"
           >
             <template v-slot:append>
               <q-icon
@@ -71,7 +71,7 @@
 </template>
 <script lang="ts">
 import { ApiResponseDto } from "@/models/api.response";
-import { UpdateLoginUser } from "@/models/login.response";
+import { LogoutResponse, UpdateLoginUser } from "@/models/login.response";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref } from "vue";
@@ -96,15 +96,17 @@ const ChangePasswordView = defineComponent({
       username.value = route.params.username as string;
       oldPassword.value = route.params.password as string;
     });
-    const currentPasswordRule = (val: any) => {
+    const oldPasswordRule = (val: any) => {
       // simulating a delay
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           if (!val) {
-            resolve("Please input Old Password");
+            resolve("Please input old Password");
           } else {
-            if (oldPassword.value != currentPassword.value) {
+            if (currentPassword.value != oldPassword.value) {
               resolve("Password is not Correct");
+            } else {
+              resolve(true);
             }
           }
         }, 1000);
@@ -147,6 +149,31 @@ const ChangePasswordView = defineComponent({
         }, 500);
       });
     };
+    const cancel = () => {
+      if (from.value == "LoginView") {
+        bridge.call("logout", null, (data: string) => {
+          const apiResponse = JSON.parse(
+            data
+          ) as ApiResponseDto<LogoutResponse>;
+          if (apiResponse.data.isSuccess) {
+            $q.notify({
+              position: "center",
+              color: "blue-5",
+              textColor: "white",
+              icon: "info",
+              timeout: 2000,
+              message: "Logout success",
+            });
+            router.push("/");
+          }
+        });
+      }
+    };
+    const back = () => {
+      if (from.value == "LoginView") {
+        cancel();
+      }
+    };
     const alertErrorMessage = (message: any) => {
       $q.notify({
         position: "center",
@@ -159,11 +186,8 @@ const ChangePasswordView = defineComponent({
     };
     return {
       isPwd: ref(true),
-      cancel() {
-        if (from.value == "LoginView") {
-          // if return to login page, call jsbridge to logout
-        }
-      },
+      cancel,
+      back,
       onSubmit() {
         $q.loading.show({
           delay: 400, // ms
@@ -186,7 +210,7 @@ const ChangePasswordView = defineComponent({
       currentPassword,
       newPassword,
       reNewPassword,
-      currentPasswordRule,
+      oldPasswordRule,
       newPasswordRule,
       reNewPasswordRule,
     };

@@ -34,7 +34,7 @@
       </div>
       <q-btn class="login-button" push type="submit" label="Log In" />
       <div class="login-link">
-        <span>
+        <span @click="clickUserManual">
           <a href="#">Help</a>
         </span>
         <span @click="clickForgotPassword">
@@ -42,8 +42,10 @@
         </span>
       </div>
     </q-form>
+    <UserManual :dialogVisible="userManualVisible" @close="onCloseUserManual">
+    </UserManual>
     <ForgotPasswordComponent
-      :dialogVisible="dialogVisible"
+      :dialogVisible="forgotPassordVisible"
       @confirm="onConfirmForgotPassword"
       @close="onCloseForgotPassword"
     >
@@ -66,9 +68,11 @@ import { ApiResponseDto } from "../models/api.response";
 import { LoginResponse } from "../models/login.response";
 import md5 from "md5";
 import ForgotPasswordComponent from "@/components/ForgotPassword.vue";
+import UserManual from "@/components/UserManual.vue";
 
 const LoginView = defineComponent({
   components: {
+    UserManual,
     ForgotPasswordComponent,
   },
   setup() {
@@ -76,7 +80,8 @@ const LoginView = defineComponent({
     const maerskLogo = logo;
     const username = ref("");
     const password = ref("");
-    const dialogVisible = ref(false);
+    const forgotPassordVisible = ref(false);
+    const userManualVisible = ref(false);
     const $q = useQuasar();
     const alertErrorMessage = (message: any) => {
       $q.notify({
@@ -101,15 +106,22 @@ const LoginView = defineComponent({
       isPwd: ref(true),
       router,
       maerskLogo,
-      dialogVisible,
+      forgotPassordVisible,
+      userManualVisible,
+      clickUserManual() {
+        userManualVisible.value = true;
+      },
       clickForgotPassword() {
-        dialogVisible.value = true;
+        forgotPassordVisible.value = true;
+      },
+      onCloseUserManual() {
+        userManualVisible.value = false;
       },
       onCloseForgotPassword() {
-        dialogVisible.value = false;
+        forgotPassordVisible.value = false;
       },
       onConfirmForgotPassword(mail: string) {
-        dialogVisible.value = false;
+        forgotPassordVisible.value = false;
       },
       onSubmit() {
         $q.loading.show({
