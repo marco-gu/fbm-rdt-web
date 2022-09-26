@@ -11,7 +11,6 @@
           icon="menu"
         />
         <q-toolbar-title>LNS</q-toolbar-title>
-
         <q-btn
           v-if="isBackShow"
           flat
@@ -78,11 +77,11 @@
               </q-item-section>
             </q-item>
           </q-list>
-          <q-item clickable @click="logout()" v-ripple>
+          <q-item clickable v-ripple>
             <q-item-section avatar>
               <q-img :src="logoutIcon" />
             </q-item-section>
-            <q-item-section avatar>
+            <q-item-section avatar @click="logout()">
               <q-item-label>Log out</q-item-label>
             </q-item-section>
           </q-item>
@@ -133,6 +132,7 @@ export default {
       router.push("/profileMgm");
     };
     const logout = () => {
+      alert("logout");
       bridge.call("logout", null, (data: string) => {
         const apiResponse = JSON.parse(data) as ApiResponseDto<LogoutResponse>;
         if (apiResponse.data.isSuccess) {
