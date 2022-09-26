@@ -108,7 +108,7 @@ import cargoImage from "../assets/icon/cargo-images.svg";
 import setting from "../assets/icon/setting.svg";
 import userManual from "../assets/icon/user-manual.svg";
 import logOut from "../assets/icon/logout.svg";
-import logo from "../assets/images/Maersk_Logo_RGB.svg";
+import logo from "../assets/images/Maersk_Logo_Neg.svg";
 export default {
   name: "HomeView",
   components: {},
