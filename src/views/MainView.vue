@@ -1,16 +1,16 @@
 <template>
   <div class="wrapper">
     <div>
-      <q-img :src="logoIcon" />
+      <q-img no-spinner :src="logoIcon" />
     </div>
     <div @click="goOnline()">
-      <q-img :src="onlineLogo" width="80%" />
+      <q-img no-spinner :src="onlineLogo" width="80%" />
     </div>
     <div>
-      <q-img :src="offlineLogo" width="80%" />
+      <q-img no-spinner :src="offlineLogo" width="80%" />
     </div>
     <div>
-      <q-img :src="continueLogo" width="80%" />
+      <q-img no-spinner :src="continueLogo" width="80%" />
     </div>
   </div>
 </template>

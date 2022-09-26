@@ -28,7 +28,7 @@
             <q-item style="background-color: #42b0d5">
               <q-img :src="logoIcon" />
             </q-item>
-            <q-item clickable @click="goProfileManagement()" v-ripple>
+            <q-item clickable @click="goMyProfile()" v-ripple>
               <q-item-section avatar>
                 <q-img :src="userProfileIcon" />
               </q-item-section>
@@ -36,7 +36,7 @@
                 <q-item-label>My Client Profile</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple>
+            <q-item clickable @click="goDataManagement()" v-ripple>
               <q-item-section avatar>
                 <q-img :src="dataManagementIcon" />
               </q-item-section>
@@ -127,9 +127,12 @@ export default {
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     };
-    const goProfileManagement = () => {
+    const goMyProfile = () => {
       isBackShow.value = true;
-      router.push("/profileMgm");
+      alert("My Client Profile");
+    };
+    const goDataManagement = () => {
+      alert("Data Management");
     };
     const logout = () => {
       bridge.call("logout", null, (data: string) => {
@@ -154,10 +157,11 @@ export default {
     return {
       leftDrawerOpen,
       toggleLeftDrawer,
-      goProfileManagement,
+      goMyProfile,
       back,
-      isBackShow,
+      goDataManagement,
       logout,
+      isBackShow,
       userProfileIcon,
       dataManagementIcon,
       lpListIcon,
