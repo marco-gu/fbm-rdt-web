@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="bg-white">
-    <q-header elevated>
+    <!-- <q-header elevated>
       <q-toolbar>
         <q-btn
           flat
@@ -21,61 +21,69 @@
           icon="arrow_back"
         />
       </q-toolbar>
-    </q-header>
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-grey-2">
+    </q-header> -->
+    <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-grey-2">
       <div class="drawer-content">
         <div>
           <q-list>
-            <q-item-label header>Essential Links</q-item-label>
-            <q-item clickable @click="goProfileManagement()">
+            <q-item style="background-color: #42b0d5">
+              <q-img :src="logoIcon" />
+            </q-item>
+            <q-item clickable @click="goProfileManagement()" v-ripple>
               <q-item-section avatar>
-                <q-icon name="business" />
+                <q-img :src="userProfileIcon" />
               </q-item-section>
-              <q-item-section>
-                <q-item-label>Client Scan Profile Management</q-item-label>
+              <q-item-section avatar>
+                <q-item-label>My Client Profile</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable>
+            <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="assessment" />
+                <q-img :src="dataManagementIcon" />
               </q-item-section>
-              <q-item-section>
-                <q-item-label>LP Management </q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item clickable>
               <q-item-section avatar>
-                <q-icon name="table_chart" />
-              </q-item-section>
-              <q-item-section>
                 <q-item-label>Data Management</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable>
+            <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="settings" />
+                <q-img :src="lpListIcon" />
               </q-item-section>
-              <q-item-section>
-                <q-item-label>Setting </q-item-label>
+              <q-item-section avatar>
+                <q-item-label>LP List</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable>
+            <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="live_help" />
+                <q-img :src="cargoImageIcon" />
               </q-item-section>
-              <q-item-section>
-                <q-item-label>Online Help </q-item-label>
+              <q-item-section avatar>
+                <q-item-label>Cargo Images</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-ripple>
+              <q-item-section avatar>
+                <q-img :src="settingIcon" />
+              </q-item-section>
+              <q-item-section avatar>
+                <q-item-label>Setting</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-ripple>
+              <q-item-section avatar>
+                <q-img :src="userManualIcon" />
+              </q-item-section>
+              <q-item-section avatar>
+                <q-item-label>User Manual</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
-        </div>
-        <div>
-          <q-item clickable @click="logout()">
+          <q-item clickable @click="logout()" v-ripple>
             <q-item-section avatar>
-              <q-icon name="logout" />
+              <q-img :src="logoutIcon" />
             </q-item-section>
-            <q-item-section>
-              <q-item-label>Logout</q-item-label>
+            <q-item-section avatar>
+              <q-item-label>Log out</q-item-label>
             </q-item-section>
           </q-item>
         </div>
@@ -93,6 +101,14 @@ import bridge from "dsbridge";
 import { ApiResponseDto } from "@/models/api.response";
 import { useQuasar } from "quasar";
 import { LogoutResponse } from "@/models/login.response";
+import userProfile from "../assets/icon/user-profile.svg";
+import dataManagement from "../assets/icon/data-management.svg";
+import lpList from "../assets/icon/lp-list.svg";
+import cargoImage from "../assets/icon/cargo-images.svg";
+import setting from "../assets/icon/setting.svg";
+import userManual from "../assets/icon/user-manual.svg";
+import logOut from "../assets/icon/logout.svg";
+import logo from "../assets/images/Maersk_Logo_RGB.svg";
 export default {
   name: "HomeView",
   components: {},
@@ -100,6 +116,14 @@ export default {
     const router = useRouter();
     const leftDrawerOpen = ref(false);
     const isBackShow = ref(false);
+    const userProfileIcon = userProfile;
+    const dataManagementIcon = dataManagement;
+    const lpListIcon = lpList;
+    const cargoImageIcon = cargoImage;
+    const settingIcon = setting;
+    const userManualIcon = userManual;
+    const logoutIcon = logOut;
+    const logoIcon = logo;
     const $q = useQuasar();
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -135,6 +159,14 @@ export default {
       back,
       isBackShow,
       logout,
+      userProfileIcon,
+      dataManagementIcon,
+      lpListIcon,
+      cargoImageIcon,
+      settingIcon,
+      userManualIcon,
+      logoutIcon,
+      logoIcon,
     };
   },
 };
