@@ -27,7 +27,7 @@
               v-model="mail"
               type="email"
               prefix="Email:"
-              lazy-rules="ondemand"
+              lazy-rules
               :rules="[mailFormatRule]"
             >
               <template v-slot:prepend>

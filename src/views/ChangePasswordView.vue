@@ -19,7 +19,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="Current Password"
-            lazy-rules="ondemand"
+            lazy-rules
             :rules="[oldPasswordRule]"
           >
             <template v-slot:append>
@@ -35,7 +35,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="New Password"
-            lazy-rules="ondemand"
+            lazy-rules
             :rules="[newPasswordRule]"
           >
             <template v-slot:append>
@@ -51,7 +51,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="Retype New Password"
-            lazy-rules="ondemand"
+            lazy-rules
             :rules="[reNewPasswordRule]"
           >
             <template v-slot:append>
@@ -115,6 +115,7 @@ const ChangePasswordView = defineComponent({
     const newPasswordRule = (val: any) => {
       return new Promise((resolve) => {
         const reg = /[A-Z]+/g;
+        const reg2 = /[0-9]+/g;
         if (!val) {
           resolve("Please input New Password");
         } else {
@@ -123,6 +124,8 @@ const ChangePasswordView = defineComponent({
           } else {
             if (!reg.test(newPassword.value)) {
               resolve("Please input at least one upper");
+            } else if (!reg2.test(newPassword.value)) {
+              resolve("Please input at least one number");
             } else {
               resolve(true);
             }

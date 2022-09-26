@@ -132,7 +132,6 @@ export default {
       router.push("/profileMgm");
     };
     const logout = () => {
-      alert("logout");
       bridge.call("logout", null, (data: string) => {
         const apiResponse = JSON.parse(data) as ApiResponseDto<LogoutResponse>;
         if (apiResponse.data.isSuccess) {
