@@ -19,6 +19,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="Current Password"
+            lazy-rules="ondemand"
             :rules="[oldPasswordRule]"
           >
             <template v-slot:append>
@@ -34,6 +35,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="New Password"
+            lazy-rules="ondemand"
             :rules="[newPasswordRule]"
           >
             <template v-slot:append>
@@ -49,6 +51,7 @@
             filled
             :type="isPwd ? 'password' : 'text'"
             placeholder="Retype New Password"
+            lazy-rules="ondemand"
             :rules="[reNewPasswordRule]"
           >
             <template v-slot:append>
@@ -97,56 +100,47 @@ const ChangePasswordView = defineComponent({
       oldPassword.value = route.params.password as string;
     });
     const oldPasswordRule = (val: any) => {
-      // simulating a delay
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (!val) {
-            resolve("Please input old Password");
+      return new Promise((resolve) => {
+        if (!val) {
+          resolve("Please input old Password");
+        } else {
+          if (currentPassword.value != oldPassword.value) {
+            resolve("Password is not Correct");
           } else {
-            if (currentPassword.value != oldPassword.value) {
-              resolve("Password is not Correct");
-            } else {
-              resolve(true);
-            }
+            resolve(true);
           }
-        }, 1000);
+        }
       });
     };
     const newPasswordRule = (val: any) => {
-      // simulating a delay
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         const reg = /[A-Z]+/g;
-        setTimeout(() => {
-          if (!val) {
-            resolve("Please input New Password");
+        if (!val) {
+          resolve("Please input New Password");
+        } else {
+          if (newPassword.value.length < 8) {
+            resolve("Please input at least eigth charactors");
           } else {
-            if (newPassword.value.length < 8) {
-              resolve("Please input at least eigth charactors");
-            } else {
-              if (!reg.test(newPassword.value)) {
-                resolve("Please input at least one upper");
-              } else {
-                resolve(true);
-              }
-            }
-          }
-        }, 500);
-      });
-    };
-    const reNewPasswordRule = (val: any) => {
-      // simulating a delay
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (!val) {
-            resolve("Please input New Password again");
-          } else {
-            if (newPassword.value != reNewPassword.value) {
-              resolve("Two Password is different");
+            if (!reg.test(newPassword.value)) {
+              resolve("Please input at least one upper");
             } else {
               resolve(true);
             }
           }
-        }, 500);
+        }
+      });
+    };
+    const reNewPasswordRule = (val: any) => {
+      return new Promise((resolve) => {
+        if (!val) {
+          resolve("Please input New Password again");
+        } else {
+          if (newPassword.value != reNewPassword.value) {
+            resolve("Two Password is different");
+          } else {
+            resolve(true);
+          }
+        }
       });
     };
     const cancel = () => {

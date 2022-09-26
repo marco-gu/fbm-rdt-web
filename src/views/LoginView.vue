@@ -11,7 +11,7 @@
           v-model="username"
           filled
           placeholder="Username"
-          lazy-rules
+          lazy-rules="ondemand"
           :rules="[(val) => (val && val.length > 0) || 'Please input username']"
         />
         <q-input
@@ -20,7 +20,7 @@
           filled
           placeholder="Password"
           :type="isPwd ? 'password' : 'text'"
-          lazy-rules
+          lazy-rules="ondemand"
           :rules="[(val) => (val && val.length > 0) || 'Please input password']"
         >
           <template v-slot:append>

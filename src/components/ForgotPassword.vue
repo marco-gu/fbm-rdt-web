@@ -27,6 +27,7 @@
               v-model="mail"
               type="email"
               prefix="Email:"
+              lazy-rules="ondemand"
               :rules="[mailFormatRule]"
             >
               <template v-slot:prepend>
@@ -66,7 +67,7 @@ const ForgotPasswordComponent = defineComponent({
       mail.value = "";
       context.emit("close");
     };
-    const alertErrorMessage = (message: any) => {
+    const alertErrorMessage = (message: string) => {
       $q.notify({
         position: "center",
         color: "red-5",
@@ -76,7 +77,7 @@ const ForgotPasswordComponent = defineComponent({
         message: message,
       });
     };
-    const alertSuccessMessage = (message: any) => {
+    const alertSuccessMessage = (message: string) => {
       $q.notify({
         position: "center",
         type: "positive",
@@ -86,6 +87,9 @@ const ForgotPasswordComponent = defineComponent({
     };
     const onConfirm = () => {
       // call native JS to valid mail
+      $q.loading.show({
+        delay: 400, // ms
+      });
       const args = {
         mail: mail.value,
       };
@@ -102,21 +106,18 @@ const ForgotPasswordComponent = defineComponent({
       });
     };
     const mailFormatRule = (val: any) => {
-      // simulating a delay
       return new Promise((resolve, reject) => {
         const reg =
           /[a-zA-Z0-9]+([-_.][A-Za-zd]+)*@([a-zA-Z0-9]+[-.])+[A-Za-zd]{2,5}$/g;
-        setTimeout(() => {
-          if (!val) {
-            resolve("Please input mail");
+        if (!val) {
+          resolve("Please input mail");
+        } else {
+          if (!reg.test(mail.value)) {
+            resolve("Please input correct format mail");
           } else {
-            if (!reg.test(mail.value)) {
-              resolve("Please input correct format mail");
-            } else {
-              resolve(true);
-            }
+            resolve(true);
           }
-        }, 2500);
+        }
       });
     };
     watch(

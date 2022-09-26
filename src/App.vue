@@ -11,7 +11,7 @@ const App = defineComponent({
     bridge.register("getDeviceBrand", (res: any) => {
       console.log("get device brand", res);
     });
-    bridge.register("reLogin", (res: any) => {
+    bridge.register("reLogin", () => {
       router.push({ name: "login", params: { message: "TOKEN EXPIRED" } });
     });
   },
