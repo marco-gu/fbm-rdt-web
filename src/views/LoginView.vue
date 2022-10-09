@@ -8,6 +8,7 @@
     <q-form @submit="onSubmit">
       <div class="login-form">
         <q-input
+          clearable
           v-model="username"
           filled
           placeholder="Username"
@@ -16,6 +17,7 @@
         />
         <q-input
           style="margin-top: 5px"
+          clearable
           v-model="password"
           filled
           placeholder="Password"
@@ -97,7 +99,9 @@ const LoginView = defineComponent({
     watch(
       username,
       () => {
-        username.value = username.value.toUpperCase();
+        if (username.value != null) {
+          username.value = username.value.toUpperCase();
+        }
       },
       { immediate: true }
     );

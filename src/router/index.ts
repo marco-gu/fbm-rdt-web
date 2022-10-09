@@ -50,11 +50,28 @@ const router = createRouter({
 // fix defect #6
 let fromPath = "/";
 router.beforeEach((to, from, next) => {
+  fromPath = from.path;
+  if (from.path == "/" && to.path == "/") {
+    bridge.call("fetchUserToken", null, (res: string) => {
+      if (res) {
+        next("home");
+      } else {
+        next();
+      }
+    });
+  }
   if (from.path == "/home" && to.path == "/") {
     bridge.call("fetchUserToken", null, (res: string) => {
       if (res) {
-        fromPath = "/home";
         return false;
+      } else {
+        next();
+      }
+    });
+  } else if (from.path == "/changePassword" && to.path == "/") {
+    bridge.call("fetchUserToken", null, (res: string) => {
+      if (res) {
+        return next("/changePassword");
       } else {
         next();
       }
