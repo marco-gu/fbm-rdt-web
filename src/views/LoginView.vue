@@ -61,7 +61,7 @@
 <script lang="ts">
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import logo from "../assets/images/Maersk_Logo_RGB.svg";
 import { useQuasar } from "quasar";
 import { ApiResponseDto } from "../models/api.response";
@@ -93,6 +93,14 @@ const LoginView = defineComponent({
         message: message,
       });
     };
+    // fix defect #3 & #4
+    watch(
+      username,
+      () => {
+        username.value = username.value.toUpperCase();
+      },
+      { immediate: true }
+    );
     onMounted(() => {
       bridge.call("checkUserUid", null, (res: string) => {
         if (res) {
@@ -120,7 +128,7 @@ const LoginView = defineComponent({
       onCloseForgotPassword() {
         forgotPassordVisible.value = false;
       },
-      onConfirmForgotPassword(mail: string) {
+      onConfirmForgotPassword() {
         forgotPassordVisible.value = false;
       },
       onSubmit() {
@@ -128,7 +136,8 @@ const LoginView = defineComponent({
           delay: 400, // ms
         });
         const args = {
-          username: username.value,
+          // fix defect #4
+          username: username.value.toUpperCase(),
           password: md5(password.value),
         };
         bridge.call("login", args, (res: string) => {

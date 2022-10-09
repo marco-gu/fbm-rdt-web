@@ -147,6 +147,15 @@ export default {
             message: "Logout success",
           });
           router.push("/");
+        } else {
+          $q.notify({
+            position: "center",
+            color: "red-5",
+            textColor: "white",
+            icon: "error",
+            timeout: 2000,
+            message: apiResponse.errorMessage,
+          });
         }
       });
     };

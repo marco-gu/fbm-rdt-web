@@ -97,7 +97,7 @@ const ForgotPasswordComponent = defineComponent({
         const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
         $q.loading.hide();
         if (apiResponse.statusCode == 200) {
-          context.emit("confirm", mail.value);
+          context.emit("confirm");
           alertSuccessMessage("Please check your mail");
         } else {
           errMsg.value = apiResponse.errorMessage;
@@ -105,8 +105,8 @@ const ForgotPasswordComponent = defineComponent({
         }
       });
     };
-    const mailFormatRule = (val: any) => {
-      return new Promise((resolve, reject) => {
+    const mailFormatRule = (val: string) => {
+      return new Promise((resolve) => {
         const reg =
           /[a-zA-Z0-9]+([-_.][A-Za-zd]+)*@([a-zA-Z0-9]+[-.])+[A-Za-zd]{2,5}$/g;
         if (!val) {

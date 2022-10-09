@@ -99,7 +99,7 @@ const ChangePasswordView = defineComponent({
       username.value = route.params.username as string;
       oldPassword.value = route.params.password as string;
     });
-    const oldPasswordRule = (val: any) => {
+    const oldPasswordRule = (val: string) => {
       return new Promise((resolve) => {
         if (!val) {
           resolve("Please input old Password");
@@ -112,7 +112,7 @@ const ChangePasswordView = defineComponent({
         }
       });
     };
-    const newPasswordRule = (val: any) => {
+    const newPasswordRule = (val: string) => {
       return new Promise((resolve) => {
         const reg = /[A-Z]+/g;
         const reg2 = /[0-9]+/g;
@@ -133,7 +133,7 @@ const ChangePasswordView = defineComponent({
         }
       });
     };
-    const reNewPasswordRule = (val: any) => {
+    const reNewPasswordRule = (val: string) => {
       return new Promise((resolve) => {
         if (!val) {
           resolve("Please input New Password again");
@@ -171,7 +171,7 @@ const ChangePasswordView = defineComponent({
         cancel();
       }
     };
-    const alertErrorMessage = (message: any) => {
+    const alertErrorMessage = (message: string) => {
       $q.notify({
         position: "center",
         color: "red-5",
@@ -187,7 +187,7 @@ const ChangePasswordView = defineComponent({
       back,
       onSubmit() {
         $q.loading.show({
-          delay: 400, // ms
+          delay: 400,
         });
         const args: UpdateLoginUser = {
           username: username.value,

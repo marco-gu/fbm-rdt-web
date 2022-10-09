@@ -19,7 +19,6 @@ import online from "../assets/images/online.png";
 import offline from "../assets/images/offline.png";
 import continueJob from "../assets/images/continue.png";
 import { useRouter } from "vue-router";
-import bridge from "dsbridge";
 import logo from "../assets/images/Maersk_Logo_Neg.svg";
 export default {
   name: " MainView",
@@ -31,17 +30,18 @@ export default {
     const continueLogo = continueJob;
     const logoIcon = logo;
     const goOnline = () => {
-      const args = {
-        clientCode: "WOLV",
-        so: "CGP7649289",
-        po: "4700522258",
-      };
+      // const args = {
+      //   clientCode: "WOLV",
+      //   so: "CGP7649289",
+      //   po: "4700522258",
+      // };
 
-      bridge.call("fetchLp", args, (res: string) => {
-        console.log(res);
-      });
-      // router.push("/profile");
+      // bridge.call("fetchLp", args, (res: string) => {
+      //   console.log(res);
+      // });
+      router.push("/lpSearch");
     };
+
     return {
       router,
       onlineLogo,

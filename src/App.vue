@@ -8,7 +8,7 @@ import { useRouter } from "vue-router";
 const App = defineComponent({
   setup() {
     const router = useRouter();
-    bridge.register("getDeviceBrand", (res: any) => {
+    bridge.register("getDeviceBrand", (res: string) => {
       console.log("get device brand", res);
     });
     bridge.register("reLogin", () => {

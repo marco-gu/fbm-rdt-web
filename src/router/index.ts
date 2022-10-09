@@ -6,12 +6,14 @@ import ProfileView from "../views/ProfileView.vue";
 import LpSearchView from "../views/LpSearchView.vue";
 import ScanView from "../views/ScanView.vue";
 import ChangePasswordView from "../views/ChangePasswordView.vue";
+import bridge from "dsbridge";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "login",
     component: LoginView,
+    meta: { isLogin: true },
   },
   {
     path: "/home",
@@ -44,6 +46,24 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
   routes,
+});
+// fix defect #6
+let fromPath = "/";
+router.beforeEach((to, from, next) => {
+  if (from.path == "/home" && to.path == "/") {
+    bridge.call("fetchUserToken", null, (res: string) => {
+      if (res) {
+        fromPath = "/home";
+        return false;
+      } else {
+        next();
+      }
+    });
+  } else if (from.path != "/" && to.path == "/") {
+    next(fromPath);
+  } else {
+    next();
+  }
 });
 
 export default router;
