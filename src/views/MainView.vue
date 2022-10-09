@@ -30,16 +30,7 @@ export default {
     const continueLogo = continueJob;
     const logoIcon = logo;
     const goOnline = () => {
-      // const args = {
-      //   clientCode: "WOLV",
-      //   so: "CGP7649289",
-      //   po: "4700522258",
-      // };
-
-      // bridge.call("fetchLp", args, (res: string) => {
-      //   console.log(res);
-      // });
-      router.push("/lpSearch");
+      router.push("/profile");
     };
 
     return {

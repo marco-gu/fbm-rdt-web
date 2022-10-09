@@ -18,10 +18,10 @@
     <div style="margin-top: 10px">
       <div v-if="result.length > 0">
         <q-list v-for="(item, index) in result" :key="index">
-          <q-item clickable @click="next(item.client)">
+          <q-item clickable @click="onClickProfile(item)">
             <q-item-section style="text-align: left">
               <q-item-label>{{ item.client }}</q-item-label>
-              <q-item-label caption>{{ item.updateDate }}</q-item-label>
+              <q-item-label caption>{{ item.effectiveDate }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-icon name="chevron_right" color="black" />
@@ -51,30 +51,37 @@ const ProfileView = defineComponent({
     home() {
       this.router.push("/home");
     },
-    next(client: string) {
-      this.router.push({ name: "lpSearch", params: { client } });
-    },
   },
   setup() {
     const router = useRouter();
     const result: Ref<ProfileMaster[]> = ref([]);
-    onMounted(() => {
-      bridge.call("fetchProfile", (res: any) => {
-        result.value = JSON.parse(res) as ProfileMaster[];
-      });
-    });
     const refresh = (done: any) => {
-      const args = { whId: "NAS01" };
-      bridge.call("refreshProfile", args, (res: any) => {
-        result.value = JSON.parse(res) as ProfileMaster[];
+      bridge.call("refreshProfile", {}, () => {
         done();
+        getProfileList();
       });
     };
+
+    const onClickProfile = (profileItem: any) => {
+      router.push({
+        name: "lpSearch",
+        params: { profile: JSON.stringify(profileItem) },
+      });
+    };
+    const getProfileList = () => {
+      bridge.call("fetchProfile", (res: string) => {
+        result.value = JSON.parse(res) as ProfileMaster[];
+      });
+    };
+    onMounted(() => {
+      getProfileList();
+    });
 
     return {
       router,
       refresh,
       result,
+      onClickProfile,
     };
   },
 });

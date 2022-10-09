@@ -1,7 +1,7 @@
 
 export interface ProfileMaster {
   client: string;
-  updateDate: string;
+  effectiveDate: string;
 }
 
 export interface ProfileDeail {

@@ -122,10 +122,11 @@ import { ApiResponseDto } from "@/models/api.response";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
+    const route = useRoute();
     const profileName = ref("");
     const scanType = ref("Receiving");
     const soNumber = ref("");
@@ -149,6 +150,10 @@ const LpSearchView = defineComponent({
     };
     onMounted(() => {
       // TODO get profile from Router
+      const profileData = route.params.profile as string;
+      alert(profileData);
+      alert(JSON.parse(profileData).client);
+
       profileName.value = "NIKE";
     });
     const onSubmit = () => {
