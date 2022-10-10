@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 22px">LP Search</span></q-item-section
+          <span style="font-size: 21px">LP Search</span></q-item-section
         >
         <q-item-section avatar @click="home">
           <q-icon name="home" />

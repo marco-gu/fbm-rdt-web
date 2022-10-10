@@ -1,59 +1,93 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <div style="width: 100%">
-        <q-item clickable>
-          <q-item-section avatar @click="back">
-            <q-icon name="arrow_back" />
-          </q-item-section>
-          <q-item-section>
-            <span style="font-size: 21px">Scan</span></q-item-section
-          >
-          <q-item-section avatar @click="home">
-            <q-icon name="home" />
-          </q-item-section>
-        </q-item>
+      <q-item clickable style="width: 100%">
+        <q-item-section avatar @click="back">
+          <q-icon name="arrow_back" />
+        </q-item-section>
+        <q-item-section>
+          <span style="font-size: 21px">Scan</span></q-item-section
+        >
+        <q-item-section avatar @click="home">
+          <q-icon name="home" />
+        </q-item-section>
+      </q-item>
+    </div>
+    <q-card class="my-card" flat bordered>
+      <q-card-section horizontal>
+        <q-card-section style="width: 50%">
+          <div><span style="font-size: 26px; color: white">0</span></div>
+          <div><span style="font-size: 20px; color: white">Scanned</span></div>
+        </q-card-section>
+        <q-separator vertical inset color="white" />
+        <q-card-section style="width: 50%">
+          <div><span style="font-size: 26px; color: white">3000</span></div>
+          <div><span style="font-size: 20px; color: white">Total</span></div>
+        </q-card-section>
+      </q-card-section>
+    </q-card>
+    <q-form @submit="onSubmit" style="background: #fff">
+      <q-input
+        v-model="profileName"
+        prefix="Profile"
+        input-class="text-right"
+        readonly
+        borderless
+        style="padding: 0px 16px"
+      >
+      </q-input>
+      <q-separator color="grey-5" />
+      <q-input
+        v-model="type"
+        prefix="Type"
+        input-class="text-right"
+        readonly
+        borderless
+        style="padding: 0px 16px"
+      >
+      </q-input>
+      <q-separator color="grey-5" />
+      <q-input
+        v-model="soNumber"
+        prefix="SO"
+        input-class="text-right"
+        readonly
+        borderless
+        style="padding: 0px 16px"
+      >
+      </q-input>
+      <q-separator color="grey-5" />
+      <q-input
+        v-model="poNumber"
+        prefix="PO"
+        input-class="text-right"
+        readonly
+        borderless
+        style="padding: 0px 16px"
+      >
+      </q-input>
+      <q-separator color="grey-5" />
+      <q-input
+        v-model="skuNumber"
+        prefix="SKU"
+        input-class="text-right"
+        readonly
+        borderless
+        style="padding: 0px 16px"
+      >
+      </q-input>
+      <q-separator color="grey-5" />
+
+      <div style="position: fixed; bottom: 0px; width: 100%">
+        <q-btn
+          no-caps
+          type="submit"
+          class="full-width"
+          label="Start Scan Carton ID"
+          style="background: #42b0d5; color: #fff; height: 40px"
+        />
       </div>
-    </div>
-    <div style="width: 95%; padding-left: 10px; margin-top: 10px">
-      <q-field label="Profile" stack-label>
-        <template v-slot:control>
-          <div class="self-center full-width no-outline">
-            {{ profileName }}
-          </div>
-        </template>
-      </q-field>
-    </div>
-    <div style="width: 95%; padding-left: 10px; margin-top: 10px">
-      <q-field label="Type" stack-label>
-        <template v-slot:control>
-          <div class="self-center full-width no-outline">
-            {{ type }}
-          </div>
-        </template>
-      </q-field>
-    </div>
-    <div style="width: 95%; padding-left: 10px; margin-top: 10px">
-      <q-field label="SO" stack-label>
-        <template v-slot:control>
-          <div class="self-center full-width no-outline">
-            {{ soNumber }}
-          </div>
-        </template>
-      </q-field>
-    </div>
-    <div style="width: 95%; padding-left: 10px; margin-top: 10px">
-      <q-field label="PO" stack-label>
-        <template v-slot:control>
-          <div class="self-center full-width no-outline">
-            {{ poNumber }}
-          </div>
-        </template>
-      </q-field>
-    </div>
-    <div style="margin-top: 150px" @click="scan">
-      <q-btn size="25px" round color="primary" icon="qr_code_scan" />
-    </div>
+    </q-form>
   </div>
 </template>
 <script lang="ts">
@@ -61,14 +95,6 @@ import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import bridge from "dsbridge";
 const ScanView = defineComponent({
-  methods: {
-    back() {
-      this.router.go(-1);
-    },
-    home() {
-      this.router.push("/home");
-    },
-  },
   setup() {
     const router = useRouter();
     const route = useRoute();
@@ -110,13 +136,17 @@ export default ScanView;
   height: 100vh;
   display: flex;
   flex-flow: column;
+  background: rgb(233, 229, 229);
 }
 .header {
-  background: #027be3;
-  padding-top: 1px;
-  padding-bottom: 1px;
   display: flex;
-  color: #fff;
+  background: #fff;
   justify-content: space-around;
+  height: 60px;
+  align-items: center;
+}
+.my-card {
+  width: 100%;
+  background-color: #00243d;
 }
 </style>
