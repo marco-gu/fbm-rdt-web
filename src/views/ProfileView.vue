@@ -1,22 +1,30 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
+      <q-item clickable>
         <q-item-section avatar @click="back">
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">Profile</span></q-item-section
+          <span class="title-text">Profile</span></q-item-section
         >
         <q-item-section avatar @click="home">
           <q-icon name="home" />
         </q-item-section>
       </q-item>
+      <q-separator color="grey-5" />
+      <div class="search q-pa-sm">
+        <q-input v-model="search" outlined dense placeholder="Search" clearable>
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </div>
     </div>
-    <q-separator color="grey-5" />
-    <div style="margin-top: 10px">
-      <div v-if="result.length > 0">
-        <q-list v-for="(item, index) in result" :key="index">
+
+    <div class="profile-list-container">
+      <div>
+        <q-list v-for="(item, index) in profileListDisplay" :key="index">
           <q-item clickable @click="onClickProfile(item)">
             <q-item-section style="text-align: left">
               <q-item-label>{{ item.client }}</q-item-label>
@@ -39,9 +47,11 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { defineComponent, onMounted, Ref, ref } from "vue";
+import { useQuasar } from "quasar";
+import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { ProfileMaster } from "../models/profile";
+import { useStore } from "@/store";
 const ProfileView = defineComponent({
   methods: {
     back() {
@@ -52,35 +62,68 @@ const ProfileView = defineComponent({
     },
   },
   setup() {
+    const $q = useQuasar();
     const router = useRouter();
-    const result: Ref<ProfileMaster[]> = ref([]);
-    const refresh = (done: any) => {
+    const store = useStore();
+    let result: ProfileMaster[] = [];
+    const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
+    const search = ref("");
+
+    const refresh = () => {
       bridge.call("refreshProfile", {}, () => {
-        done();
         getProfileList();
       });
     };
 
     const onClickProfile = (profileItem: any) => {
-      router.push({
-        name: "lpSearch",
-        params: { profile: JSON.stringify(profileItem) },
-      });
+      store
+        .dispatch("profileModule/saveProfile", {
+          profile: JSON.stringify(profileItem),
+        })
+        .then(() => {
+          router.push("/lpSearch");
+        });
+      // router.push({
+      //   name: "lpSearch",
+      //   params: { profile: JSON.stringify(profileItem) },
+      // });
     };
     const getProfileList = () => {
-      bridge.call("fetchProfile", (res: string) => {
-        result.value = JSON.parse(res) as ProfileMaster[];
-      });
+      const profileList = bridge.call("fetchProfile");
+      result = JSON.parse(profileList) as ProfileMaster[];
+      profileListDisplay.value = JSON.parse(profileList) as ProfileMaster[];
+      if (result.length === 0) {
+        $q.dialog({
+          title: "Sync Profile",
+          message: "Please synchronize the latest profiles",
+        }).onOk(() => {
+          refresh();
+        });
+      }
     };
     onMounted(() => {
       getProfileList();
+    });
+    watch(search, () => {
+      if (search.value) {
+        const filteredResult = result.filter(
+          (item) =>
+            item.client.toLowerCase().indexOf(search.value.toLowerCase()) > -1
+        );
+
+        profileListDisplay.value = filteredResult;
+      } else {
+        profileListDisplay.value = result;
+      }
+      console.log(profileListDisplay.value);
     });
 
     return {
       router,
       refresh,
-      result,
       onClickProfile,
+      profileListDisplay,
+      search,
     };
   },
 });
@@ -89,14 +132,26 @@ export default ProfileView;
 <style lang="scss" scoped>
 .wrapper {
   height: 100vh;
-  display: flex;
-  flex-flow: column;
+  position: relative;
 }
 .header {
-  display: flex;
-  background: #fff;
-  justify-content: space-around;
-  height: 60px;
-  align-items: center;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  // height: 60px;
+  background-color: #ffffff;
+  z-index: 1;
+  .q-item {
+    background-color: #ffffff;
+    height: 60px;
+    width: 100%;
+  }
+
+  .title-text {
+    font-size: 21px;
+  }
 }
+
+// .profile-list-container {
+// }
 </style>

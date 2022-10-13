@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import store from "./store";
+import store, { key } from "./store";
 import { Dialog, Loading, Notify, Quasar } from "quasar";
 import "./styles/quasar.scss";
 import "@quasar/extras/material-icons/material-icons.css";
@@ -13,6 +13,6 @@ const quasarUserOptions = {
 
 createApp(App)
   .use(Quasar, quasarUserOptions)
-  .use(store)
+  .use(store, key)
   .use(router)
   .mount("#app");

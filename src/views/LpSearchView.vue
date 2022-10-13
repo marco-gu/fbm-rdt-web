@@ -145,6 +145,7 @@
 <script lang="ts">
 import { ApiResponseDto } from "@/models/api.response";
 import { Attribute, ProfileDeail } from "@/models/profile";
+import { useStore } from "@/store";
 import bridge from "dsbridge";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -156,6 +157,7 @@ const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const store = useStore();
     const profileName = ref("");
     // Define Scan Type
     const scanType = ref("");
@@ -167,11 +169,10 @@ const LpSearchView = defineComponent({
     const receivingType = ref(false);
     // Whether Stuffing type exist
     const stuffingType = ref(false);
-    const profileFromRoute = ref();
     onMounted(() => {
-      const data = JSON.parse(route.params.profile as string) as ProfileDeail;
-      profileFromRoute.value = data;
-      alert(data.client);
+      const data = JSON.parse(
+        store.state.profileModule.profile
+      ) as ProfileDeail;
       profileName.value = data.client;
       // Configure Scan type
       receivingType.value = data.receivingScanFlag == 1 ? true : false;
@@ -213,7 +214,6 @@ const LpSearchView = defineComponent({
       view.model = ref("");
       const reg = composeReg(attr.format);
       view.reg = new RegExp(reg);
-      // TODO Check combo
       // element.display = temp.combo;
       view.display = 1;
       view.valid = (val: string) => {
@@ -245,6 +245,7 @@ const LpSearchView = defineComponent({
         receivingViews.value.forEach((view: any) => {
           routeParams[view.dataFieldName] = view.model;
           routeParams.scanned = 0;
+          // TODO calculate total
           routeParams.total = 0;
         });
         router.push({
@@ -255,6 +256,7 @@ const LpSearchView = defineComponent({
         stuffingViews.value.forEach((view: any) => {
           routeParams[view.dataFieldName] = view.model;
           routeParams.scanned = 0;
+          // TODO calculate total
           routeParams.total = 0;
         });
         router.push({
@@ -265,13 +267,6 @@ const LpSearchView = defineComponent({
       // $q.loading.show({
       //   delay: 400,
       // });
-      // const args = {
-      //   // TODO clientCode
-      //   clientCode: "WOLV",
-      //   so: soNumber.value,
-      //   po: poNumber.value,
-      //   sku: skuNumber.value,
-      // };
       // bridge.call("fetchLp", args, (res: string) => {
       //   const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
       //   $q.loading.hide();
