@@ -1,20 +1,19 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <div style="width: 100%">
-        <q-item clickable>
-          <q-item-section avatar @click="back">
-            <q-icon name="arrow_back" />
-          </q-item-section>
-          <q-item-section>
-            <span style="font-size: 21px">Profile</span></q-item-section
-          >
-          <q-item-section avatar @click="home">
-            <q-icon name="home" />
-          </q-item-section>
-        </q-item>
-      </div>
+      <q-item clickable style="width: 100%">
+        <q-item-section avatar @click="back">
+          <q-icon name="arrow_back" />
+        </q-item-section>
+        <q-item-section>
+          <span style="font-size: 21px">Profile</span></q-item-section
+        >
+        <q-item-section avatar @click="home">
+          <q-icon name="home" />
+        </q-item-section>
+      </q-item>
     </div>
+    <q-separator color="grey-5" />
     <div style="margin-top: 10px">
       <div v-if="result.length > 0">
         <q-list v-for="(item, index) in result" :key="index">
@@ -94,11 +93,10 @@ export default ProfileView;
   flex-flow: column;
 }
 .header {
-  background: #027be3;
-  padding-top: 1px;
-  padding-bottom: 1px;
   display: flex;
-  color: #fff;
+  background: #fff;
   justify-content: space-around;
+  height: 60px;
+  align-items: center;
 }
 </style>

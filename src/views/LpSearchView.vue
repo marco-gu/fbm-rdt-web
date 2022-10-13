@@ -31,78 +31,103 @@
             <span>Scan Type</span>
           </div>
         </template>
-        <div style="display: flex; color: black">
-          <q-radio
-            v-model="scanType"
-            val="Receiving"
-            label="Receiving"
-            @click="onClick"
-          />
-          <q-radio
-            v-model="scanType"
-            val="Stuffing"
-            label="Stuffing"
-            @click="onClick"
-          />
+        <div style="display: flex; color: black; align-items: center">
+          <div v-if="receivingType">
+            <q-radio
+              v-model="scanType"
+              val="Receiving"
+              label="Receiving"
+              @click="onClick"
+            />
+          </div>
+          <div v-if="!receivingType">
+            <q-radio
+              disable
+              v-model="scanType"
+              val="Receiving"
+              label="Receiving"
+              @click="onClick"
+            />
+          </div>
+          <div v-if="stuffingType">
+            <q-radio
+              disable
+              v-model="scanType"
+              val="Stuffing"
+              label="Stuffing"
+              @click="onClick"
+            />
+          </div>
+          <div v-if="!stuffingType">
+            <q-radio
+              disable
+              v-model="scanType"
+              val="Stuffing"
+              label="Stuffing"
+              @click="onClick"
+            />
+          </div>
         </div>
       </q-field>
       <q-separator color="grey-5" />
-      <q-input
-        ref="inputSoRef"
-        v-model="soNumber"
-        prefix="SO"
-        clearable
-        input-class="text-right"
-        lazy-rules
-        :rules="[soFormatRule]"
-        borderless
-        style="padding: 0px 16px"
-      >
-        <template v-slot:append>
-          <q-avatar>
-            <q-icon name="qr_code_scanner" />
-          </q-avatar>
-        </template>
-      </q-input>
-      <q-separator color="grey-5" />
-      <div v-if="isPoNumberVisible">
-        <q-input
-          ref="inputPoRef"
-          v-model="poNumber"
-          prefix="PO"
-          clearable
-          input-class="text-right"
-          lazy-rules
-          :rules="[poFormatRule]"
-          borderless
-          style="padding: 0px 16px"
+      <div v-for="(item, i) in receivingViews" :key="i">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
+          v-if="item.display == 1 && scanType == 'Receiving'"
         >
-          <template v-slot:append>
-            <q-avatar>
-              <q-icon name="qr_code_scanner" />
-            </q-avatar>
-          </template>
-        </q-input>
+          <lable style="padding-left: 1rem; color: black">{{
+            item.dataFieldName
+          }}</lable>
+          <q-input
+            v-model="item.model"
+            clearable
+            input-class="text-right"
+            lazy-rules
+            :rules="[item.valid]"
+            borderless
+            style="padding: 0px 16px"
+          >
+            <template v-slot:append>
+              <q-avatar>
+                <q-icon name="qr_code_scanner" />
+              </q-avatar>
+            </template>
+          </q-input>
+        </div>
         <q-separator color="grey-5" />
       </div>
-      <div v-if="isSkuNumberVisible">
-        <q-input
-          ref="inputSkuRef"
-          v-model="skuNumber"
-          prefix="SKU"
-          clearable
-          input-class="text-right"
-          lazy-rules
-          :rules="[skuFormatRule]"
-          borderless
-          style="padding: 0px 16px"
+      <div v-for="(item, i) in stuffingViews" :key="i">
+        <div
+          v-if="item.display == 1 && scanType == 'Stuffing'"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
         >
-          <template v-slot:append>
-            <q-avatar>
-              <q-icon name="qr_code_scanner" />
-            </q-avatar>
-          </template>
-        </q-input>
+          <lable style="padding-left: 1rem; color: black">{{
+            item.dataFieldName
+          }}</lable>
+          <q-input
+            v-model="item.model"
+            clearable
+            input-class="text-right"
+            lazy-rules
+            :rules="[item.valid]"
+            borderless
+            style="padding: 0px 16px"
+          >
+            <template v-slot:append>
+              <q-avatar>
+                <q-icon name="qr_code_scanner" />
+              </q-avatar>
+            </template>
+          </q-input>
+        </div>
         <q-separator color="grey-5" />
       </div>
       <div style="position: fixed; bottom: 0px; width: 100%">
@@ -119,178 +144,161 @@
 </template>
 <script lang="ts">
 import { ApiResponseDto } from "@/models/api.response";
+import { Attribute, ProfileDeail } from "@/models/profile";
 import bridge from "dsbridge";
-import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+export const enum ScanType {
+  RECEIVING = "Receiving",
+  STUFFING = "Stuffing",
+}
 const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
     const profileName = ref("");
-    const scanType = ref("Receiving");
-    const soNumber = ref("");
-    const inputSoRef = ref("");
-    const poNumber = ref("");
-    const inputPoRef = ref("");
-    const isPoNumberVisible = ref(true);
-    const skuNumber = ref("");
-    const inputSkuRef = ref("");
-    const isSkuNumberVisible = ref(false);
-    const $q = useQuasar();
-    const alertErrorMessage = (message: any) => {
-      $q.notify({
-        position: "center",
-        color: "red-5",
-        textColor: "white",
-        icon: "error",
-        timeout: 2000,
-        message: message,
-      });
-    };
+    // Define Scan Type
+    const scanType = ref("");
+    // Receiving View List
+    const receivingViews = ref([]);
+    // Stuffing View List
+    const stuffingViews = ref([]);
+    // Whether Receving type exist
+    const receivingType = ref(false);
+    // Whether Stuffing type exist
+    const stuffingType = ref(false);
+    const profileFromRoute = ref();
     onMounted(() => {
-      // TODO get profile from Router
-      const profileData = route.params.profile as string;
-      alert(profileData);
-      alert(JSON.parse(profileData).client);
-
-      profileName.value = "NIKE";
-    });
-    const onSubmit = () => {
-      $q.loading.show({
-        delay: 400,
-      });
-      const args = {
-        // TODO clientCode
-        clientCode: "WOLV",
-        so: soNumber.value,
-        po: poNumber.value,
-        sku: skuNumber.value,
-      };
-      bridge.call("fetchLp", args, (res: string) => {
-        const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
-        $q.loading.hide();
-        if (apiResponse.statusCode == 200) {
-          alert("success");
+      const data = JSON.parse(route.params.profile as string) as ProfileDeail;
+      profileFromRoute.value = data;
+      alert(data.client);
+      profileName.value = data.client;
+      // Configure Scan type
+      receivingType.value = data.receivingScanFlag == 1 ? true : false;
+      stuffingType.value = data.stuffingScanFlag == 1 ? true : false;
+      scanType.value =
+        receivingType.value == true ? ScanType.RECEIVING : ScanType.STUFFING;
+      data.attributes.forEach((attr: Attribute) => {
+        if (attr.type == ScanType.RECEIVING) {
+          receivingViews.value.push(composeViewElements(attr) as never);
         } else {
-          alertErrorMessage(apiResponse.errorMessage);
+          stuffingViews.value.push(composeViewElements(attr) as never);
         }
       });
-    };
-    const onClick = () => {
-      const tempSo = inputSoRef.value as any;
-      tempSo.resetValidation();
-      soNumber.value = "";
-      const tempPo = inputPoRef.value as any;
-      tempPo.resetValidation();
-      poNumber.value = "";
-      const tempSku = inputSkuRef.value as any;
-      tempSku.resetValidation();
-      skuNumber.value = "";
-    };
-    // TODO
-    const soFormatRule = (val: string) => {
-      switch (scanType.value) {
-        case "Receiving":
-          return new Promise((resolve) => {
-            if (!val) {
-              resolve("Please input SO");
-            } else {
-              if (soNumber.value.length > 18) {
-                resolve("Please input not more than 18 charactors");
-              } else {
-                resolve(true);
-              }
-            }
-          });
-        case "Stuffing":
-          return new Promise((resolve) => {
-            if (!val) {
-              resolve("Please input SO");
-            } else {
-              if (soNumber.value.length > 10) {
-                resolve("Please input not more than 10 charactors");
-              } else {
-                resolve(true);
-              }
-            }
-          });
+    });
+    const composeReg = (format: string) => {
+      let result = "";
+      for (let i = 0; i < format.length; i++) {
+        switch (format[i]) {
+          case "A":
+            result += "[a-zA-Z]";
+            break;
+          case "9":
+            result += "[0-9]";
+            break;
+          case "#":
+            result += "[\\s]|[0-9]";
+            break;
+          case "X":
+            result += "[.]";
+            break;
+        }
       }
+      return result;
     };
-    // TODO
-    const poFormatRule = (val: string) => {
-      switch (scanType.value) {
-        case "Receiving":
-          return new Promise((resolve) => {
-            if (!val) {
-              resolve("Please input PO");
+    const composeViewElements = (attr: Attribute) => {
+      const view = {} as any;
+      view.dataFieldName = attr.dataFieldName;
+      view.mandatory = attr.mandatory;
+      view.model = ref("");
+      const reg = composeReg(attr.format);
+      view.reg = new RegExp(reg);
+      // TODO Check combo
+      // element.display = temp.combo;
+      view.display = 1;
+      view.valid = (val: string) => {
+        return new Promise((resolve) => {
+          if (view.mandatory == 1 && !val) {
+            resolve(`Please input ${view.dataFieldName}`);
+          } else {
+            if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
+              resolve(
+                `Please input not more than ${attr.maxLength} charactors`
+              );
+            } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
+              resolve(
+                `Please input not more or less than ${attr.maxLength} charactors`
+              );
+            } else if (!view.reg.test(val)) {
+              resolve("Please input correct format");
             } else {
-              if (poNumber.value.length > 18) {
-                resolve("Please input not more than 18 charactors");
-              } else {
-                resolve(true);
-              }
+              resolve(true);
             }
-          });
-        case "Stuffing":
-          return new Promise((resolve) => {
-            if (!val) {
-              resolve("Please input PO");
-            } else {
-              if (poNumber.value.length > 10) {
-                resolve("Please input not more than 10 charactors");
-              } else {
-                resolve(true);
-              }
-            }
-          });
-      }
+          }
+        });
+      };
+      return view;
     };
-    // TODO
-    const skuFormatRule = (val: string) => {
-      switch (scanType.value) {
-        case "Receiving":
-          return new Promise((resolve) => {
-            if (!val) {
-              resolve("Please input SKU");
-            } else {
-              if (skuNumber.value.length > 18) {
-                resolve("Please input not more than 18 charactors");
-              } else {
-                resolve(true);
-              }
-            }
-          });
-        case "Stuffing":
-          return new Promise((resolve) => {
-            if (!val) {
-              resolve("Please input SKU");
-            } else {
-              if (skuNumber.value.length > 10) {
-                resolve("Please input not more than 10 charactors");
-              } else {
-                resolve(true);
-              }
-            }
-          });
+    const onSubmit = () => {
+      const routeParams = {} as any;
+      if (scanType.value == ScanType.RECEIVING) {
+        receivingViews.value.forEach((view: any) => {
+          routeParams[view.dataFieldName] = view.model;
+          routeParams.scanned = 0;
+          routeParams.total = 0;
+        });
+        router.push({
+          name: "scan",
+          params: routeParams,
+        });
+      } else {
+        stuffingViews.value.forEach((view: any) => {
+          routeParams[view.dataFieldName] = view.model;
+          routeParams.scanned = 0;
+          routeParams.total = 0;
+        });
+        router.push({
+          name: "scan",
+          params: routeParams,
+        });
       }
+      // $q.loading.show({
+      //   delay: 400,
+      // });
+      // const args = {
+      //   // TODO clientCode
+      //   clientCode: "WOLV",
+      //   so: soNumber.value,
+      //   po: poNumber.value,
+      //   sku: skuNumber.value,
+      // };
+      // bridge.call("fetchLp", args, (res: string) => {
+      //   const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
+      //   $q.loading.hide();
+      //   if (apiResponse.statusCode == 200) {
+      //     alert("success");
+      //   } else {
+      //     alertErrorMessage(apiResponse.errorMessage);
+      //   }
+      // });
+    };
+    const back = () => {
+      router.go(-1);
+    };
+    const home = () => {
+      router.push("/home");
     };
     return {
       router,
       profileName,
       scanType,
-      soNumber,
-      inputSoRef,
-      poNumber,
-      inputPoRef,
-      skuNumber,
-      isPoNumberVisible,
-      isSkuNumberVisible,
       onSubmit,
-      soFormatRule,
-      poFormatRule,
-      skuFormatRule,
-      onClick,
+      back,
+      home,
+      receivingViews,
+      stuffingViews,
+      receivingType,
+      stuffingType,
     };
   },
 });

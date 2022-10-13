@@ -5,6 +5,7 @@ import {
   Store,
   useStore as baseUseStore,
 } from "vuex";
+import profileModule from "./module/profile.module";
 
 import RootState, { State } from "./state";
 
@@ -13,7 +14,9 @@ export default createStore({
   state: {},
   mutations: {},
   actions: {},
-  modules: {},
+  modules: {
+    profileModule,
+  },
   strict: debug,
   plugins: debug ? [createLogger()] : [],
 });

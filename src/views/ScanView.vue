@@ -16,38 +16,44 @@
     <q-card class="my-card" flat bordered>
       <q-card-section horizontal>
         <q-card-section style="width: 50%">
-          <div><span style="font-size: 26px; color: white">0</span></div>
+          <div>
+            <span style="font-size: 26px; color: white"> {{ scanned }} </span>
+          </div>
           <div><span style="font-size: 20px; color: white">Scanned</span></div>
         </q-card-section>
         <q-separator vertical inset color="white" />
         <q-card-section style="width: 50%">
-          <div><span style="font-size: 26px; color: white">3000</span></div>
-          <div><span style="font-size: 20px; color: white">Total</span></div>
+          <div>
+            <span style="font-size: 26px; color: white">{{ total }}</span>
+          </div>
+          <div>
+            <span style="font-size: 20px; color: white">Total Number</span>
+          </div>
         </q-card-section>
       </q-card-section>
     </q-card>
     <q-form @submit="onSubmit" style="background: #fff">
-      <q-input
-        v-model="profileName"
-        prefix="Profile"
-        input-class="text-right"
-        readonly
-        borderless
-        style="padding: 0px 16px"
-      >
-      </q-input>
-      <q-separator color="grey-5" />
-      <q-input
-        v-model="type"
-        prefix="Type"
-        input-class="text-right"
-        readonly
-        borderless
-        style="padding: 0px 16px"
-      >
-      </q-input>
-      <q-separator color="grey-5" />
-      <q-input
+      <div v-for="(item, i) in views" :key="i">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
+        >
+          <lable style="padding-left: 1rem; color: black">{{ item.key }}</lable>
+          <q-input
+            v-model="item.value"
+            input-class="text-right"
+            borderless
+            style="padding: 0px 16px"
+            readonly
+          >
+          </q-input>
+        </div>
+        <q-separator color="grey-5" />
+      </div>
+      <!-- <q-input
         v-model="soNumber"
         prefix="SO"
         input-class="text-right"
@@ -76,7 +82,7 @@
         style="padding: 0px 16px"
       >
       </q-input>
-      <q-separator color="grey-5" />
+      <q-separator color="grey-5" /> -->
 
       <div style="position: fixed; bottom: 0px; width: 100%">
         <q-btn
@@ -94,20 +100,54 @@
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import bridge from "dsbridge";
+import { ProfileDeail } from "@/models/profile";
 const ScanView = defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
     const profileName = ref("");
-    const type = ref("");
+    const scanType = ref("");
     const soNumber = ref("");
     const poNumber = ref("");
+    const skuNumber = ref("");
+    const scanned = ref(0);
+    const total = ref(0);
+    const views = ref([]);
+    const headerViews = ref([]);
+    const data = ref();
     onMounted(() => {
-      profileName.value = route.params.profileName as string;
-      type.value = route.params.type as string;
-      soNumber.value = route.params.so as string;
-      poNumber.value = route.params.po as string;
+      data.value = route.params as any;
+      for (const key in data.value) {
+        if (key != "profile") {
+          if (key == "scanned" || key == "total") {
+            const element = {
+              key: key,
+              value: data.value[key],
+            };
+            headerViews.value.push(element as never);
+          } else {
+            const element = {
+              key: key.charAt(0).toUpperCase() + key.slice(1),
+              value: data.value[key],
+            };
+            views.value.push(element as never);
+          }
+        }
+      }
+      // profileName.value = route.params.profileName as string;
+      // scanType.value = route.params.scanType as string;
+      // soNumber.value = route.params.soNumber as string;
+      // poNumber.value = route.params.poNumber as string;
+      // skuNumber.value = route.params.skuNumber as string;
+      // scanned.value = route.params.scanned as any;
+      // total.value = route.params.total as any;
     });
+    const back = () => {
+      router.push("/lpSearch");
+    };
+    const home = () => {
+      router.push("/home");
+    };
     const scan = () => {
       const args = {
         profileName: profileName.value,
@@ -122,10 +162,17 @@ const ScanView = defineComponent({
     return {
       router,
       profileName,
-      type,
+      scanType,
       soNumber,
       poNumber,
+      skuNumber,
+      scanned,
+      total,
       scan,
+      back,
+      home,
+      views,
+      headerViews,
     };
   },
 });
