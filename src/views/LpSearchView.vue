@@ -6,8 +6,8 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">LP Search</span></q-item-section
-        >
+          <span style="font-size: 21px">LP Search</span>
+        </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
         </q-item-section>
@@ -51,7 +51,6 @@
           </div>
           <div v-if="stuffingType">
             <q-radio
-              disable
               v-model="scanType"
               val="Stuffing"
               label="Stuffing"
@@ -70,65 +69,36 @@
         </div>
       </q-field>
       <q-separator color="grey-5" />
-      <div v-for="(item, i) in receivingViews" :key="i">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          "
-          v-if="item.display == 1 && scanType == 'Receiving'"
-        >
-          <lable style="padding-left: 1rem; color: black">{{
-            item.dataFieldName
-          }}</lable>
-          <q-input
-            v-model="item.model"
-            clearable
-            input-class="text-right"
-            lazy-rules
-            :rules="[item.valid]"
-            borderless
-            style="padding: 0px 16px"
+      <div v-for="(item, i) in pageViews" :key="i">
+        <div v-if="item.display == 1">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            "
           >
-            <template v-slot:append>
-              <q-avatar>
-                <q-icon name="qr_code_scanner" />
-              </q-avatar>
-            </template>
-          </q-input>
+            <lable style="padding-left: 1rem; color: black">
+              {{ item.dataFieldName }}
+            </lable>
+            <q-input
+              v-model="item.model"
+              clearable
+              input-class="text-right"
+              lazy-rules
+              :rules="[item.valid]"
+              borderless
+              style="padding: 0px 16px"
+            >
+              <template v-slot:append>
+                <q-avatar>
+                  <q-icon name="qr_code_scanner" />
+                </q-avatar>
+              </template>
+            </q-input>
+          </div>
+          <q-separator color="grey-5" />
         </div>
-        <q-separator color="grey-5" />
-      </div>
-      <div v-for="(item, i) in stuffingViews" :key="i">
-        <div
-          v-if="item.display == 1 && scanType == 'Stuffing'"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          "
-        >
-          <lable style="padding-left: 1rem; color: black">{{
-            item.dataFieldName
-          }}</lable>
-          <q-input
-            v-model="item.model"
-            clearable
-            input-class="text-right"
-            lazy-rules
-            :rules="[item.valid]"
-            borderless
-            style="padding: 0px 16px"
-          >
-            <template v-slot:append>
-              <q-avatar>
-                <q-icon name="qr_code_scanner" />
-              </q-avatar>
-            </template>
-          </q-input>
-        </div>
-        <q-separator color="grey-5" />
       </div>
       <div style="position: fixed; bottom: 0px; width: 100%">
         <q-btn
@@ -147,79 +117,73 @@ import { ApiResponseDto } from "@/models/api.response";
 import { Attribute, ProfileDeail } from "@/models/profile";
 import { useStore } from "@/store";
 import bridge from "dsbridge";
+import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 export const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
 }
+export const enum InterfaceMandatoryField {
+  SO = "SO",
+  PO = "PO",
+  SKU = "SKU",
+}
 const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
-    const route = useRoute();
     const store = useStore();
     const profileName = ref("");
-    // Define Scan Type
     const scanType = ref("");
-    // Receiving View List
-    const receivingViews = ref([]);
-    // Stuffing View List
-    const stuffingViews = ref([]);
-    // Whether Receving type exist
+    const receivingViews = ref([{}]);
+    const stuffingViews = ref([{}]);
+    const pageViews = ref([{}]);
     const receivingType = ref(false);
-    // Whether Stuffing type exist
     const stuffingType = ref(false);
+    const $q = useQuasar();
+    const a = ref("aaa");
+    const alertErrorMessage = (message: any) => {
+      $q.notify({
+        position: "center",
+        color: "red-5",
+        textColor: "white",
+        icon: "error",
+        timeout: 2000,
+        message: message,
+      });
+    };
     onMounted(() => {
-      const data = JSON.parse(
+      const initData = JSON.parse(
         store.state.profileModule.profile
       ) as ProfileDeail;
-      profileName.value = data.client;
-      // Configure Scan type
-      receivingType.value = data.receivingScanFlag == 1 ? true : false;
-      stuffingType.value = data.stuffingScanFlag == 1 ? true : false;
+      profileName.value = initData.client;
+      receivingType.value = initData.receivingScanFlag == 1 ? true : false;
+      stuffingType.value = initData.stuffingScanFlag == 1 ? true : false;
       scanType.value =
         receivingType.value == true ? ScanType.RECEIVING : ScanType.STUFFING;
-      data.attributes.forEach((attr: Attribute) => {
+      initData.attributes.forEach((attr: Attribute) => {
         if (attr.type == ScanType.RECEIVING) {
-          receivingViews.value.push(composeViewElements(attr) as never);
-        } else {
-          stuffingViews.value.push(composeViewElements(attr) as never);
+          receivingViews.value.push(composeViewElements(attr));
+        } else if (attr.type == ScanType.STUFFING) {
+          stuffingViews.value.push(composeViewElements(attr));
         }
       });
+      pageViews.value =
+        scanType.value == ScanType.RECEIVING
+          ? receivingViews.value
+          : stuffingViews.value;
     });
-    const composeReg = (format: string) => {
-      let result = "";
-      for (let i = 0; i < format.length; i++) {
-        switch (format[i]) {
-          case "A":
-            result += "[a-zA-Z]";
-            break;
-          case "9":
-            result += "[0-9]";
-            break;
-          case "#":
-            result += "[\\s]|[0-9]";
-            break;
-          case "X":
-            result += "[.]";
-            break;
-        }
-      }
-      return result;
-    };
     const composeViewElements = (attr: Attribute) => {
-      const view = {} as any;
-      view.dataFieldName = attr.dataFieldName;
-      view.mandatory = attr.mandatory;
-      view.model = ref("");
-      const reg = composeReg(attr.format);
-      view.reg = new RegExp(reg);
-      // element.display = temp.combo;
-      view.display = 1;
-      view.valid = (val: string) => {
+      const viewElement = {} as any;
+      viewElement.dataFieldName = attr.dataFieldName;
+      viewElement.mandatory = attr.mandatory;
+      viewElement.model = ref("");
+      viewElement.reg = new RegExp(composeReg(attr.format));
+      viewElement.display = attr.combo;
+      viewElement.valid = (val: string) => {
         return new Promise((resolve) => {
-          if (view.mandatory == 1 && !val) {
-            resolve(`Please input ${view.dataFieldName}`);
+          if (viewElement.mandatory == 1 && !val) {
+            resolve(`Please input ${viewElement.dataFieldName}`);
           } else {
             if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
               resolve(
@@ -229,7 +193,7 @@ const LpSearchView = defineComponent({
               resolve(
                 `Please input not more or less than ${attr.maxLength} charactors`
               );
-            } else if (!view.reg.test(val)) {
+            } else if (!viewElement.reg.test(val)) {
               resolve("Please input correct format");
             } else {
               resolve(true);
@@ -237,48 +201,86 @@ const LpSearchView = defineComponent({
           }
         });
       };
-      return view;
+      return viewElement;
+    };
+    const composeReg = (format: string) => {
+      let reg = "";
+      for (let i = 0; i < format.length; i++) {
+        switch (format[i]) {
+          case "A":
+            reg += "[a-zA-Z]";
+            break;
+          case "9":
+            reg += "[0-9]";
+            break;
+          case "#":
+            reg += "[0-9]|[\\s]";
+            break;
+          case "X":
+            reg += "[.]";
+            break;
+        }
+      }
+      return reg;
+    };
+    const composeRequestAndRouteParams = (
+      reqParams: any,
+      routeParams: any,
+      source: any
+    ) => {
+      source.forEach((view: any) => {
+        if (view.display == 1) {
+          routeParams[view.dataFieldName] = view.model;
+        }
+        switch (view.dataFieldName) {
+          case InterfaceMandatoryField.SO:
+            reqParams.so = view.model;
+            break;
+          case InterfaceMandatoryField.PO:
+            reqParams.po = view.model;
+            break;
+          case InterfaceMandatoryField.SKU:
+            reqParams.sku = view.model;
+        }
+      });
+      return reqParams;
+    };
+    const onClick = () => {
+      pageViews.value =
+        scanType.value == ScanType.RECEIVING
+          ? receivingViews.value
+          : stuffingViews.value;
     };
     const onSubmit = () => {
-      const routeParams = {} as any;
-      if (scanType.value == ScanType.RECEIVING) {
-        receivingViews.value.forEach((view: any) => {
-          routeParams[view.dataFieldName] = view.model;
-          routeParams.scanned = 0;
-          // TODO calculate total
-          routeParams.total = 0;
-        });
-        router.push({
-          name: "scan",
-          params: routeParams,
-        });
-      } else {
-        stuffingViews.value.forEach((view: any) => {
-          routeParams[view.dataFieldName] = view.model;
-          routeParams.scanned = 0;
-          // TODO calculate total
-          routeParams.total = 0;
-        });
-        router.push({
-          name: "scan",
-          params: routeParams,
-        });
-      }
-      // $q.loading.show({
-      //   delay: 400,
-      // });
-      // bridge.call("fetchLp", args, (res: string) => {
-      //   const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
-      //   $q.loading.hide();
-      //   if (apiResponse.statusCode == 200) {
-      //     alert("success");
-      //   } else {
-      //     alertErrorMessage(apiResponse.errorMessage);
-      //   }
-      // });
+      const reqParams = {
+        clientCode: profileName.value,
+        so: "",
+        po: "",
+        sku: "",
+      };
+      const routeParams = {
+        scanned: "0",
+        total: "0",
+      };
+      composeRequestAndRouteParams(reqParams, routeParams, pageViews.value);
+      $q.loading.show({
+        delay: 400,
+      });
+      bridge.call("fetchLp", reqParams, (res: string) => {
+        const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
+        $q.loading.hide();
+        if (apiResponse.statusCode == 200) {
+          router.push({
+            name: "scan",
+            params: routeParams,
+          });
+        } else {
+          alertErrorMessage(apiResponse.errorMessage);
+        }
+      });
     };
     const back = () => {
-      router.go(-1);
+      router.push("/profile");
     };
     const home = () => {
       router.push("/home");
@@ -290,10 +292,10 @@ const LpSearchView = defineComponent({
       onSubmit,
       back,
       home,
-      receivingViews,
-      stuffingViews,
       receivingType,
       stuffingType,
+      pageViews,
+      onClick,
     };
   },
 });
