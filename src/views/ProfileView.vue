@@ -70,9 +70,13 @@ const ProfileView = defineComponent({
     const search = ref("");
 
     const refresh = () => {
-      bridge.call("refreshProfile", {}, () => {
+      const isSuccess = bridge.call("refreshProfile");
+      if (isSuccess) {
         getProfileList();
-      });
+      }
+      // bridge.call("refreshProfile", {}, () => {
+      //   getProfileList();
+      // });
     };
 
     const onClickProfile = (profileItem: any) => {
@@ -83,10 +87,6 @@ const ProfileView = defineComponent({
         .then(() => {
           router.push("/lpSearch");
         });
-      // router.push({
-      //   name: "lpSearch",
-      //   params: { profile: JSON.stringify(profileItem) },
-      // });
     };
     const getProfileList = () => {
       const profileList = bridge.call("fetchProfile");
