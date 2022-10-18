@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="header">
       <q-item clickable>
-        <q-item-section avatar @click="back">
+        <q-item-section avatar @click="home">
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
@@ -54,9 +54,6 @@ import { ProfileMaster } from "../models/profile";
 import { useStore } from "@/store";
 const ProfileView = defineComponent({
   methods: {
-    back() {
-      this.router.go(-1);
-    },
     home() {
       this.router.push("/home");
     },

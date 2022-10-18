@@ -78,9 +78,9 @@
               justify-content: space-between;
             "
           >
-            <lable style="padding-left: 1rem; color: black">
+            <span style="padding-left: 1rem; color: black">
               {{ item.dataFieldName }}
-            </lable>
+            </span>
             <q-input
               v-model="item.model"
               clearable
@@ -91,7 +91,7 @@
               style="padding: 0px 16px"
             >
               <template v-slot:append>
-                <q-avatar>
+                <q-avatar v-if="item.scan == 1">
                   <q-icon name="qr_code_scanner" />
                 </q-avatar>
               </template>
@@ -134,14 +134,14 @@ const LpSearchView = defineComponent({
     const router = useRouter();
     const store = useStore();
     const profileName = ref("");
+    const clientCode = ref("");
     const scanType = ref("");
-    const receivingViews = ref([{}]);
-    const stuffingViews = ref([{}]);
-    const pageViews = ref([{}]);
+    const receivingViews = ref([]);
+    const stuffingViews = ref([]);
+    const pageViews = ref([]);
     const receivingType = ref(false);
     const stuffingType = ref(false);
     const $q = useQuasar();
-    const a = ref("aaa");
     const alertErrorMessage = (message: any) => {
       $q.notify({
         position: "center",
@@ -157,15 +157,16 @@ const LpSearchView = defineComponent({
         store.state.profileModule.profile
       ) as ProfileDeail;
       profileName.value = initData.client;
+      clientCode.value = initData.clientCode;
       receivingType.value = initData.receivingScanFlag == 1 ? true : false;
       stuffingType.value = initData.stuffingScanFlag == 1 ? true : false;
       scanType.value =
         receivingType.value == true ? ScanType.RECEIVING : ScanType.STUFFING;
       initData.attributes.forEach((attr: Attribute) => {
         if (attr.type == ScanType.RECEIVING) {
-          receivingViews.value.push(composeViewElements(attr));
+          receivingViews.value.push(composeViewElements(attr) as never);
         } else if (attr.type == ScanType.STUFFING) {
-          stuffingViews.value.push(composeViewElements(attr));
+          stuffingViews.value.push(composeViewElements(attr) as never);
         }
       });
       pageViews.value =
@@ -180,6 +181,7 @@ const LpSearchView = defineComponent({
       viewElement.model = ref("");
       viewElement.reg = new RegExp(composeReg(attr.format));
       viewElement.display = attr.combo;
+      viewElement.scan = attr.scan == "1" ? 1 : 0;
       viewElement.valid = (val: string) => {
         return new Promise((resolve) => {
           if (viewElement.mandatory == 1 && !val) {
@@ -253,10 +255,12 @@ const LpSearchView = defineComponent({
     };
     const onSubmit = () => {
       const reqParams = {
-        clientCode: profileName.value,
+        clientCode: clientCode.value,
         so: "",
         po: "",
         sku: "",
+        scanType: scanType.value == ScanType.RECEIVING ? 0 : 1,
+        validationType: 0,
       };
       const routeParams = {
         scanned: "0",

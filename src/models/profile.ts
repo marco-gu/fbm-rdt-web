@@ -25,6 +25,7 @@ export interface ProfileDeail {
   pickingScanFlag: number;
   stuffingScanFlag: number;
   scanPackFlag: number;
+  clientCode: string;
   attributes: Attribute[]
 }
 
