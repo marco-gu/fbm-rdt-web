@@ -93,7 +93,7 @@ const ProfileView = defineComponent({
           title: "Sync Profile",
           message: "Please synchronize the latest profiles",
         }).onOk(() => {
-          refresh(null);
+          refresh(() => void 0);
         });
       }
     };
