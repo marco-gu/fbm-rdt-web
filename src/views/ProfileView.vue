@@ -23,7 +23,7 @@
     </div>
 
     <div class="profile-list-container">
-      <div>
+      <q-pull-to-refresh @refresh="refresh">
         <q-list v-for="(item, index) in profileListDisplay" :key="index">
           <q-item clickable @click="onClickProfile(item)">
             <q-item-section style="text-align: left">
@@ -35,11 +35,6 @@
             </q-item-section>
           </q-item>
           <q-separator spaced inset />
-        </q-list>
-      </div>
-      <q-pull-to-refresh @refresh="refresh">
-        <q-list>
-          <q-item> </q-item>
         </q-list>
       </q-pull-to-refresh>
     </div>
@@ -66,10 +61,15 @@ const ProfileView = defineComponent({
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const search = ref("");
 
-    const refresh = () => {
-      bridge.call("refreshProfile", {}, () => {
+    const refresh = (done: any) => {
+      const isSuccess = bridge.call("refreshProfile");
+      if (isSuccess) {
         getProfileList();
-      });
+      }
+      done();
+      // bridge.call("refreshProfile", {}, () => {
+      //   getProfileList();
+      // });
     };
 
     const onClickProfile = (profileItem: any) => {
@@ -80,10 +80,6 @@ const ProfileView = defineComponent({
         .then(() => {
           router.push("/lpSearch");
         });
-      // router.push({
-      //   name: "lpSearch",
-      //   params: { profile: JSON.stringify(profileItem) },
-      // });
     };
     const getProfileList = () => {
       const profileList = bridge.call("fetchProfile");
@@ -94,7 +90,7 @@ const ProfileView = defineComponent({
           title: "Sync Profile",
           message: "Please synchronize the latest profiles",
         }).onOk(() => {
-          refresh();
+          refresh(() => void 0);
         });
       }
     };
