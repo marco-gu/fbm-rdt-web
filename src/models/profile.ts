@@ -1,6 +1,6 @@
 
 export interface ProfileMaster {
-  client: string;
+  profileCode: string;
   effectiveDate: string;
 }
 
@@ -25,8 +25,8 @@ export interface ProfileDeail {
   pickingScanFlag: number;
   stuffingScanFlag: number;
   scanPackFlag: number;
-  clientCode: string;
-  attributes: Attribute[]
+  profileCode: string;
+  attributes: Attribute[];
 }
 
 export interface Attribute {

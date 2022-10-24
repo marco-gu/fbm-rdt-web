@@ -27,7 +27,7 @@
         <q-list v-for="(item, index) in profileListDisplay" :key="index">
           <q-item clickable @click="onClickProfile(item)">
             <q-item-section style="text-align: left">
-              <q-item-label>{{ item.client }}</q-item-label>
+              <q-item-label>{{ item.profileCode }}</q-item-label>
               <q-item-label caption>{{ item.effectiveDate }}</q-item-label>
             </q-item-section>
             <q-item-section side>
@@ -101,7 +101,8 @@ const ProfileView = defineComponent({
       if (search.value) {
         const filteredResult = result.filter(
           (item) =>
-            item.client.toLowerCase().indexOf(search.value.toLowerCase()) > -1
+            item.profileCode.toLowerCase().indexOf(search.value.toLowerCase()) >
+            -1
         );
 
         profileListDisplay.value = filteredResult;
