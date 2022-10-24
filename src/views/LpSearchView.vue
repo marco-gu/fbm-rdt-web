@@ -157,7 +157,7 @@ const LpSearchView = defineComponent({
         store.state.profileModule.profile
       ) as ProfileDeail;
       profileName.value = initData.client;
-      clientCode.value = initData.clientCode;
+      clientCode.value = initData.profileCode;
       receivingType.value = initData.receivingScanFlag == 1 ? true : false;
       stuffingType.value = initData.stuffingScanFlag == 1 ? true : false;
       scanType.value =
