@@ -118,7 +118,7 @@ import { Attribute, ProfileDeail } from "@/models/profile";
 import { useStore } from "@/store";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 export const enum ScanType {
   RECEIVING = "Receiving",
@@ -141,6 +141,8 @@ const LpSearchView = defineComponent({
     const pageViews = ref([]);
     const receivingType = ref(false);
     const stuffingType = ref(false);
+    // 2- Search criteria input supports both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
+    const scanOrTypeInList = ["PO", "SO", "SKU", "Container"];
     const $q = useQuasar();
     const alertErrorMessage = (message: any) => {
       $q.notify({
@@ -182,6 +184,15 @@ const LpSearchView = defineComponent({
       viewElement.reg = new RegExp(composeReg(attr.format));
       viewElement.display = attr.combo;
       viewElement.scan = attr.scan == "1" ? 1 : 0;
+      scanOrTypeInList.forEach((t) => {
+        if (t == viewElement.dataFieldName) {
+          viewElement.scan = 1;
+        }
+      });
+      /* 3- Validate the input data of the search criteria whether in right format
+       * as per Scan Profile rule, i.e. data in charater, numeric or alphanumeric,
+       * max length matched or not, the field is mandatory or not. detail refers to the client scan profile rule.
+       */
       viewElement.valid = (val: string) => {
         return new Promise((resolve) => {
           if (viewElement.mandatory == 1 && !val) {
@@ -253,8 +264,11 @@ const LpSearchView = defineComponent({
           ? receivingViews.value
           : stuffingViews.value;
     };
+    // 6- Submit the search criteria and download the LP from LNS web.
     const onSubmit = () => {
+      $q.loading.show({});
       const reqParams = {
+        profileName: profileName.value,
         clientCode: clientCode.value,
         so: "",
         po: "",
@@ -267,13 +281,12 @@ const LpSearchView = defineComponent({
         total: "0",
       };
       composeRequestAndRouteParams(reqParams, routeParams, pageViews.value);
-      $q.loading.show({
-        delay: 400,
-      });
       bridge.call("fetchLp", reqParams, (res: string) => {
         const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
         $q.loading.hide();
         if (apiResponse.statusCode == 200) {
+          routeParams.scanned = apiResponse.data.scanned;
+          routeParams.total = apiResponse.data.total;
           router.push({
             name: "scan",
             params: routeParams,
@@ -283,6 +296,27 @@ const LpSearchView = defineComponent({
         }
       });
     };
+    // 4- Convert the input data value into upper case if it is not
+    const multiWatchSources = [receivingViews.value, stuffingViews.value];
+    watch(
+      multiWatchSources,
+      () => {
+        if (receivingViews.value.length > 0) {
+          receivingViews.value.forEach((t: any) => {
+            if (t.model != null && t.model.length > 1) {
+              t.model = t.model.toUpperCase();
+            }
+          });
+        } else if (stuffingViews.value.length > 0) {
+          stuffingViews.value.forEach((t: any) => {
+            if (t.model != null && t.model.length > 1) {
+              t.model = t.model.toUpperCase();
+            }
+          });
+        }
+      },
+      { immediate: true }
+    );
     const back = () => {
       router.push("/profile");
     };

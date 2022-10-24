@@ -100,7 +100,6 @@
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { ProfileDeail } from "@/models/profile";
 const ScanView = defineComponent({
   setup() {
     const router = useRouter();
@@ -113,18 +112,15 @@ const ScanView = defineComponent({
     const scanned = ref(0);
     const total = ref(0);
     const views = ref([]);
-    const headerViews = ref([]);
     const data = ref();
     onMounted(() => {
       data.value = route.params as any;
       for (const key in data.value) {
         if (key != "profile") {
-          if (key == "scanned" || key == "total") {
-            const element = {
-              key: key,
-              value: data.value[key],
-            };
-            headerViews.value.push(element as never);
+          if (key == "scanned") {
+            scanned.value = data.value[key];
+          } else if (key == "total") {
+            total.value = data.value[key];
           } else {
             const element = {
               key: key.charAt(0).toUpperCase() + key.slice(1),
@@ -134,13 +130,6 @@ const ScanView = defineComponent({
           }
         }
       }
-      // profileName.value = route.params.profileName as string;
-      // scanType.value = route.params.scanType as string;
-      // soNumber.value = route.params.soNumber as string;
-      // poNumber.value = route.params.poNumber as string;
-      // skuNumber.value = route.params.skuNumber as string;
-      // scanned.value = route.params.scanned as any;
-      // total.value = route.params.total as any;
     });
     const back = () => {
       router.push("/lpSearch");
@@ -148,7 +137,7 @@ const ScanView = defineComponent({
     const home = () => {
       router.push("/home");
     };
-    const scan = () => {
+    const onSubmit = () => {
       const args = {
         profileName: profileName.value,
         so: soNumber.value,
@@ -168,11 +157,10 @@ const ScanView = defineComponent({
       skuNumber,
       scanned,
       total,
-      scan,
+      onSubmit,
       back,
       home,
       views,
-      headerViews,
     };
   },
 });
