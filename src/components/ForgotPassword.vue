@@ -45,7 +45,7 @@
   </div>
 </template>
 <script lang="ts">
-import { ApiResponseDto } from "@/models/api.response";
+import { ApiResponseDto, ApiResponseStatus } from "@/models/api.response";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, ref, toRefs, watch } from "vue";
@@ -96,11 +96,11 @@ const ForgotPasswordComponent = defineComponent({
       bridge.call("forgotPassword", args, (res: string) => {
         const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
         $q.loading.hide();
-        if (apiResponse.statusCode == 200) {
+        if (apiResponse.status == ApiResponseStatus.SUCCESS) {
           context.emit("confirm");
           alertSuccessMessage("Please check your mail");
         } else {
-          errMsg.value = apiResponse.errorMessage;
+          errMsg.value = apiResponse.messageCode;
           alertErrorMessage(errMsg.value);
         }
       });

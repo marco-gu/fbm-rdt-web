@@ -116,7 +116,7 @@
   </div>
 </template>
 <script lang="ts">
-import { ApiResponseDto } from "@/models/api.response";
+import { ApiResponseDto, ApiResponseStatus } from "@/models/api.response";
 import { Attribute, ProfileDeail } from "@/models/profile";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
@@ -297,7 +297,7 @@ const LpSearchView = defineComponent({
       bridge.call("fetchLp", reqParams, (res: string) => {
         const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
         $q.loading.hide();
-        if (apiResponse.statusCode == 200) {
+        if (apiResponse.status == ApiResponseStatus.SUCCESS) {
           routeParams.scanned = apiResponse.data.scanned;
           routeParams.total = apiResponse.data.total;
           localStorage.clear();
@@ -310,7 +310,7 @@ const LpSearchView = defineComponent({
               params: routeParams,
             });
         } else {
-          alertErrorMessage(apiResponse.errorMessage);
+          alertErrorMessage(apiResponse.messageCode);
         }
       });
     };

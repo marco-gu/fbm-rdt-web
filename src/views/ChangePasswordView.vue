@@ -73,7 +73,7 @@
   </div>
 </template>
 <script lang="ts">
-import { ApiResponseDto } from "@/models/api.response";
+import { ApiResponseDto, ApiResponseStatus } from "@/models/api.response";
 import { LogoutResponse, UpdateLoginUser } from "@/models/login.response";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
@@ -197,10 +197,10 @@ const ChangePasswordView = defineComponent({
         bridge.call("resetPassword", args, (res: string) => {
           const apiResponse = JSON.parse(res) as ApiResponseDto<any>;
           $q.loading.hide();
-          if (apiResponse.statusCode == 200) {
+          if (apiResponse.status == ApiResponseStatus.SUCCESS) {
             router.push("/home");
           } else {
-            alertErrorMessage(apiResponse.errorMessage);
+            alertErrorMessage(apiResponse.messageCode);
           }
         });
       },
