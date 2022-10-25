@@ -1,12 +1,12 @@
-export enum ApiResponseStatus {
+export enum AndroidResponseStatus {
   SUCCESS = "SUCCESS",
   INFO = "INFO",
   WARNING = "WARNING",
   ERROR = "ERROR",
 }
 
-export interface ApiResponseDto<T> {
-  status: ApiResponseStatus;
+export interface AndroidResponse<T> {
+  status: AndroidResponseStatus;
   messageCode: string;
   data: T;
 }

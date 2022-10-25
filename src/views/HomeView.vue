@@ -97,7 +97,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { ApiResponseDto } from "@/models/api.response";
+import { AndroidResponse } from "@/models/android.response";
 import { useQuasar } from "quasar";
 import { LogoutResponse } from "@/models/login.response";
 import userProfile from "../assets/icon/user-profile.svg";
@@ -136,7 +136,7 @@ export default {
     };
     const logout = () => {
       bridge.call("logout", null, (data: string) => {
-        const apiResponse = JSON.parse(data) as ApiResponseDto<LogoutResponse>;
+        const apiResponse = JSON.parse(data) as AndroidResponse<LogoutResponse>;
         if (apiResponse.data.isSuccess) {
           $q.notify({
             position: "center",
