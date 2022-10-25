@@ -132,7 +132,7 @@ const ScanView = defineComponent({
       }
     });
     const back = () => {
-      router.push("/lpSearch");
+      router.push({ name: "lpSearch", params: { from: "WEB" } });
     };
     const home = () => {
       router.push("/home");
@@ -146,7 +146,6 @@ const ScanView = defineComponent({
       bridge.call("scan", args, (res: any) => {
         console.log(res);
       });
-      // router.push("/home");
     };
     return {
       router,

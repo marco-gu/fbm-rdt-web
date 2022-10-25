@@ -17,6 +17,7 @@ const profileModule: Module<ProfileState, RootState> = {
   mutations: {
     setProfile(state: any, payload: any) {
       state.profile = payload.profile;
+      localStorage.setItem("profile", payload.profile);
     },
   },
   namespaced: true,

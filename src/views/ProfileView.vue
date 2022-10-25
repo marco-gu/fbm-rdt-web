@@ -78,7 +78,8 @@ const ProfileView = defineComponent({
           profile: JSON.stringify(profileItem),
         })
         .then(() => {
-          router.push("/lpSearch");
+          localStorage.setItem("profile", JSON.stringify(profileItem));
+          router.push({ name: "lpSearch", params: { from: "WEB" } });
         });
     };
     const getProfileList = () => {
@@ -109,7 +110,6 @@ const ProfileView = defineComponent({
       } else {
         profileListDisplay.value = result;
       }
-      console.log(profileListDisplay.value);
     });
 
     return {

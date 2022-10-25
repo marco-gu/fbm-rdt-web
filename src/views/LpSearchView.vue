@@ -91,7 +91,10 @@
               style="padding: 0px 16px"
             >
               <template v-slot:append>
-                <q-avatar v-if="item.scan == 1">
+                <q-avatar
+                  v-if="item.scan == 1"
+                  @click="scan(item.dataFieldName)"
+                >
                   <q-icon name="qr_code_scanner" />
                 </q-avatar>
               </template>
@@ -115,11 +118,10 @@
 <script lang="ts">
 import { ApiResponseDto } from "@/models/api.response";
 import { Attribute, ProfileDeail } from "@/models/profile";
-import { useStore } from "@/store";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 export const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
@@ -132,7 +134,7 @@ export const enum InterfaceMandatoryField {
 const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
-    const store = useStore();
+    const route = useRoute();
     const profileName = ref("");
     const clientCode = ref("");
     const scanType = ref("");
@@ -141,6 +143,8 @@ const LpSearchView = defineComponent({
     const pageViews = ref([]);
     const receivingType = ref(false);
     const stuffingType = ref(false);
+    const from = ref("");
+    const profileConfiguration = ref("");
     // 2- Search criteria input supports both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
     const scanOrTypeInList = ["PO", "SO", "SKU", "Container"];
     const $q = useQuasar();
@@ -155,12 +159,13 @@ const LpSearchView = defineComponent({
       });
     };
     onMounted(() => {
+      from.value = route.params.from as string;
       const initData = JSON.parse(
-        store.state.profileModule.profile
+        localStorage.getItem("profile") as any
       ) as ProfileDeail;
+      profileConfiguration.value = initData as any;
       profileName.value = initData.profileCode;
       clientCode.value = initData.profileName;
-      alert(clientCode.value);
       receivingType.value = initData.receivingScanFlag == 1 ? true : false;
       stuffingType.value = initData.stuffingScanFlag == 1 ? true : false;
       scanType.value =
@@ -181,7 +186,14 @@ const LpSearchView = defineComponent({
       const viewElement = {} as any;
       viewElement.dataFieldName = attr.dataFieldName;
       viewElement.mandatory = attr.mandatory;
-      viewElement.model = ref("");
+      // try to get value from localstorage
+      const key = scanType.value + "_" + viewElement.dataFieldName;
+      const value = localStorage.getItem(key);
+      if (from.value == "WEB") {
+        viewElement.model = ref("");
+      } else {
+        viewElement.model = value == null ? ref("") : value;
+      }
       viewElement.reg = new RegExp(composeReg(attr.format));
       viewElement.display = attr.combo;
       viewElement.scan = attr.scan == "1" ? 1 : 0;
@@ -288,10 +300,15 @@ const LpSearchView = defineComponent({
         if (apiResponse.statusCode == 200) {
           routeParams.scanned = apiResponse.data.scanned;
           routeParams.total = apiResponse.data.total;
-          router.push({
-            name: "scan",
-            params: routeParams,
-          });
+          localStorage.clear();
+          localStorage.setItem(
+            "profile",
+            JSON.stringify(profileConfiguration.value)
+          ),
+            router.push({
+              name: "scan",
+              params: routeParams,
+            });
         } else {
           alertErrorMessage(apiResponse.errorMessage);
         }
@@ -319,11 +336,28 @@ const LpSearchView = defineComponent({
       { immediate: true }
     );
     const back = () => {
+      localStorage.clear();
       router.push("/profile");
     };
     const home = () => {
+      localStorage.clear();
       router.push("/home");
     };
+    const scan = (dataFieldName: string) => {
+      const reqParams = {
+        scanType: scanType.value,
+        fieldName: dataFieldName,
+      };
+      bridge.call("scanForInput", reqParams);
+    };
+
+    bridge.register("getScanResult", (res: string) => {
+      if (res.indexOf("_") != -1) {
+        const key = res.substring(0, res.lastIndexOf("_"));
+        const value = res.substring(res.lastIndexOf("_") + 1);
+        localStorage.setItem(key, value);
+      }
+    });
     return {
       router,
       profileName,
@@ -335,6 +369,7 @@ const LpSearchView = defineComponent({
       stuffingType,
       pageViews,
       onClick,
+      scan,
     };
   },
 });
