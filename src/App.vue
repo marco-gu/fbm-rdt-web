@@ -11,6 +11,10 @@ const App = defineComponent({
     provideI18n({
       locale: "en/",
       messages: {
+        MessageCode: {
+          zh: require("../src/assets/lang/zh/MessageCode/zh.json"),
+          en: require("../src/assets/lang/en/MessageCode/en.json"),
+        },
         LoginView: {
           zh: require("../src/assets/lang/zh/LoginView/zh.json"),
           en: require("../src/assets/lang/en/LoginView/en.json"),

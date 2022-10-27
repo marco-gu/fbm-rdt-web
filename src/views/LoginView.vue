@@ -87,7 +87,6 @@ const LoginView = defineComponent({
     const router = useRouter();
     const maerskLogo = logo;
     const i18n = useI18n();
-    i18n.screenNm.value = "LoginView";
     const login = ref("");
     const help = ref("");
     const forgotPassword = ref("");
@@ -185,7 +184,10 @@ const LoginView = defineComponent({
               router.push("/home");
             }
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            alertErrorMessage(i18n.$t(androidResponse.messageCode));
+            i18n.screenNm.value = "MessageCode";
+            alert(androidResponse.messageCode);
+            const message = i18n.$t(androidResponse.messageCode);
+            alertErrorMessage(message);
           }
         });
       },

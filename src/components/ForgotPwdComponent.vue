@@ -66,9 +66,9 @@ const ForgotPwdComponent = defineComponent({
     const i18n = useI18n();
     const forgotPassword = ref("");
     const confirm = ref("");
-    i18n.screenNm.value = "ForgotPwdComponent";
     bridge.call("getSystemLangugae", null, (res: string) => {
       i18n.locale.value = res;
+      i18n.screenNm.value = "ForgotPwdComponent";
       forgotPassword.value = i18n.$t("forgotPassword");
       confirm.value = i18n.$t("confirm");
     });

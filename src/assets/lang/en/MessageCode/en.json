@@ -1,9 +1,7 @@
 {
-    "login": "LOG IN",
-    "help": "Help",
-    "forgotPassword": "Forgot Password",
     "E00-01-0001": "Username not exist",
     "E00-01-0002": "Password not correct",
     "E00-01-0003": "The user has logged in",
+    "E00-01-0004": "Username not exist",
     "E00-01-0005": "Service Unavailable"
 }
