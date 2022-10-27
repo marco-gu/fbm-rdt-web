@@ -1,5 +1,8 @@
 {
     "login": "LOG IN",
     "help": "Help",
-    "forgotPassword": "Forgot Password"
+    "forgotPassword": "Forgot Password",
+    "E00-01-0001": "Username not exist",
+    "E00-01-0002": "Password not correct",
+    "E00-01-0003": "The user has logged in"
 }

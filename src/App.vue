@@ -9,11 +9,19 @@ import { provideI18n } from "./plugin/i18nPlugins";
 const App = defineComponent({
   setup() {
     provideI18n({
-      locale: "zh",
+      locale: "en/",
       messages: {
         LoginView: {
           zh: require("../src/assets/lang/zh/LoginView/zh.json"),
           en: require("../src/assets/lang/en/LoginView/en.json"),
+        },
+        ForgotPwdComponent: {
+          zh: require("../src/assets/lang/zh/ForgotPwdComponent/zh.json"),
+          en: require("../src/assets/lang/en/ForgotPwdComponent/en.json"),
+        },
+        LpSearchView: {
+          zh: require("../src/assets/lang/zh/LpSearchView/zh.json"),
+          en: require("../src/assets/lang/en/LpSearchView/en.json"),
         },
       },
     });

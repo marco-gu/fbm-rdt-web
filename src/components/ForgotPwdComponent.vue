@@ -10,7 +10,7 @@
         <q-form @submit="onConfirm">
           <q-toolbar>
             <q-toolbar-title
-              ><span class="text-weight-bold">Forgot Password</span>
+              ><span class="text-weight-bold">{{ forgotPassword }}</span>
             </q-toolbar-title>
             <q-btn
               @click="onClose"
@@ -37,7 +37,7 @@
           </q-card-section>
           <q-separator />
           <q-card-actions align="right" class="bg-white text-teal">
-            <q-btn flat label="Confirm" type="submit" />
+            <q-btn flat type="submit"> {{ confirm }}</q-btn>
           </q-card-actions>
         </q-form>
       </q-card>
@@ -49,10 +49,11 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
+import { useI18n } from "@/plugin/i18nPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, ref, toRefs, watch } from "vue";
-const ForgotPasswordComponent = defineComponent({
+const ForgotPwdComponent = defineComponent({
   props: {
     dialogVisible: {
       type: Boolean,
@@ -62,6 +63,15 @@ const ForgotPasswordComponent = defineComponent({
   emits: ["close", "confirm"],
   setup(props, context) {
     const { dialogVisible } = toRefs(props);
+    const i18n = useI18n();
+    const forgotPassword = ref("");
+    const confirm = ref("");
+    i18n.screenNm.value = "ForgotPwdComponent";
+    bridge.call("getSystemLangugae", null, (res: string) => {
+      i18n.locale.value = res;
+      forgotPassword.value = i18n.$t("forgotPassword");
+      confirm.value = i18n.$t("confirm");
+    });
     const visible = ref(false);
     const errMsg = ref("");
     const mail = ref("");
@@ -131,7 +141,8 @@ const ForgotPasswordComponent = defineComponent({
       { immediate: true }
     );
     return {
-      errMsg,
+      forgotPassword,
+      confirm,
       mail,
       visible,
       onClose,
@@ -140,5 +151,5 @@ const ForgotPasswordComponent = defineComponent({
     };
   },
 });
-export default ForgotPasswordComponent;
+export default ForgotPwdComponent;
 </script>

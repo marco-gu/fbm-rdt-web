@@ -79,7 +79,7 @@ const ProfileView = defineComponent({
         })
         .then(() => {
           localStorage.setItem("profile", JSON.stringify(profileItem));
-          router.push({ name: "lpSearch", params: { from: "WEB" } });
+          router.push("/lpSearch");
         });
     };
     const getProfileList = () => {

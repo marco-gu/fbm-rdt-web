@@ -28,7 +28,7 @@
       <q-field borderless style="padding: 0px 16px" item-aligned>
         <template v-slot:control>
           <div>
-            <span>Scan Type</span>
+            <span> Scan Type</span>
           </div>
         </template>
         <div style="display: flex; color: black; align-items: center">
@@ -121,6 +121,7 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import { Attribute, ProfileDeail } from "@/models/profile";
+import { useI18n } from "@/plugin/i18nPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref, watch } from "vue";
@@ -137,7 +138,6 @@ export const enum InterfaceMandatoryField {
 const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
-    const route = useRoute();
     const profileName = ref("");
     const clientCode = ref("");
     const scanType = ref("");
@@ -146,12 +146,15 @@ const LpSearchView = defineComponent({
     const pageViews = ref([]);
     const receivingType = ref(false);
     const stuffingType = ref(false);
-    const from = ref("");
-    const profileConfiguration = ref("");
+    const i18n = useI18n();
+    i18n.screenNm.value = "LpSearchView";
+    bridge.call("getSystemLangugae", null, (res: string) => {
+      i18n.locale.value = res;
+    });
     // 2- Search criteria input supports both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
     const scanOrTypeInList = ["PO", "SO", "SKU", "Container"];
     const $q = useQuasar();
-    const alertErrorMessage = (message: any) => {
+    const alertErrorMessage = (message: string) => {
       $q.notify({
         position: "center",
         color: "red-5",
@@ -162,11 +165,9 @@ const LpSearchView = defineComponent({
       });
     };
     onMounted(() => {
-      from.value = route.params.from as string;
       const initData = JSON.parse(
-        localStorage.getItem("profile") as any
+        localStorage.getItem("profile") as never
       ) as ProfileDeail;
-      profileConfiguration.value = initData as any;
       profileName.value = initData.profileCode;
       clientCode.value = initData.profileName;
       receivingType.value = initData.receivingScanFlag == 1 ? true : false;
@@ -189,14 +190,7 @@ const LpSearchView = defineComponent({
       const viewElement = {} as any;
       viewElement.dataFieldName = attr.dataFieldName;
       viewElement.mandatory = attr.mandatory;
-      // try to get value from localstorage
-      const key = scanType.value + "_" + viewElement.dataFieldName;
-      const value = localStorage.getItem(key);
-      if (from.value == "WEB") {
-        viewElement.model = ref("");
-      } else {
-        viewElement.model = value == null ? ref("") : value;
-      }
+      viewElement.model = ref("");
       viewElement.reg = new RegExp(composeReg(attr.format));
       viewElement.display = attr.combo;
       viewElement.scan = attr.scan == "1" ? 1 : 0;
@@ -303,15 +297,10 @@ const LpSearchView = defineComponent({
         if (apiResponse.status == AndroidResponseStatus.SUCCESS) {
           routeParams.scanned = apiResponse.data.scanned;
           routeParams.total = apiResponse.data.total;
-          localStorage.clear();
-          localStorage.setItem(
-            "profile",
-            JSON.stringify(profileConfiguration.value)
-          ),
-            router.push({
-              name: "scan",
-              params: routeParams,
-            });
+          router.push({
+            name: "scan",
+            params: routeParams,
+          });
         } else {
           alertErrorMessage(apiResponse.messageCode);
         }
@@ -339,11 +328,9 @@ const LpSearchView = defineComponent({
       { immediate: true }
     );
     const back = () => {
-      localStorage.clear();
       router.push("/profile");
     };
     const home = () => {
-      localStorage.clear();
       router.push("/home");
     };
     const scan = (dataFieldName: string) => {
@@ -355,13 +342,24 @@ const LpSearchView = defineComponent({
     };
 
     bridge.register("getScanResult", (res: string) => {
-      if (res.indexOf("_") != -1) {
-        const key = res.substring(0, res.lastIndexOf("_"));
-        const value = res.substring(res.lastIndexOf("_") + 1);
-        localStorage.setItem(key, value);
+      if (scanType.value == ScanType.RECEIVING) {
+        receivingViews.value.forEach((receivingView: any) => {
+          const key = scanType.value + "_" + receivingView.dataFieldName;
+          if (key == res.substring(0, res.lastIndexOf("_"))) {
+            receivingView.model = res.substring(res.lastIndexOf("_") + 1);
+          }
+        });
+      } else {
+        stuffingViews.value.forEach((stuffingView: any) => {
+          const key = scanType.value + "_" + stuffingView.dataFieldName;
+          if (key == res.substring(0, res.lastIndexOf("_"))) {
+            stuffingView.model = res.substring(res.lastIndexOf("_") + 1);
+          }
+        });
       }
     });
     return {
+      i18n,
       router,
       profileName,
       scanType,
