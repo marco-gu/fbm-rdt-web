@@ -107,14 +107,15 @@ const ForgotPwdComponent = defineComponent({
         mail: mail.value,
       };
       bridge.call("forgotPassword", args, (res: string) => {
-        const apiResponse = JSON.parse(res) as AndroidResponse<any>;
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         $q.loading.hide();
-        if (apiResponse.status == AndroidResponseStatus.SUCCESS) {
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           context.emit("confirm");
           alertSuccessMessage("Please check your mail");
         } else {
-          errMsg.value = apiResponse.messageCode;
-          alertErrorMessage(errMsg.value);
+          i18n.screenNm.value = "MessageCode";
+          const message = i18n.$t(androidResponse.messageCode);
+          alertErrorMessage(message);
         }
       });
     };
