@@ -12,8 +12,8 @@
           v-model="username"
           filled
           placeholder="Username"
-          lazy-rules="ondemand"
-          :rules="[(val) => (val && val.length > 0) || 'Please input username']"
+          lazy-rules
+          :rules="[userNameRule]"
         />
         <q-input
           style="margin-top: 5px"
@@ -22,8 +22,8 @@
           filled
           placeholder="Password"
           :type="isPwd ? 'password' : 'text'"
-          lazy-rules="ondemand"
-          :rules="[(val) => (val && val.length > 0) || 'Please input password']"
+          lazy-rules
+          :rules="[passwordRule]"
         >
           <template v-slot:append>
             <q-icon
@@ -35,21 +35,21 @@
         </q-input>
       </div>
       <q-btn class="login-button" push type="submit">
-        {{ login }}
+        {{ loginLabel }}
       </q-btn>
       <div class="login-link">
         <span @click="clickUserManual">
-          <a href="#">{{ help }}</a>
+          <a href="#">{{ helpLabel }}</a>
         </span>
-        <span @click="clickForgotPassword">
-          <a href="#">{{ forgotPassword }}?</a>
+        <span @click="clickForgotPwd">
+          <a href="#">{{ forgotPwdLabel }}?</a>
         </span>
       </div>
     </q-form>
     <UserManual :dialogVisible="userManualVisible" @close="onCloseUserManual">
     </UserManual>
     <ForgotPwdComponent
-      :dialogVisible="forgotPassordVisible"
+      :dialogVisible="forgotPwdVisible"
       @confirm="onConfirmForgotPassword"
       @close="onCloseForgotPassword"
     >
@@ -65,7 +65,7 @@
 <script lang="ts">
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { defineComponent, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import logo from "../assets/images/Maersk_Logo_RGB.svg";
 import { useQuasar } from "quasar";
 import {
@@ -77,6 +77,8 @@ import md5 from "md5";
 import ForgotPwdComponent from "@/components/ForgotPwdComponent.vue";
 import UserManual from "@/components/UserManualComponent.vue";
 import { useI18n } from "@/plugin/i18nPlugins";
+import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
+import { popupErrorMsg } from "@/plugin/popupPlugins";
 
 const LoginView = defineComponent({
   components: {
@@ -86,48 +88,67 @@ const LoginView = defineComponent({
   setup() {
     const router = useRouter();
     const i18n = useI18n();
-    const login = ref("");
-    const help = ref("");
-    const forgotPassword = ref("");
+    const $q = useQuasar();
     const maerskLogo = logo;
-    bridge.call("getSystemLangugae", null, (res: string) => {
-      i18n.screenNm.value = "LoginView";
-      i18n.locale.value = res;
-      login.value = i18n.$t("login");
-      help.value = i18n.$t("help");
-      forgotPassword.value = i18n.$t("forgotPassword");
-    });
+    const loginLabel = ref("");
+    const helpLabel = ref("");
+    const forgotPwdLabel = ref("");
     const username = ref("");
     const password = ref("");
-    const forgotPassordVisible = ref(false);
+    const forgotPwdVisible = ref(false);
     const userManualVisible = ref(false);
-    const $q = useQuasar();
-    let timer: any;
-    const alertErrorMessage = (message: any) => {
-      $q.notify({
-        position: "center",
-        color: "red-5",
-        textColor: "white",
-        icon: "error",
-        timeout: 2000,
-        message: message,
-      });
-    };
+    const isPwd = ref(true);
     onMounted(() => {
+      bridge.call("getSystemLangugae", null, (res: string) => {
+        i18n.category.value = "LoginView";
+        i18n.locale.value = res;
+        loginLabel.value = i18n.$t("login");
+        helpLabel.value = i18n.$t("help");
+        forgotPwdLabel.value = i18n.$t("forgotPassword");
+      });
       bridge.call("checkUserUid", null, (res: string) => {
         if (res) {
           username.value = res.toUpperCase();
         }
       });
     });
-    // onBeforeUnmount(() => {
-    //   alert(timer);
-    //   if (timer !== void 0) {
-    //     clearTimeout(timer);
-    //     $q.loading.hide();
-    //   }
-    // });
-    // fix defect #3 & #4
+    const clickUserManual = () => {
+      userManualVisible.value = true;
+    };
+    const onCloseUserManual = () => {
+      userManualVisible.value = false;
+    };
+    const clickForgotPwd = () => {
+      forgotPwdVisible.value = true;
+    };
+    const onCloseForgotPassword = () => {
+      forgotPwdVisible.value = false;
+    };
+    const onConfirmForgotPassword = () => {
+      forgotPwdVisible.value = false;
+    };
+    const userNameRule = (val: string) => {
+      i18n.category.value = "MessageCode";
+      return new Promise((resolve) => {
+        if (!val) {
+          const errMsg = i18n.$t("E00-01-0005");
+          resolve(errMsg);
+        } else {
+          resolve(true);
+        }
+      });
+    };
+    const passwordRule = (val: string) => {
+      i18n.category.value = "MessageCode";
+      return new Promise((resolve) => {
+        if (!val) {
+          const errMsg = i18n.$t("E00-01-0006");
+          resolve(errMsg);
+        } else {
+          resolve(true);
+        }
+      });
+    };
     watch(
       username,
       () => {
@@ -137,34 +158,21 @@ const LoginView = defineComponent({
       },
       { immediate: true }
     );
-    const showLoading = () => {
-      $q.loading.show({
-        message:
-          'Some important <b>process</b> is in progress.<br/><span class="text-amber text-italic">Please wait...</span>',
-        html: true,
-      });
-    };
     const onSubmit = () => {
-      showLoading();
+      showLoading($q);
       const args = {
-        // fix defect #4
         username: username.value.toUpperCase(),
         password: md5(password.value),
       };
       bridge.call("login", args, (res: string) => {
-        timer == void 0;
+        closeLoading($q);
         const androidResponse = JSON.parse(
           res
         ) as AndroidResponse<LoginResponse>;
-        if (timer !== void 0) {
-          clearTimeout(timer);
-          $q.loading.hide();
-        }
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           if (androidResponse.data.autoGeneratedPassword) {
-            // First time Login
             router.push({
-              name: "changePassword",
+              name: "resetPwd",
               params: {
                 from: "LoginView",
                 username: username.value,
@@ -175,39 +183,30 @@ const LoginView = defineComponent({
             router.push("/home");
           }
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          i18n.screenNm.value = "MessageCode";
+          i18n.category.value = "MessageCode";
           const message = i18n.$t(androidResponse.messageCode);
-          alertErrorMessage(message);
+          popupErrorMsg($q, message);
         }
       });
     };
     return {
       username,
-      forgotPassword,
-      login,
-      help,
-      maerskLogo,
+      userNameRule,
       password,
-      isPwd: ref(true),
-      router,
-      forgotPassordVisible,
+      passwordRule,
+      forgotPwdLabel,
+      loginLabel,
+      helpLabel,
+      maerskLogo,
+      isPwd,
+      forgotPwdVisible,
       userManualVisible,
       onSubmit,
-      clickUserManual() {
-        userManualVisible.value = true;
-      },
-      clickForgotPassword() {
-        forgotPassordVisible.value = true;
-      },
-      onCloseUserManual() {
-        userManualVisible.value = false;
-      },
-      onCloseForgotPassword() {
-        forgotPassordVisible.value = false;
-      },
-      onConfirmForgotPassword() {
-        forgotPassordVisible.value = false;
-      },
+      clickUserManual,
+      onCloseUserManual,
+      clickForgotPwd,
+      onCloseForgotPassword,
+      onConfirmForgotPassword,
     };
   },
 });

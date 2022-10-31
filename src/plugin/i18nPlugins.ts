@@ -1,11 +1,11 @@
 import { inject, provide, ref } from "vue";
 
 const createI18n = (config: any) => ({
-  screenNm: ref(config.screenNm),
+  category: ref(config.category),
   locale: ref(config.locale),
   message: config.messages,
   $t(key: string) {
-    return this.message[this.screenNm.value][this.locale.value][key];
+    return this.message[this.category.value][this.locale.value][key];
   },
 });
 

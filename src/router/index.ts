@@ -5,7 +5,7 @@ import MainView from "../views/MainView.vue";
 import ProfileView from "../views/ProfileView.vue";
 import LpSearchView from "../views/LpSearchView.vue";
 import ScanView from "../views/ScanView.vue";
-import ChangePasswordView from "../views/ChangePasswordView.vue";
+import ResetPwdView from "../views/ResetPwdView.vue";
 import bridge from "dsbridge";
 
 const routes: Array<RouteRecordRaw> = [
@@ -22,9 +22,9 @@ const routes: Array<RouteRecordRaw> = [
     children: [{ path: "", name: "main", component: MainView }],
   },
   {
-    path: "/changePassword",
-    name: "changePassword",
-    component: ChangePasswordView,
+    path: "/resetPwd",
+    name: "resetPwd",
+    component: ResetPwdView,
   },
   {
     path: "/profile",
@@ -68,10 +68,10 @@ router.beforeEach((to, from, next) => {
         next();
       }
     });
-  } else if (from.path == "/changePassword" && to.path == "/") {
+  } else if (from.path == "/resetPwd" && to.path == "/") {
     bridge.call("fetchUserToken", null, (res: string) => {
       if (res) {
-        return next("/changePassword");
+        return next("/resetPwd");
       } else {
         next();
       }

@@ -47,6 +47,12 @@ import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { ProfileMaster } from "../models/profile";
 import { useStore } from "@/store";
+import {
+  AndroidResponse,
+  AndroidResponseStatus,
+} from "@/models/android.response";
+import { useI18n } from "@/plugin/i18nPlugins";
+import { popupErrorMsg } from "@/plugin/popupPlugins";
 const ProfileView = defineComponent({
   methods: {
     home() {
@@ -56,20 +62,29 @@ const ProfileView = defineComponent({
   setup() {
     const $q = useQuasar();
     const router = useRouter();
+    const i18n = useI18n();
+    bridge.call("getSystemLangugae", null, (res: string) => {
+      i18n.locale.value = res;
+    });
     const store = useStore();
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const search = ref("");
-
     const refresh = (done: any) => {
-      const isSuccess = bridge.call("refreshProfile");
-      if (isSuccess) {
-        getProfileList();
-      }
-      done();
-      // bridge.call("refreshProfile", {}, () => {
-      //   getProfileList();
-      // });
+      bridge.call("refreshProfile", null, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<
+          ProfileMaster[]
+        >;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          getProfileList();
+          done();
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          i18n.category.value = "MessageCode";
+          const message = i18n.$t(androidResponse.messageCode);
+          popupErrorMsg($q, message);
+          done();
+        }
+      });
     };
 
     const onClickProfile = (profileItem: any) => {
@@ -83,17 +98,18 @@ const ProfileView = defineComponent({
         });
     };
     const getProfileList = () => {
-      const profileList = bridge.call("fetchProfile");
-      result = JSON.parse(profileList) as ProfileMaster[];
-      profileListDisplay.value = JSON.parse(profileList) as ProfileMaster[];
-      if (result.length === 0) {
-        $q.dialog({
-          title: "Sync Profile",
-          message: "Please synchronize the latest profiles",
-        }).onOk(() => {
-          refresh(() => void 0);
-        });
-      }
+      bridge.call("fetchProfile", null, (res: string) => {
+        result = JSON.parse(res) as ProfileMaster[];
+        profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
+        if (result.length === 0) {
+          $q.dialog({
+            title: "Sync Profile",
+            message: "Please synchronize the latest profiles",
+          }).onOk(() => {
+            refresh(() => void 0);
+          });
+        }
+      });
     };
     onMounted(() => {
       getProfileList();
@@ -105,7 +121,6 @@ const ProfileView = defineComponent({
             item.profileCode.toLowerCase().indexOf(search.value.toLowerCase()) >
             -1
         );
-
         profileListDisplay.value = filteredResult;
       } else {
         profileListDisplay.value = result;

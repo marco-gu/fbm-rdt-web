@@ -28,7 +28,7 @@
       <q-field borderless style="padding: 0px 16px" item-aligned>
         <template v-slot:control>
           <div>
-            <span> Scan Type</span>
+            <span>Scan Type</span>
           </div>
         </template>
         <div style="display: flex; color: black; align-items: center">
@@ -122,10 +122,16 @@ import {
 } from "@/models/android.response";
 import { Attribute, ProfileDeail } from "@/models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
+import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
+import {
+  popupErrorMsg,
+  popupInfoMsg,
+  popupSuccessMsg,
+} from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 export const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
@@ -147,27 +153,20 @@ const LpSearchView = defineComponent({
     const receivingType = ref(false);
     const stuffingType = ref(false);
     const i18n = useI18n();
-    i18n.screenNm.value = "LpSearchView";
+    i18n.category.value = "LpSearchView";
     bridge.call("getSystemLangugae", null, (res: string) => {
       i18n.locale.value = res;
     });
     // 2- Search criteria input supports both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
     const scanOrTypeInList = ["PO", "SO", "SKU", "Container"];
     const $q = useQuasar();
-    const alertErrorMessage = (message: string) => {
-      $q.notify({
-        position: "center",
-        color: "red-5",
-        textColor: "white",
-        icon: "error",
-        timeout: 2000,
-        message: message,
-      });
-    };
     onMounted(() => {
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
       ) as ProfileDeail;
+      bridge.call("getSystemLangugae", null, (res: string) => {
+        i18n.locale.value = res;
+      });
       profileName.value = initData.profileCode;
       clientCode.value = initData.profileName;
       receivingType.value = initData.receivingScanFlag == 1 ? true : false;
@@ -276,7 +275,7 @@ const LpSearchView = defineComponent({
     };
     // 6- Submit the search criteria and download the LP from LNS web.
     const onSubmit = () => {
-      $q.loading.show({});
+      showLoading($q);
       const reqParams = {
         profileName: profileName.value,
         clientCode: clientCode.value,
@@ -292,17 +291,24 @@ const LpSearchView = defineComponent({
       };
       composeRequestAndRouteParams(reqParams, routeParams, pageViews.value);
       bridge.call("fetchLp", reqParams, (res: string) => {
-        const apiResponse = JSON.parse(res) as AndroidResponse<any>;
-        $q.loading.hide();
-        if (apiResponse.status == AndroidResponseStatus.SUCCESS) {
-          routeParams.scanned = apiResponse.data.scanned;
-          routeParams.total = apiResponse.data.total;
+        closeLoading($q);
+        i18n.category.value = "MessageCode";
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          routeParams.scanned = androidResponse.data.scanned;
+          routeParams.total = androidResponse.data.total;
           router.push({
             name: "scan",
             params: routeParams,
           });
-        } else {
-          alertErrorMessage(apiResponse.messageCode);
+          const message = i18n.$t("E00-01-0019");
+          popupSuccessMsg($q, message);
+        } else if (androidResponse.status == AndroidResponseStatus.INFO) {
+          const message = i18n.$t(androidResponse.messageCode);
+          popupInfoMsg($q, message);
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          const message = i18n.$t(androidResponse.messageCode);
+          popupErrorMsg($q, message);
         }
       });
     };

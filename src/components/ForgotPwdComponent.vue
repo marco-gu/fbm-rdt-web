@@ -10,7 +10,7 @@
         <q-form @submit="onConfirm">
           <q-toolbar>
             <q-toolbar-title
-              ><span class="text-weight-bold">{{ forgotPassword }}</span>
+              ><span class="text-weight-bold">{{ forgotPwdLabel }}</span>
             </q-toolbar-title>
             <q-btn
               @click="onClose"
@@ -23,12 +23,13 @@
           </q-toolbar>
           <q-card-section>
             <q-input
+              clearable
               filled
               v-model="mail"
               type="email"
               prefix="Email:"
               lazy-rules
-              :rules="[mailFormatRule]"
+              :rules="[mailRule]"
             >
               <template v-slot:prepend>
                 <q-icon name="mail" />
@@ -37,7 +38,7 @@
           </q-card-section>
           <q-separator />
           <q-card-actions align="right" class="bg-white text-teal">
-            <q-btn flat type="submit"> {{ confirm }}</q-btn>
+            <q-btn flat type="submit"> {{ confirmLabel }}</q-btn>
           </q-card-actions>
         </q-form>
       </q-card>
@@ -50,6 +51,8 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import { useI18n } from "@/plugin/i18nPlugins";
+import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
+import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, ref, toRefs, watch } from "vue";
@@ -64,70 +67,52 @@ const ForgotPwdComponent = defineComponent({
   setup(props, context) {
     const { dialogVisible } = toRefs(props);
     const i18n = useI18n();
-    const forgotPassword = ref("");
-    const confirm = ref("");
-    bridge.call("getSystemLangugae", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.screenNm.value = "ForgotPwdComponent";
-      forgotPassword.value = i18n.$t("forgotPassword");
-      confirm.value = i18n.$t("confirm");
-    });
-    const visible = ref(false);
-    const errMsg = ref("");
-    const mail = ref("");
     const $q = useQuasar();
+    const forgotPwdLabel = ref("");
+    const confirmLabel = ref("");
+    const mail = ref("");
+    const visible = ref(false);
+    bridge.call("getSystemLangugae", null, (res: string) => {
+      i18n.category.value = "ForgotPwdComponent";
+      i18n.locale.value = res;
+      forgotPwdLabel.value = i18n.$t("forgotPassword");
+      confirmLabel.value = i18n.$t("confirm");
+    });
     const onClose = () => {
       mail.value = "";
       context.emit("close");
     };
-    const alertErrorMessage = (message: string) => {
-      $q.notify({
-        position: "center",
-        color: "red-5",
-        textColor: "white",
-        icon: "error",
-        timeout: 2000,
-        message: message,
-      });
-    };
-    const alertSuccessMessage = (message: string) => {
-      $q.notify({
-        position: "center",
-        type: "positive",
-        timeout: 2000,
-        message: message,
-      });
-    };
     const onConfirm = () => {
-      // call native JS to valid mail
-      $q.loading.show({
-        delay: 400, // ms
-      });
+      showLoading($q);
       const args = {
         mail: mail.value,
       };
       bridge.call("forgotPassword", args, (res: string) => {
-        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-        $q.loading.hide();
+        closeLoading($q);
+        const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
+        i18n.category.value = "MessageCode";
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           context.emit("confirm");
-          alertSuccessMessage("Please check your mail");
-        } else {
-          i18n.screenNm.value = "MessageCode";
+          const message = i18n.$t("E00-01-0009");
+          popupSuccessMsg($q, message);
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.$t(androidResponse.messageCode);
-          alertErrorMessage(message);
+          popupErrorMsg($q, message);
         }
       });
     };
-    const mailFormatRule = (val: string) => {
+    const mailRule = (val: string) => {
+      i18n.category.value = "MessageCode";
       return new Promise((resolve) => {
         const reg =
           /[a-zA-Z0-9]+([-_.][A-Za-zd]+)*@([a-zA-Z0-9]+[-.])+[A-Za-zd]{2,5}$/g;
         if (!val) {
-          resolve("Please input mail");
+          const errMsg = i18n.$t("E00-01-0008");
+          resolve(errMsg);
         } else {
           if (!reg.test(mail.value)) {
-            resolve("Please input correct format mail");
+            const errMsg = i18n.$t("E00-01-0007");
+            resolve(errMsg);
           } else {
             resolve(true);
           }
@@ -142,13 +127,13 @@ const ForgotPwdComponent = defineComponent({
       { immediate: true }
     );
     return {
-      forgotPassword,
-      confirm,
+      forgotPwdLabel,
+      confirmLabel,
       mail,
       visible,
       onClose,
       onConfirm,
-      mailFormatRule,
+      mailRule,
     };
   },
 });

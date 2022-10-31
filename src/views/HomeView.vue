@@ -97,7 +97,10 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { AndroidResponse } from "@/models/android.response";
+import {
+  AndroidResponse,
+  AndroidResponseStatus,
+} from "@/models/android.response";
 import { useQuasar } from "quasar";
 import { LogoutResponse } from "@/models/login.response";
 import userProfile from "../assets/icon/user-profile.svg";
@@ -108,11 +111,16 @@ import setting from "../assets/icon/setting.svg";
 import userManual from "../assets/icon/user-manual.svg";
 import logOut from "../assets/icon/logout.svg";
 import logo from "../assets/images/Maersk_Logo_Neg.svg";
+import { useI18n } from "@/plugin/i18nPlugins";
+import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
+import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 export default {
   name: "HomeView",
   components: {},
   setup() {
     const router = useRouter();
+    const i18n = useI18n();
+    const $q = useQuasar();
     const leftDrawerOpen = ref(false);
     const isBackShow = ref(false);
     const userProfileIcon = userProfile;
@@ -123,39 +131,34 @@ export default {
     const userManualIcon = userManual;
     const logoutIcon = logOut;
     const logoIcon = logo;
-    const $q = useQuasar();
+    bridge.call("getSystemLangugae", null, (res: string) => {
+      i18n.category.value = "LoginView";
+      i18n.locale.value = res;
+    });
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     };
     const goMyProfile = () => {
       isBackShow.value = true;
-      alert("My Client Profile");
     };
     const goDataManagement = () => {
       alert("Data Management");
     };
     const logout = () => {
+      showLoading($q);
       bridge.call("logout", null, (data: string) => {
-        const apiResponse = JSON.parse(data) as AndroidResponse<LogoutResponse>;
-        if (apiResponse.data.isSuccess) {
-          $q.notify({
-            position: "center",
-            color: "blue-5",
-            textColor: "white",
-            icon: "info",
-            timeout: 2000,
-            message: "Logout success",
-          });
+        closeLoading($q);
+        const androidResponse = JSON.parse(
+          data
+        ) as AndroidResponse<LogoutResponse>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          const message = i18n.$t("E00-01-0014");
           router.push("/");
-        } else {
-          $q.notify({
-            position: "center",
-            color: "red-5",
-            textColor: "white",
-            icon: "error",
-            timeout: 2000,
-            message: apiResponse.messageCode,
-          });
+          popupSuccessMsg($q, message);
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          i18n.category.value = "MessageCode";
+          const message = i18n.$t(androidResponse.messageCode);
+          popupErrorMsg($q, message);
         }
       });
     };
