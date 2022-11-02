@@ -41,7 +41,7 @@
             justify-content: space-between;
           "
         >
-          <lable style="padding-left: 1rem; color: black">{{ item.key }}</lable>
+          <label style="padding-left: 1rem; color: black">{{ item.key }}</label>
           <q-input
             v-model="item.value"
             input-class="text-right"
