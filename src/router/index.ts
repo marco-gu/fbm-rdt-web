@@ -6,6 +6,7 @@ import ProfileView from "../views/ProfileView.vue";
 import LpSearchView from "../views/LpSearchView.vue";
 import ScanView from "../views/ScanView.vue";
 import ResetPwdView from "../views/ResetPwdView.vue";
+import MixCartonView from "../views/MixCartonView.vue";
 import bridge from "dsbridge";
 
 const routes: Array<RouteRecordRaw> = [
@@ -40,6 +41,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/scan",
     name: "scan",
     component: ScanView,
+  },
+  {
+    path: "/mixCarton",
+    name: "mixCarton",
+    component: MixCartonView,
   },
 ];
 

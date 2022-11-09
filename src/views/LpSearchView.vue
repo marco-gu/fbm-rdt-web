@@ -131,12 +131,12 @@ import {
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-export const enum ScanType {
+import { useRoute, useRouter } from "vue-router";
+const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
 }
-export const enum InterfaceMandatoryField {
+const enum InterfaceMandatoryField {
   SO = "SO",
   PO = "PO",
   SKU = "SKU",

@@ -64,9 +64,23 @@
           </q-input>
         </div>
         <div class="bottom">
-          <q-btn style="width: 48%" flat push label="Cancel" @click="cancel" />
+          <q-btn
+            no-caps
+            style="width: 48%"
+            flat
+            push
+            label="Cancel"
+            @click="cancel"
+          />
           <q-separator vertical inset color="white" />
-          <q-btn style="width: 52%" flat type="submit" push label="Save" />
+          <q-btn
+            no-caps
+            style="width: 52%"
+            flat
+            type="submit"
+            push
+            label="Save"
+          />
         </div>
       </q-form>
     </q-card>
