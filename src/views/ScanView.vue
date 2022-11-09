@@ -53,37 +53,6 @@
         </div>
         <q-separator color="grey-5" />
       </div>
-      <!-- <q-input
-        v-model="soNumber"
-        prefix="SO"
-        input-class="text-right"
-        readonly
-        borderless
-        style="padding: 0px 16px"
-      >
-      </q-input>
-      <q-separator color="grey-5" />
-      <q-input
-        v-model="poNumber"
-        prefix="PO"
-        input-class="text-right"
-        readonly
-        borderless
-        style="padding: 0px 16px"
-      >
-      </q-input>
-      <q-separator color="grey-5" />
-      <q-input
-        v-model="skuNumber"
-        prefix="SKU"
-        input-class="text-right"
-        readonly
-        borderless
-        style="padding: 0px 16px"
-      >
-      </q-input>
-      <q-separator color="grey-5" /> -->
-
       <div style="position: fixed; bottom: 0px; width: 100%">
         <q-btn
           no-caps
