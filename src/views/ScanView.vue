@@ -74,7 +74,10 @@ const ScanView = defineComponent({
     const router = useRouter();
     const route = useRoute();
     const profileName = ref("");
+    const clientCode = ref("");
+    const clientName = ref("");
     const taskID = ref("");
+    const type = ref("");
     const scanType = ref("");
     const soNumber = ref("");
     const poNumber = ref("");
@@ -86,13 +89,24 @@ const ScanView = defineComponent({
     onMounted(() => {
       data.value = route.params as any;
       for (const key in data.value) {
-        if (key != "profile") {
-          if (key == "scanned") {
-            scanned.value = data.value[key];
-          } else if (key == "total") {
-            total.value = data.value[key];
-          } else if (key == "taskID") {
-            taskID.value = data.value[key];
+        if (key == "scanned") {
+          scanned.value = data.value[key];
+        } else if (key == "total") {
+          total.value = data.value[key];
+        } else if (key == "taskID") {
+          taskID.value = data.value[key];
+        } else if (key == "clientCode") {
+          clientCode.value = data.value[key];
+        } else if (key == "clientName") {
+          clientName.value = data.value[key];
+        } else {
+          if (key == "type") {
+            type.value = data.value[key];
+            const element = {
+              key: "Scan Type",
+              value: data.value[key],
+            };
+            views.value.push(element as never);
           } else {
             const element = {
               key: key.charAt(0).toUpperCase() + key.slice(1),
@@ -112,7 +126,11 @@ const ScanView = defineComponent({
     const onSubmit = () => {
       const args = {
         taskID: taskID.value,
+        clientCode: clientCode.value,
+        clientName: clientName.value,
+        type: type.value,
       };
+      alert(JSON.stringify(args));
       bridge.call("scan", args, (res: any) => {
         console.log(res);
       });

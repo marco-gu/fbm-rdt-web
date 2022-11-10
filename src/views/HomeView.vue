@@ -145,6 +145,7 @@ export default {
       alert("Data Management");
     };
     const logout = () => {
+      i18n.category.value = "MessageCode";
       showLoading($q);
       bridge.call("logout", null, (data: string) => {
         closeLoading($q);
@@ -152,11 +153,10 @@ export default {
           data
         ) as AndroidResponse<LogoutResponse>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          const message = i18n.$t("E00-01-0014");
+          const msg = i18n.$t("E00-01-0014");
           router.push("/");
-          popupSuccessMsg($q, message);
+          popupSuccessMsg($q, msg);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          i18n.category.value = "MessageCode";
           const message = i18n.$t(androidResponse.messageCode);
           popupErrorMsg($q, message);
         }

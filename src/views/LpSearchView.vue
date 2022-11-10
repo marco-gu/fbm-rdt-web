@@ -153,6 +153,7 @@ const LpSearchView = defineComponent({
     const receivingType = ref(false);
     const stuffingType = ref(false);
     const i18n = useI18n();
+    const clientName = ref("");
     i18n.category.value = "LpSearchView";
     bridge.call("getSystemLanguage", null, (res: string) => {
       i18n.locale.value = res;
@@ -164,6 +165,7 @@ const LpSearchView = defineComponent({
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
       ) as ProfileDeail;
+      clientName.value = initData.client;
       bridge.call("getSystemLanguage", null, (res: string) => {
         i18n.locale.value = res;
       });
@@ -245,7 +247,7 @@ const LpSearchView = defineComponent({
       }
       return reg;
     };
-    const composeRequestAndRouteParams = (
+    const composeApiAndRouteParams = (
       apiParams: any,
       routeParams: any,
       source: any
@@ -265,7 +267,7 @@ const LpSearchView = defineComponent({
             apiParams.sku = view.model;
         }
       });
-      return apiParams;
+      // return apiParams;
     };
     const onClick = () => {
       pageViews.value =
@@ -289,8 +291,12 @@ const LpSearchView = defineComponent({
         scanned: "0",
         total: "0",
         taskID: "",
+        clientCode: "",
+        profile: profileName.value,
+        type: "",
+        clientName: "",
       };
-      composeRequestAndRouteParams(apiParams, routeParams, pageViews.value);
+      composeApiAndRouteParams(apiParams, routeParams, pageViews.value);
       bridge.call("fetchLp", apiParams, (res: string) => {
         closeLoading($q);
         i18n.category.value = "MessageCode";
@@ -299,7 +305,9 @@ const LpSearchView = defineComponent({
           routeParams.scanned = androidResponse.data.scanned;
           routeParams.total = androidResponse.data.total;
           routeParams.taskID = androidResponse.data.taskID;
-          alert(routeParams.taskID);
+          routeParams.clientCode = clientCode.value;
+          routeParams.type = scanType.value;
+          routeParams.clientName = clientName.value;
           router.push({
             name: "scan",
             params: routeParams,
