@@ -61,7 +61,6 @@
     </div>
   </div>
 </template>
-
 <script lang="ts">
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
@@ -79,7 +78,6 @@ import UserManual from "@/components/UserManualComponent.vue";
 import { useI18n } from "@/plugin/i18nPlugins";
 import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
-
 const LoginView = defineComponent({
   components: {
     UserManual,
@@ -99,7 +97,7 @@ const LoginView = defineComponent({
     const userManualVisible = ref(false);
     const isPwd = ref(true);
     onMounted(() => {
-      bridge.call("getSystemLangugae", null, (res: string) => {
+      bridge.call("getSystemLanguage", null, (res: string) => {
         i18n.category.value = "LoginView";
         i18n.locale.value = res;
         loginLabel.value = i18n.$t("login");

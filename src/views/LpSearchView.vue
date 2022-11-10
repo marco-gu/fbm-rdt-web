@@ -131,7 +131,7 @@ import {
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
@@ -154,7 +154,7 @@ const LpSearchView = defineComponent({
     const stuffingType = ref(false);
     const i18n = useI18n();
     i18n.category.value = "LpSearchView";
-    bridge.call("getSystemLangugae", null, (res: string) => {
+    bridge.call("getSystemLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
     // 2- Search criteria input supports both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
@@ -164,7 +164,7 @@ const LpSearchView = defineComponent({
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
       ) as ProfileDeail;
-      bridge.call("getSystemLangugae", null, (res: string) => {
+      bridge.call("getSystemLanguage", null, (res: string) => {
         i18n.locale.value = res;
       });
       profileName.value = initData.profileCode;
@@ -246,7 +246,7 @@ const LpSearchView = defineComponent({
       return reg;
     };
     const composeRequestAndRouteParams = (
-      reqParams: any,
+      apiParams: any,
       routeParams: any,
       source: any
     ) => {
@@ -256,16 +256,16 @@ const LpSearchView = defineComponent({
         }
         switch (view.dataFieldName) {
           case InterfaceMandatoryField.SO:
-            reqParams.so = view.model;
+            apiParams.so = view.model;
             break;
           case InterfaceMandatoryField.PO:
-            reqParams.po = view.model;
+            apiParams.po = view.model;
             break;
           case InterfaceMandatoryField.SKU:
-            reqParams.sku = view.model;
+            apiParams.sku = view.model;
         }
       });
-      return reqParams;
+      return apiParams;
     };
     const onClick = () => {
       pageViews.value =
@@ -276,7 +276,7 @@ const LpSearchView = defineComponent({
     // 6- Submit the search criteria and download the LP from LNS web.
     const onSubmit = () => {
       showLoading($q);
-      const reqParams = {
+      const apiParams = {
         profileName: profileName.value,
         clientCode: clientCode.value,
         so: "",
@@ -288,15 +288,18 @@ const LpSearchView = defineComponent({
       const routeParams = {
         scanned: "0",
         total: "0",
+        taskID: "",
       };
-      composeRequestAndRouteParams(reqParams, routeParams, pageViews.value);
-      bridge.call("fetchLp", reqParams, (res: string) => {
+      composeRequestAndRouteParams(apiParams, routeParams, pageViews.value);
+      bridge.call("fetchLp", apiParams, (res: string) => {
         closeLoading($q);
         i18n.category.value = "MessageCode";
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           routeParams.scanned = androidResponse.data.scanned;
           routeParams.total = androidResponse.data.total;
+          routeParams.taskID = androidResponse.data.taskID;
+          alert(routeParams.taskID);
           router.push({
             name: "scan",
             params: routeParams,

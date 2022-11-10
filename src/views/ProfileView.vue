@@ -63,7 +63,7 @@ const ProfileView = defineComponent({
     const $q = useQuasar();
     const router = useRouter();
     const i18n = useI18n();
-    bridge.call("getSystemLangugae", null, (res: string) => {
+    bridge.call("getSystemLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
     const store = useStore();

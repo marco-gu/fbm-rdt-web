@@ -74,6 +74,7 @@ const ScanView = defineComponent({
     const router = useRouter();
     const route = useRoute();
     const profileName = ref("");
+    const taskID = ref("");
     const scanType = ref("");
     const soNumber = ref("");
     const poNumber = ref("");
@@ -90,6 +91,8 @@ const ScanView = defineComponent({
             scanned.value = data.value[key];
           } else if (key == "total") {
             total.value = data.value[key];
+          } else if (key == "taskID") {
+            taskID.value = data.value[key];
           } else {
             const element = {
               key: key.charAt(0).toUpperCase() + key.slice(1),
@@ -108,9 +111,7 @@ const ScanView = defineComponent({
     };
     const onSubmit = () => {
       const args = {
-        profileName: profileName.value,
-        so: soNumber.value,
-        po: poNumber.value,
+        taskID: taskID.value,
       };
       bridge.call("scan", args, (res: any) => {
         console.log(res);
