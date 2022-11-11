@@ -56,6 +56,9 @@ const router = createRouter({
 // fix defect #6
 let fromPath = "/";
 router.beforeEach((to, from, next) => {
+  if (to.path == "mixcarton") {
+    next("/mixCarton");
+  }
   fromPath = from.path;
   if (from.path == "/" && to.path == "/") {
     bridge.call("fetchUserToken", null, (res: string) => {

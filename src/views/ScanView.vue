@@ -130,7 +130,6 @@ const ScanView = defineComponent({
         clientName: clientName.value,
         type: type.value,
       };
-      alert(JSON.stringify(args));
       bridge.call("scan", args, (res: any) => {
         console.log(res);
       });
