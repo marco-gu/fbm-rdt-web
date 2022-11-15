@@ -134,7 +134,11 @@ const ResetPwdView = defineComponent({
         const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           const message = i18n.$t("E00-01-0010");
-          router.push("/home");
+          if (from.value == "LoginView") {
+            router.push("/home");
+          } else if (from.value == "SettingView") {
+            router.push("/setting");
+          }
           popupSuccessMsg($q, message);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.$t(androidResponse.messageCode);
@@ -212,11 +216,15 @@ const ResetPwdView = defineComponent({
             popupSuccessMsg($q, message);
           }
         });
+      } else if (from.value == "SettingView") {
+        router.push("/setting");
       }
     };
     const back = () => {
       if (from.value == "LoginView") {
         cancel();
+      } else if (from.value == "SettingView") {
+        router.push("/setting");
       }
     };
     return {

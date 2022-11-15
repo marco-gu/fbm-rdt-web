@@ -18,40 +18,40 @@
       <q-list>
         <q-item>
           <q-item-section style="text-align: left">
-            <q-item-label>Ring voice</q-item-label>
+            <q-item-label>{{ ringVoiceLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-btn flat dense label="ON" icon-right="chevron_right" />
+            <q-btn flat dense icon-right="chevron_right">
+              {{ ringVoice }}
+            </q-btn>
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
         <q-item>
           <q-item-section style="text-align: left">
-            <q-item-label>Language</q-item-label>
+            <q-item-label>{{ languageLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-btn
-              flat
-              dense
-              label="English"
-              icon-right="chevron_right"
-              @click="goLanguage"
-            />
+            <q-btn flat dense icon-right="chevron_right" @click="goLanguage">
+              {{ language }}
+            </q-btn>
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
         <q-item>
           <q-item-section style="text-align: left">
-            <q-item-label>Scanning device</q-item-label>
+            <q-item-label>{{ scanningDeviceLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-btn flat dense label="Camera" icon-right="chevron_right" />
+            <q-btn flat dense icon-right="chevron_right">
+              {{ scanningDevice }}
+            </q-btn>
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
         <q-item>
           <q-item-section style="text-align: left">
-            <q-item-label>Reset password</q-item-label>
+            <q-item-label>{{ resetPasswordLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-btn flat dense icon-right="chevron_right" @click="goResetPwd" />
@@ -60,19 +60,21 @@
         <q-separator color="grey-5" />
         <q-item>
           <q-item-section style="text-align: left">
-            <q-item-label>Last Profile Sync Time</q-item-label>
+            <q-item-label>{{ lastProfileSyncTimeLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-item-label>2015-03-03 14:20:11</q-item-label>
+            <q-item-label>{{ lastProfileSyncTime }}</q-item-label>
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
         <q-item>
           <q-item-section style="text-align: left">
-            <q-item-label>Software update</q-item-label>
+            <q-item-label>{{ softwareUpdateLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-btn flat dense label="V 1.0.1" icon-right="chevron_right" />
+            <q-btn flat dense icon-right="chevron_right">{{
+              softwareUpdate
+            }}</q-btn>
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
@@ -86,6 +88,7 @@ import { useQuasar } from "quasar";
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import { useI18n } from "@/plugin/i18nPlugins";
+import { onMounted, ref, watch } from "vue";
 export default {
   name: "SettingView",
   components: {},
@@ -94,14 +97,38 @@ export default {
     const i18n = useI18n();
     const store = useStore();
     const router = useRouter();
+    const ringVoiceLabel = ref("");
+    const ringVoice = ref("ON");
+    const languageLabel = ref("");
+    const language = ref("");
+    const scanningDeviceLabel = ref("");
+    const scanningDevice = ref("CAMERA");
+    const resetPasswordLabel = ref("");
+    const lastProfileSyncTimeLabel = ref("");
+    const lastProfileSyncTime = ref("2015-03-03 14:20:11");
+    const softwareUpdateLabel = ref("");
+    const softwareUpdate = ref("V 1.0.1");
     bridge.call("getSystemLanguage", null, (res: string) => {
+      i18n.category.value = "SettingView";
       i18n.locale.value = res;
+      language.value = res;
+      ringVoiceLabel.value = i18n.$t("ringVoice");
+      languageLabel.value = i18n.$t("language");
+      scanningDeviceLabel.value = i18n.$t("scanningDevice");
+      resetPasswordLabel.value = i18n.$t("resetPassword");
+      lastProfileSyncTimeLabel.value = i18n.$t("lastProfileSyncTime");
+      softwareUpdateLabel.value = i18n.$t("softwareUpdate");
     });
     const home = () => {
       router.push("/home");
     };
     const goResetPwd = () => {
-      // TODO
+      router.push({
+        name: "resetPwd",
+        params: {
+          from: "SettingView",
+        },
+      });
     };
     const goLanguage = () => {
       // TODO
@@ -111,6 +138,17 @@ export default {
       home,
       goResetPwd,
       goLanguage,
+      ringVoiceLabel,
+      ringVoice,
+      languageLabel,
+      language,
+      scanningDeviceLabel,
+      scanningDevice,
+      resetPasswordLabel,
+      lastProfileSyncTimeLabel,
+      lastProfileSyncTime,
+      softwareUpdateLabel,
+      softwareUpdate,
     };
   },
 };

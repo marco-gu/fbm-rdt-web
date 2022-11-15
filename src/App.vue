@@ -27,6 +27,10 @@ const App = defineComponent({
           zh: require("../src/assets/lang/zh/LpSearchView/zh.json"),
           en: require("../src/assets/lang/en/LpSearchView/en.json"),
         },
+        SettingView: {
+          zh: require("../src/assets/lang/zh/SettingView/zh.json"),
+          en: require("../src/assets/lang/en/SettingView/en.json"),
+        },
       },
     });
     const router = useRouter();
