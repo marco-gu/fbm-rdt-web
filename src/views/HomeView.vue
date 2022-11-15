@@ -60,7 +60,7 @@
                 <q-item-label>Cargo Images</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple>
+            <q-item clickable @click="goSetting" v-ripple>
               <q-item-section avatar>
                 <q-img :src="settingIcon" />
               </q-item-section>
@@ -166,6 +166,9 @@ export default {
       router.go(-1);
       isBackShow.value = false;
     };
+    const goSetting = () => {
+      router.push("/setting");
+    };
     return {
       leftDrawerOpen,
       toggleLeftDrawer,
@@ -182,6 +185,7 @@ export default {
       userManualIcon,
       logoutIcon,
       logoIcon,
+      goSetting,
     };
   },
 };

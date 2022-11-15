@@ -8,6 +8,7 @@ import ScanView from "../views/ScanView.vue";
 import ResetPwdView from "../views/ResetPwdView.vue";
 import MixCartonView from "../views/MixCartonView.vue";
 import bridge from "dsbridge";
+import SettingView from "../views/SettingView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -46,6 +47,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/mixCarton",
     name: "mixCarton",
     component: MixCartonView,
+  },
+  {
+    path: "/setting",
+    name: "setting",
+    component: SettingView,
   },
 ];
 
