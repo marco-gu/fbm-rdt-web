@@ -118,7 +118,7 @@ const ResetPwdView = defineComponent({
       from.value = route.params.from as string;
       username.value = route.params.username as string;
       initPwd.value = route.params.password as string;
-      bridge.call("getSystemLanguage", null, (res: string) => {
+      bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.locale.value = res;
       });
     });

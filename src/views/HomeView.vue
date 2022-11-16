@@ -132,7 +132,7 @@ export default {
     const userManualIcon = userManual;
     const logoutIcon = logOut;
     const logoIcon = logo;
-    bridge.call("getSystemLanguage", null, (res: string) => {
+    bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.category.value = "LoginView";
       i18n.locale.value = res;
     });
