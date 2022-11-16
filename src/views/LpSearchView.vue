@@ -267,7 +267,6 @@ const LpSearchView = defineComponent({
             apiParams.sku = view.model;
         }
       });
-      // return apiParams;
     };
     const onClick = () => {
       pageViews.value =
