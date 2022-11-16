@@ -153,11 +153,20 @@ const ResetPwdView = defineComponent({
           const message = i18n.$t("E00-01-0015");
           resolve(message);
         } else {
-          if (currentPwd.value != initPwd.value) {
-            const message = i18n.$t("E00-01-0012");
-            resolve(message);
+          if (from.value === "SettingView") {
+            if (md5(currentPwd.value) != initPwd.value) {
+              const message = i18n.$t("E00-01-0012");
+              resolve(message);
+            } else {
+              resolve(true);
+            }
           } else {
-            resolve(true);
+            if (currentPwd.value != initPwd.value) {
+              const message = i18n.$t("E00-01-0012");
+              resolve(message);
+            } else {
+              resolve(true);
+            }
           }
         }
       });

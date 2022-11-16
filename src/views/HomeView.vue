@@ -94,8 +94,8 @@
   </q-layout>
 </template>
 <script lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import bridge from "dsbridge";
 import {
   AndroidResponse,
@@ -118,6 +118,7 @@ export default {
   name: "HomeView",
   components: {},
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const i18n = useI18n();
     const $q = useQuasar();
@@ -135,6 +136,11 @@ export default {
       i18n.category.value = "LoginView";
       i18n.locale.value = res;
     });
+    // onMounted(() => {
+    //   if (route.params.leftDrawerOpen === "true") {
+    //     toggleLeftDrawer();
+    //   }
+    // });
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     };

@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">Setting</span>
+          <span style="font-size: 21px">{{ settingTitle }}</span>
         </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -27,12 +27,12 @@
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
-        <q-item>
+        <q-item clickable @click="goLanguage">
           <q-item-section style="text-align: left">
             <q-item-label>{{ languageLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-btn flat dense icon-right="chevron_right" @click="goLanguage">
+            <q-btn flat dense icon-right="chevron_right">
               {{ language }}
             </q-btn>
           </q-item-section>
@@ -49,12 +49,12 @@
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
-        <q-item>
+        <q-item clickable @click="goResetPwd">
           <q-item-section style="text-align: left">
             <q-item-label>{{ resetPasswordLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-btn flat dense icon-right="chevron_right" @click="goResetPwd" />
+            <q-btn flat dense icon-right="chevron_right" />
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
@@ -97,6 +97,7 @@ export default {
     const i18n = useI18n();
     const store = useStore();
     const router = useRouter();
+    const settingTitle = ref("Setting");
     const ringVoiceLabel = ref("");
     const ringVoice = ref("ON");
     const languageLabel = ref("");
@@ -108,9 +109,12 @@ export default {
     const lastProfileSyncTime = ref("2015-03-03 14:20:11");
     const softwareUpdateLabel = ref("");
     const softwareUpdate = ref("V 1.0.1");
+    const username = ref("");
+    const password = ref("");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.category.value = "SettingView";
       i18n.locale.value = res;
+      settingTitle.value = res === "en" ? "Setting" : "设置";
       language.value = res === "en" ? "English" : "简体中文";
       ringVoiceLabel.value = i18n.$t("ringVoice");
       languageLabel.value = i18n.$t("language");
@@ -119,6 +123,27 @@ export default {
       lastProfileSyncTimeLabel.value = i18n.$t("lastProfileSyncTime");
       softwareUpdateLabel.value = i18n.$t("softwareUpdate");
     });
+    onMounted(() => {
+      bridge.call("checkUserUid", null, (res: string) => {
+        if (res) {
+          username.value = res.toUpperCase();
+        }
+      });
+      bridge.call("getUserPassword", null, (res: string) => {
+        if (res) {
+          password.value = res;
+        }
+      });
+    });
+    const back = () => {
+      router.push("/home");
+      // router.push({
+      //   name: "home",
+      //   params: {
+      //     leftDrawerOpen: "true",
+      //   },
+      // });
+    };
     const home = () => {
       router.push("/home");
     };
@@ -127,6 +152,8 @@ export default {
         name: "resetPwd",
         params: {
           from: "SettingView",
+          username: username.value,
+          password: password.value,
         },
       });
     };
@@ -149,6 +176,8 @@ export default {
       lastProfileSyncTime,
       softwareUpdateLabel,
       softwareUpdate,
+      back,
+      settingTitle,
     };
   },
 };
