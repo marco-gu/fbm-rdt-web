@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">Setting</span>
+          <span style="font-size: 21px">{{ settingTitle }}</span>
         </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -54,10 +54,12 @@ export default {
     const chineseLabel = ref("");
     const englishLabel = ref("");
     var selectedLanguage = ref("");
+    const settingTitle = ref("Setting");
 
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.category.value = "SettingView";
       i18n.locale.value = res;
+      settingTitle.value = res === "en" ? "Setting" : "设置";
       selectedLanguage.value = res;
       chineseLabel.value = i18n.$t("chinese");
       englishLabel.value = i18n.$t("english");
@@ -90,6 +92,7 @@ export default {
       selectedLanguage,
       chineseLabel,
       englishLabel,
+      settingTitle,
     };
   },
 };
