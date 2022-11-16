@@ -4,5 +4,7 @@
     "scanningDevice": "Scanning device",
     "resetPassword": "Reset password",
     "lastProfileSyncTime": "Last Profile Sync Time",
-    "softwareUpdate": "Software update"
+    "softwareUpdate": "Software update",
+    "chinese": "Chinese",
+    "english": "English"
 }

@@ -108,7 +108,7 @@ export default {
     const lastProfileSyncTime = ref("2015-03-03 14:20:11");
     const softwareUpdateLabel = ref("");
     const softwareUpdate = ref("V 1.0.1");
-    bridge.call("getSystemLanguage", null, (res: string) => {
+    bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.category.value = "SettingView";
       i18n.locale.value = res;
       language.value = res === "en" ? "English" : "简体中文";
@@ -131,7 +131,7 @@ export default {
       });
     };
     const goLanguage = () => {
-      // TODO
+      router.push("/settingLanguage");
     };
     return {
       router,
