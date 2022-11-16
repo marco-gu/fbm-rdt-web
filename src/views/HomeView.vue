@@ -136,11 +136,11 @@ export default {
       i18n.category.value = "LoginView";
       i18n.locale.value = res;
     });
-    // onMounted(() => {
-    //   if (route.params.leftDrawerOpen === "true") {
-    //     toggleLeftDrawer();
-    //   }
-    // });
+    onMounted(() => {
+      if (route.query.leftDrawerOpen === "true") {
+        toggleLeftDrawer();
+      }
+    });
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     };

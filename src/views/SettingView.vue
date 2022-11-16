@@ -136,13 +136,12 @@ export default {
       });
     });
     const back = () => {
-      router.push("/home");
-      // router.push({
-      //   name: "home",
-      //   params: {
-      //     leftDrawerOpen: "true",
-      //   },
-      // });
+      router.push({
+        path: "/home",
+        query: {
+          leftDrawerOpen: "true",
+        },
+      });
     };
     const home = () => {
       router.push("/home");
