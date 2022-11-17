@@ -155,7 +155,7 @@ const LpSearchView = defineComponent({
     const i18n = useI18n();
     const clientName = ref("");
     i18n.category.value = "LpSearchView";
-    bridge.call("getSystemLanguage", null, (res: string) => {
+    bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
     // 2- Search criteria input supports both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
@@ -166,7 +166,7 @@ const LpSearchView = defineComponent({
         localStorage.getItem("profile") as never
       ) as ProfileDeail;
       clientName.value = initData.client;
-      bridge.call("getSystemLanguage", null, (res: string) => {
+      bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.locale.value = res;
       });
       profileName.value = initData.profileCode;
@@ -311,7 +311,7 @@ const LpSearchView = defineComponent({
             name: "scan",
             params: routeParams,
           });
-          const message = i18n.$t("E00-01-0019");
+          const message = i18n.$t("E93-05-0005");
           popupSuccessMsg($q, message);
         } else if (androidResponse.status == AndroidResponseStatus.INFO) {
           const message = i18n.$t(androidResponse.messageCode);

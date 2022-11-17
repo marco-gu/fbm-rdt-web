@@ -97,7 +97,7 @@ const LoginView = defineComponent({
     const userManualVisible = ref(false);
     const isPwd = ref(true);
     onMounted(() => {
-      bridge.call("getSystemLanguage", null, (res: string) => {
+      bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.category.value = "LoginView";
         i18n.locale.value = res;
         loginLabel.value = i18n.$t("login");
@@ -129,7 +129,7 @@ const LoginView = defineComponent({
       i18n.category.value = "MessageCode";
       return new Promise((resolve) => {
         if (!val) {
-          const errMsg = i18n.$t("E00-01-0005");
+          const errMsg = i18n.$t("E93-01-0001");
           resolve(errMsg);
         } else {
           resolve(true);
@@ -140,7 +140,7 @@ const LoginView = defineComponent({
       i18n.category.value = "MessageCode";
       return new Promise((resolve) => {
         if (!val) {
-          const errMsg = i18n.$t("E00-01-0006");
+          const errMsg = i18n.$t("E93-01-0002");
           resolve(errMsg);
         } else {
           resolve(true);

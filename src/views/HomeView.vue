@@ -60,7 +60,7 @@
                 <q-item-label>Cargo Images</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple>
+            <q-item clickable @click="goSetting" v-ripple>
               <q-item-section avatar>
                 <q-img :src="settingIcon" />
               </q-item-section>
@@ -94,8 +94,8 @@
   </q-layout>
 </template>
 <script lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import bridge from "dsbridge";
 import {
   AndroidResponse,
@@ -118,6 +118,7 @@ export default {
   name: "HomeView",
   components: {},
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const i18n = useI18n();
     const $q = useQuasar();
@@ -131,9 +132,14 @@ export default {
     const userManualIcon = userManual;
     const logoutIcon = logOut;
     const logoIcon = logo;
-    bridge.call("getSystemLanguage", null, (res: string) => {
+    bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.category.value = "LoginView";
       i18n.locale.value = res;
+    });
+    onMounted(() => {
+      if (route.query.leftDrawerOpen == "true") {
+        toggleLeftDrawer();
+      }
     });
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -153,7 +159,7 @@ export default {
           data
         ) as AndroidResponse<LogoutResponse>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          const msg = i18n.$t("E00-01-0014");
+          const msg = i18n.$t("E93-06-0001");
           router.push("/");
           popupSuccessMsg($q, msg);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
@@ -165,6 +171,9 @@ export default {
     const back = () => {
       router.go(-1);
       isBackShow.value = false;
+    };
+    const goSetting = () => {
+      router.push("/setting");
     };
     return {
       leftDrawerOpen,
@@ -182,6 +191,7 @@ export default {
       userManualIcon,
       logoutIcon,
       logoIcon,
+      goSetting,
     };
   },
 };

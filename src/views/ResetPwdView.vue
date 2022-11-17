@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span class="header-title">Change Password</span></q-item-section
+          <span class="header-title">{{ changePwdTitle }}</span></q-item-section
         >
       </q-item>
     </div>
@@ -18,7 +18,7 @@
             v-model="currentPwd"
             filled
             :type="isPwd ? 'password' : 'text'"
-            placeholder="Current Password"
+            :placeholder="currentPwdLabel"
             lazy-rules
             :rules="[initPwdRule]"
           >
@@ -34,7 +34,7 @@
             v-model="newPwd"
             filled
             :type="isPwd ? 'password' : 'text'"
-            placeholder="New Password"
+            :placeholder="newPwdLabel"
             lazy-rules
             :rules="[newPwdRule]"
           >
@@ -50,7 +50,7 @@
             v-model="reNewPwd"
             filled
             :type="isPwd ? 'password' : 'text'"
-            placeholder="Retype New Password"
+            :placeholder="retypeNewPwdLabel"
             lazy-rules
             :rules="[reNewPwdRule]"
           >
@@ -69,7 +69,7 @@
             style="width: 48%"
             flat
             push
-            label="Cancel"
+            :label="cancelLabel"
             @click="cancel"
           />
           <q-separator vertical inset color="white" />
@@ -79,7 +79,7 @@
             flat
             type="submit"
             push
-            label="Save"
+            :label="saveLabel"
           />
         </div>
       </q-form>
@@ -114,12 +114,25 @@ const ResetPwdView = defineComponent({
     const initPwd = ref();
     const from = ref("");
     const isPwd = ref(true);
+    const changePwdTitle = ref("");
+    const currentPwdLabel = ref("");
+    const newPwdLabel = ref("");
+    const retypeNewPwdLabel = ref("");
+    const cancelLabel = ref("");
+    const saveLabel = ref("");
     onMounted(() => {
       from.value = route.params.from as string;
       username.value = route.params.username as string;
       initPwd.value = route.params.password as string;
-      bridge.call("getSystemLanguage", null, (res: string) => {
+      bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.locale.value = res;
+        i18n.category.value = "ResetPwdView";
+        changePwdTitle.value = i18n.$t("changePwd");
+        currentPwdLabel.value = i18n.$t("currentPwd");
+        newPwdLabel.value = i18n.$t("newPwd");
+        retypeNewPwdLabel.value = i18n.$t("retypeNewPwd");
+        cancelLabel.value = i18n.$t("cancel");
+        saveLabel.value = i18n.$t("save");
       });
     });
     const onSubmit = () => {
@@ -133,8 +146,12 @@ const ResetPwdView = defineComponent({
         closeLoading($q);
         const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          const message = i18n.$t("E00-01-0010");
-          router.push("/home");
+          const message = i18n.$t("E93-02-0001");
+          if (from.value == "LoginView") {
+            router.push("/home");
+          } else if (from.value == "SettingView") {
+            router.push("/setting");
+          }
           popupSuccessMsg($q, message);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.$t(androidResponse.messageCode);
@@ -146,14 +163,23 @@ const ResetPwdView = defineComponent({
       i18n.category.value = "MessageCode";
       return new Promise((resolve) => {
         if (!val) {
-          const message = i18n.$t("E00-01-0015");
+          const message = i18n.$t("E93-02-0005");
           resolve(message);
         } else {
-          if (currentPwd.value != initPwd.value) {
-            const message = i18n.$t("E00-01-0012");
-            resolve(message);
+          if (from.value === "SettingView") {
+            if (md5(currentPwd.value) != initPwd.value) {
+              const message = i18n.$t("E93-02-0003");
+              resolve(message);
+            } else {
+              resolve(true);
+            }
           } else {
-            resolve(true);
+            if (currentPwd.value != initPwd.value) {
+              const message = i18n.$t("E93-02-0003");
+              resolve(message);
+            } else {
+              resolve(true);
+            }
           }
         }
       });
@@ -164,18 +190,18 @@ const ResetPwdView = defineComponent({
         const reg = /[A-Z]+/g;
         const reg2 = /[0-9]+/g;
         if (!val) {
-          const message = i18n.$t("E00-01-0016");
+          const message = i18n.$t("E93-02-0006");
           resolve(message);
         } else {
           if (newPwd.value.length < 8) {
-            const message = i18n.$t("E00-01-0013");
+            const message = i18n.$t("EE93-02-0004");
             resolve(message);
           } else {
             if (!reg.test(newPwd.value)) {
-              const message = i18n.$t("E00-01-0013");
+              const message = i18n.$t("E93-02-0004");
               resolve(message);
             } else if (!reg2.test(newPwd.value)) {
-              const message = i18n.$t("E00-01-0013");
+              const message = i18n.$t("E93-02-0004");
               resolve(message);
             } else {
               resolve(true);
@@ -188,11 +214,11 @@ const ResetPwdView = defineComponent({
       i18n.category.value = "MessageCode";
       return new Promise((resolve) => {
         if (!val) {
-          const message = i18n.$t("E00-01-0017");
+          const message = i18n.$t("E93-02-0007");
           resolve(message);
         } else {
           if (newPwd.value != reNewPwd.value) {
-            const message = i18n.$t("E00-01-0011");
+            const message = i18n.$t("E93-02-0002");
             resolve(message);
           } else {
             resolve(true);
@@ -207,16 +233,20 @@ const ResetPwdView = defineComponent({
             data
           ) as AndroidResponse<LogoutResponse>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            const message = i18n.$t("E00-01-0014");
+            const message = i18n.$t("E93-06-0001");
             router.push("/");
             popupSuccessMsg($q, message);
           }
         });
+      } else if (from.value == "SettingView") {
+        router.push("/setting");
       }
     };
     const back = () => {
       if (from.value == "LoginView") {
         cancel();
+      } else if (from.value == "SettingView") {
+        router.push("/setting");
       }
     };
     return {
@@ -230,6 +260,12 @@ const ResetPwdView = defineComponent({
       initPwdRule,
       newPwdRule,
       reNewPwdRule,
+      changePwdTitle,
+      currentPwdLabel,
+      newPwdLabel,
+      retypeNewPwdLabel,
+      cancelLabel,
+      saveLabel,
     };
   },
 });
