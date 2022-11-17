@@ -9,7 +9,7 @@ import { provideI18n } from "./plugin/i18nPlugins";
 const App = defineComponent({
   setup() {
     provideI18n({
-      locale: "en/",
+      locale: "en",
       messages: {
         MessageCode: {
           zh: require("../src/assets/lang/MessageCode/zh.json"),
@@ -30,6 +30,10 @@ const App = defineComponent({
         SettingView: {
           zh: require("../src/assets/lang/SettingView/zh.json"),
           en: require("../src/assets/lang/SettingView/en.json"),
+        },
+        ResetPwdView: {
+          zh: require("../src/assets/lang/ResetPwdView/zh.json"),
+          en: require("../src/assets/lang/ResetPwdView/en.json"),
         },
       },
     });

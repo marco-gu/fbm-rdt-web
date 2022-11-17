@@ -93,7 +93,7 @@ const ForgotPwdComponent = defineComponent({
         i18n.category.value = "MessageCode";
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           context.emit("confirm");
-          const message = i18n.$t("E00-01-0009");
+          const message = i18n.$t("E93-03-0001");
           popupSuccessMsg($q, message);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.$t(androidResponse.messageCode);
@@ -107,11 +107,11 @@ const ForgotPwdComponent = defineComponent({
         const reg =
           /[a-zA-Z0-9]+([-_.][A-Za-zd]+)*@([a-zA-Z0-9]+[-.])+[A-Za-zd]{2,5}$/g;
         if (!val) {
-          const errMsg = i18n.$t("E00-01-0008");
+          const errMsg = i18n.$t("E93-03-0003");
           resolve(errMsg);
         } else {
           if (!reg.test(mail.value)) {
-            const errMsg = i18n.$t("E00-01-0007");
+            const errMsg = i18n.$t("E93-03-0002");
             resolve(errMsg);
           } else {
             resolve(true);

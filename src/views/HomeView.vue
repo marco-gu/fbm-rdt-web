@@ -159,7 +159,7 @@ export default {
           data
         ) as AndroidResponse<LogoutResponse>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          const msg = i18n.$t("E00-01-0014");
+          const msg = i18n.$t("E93-06-0001");
           router.push("/");
           popupSuccessMsg($q, msg);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {

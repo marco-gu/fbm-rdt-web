@@ -312,7 +312,7 @@ const LpSearchView = defineComponent({
             name: "scan",
             params: routeParams,
           });
-          const message = i18n.$t("E00-01-0019");
+          const message = i18n.$t("E93-05-0005");
           popupSuccessMsg($q, message);
         } else if (androidResponse.status == AndroidResponseStatus.INFO) {
           const message = i18n.$t(androidResponse.messageCode);

@@ -114,7 +114,7 @@ export default {
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.category.value = "SettingView";
       i18n.locale.value = res;
-      settingTitle.value = res === "en" ? "Setting" : "设置";
+      settingTitle.value = i18n.$t("setting");
       language.value = res === "en" ? "English" : "简体中文";
       ringVoiceLabel.value = i18n.$t("ringVoice");
       languageLabel.value = i18n.$t("language");
