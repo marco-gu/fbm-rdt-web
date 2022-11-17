@@ -54,12 +54,12 @@ export default {
     const chineseLabel = ref("");
     const englishLabel = ref("");
     var selectedLanguage = ref("");
-    const title = ref("Language");
+    const title = ref("Change Language");
 
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.category.value = "SettingView";
       i18n.locale.value = res;
-      title.value = res === "en" ? "Language" : "语言";
+      title.value = res === "en" ? "Change Language" : "设置语言";
       selectedLanguage.value = res;
       chineseLabel.value = i18n.$t("chinese");
       englishLabel.value = i18n.$t("english");
