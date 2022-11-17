@@ -102,6 +102,9 @@ router.beforeEach((to, from, next) => {
   } else {
     next();
   }
+  if (from.path == "/setting" && to.path == "/home") {
+    next({ path: "/home", query: { leftDrawerOpen: "true" } });
+  }
 });
 
 export default router;
