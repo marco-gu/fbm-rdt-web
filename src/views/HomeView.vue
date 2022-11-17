@@ -137,7 +137,7 @@ export default {
       i18n.locale.value = res;
     });
     onMounted(() => {
-      if (route.query.leftDrawerOpen === "true") {
+      if (route.query.leftDrawerOpen == "true") {
         toggleLeftDrawer();
       }
     });
