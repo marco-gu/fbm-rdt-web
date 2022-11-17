@@ -12,24 +12,24 @@ const App = defineComponent({
       locale: "en/",
       messages: {
         MessageCode: {
-          zh: require("../src/assets/lang/zh/MessageCode/zh.json"),
-          en: require("../src/assets/lang/en/MessageCode/en.json"),
+          zh: require("../src/assets/lang/MessageCode/zh.json"),
+          en: require("../src/assets/lang/MessageCode/en.json"),
         },
         LoginView: {
-          zh: require("../src/assets/lang/zh/LoginView/zh.json"),
-          en: require("../src/assets/lang/en/LoginView/en.json"),
+          zh: require("../src/assets/lang/LoginView/zh.json"),
+          en: require("../src/assets/lang/LoginView/en.json"),
         },
         ForgotPwdComponent: {
-          zh: require("../src/assets/lang/zh/ForgotPwdComponent/zh.json"),
-          en: require("../src/assets/lang/en/ForgotPwdComponent/en.json"),
+          zh: require("../src/assets/lang/ForgotPwdComponent/zh.json"),
+          en: require("../src/assets/lang/ForgotPwdComponent/en.json"),
         },
         LpSearchView: {
-          zh: require("../src/assets/lang/zh/LpSearchView/zh.json"),
-          en: require("../src/assets/lang/en/LpSearchView/en.json"),
+          zh: require("../src/assets/lang/LpSearchView/zh.json"),
+          en: require("../src/assets/lang/LpSearchView/en.json"),
         },
         SettingView: {
-          zh: require("../src/assets/lang/zh/SettingView/zh.json"),
-          en: require("../src/assets/lang/en/SettingView/en.json"),
+          zh: require("../src/assets/lang/SettingView/zh.json"),
+          en: require("../src/assets/lang/SettingView/en.json"),
         },
       },
     });
