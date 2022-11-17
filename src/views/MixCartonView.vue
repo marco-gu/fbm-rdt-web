@@ -2,14 +2,11 @@
   <div class="wrapper">
     <div class="header">
       <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
+        <q-item-section avatar @click="back()">
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
           <span style="font-size: 21px">Mix Carton</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
         </q-item-section>
       </q-item>
     </div>
@@ -76,11 +73,11 @@ const MixCartonView = defineComponent({
     const addPageViews = ref([] as PageView[]);
     onMounted(() => {
       // call natvive get Mix carton Page Details
-      bridge.call("checkUserUid", null, (res: string) => {
-        if (res) {
-          // username.value = res.toUpperCase();
-        }
-      });
+      // bridge.call("checkUserUid", null, (res: string) => {
+      //   if (res) {
+      //     // username.value = res.toUpperCase();
+      //   }
+      // });
       const pageView1 = {} as PageView;
       pageView1.name = "Style";
       pageViews.value.push(pageView1);
@@ -161,11 +158,15 @@ const MixCartonView = defineComponent({
       alert("scan");
       // call native
     };
+    const back = () => {
+      bridge.call("backToScan", null);
+    };
     return {
       scan,
       add,
       onSubmit,
       pageViews,
+      back,
     };
   },
 });
