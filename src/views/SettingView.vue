@@ -38,7 +38,7 @@
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
-        <q-item>
+        <q-item clickable @click="goScanningDevice">
           <q-item-section style="text-align: left">
             <q-item-label>{{ scanningDeviceLabel }}</q-item-label>
           </q-item-section>
@@ -104,7 +104,7 @@ export default {
     const languageLabel = ref("");
     const language = ref("");
     const scanningDeviceLabel = ref("");
-    const scanningDevice = ref("CAMERA");
+    const scanningDevice = ref("");
     const resetPasswordLabel = ref("");
     const lastProfileSyncTimeLabel = ref("");
     const lastProfileSyncTime = ref("2015-03-03 14:20:11");
@@ -130,6 +130,11 @@ export default {
       softwareUpdateLabel.value = i18n.$t("softwareUpdate");
       ringVoiceDisplay.value = i18n.$t(ringVoice.value);
     });
+
+    bridge.call("getScanDevice", null, (device: string) => {
+      scanningDevice.value = i18n.$t(device);
+    });
+
     onMounted(() => {
       bridge.call("checkUserUid", null, (res: string) => {
         if (res) {
@@ -163,6 +168,11 @@ export default {
         },
       });
     };
+
+    const goScanningDevice = () => {
+      router.push("/settingScanDevice");
+    };
+
     const goLanguage = () => {
       router.push("/settingLanguage");
     };
@@ -191,6 +201,7 @@ export default {
       back,
       settingTitle,
       goRingVoice,
+      goScanningDevice,
     };
   },
 };

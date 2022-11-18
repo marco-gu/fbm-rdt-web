@@ -11,6 +11,7 @@ import bridge from "dsbridge";
 import SettingView from "../views/SettingView.vue";
 import LanguageView from "../views/LanguageView.vue";
 import RingVoiceView from "../views/RingVoiceView.vue";
+import ScanDeviceView from "../views/ScanDeviceView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -64,6 +65,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/ringVoice",
     name: "ringVoice",
     component: RingVoiceView,
+  },
+  {
+    path: "/settingScanDevice",
+    name: "scanDevice",
+    component: ScanDeviceView,
   },
 ];
 

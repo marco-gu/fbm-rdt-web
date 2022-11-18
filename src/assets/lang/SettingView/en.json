@@ -9,5 +9,7 @@
     "chinese": "Chinese",
     "english": "English",
     "on": "ON",
-    "off": "OFF"
+    "off": "OFF",
+    "camera": "Camera",
+    "bluetooth": "Bluetooth"
 }
