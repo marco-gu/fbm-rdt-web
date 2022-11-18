@@ -10,6 +10,7 @@ import MixCartonView from "../views/MixCartonView.vue";
 import bridge from "dsbridge";
 import SettingView from "../views/SettingView.vue";
 import LanguageView from "../views/LanguageView.vue";
+import RingVoiceView from "../views/RingVoiceView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -53,13 +54,16 @@ const routes: Array<RouteRecordRaw> = [
     path: "/setting",
     name: "setting",
     component: SettingView,
-    children: [
-      {
-        path: "/settingLanguage",
-        name: "settingLanguage",
-        component: LanguageView,
-      },
-    ],
+  },
+  {
+    path: "/settingLanguage",
+    name: "settingLanguage",
+    component: LanguageView,
+  },
+  {
+    path: "/ringVoice",
+    name: "ringVoice",
+    component: RingVoiceView,
   },
 ];
 
