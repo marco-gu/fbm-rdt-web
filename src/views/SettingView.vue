@@ -157,7 +157,7 @@ export default {
       });
     };
     const goLanguage = () => {
-      router.push("/settingLanguage");
+      router.push("/setting/settingLanguage");
     };
     return {
       router,

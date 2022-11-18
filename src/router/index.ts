@@ -53,11 +53,13 @@ const routes: Array<RouteRecordRaw> = [
     path: "/setting",
     name: "setting",
     component: SettingView,
-  },
-  {
-    path: "/settingLanguage",
-    name: "settingLanguage",
-    component: LanguageView,
+    children: [
+      {
+        path: "/settingLanguage",
+        name: "settingLanguage",
+        component: LanguageView,
+      },
+    ],
   },
 ];
 
