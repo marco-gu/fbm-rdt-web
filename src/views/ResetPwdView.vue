@@ -194,7 +194,7 @@ const ResetPwdView = defineComponent({
           resolve(message);
         } else {
           if (newPwd.value.length < 8) {
-            const message = i18n.$t("EE93-02-0004");
+            const message = i18n.$t("E93-02-0004");
             resolve(message);
           } else {
             if (!reg.test(newPwd.value)) {
