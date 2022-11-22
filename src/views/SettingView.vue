@@ -16,13 +16,13 @@
     <q-separator color="grey-5" />
     <div class="setting-list-container">
       <q-list>
-        <q-item>
+        <q-item clickable @click="goRingVoice">
           <q-item-section style="text-align: left">
             <q-item-label>{{ ringVoiceLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-btn flat dense icon-right="chevron_right">
-              {{ ringVoice }}
+              {{ ringVoiceDisplay }}
             </q-btn>
           </q-item-section>
         </q-item>
@@ -38,7 +38,7 @@
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
-        <q-item>
+        <q-item clickable @click="goScanningDevice">
           <q-item-section style="text-align: left">
             <q-item-label>{{ scanningDeviceLabel }}</q-item-label>
           </q-item-section>
@@ -99,11 +99,12 @@ export default {
     const router = useRouter();
     const settingTitle = ref("Setting");
     const ringVoiceLabel = ref("");
-    const ringVoice = ref("ON");
+    const ringVoice = ref("");
+    const ringVoiceDisplay = ref("");
     const languageLabel = ref("");
     const language = ref("");
     const scanningDeviceLabel = ref("");
-    const scanningDevice = ref("CAMERA");
+    const scanningDevice = ref("");
     const resetPasswordLabel = ref("");
     const lastProfileSyncTimeLabel = ref("");
     const lastProfileSyncTime = ref("2015-03-03 14:20:11");
@@ -111,6 +112,11 @@ export default {
     const softwareUpdate = ref("V 1.0.1");
     const username = ref("");
     const password = ref("");
+    bridge.call("getRingVoice", null, (res: string) => {
+      if (res) {
+        ringVoice.value = res;
+      }
+    });
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.category.value = "SettingView";
       i18n.locale.value = res;
@@ -122,7 +128,13 @@ export default {
       resetPasswordLabel.value = i18n.$t("resetPassword");
       lastProfileSyncTimeLabel.value = i18n.$t("lastProfileSyncTime");
       softwareUpdateLabel.value = i18n.$t("softwareUpdate");
+      ringVoiceDisplay.value = i18n.$t(ringVoice.value);
     });
+
+    bridge.call("getScanDevice", null, (device: string) => {
+      scanningDevice.value = i18n.$t(device);
+    });
+
     onMounted(() => {
       bridge.call("checkUserUid", null, (res: string) => {
         if (res) {
@@ -156,8 +168,19 @@ export default {
         },
       });
     };
+
+    const goScanningDevice = () => {
+      router.push("/settingScanDevice");
+    };
+
     const goLanguage = () => {
       router.push("/settingLanguage");
+    };
+    const goRingVoice = () => {
+      router.push({
+        path: "/ringVoice",
+        query: { ringVoice: ringVoice.value },
+      });
     };
     return {
       router,
@@ -165,7 +188,7 @@ export default {
       goResetPwd,
       goLanguage,
       ringVoiceLabel,
-      ringVoice,
+      ringVoiceDisplay,
       languageLabel,
       language,
       scanningDeviceLabel,
@@ -177,6 +200,8 @@ export default {
       softwareUpdate,
       back,
       settingTitle,
+      goRingVoice,
+      goScanningDevice,
     };
   },
 };
