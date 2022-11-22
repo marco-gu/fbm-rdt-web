@@ -251,6 +251,7 @@ const MixCartonView = defineComponent({
       itemCount,
       cartonID,
       inputRef,
+      back,
     };
   },
 });
