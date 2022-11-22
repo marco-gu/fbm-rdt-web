@@ -53,3 +53,27 @@ export interface LpSearch {
   so: string;
   po: string
 }
+
+export interface MixCartonProfile {
+  cartonID: string;
+  uniqueId: string;
+  masterUniqueId: string;
+  type: string;
+  typeDescription: string;
+  dataFieldName: string;
+  displayDataFieldName: string;
+  format: string;
+  maxLength: number;
+  mandatory: number;
+  duplicate: number;
+  isKey: number;
+  verification: number;
+  combo: number;
+  scan: string;
+  irecType: string;
+}
+
+export interface MixCartonRendering {
+  cartonID: string;
+  mixCartonProfile: MixCartonProfile[];
+}

@@ -291,7 +291,7 @@ const LpSearchView = defineComponent({
         total: "0",
         taskID: "",
         clientCode: "",
-        profile: profileName.value,
+        profileCode: profileName.value,
         type: "",
         clientName: "",
       };
@@ -307,12 +307,14 @@ const LpSearchView = defineComponent({
           routeParams.clientCode = clientCode.value;
           routeParams.type = scanType.value;
           routeParams.clientName = clientName.value;
-          router.push({
-            name: "scan",
-            params: routeParams,
-          });
           const message = i18n.$t("E93-05-0005");
           popupSuccessMsg($q, message);
+          setTimeout(() => {
+            router.push({
+              name: "scan",
+              params: routeParams,
+            });
+          }, 2000);
         } else if (androidResponse.status == AndroidResponseStatus.INFO) {
           const message = i18n.$t(androidResponse.messageCode);
           popupInfoMsg($q, message);

@@ -73,7 +73,7 @@ const ScanView = defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const profileName = ref("");
+    const profileCode = ref("");
     const clientCode = ref("");
     const clientName = ref("");
     const taskID = ref("");
@@ -100,6 +100,8 @@ const ScanView = defineComponent({
           clientCode.value = data.value[key];
         } else if (key == "clientName") {
           clientName.value = data.value[key];
+        } else if (key == "profileCode") {
+          profileCode.value = data.value[key];
         } else {
           if (key == "type") {
             type.value = data.value[key];
@@ -146,12 +148,12 @@ const ScanView = defineComponent({
         skuNumber: skuNumber.value,
         containerNumber: containerNumber.value,
         style: style.value,
+        profileCode: profileCode.value,
       };
       bridge.call("scan", args);
     };
     return {
       router,
-      profileName,
       scanned,
       total,
       onSubmit,

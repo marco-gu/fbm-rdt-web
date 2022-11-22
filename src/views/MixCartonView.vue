@@ -15,10 +15,11 @@
     </div>
     <q-separator color="grey-5" />
     <div class="carton-info">
-      <span>63786764788197289371987</span>
-      <span>Item count:1</span>
+      <span>{{ cartonID }}</span>
+
+      <span>Item count: {{ itemCount }}</span>
     </div>
-    <q-form @submit="onSubmit" style="background: #fff">
+    <q-form style="background: #fff" @submit="onSubmit">
       <div v-for="(item, i) in pageViews" :key="i">
         <div
           style="
@@ -30,7 +31,9 @@
           <span style="padding-left: 1rem; color: black">
             {{ item.name }}
           </span>
+
           <q-input
+            ref="inputRef"
             v-model="item.value"
             clearable
             input-class="text-right"
@@ -39,19 +42,14 @@
             borderless
             style="padding: 0px 16px"
           >
-            <template v-slot:append>
-              <q-avatar v-if="item.canScan == 1" @click="scan(name)">
-                <q-icon name="qr_code_scanner" />
-              </q-avatar>
-            </template>
           </q-input>
         </div>
         <q-separator color="grey-5" />
       </div>
-      <div class="bottom">
-        <q-btn no-caps style="width: 48%" flat push @click="add">Add</q-btn>
+      <div class="bottom" :ref="two">
+        <q-btn no-caps style="width: 48%" flat push type="submit">Add</q-btn>
         <q-separator vertical inset color="white" />
-        <q-btn no-caps style="width: 52%" flat type="submit" push
+        <q-btn no-caps style="width: 52%" flat push @click="complete"
           >Complete</q-btn
         >
       </div>
@@ -59,9 +57,9 @@
   </div>
 </template>
 <script lang="ts">
-import { Attribute } from "@/models/profile";
+import { MixCartonRendering } from "@/models/profile";
 import bridge from "dsbridge";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, nextTick, ref } from "vue";
 interface PageView {
   name: string;
   value: unknown;
@@ -69,38 +67,54 @@ interface PageView {
   format: RegExp;
   rule: unknown;
   canScan: number;
+  ref: unknown;
 }
 const MixCartonView = defineComponent({
   setup() {
     const pageViews = ref([] as PageView[]);
-    const addPageViews = ref([] as PageView[]);
-    onMounted(() => {
-      // call natvive get Mix carton Page Details
-      bridge.call("checkUserUid", null, (res: string) => {
-        if (res) {
-          // username.value = res.toUpperCase();
+    const cartonID = ref("");
+    const itemCount = ref(0);
+    let hasRendered = false;
+    let isFirstAdd = true;
+    let completeMixCarton = false;
+    let result = {} as MixCartonRendering;
+    const inputRef = ref(null);
+    if (hasRendered == false) {
+      bridge.register("getMixCartonProfile", (res: string) => {
+        result = JSON.parse(res);
+        if (!hasRendered) {
+          hasRendered = true;
+          isFirstAdd = true;
+          result.mixCartonProfile.forEach((t) => {
+            pageViews.value.push(composeViews(t));
+          });
         }
+        cartonID.value = result.cartonID;
+        itemCount.value = 0;
       });
-      const pageView1 = {} as PageView;
-      pageView1.name = "Style";
-      pageViews.value.push(pageView1);
-      const pageView2 = {} as PageView;
-      pageView2.name = "Color";
-      pageViews.value.push(pageView2);
-      const pageView3 = {} as PageView;
-      pageView3.name = "Size";
-      pageViews.value.push(pageView3);
-      const pageView4 = {} as PageView;
-      pageView4.name = "QTY";
-      pageViews.value.push(pageView4);
-    });
-    const composeViews = (attr: Attribute) => {
+    }
+    // onMounted(() => {
+    //   if (hasRendered == false) {
+    //     bridge.register("getMixCartonProfile", (res: string) => {
+    //       result = JSON.parse(res);
+    //       if (!hasRendered) {
+    //         hasRendered = true;
+    //         result.mixCartonProfile.forEach((t) => {
+    //           pageViews.value.push(composeViews(t));
+    //         });
+    //       }
+    //       cartonID.value = result.cartonID;
+    //       itemCount.value = 0;
+    //     });
+    //   }
+    // });
+    const composeViews = (attr: any) => {
       const view = {} as PageView;
       view.name = attr.dataFieldName;
       view.mandatory = attr.mandatory;
-      view.value = ref("");
+      view.value = ref(null);
+      view.ref = ref(null);
       view.format = new RegExp(composeFormat(attr.format));
-      view.canScan = attr.scan == "1" ? 1 : 0;
       view.rule = (val: string) => {
         return new Promise((resolve) => {
           if (view.mandatory == 1 && !val) {
@@ -108,7 +122,9 @@ const MixCartonView = defineComponent({
           } else {
             if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
               resolve(
-                `Please input not more than ${attr.maxLength} charactors`
+                `Please input not more than ${Math.abs(
+                  attr.maxLength
+                )} charactors`
               );
             } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
               resolve(
@@ -144,28 +160,98 @@ const MixCartonView = defineComponent({
       }
       return reg;
     };
+    const complete = () => {
+      pageViews.value.forEach((t) => {
+        const funtion = t.rule as any;
+        funtion(t.value).then((resolve: any) => {
+          if (resolve == true) {
+            completeMixCarton = true;
+            onSubmit();
+          } else {
+            reset(inputRef.value);
+            bridge.call("completeMixCarton");
+          }
+        });
+      });
+    };
+    const reset = (param: any) => {
+      param.forEach((t: any) => {
+        if (t) {
+          t.resetValidation();
+        }
+      });
+      pageViews.value.forEach((t) => {
+        t.value = "";
+      });
+    };
     const onSubmit = () => {
-      // submit data to natvive
-      addPageViews.value.forEach((addPageView) => {
-        //
+      const args: any = {
+        cartonID: cartonID.value,
+        UPC: "",
+        Style: "",
+        SKU: "",
+        Color: "",
+        Size: "",
+        Quantity: "",
+      };
+      pageViews.value.forEach((t) => {
+        switch (t.name) {
+          case "UPC":
+            args["UPC"] = t.value;
+            break;
+          case "Style":
+            args["Style"] = t.value;
+            break;
+          case "SKU":
+            args["SKU"] = t.value;
+            break;
+          case "Color":
+            args["Color"] = t.value;
+            break;
+          case "Size":
+            args["Size"] = t.value;
+            break;
+          case "Quantity":
+            args["Quantity"] = t.value;
+            break;
+        }
       });
-    };
-    const add = () => {
-      // stay at current page and clear all inputs
-      pageViews.value.forEach((pageView) => {
-        addPageViews.value.push(pageView);
-        pageView.value = "";
-      });
-    };
-    const scan = () => {
-      alert("scan");
-      // call native
+      if (isFirstAdd) {
+        bridge.call("addMixCartonForFirst", args, (res: string) => {
+          nextTick(() => {
+            reset(inputRef.value);
+          });
+          if (completeMixCarton) {
+            alert("Add Complete");
+            bridge.call("completeMixCarton");
+          } else {
+            alert("add success");
+            isFirstAdd = false;
+          }
+        });
+      } else {
+        bridge.call("addMixCarton", args, (res: string) => {
+          nextTick(() => {
+            reset(inputRef.value);
+          });
+          if (completeMixCarton) {
+            alert("Add Complete");
+            bridge.call("completeMixCarton");
+          } else {
+            alert("add success");
+          }
+        });
+      }
+      itemCount.value++;
     };
     return {
-      scan,
-      add,
       onSubmit,
+      complete,
       pageViews,
+      itemCount,
+      cartonID,
+      inputRef,
+      model: ref(""),
     };
   },
 });
