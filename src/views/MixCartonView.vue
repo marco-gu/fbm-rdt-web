@@ -2,14 +2,11 @@
   <div class="wrapper">
     <div class="header">
       <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
+        <q-item-section avatar @click="back()">
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
           <span style="font-size: 21px">Mix Carton</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
         </q-item-section>
       </q-item>
     </div>
@@ -244,6 +241,9 @@ const MixCartonView = defineComponent({
       }
       itemCount.value++;
     };
+    const back = () => {
+      bridge.call("backToScan", null);
+    };
     return {
       onSubmit,
       complete,
@@ -251,7 +251,6 @@ const MixCartonView = defineComponent({
       itemCount,
       cartonID,
       inputRef,
-      model: ref(""),
     };
   },
 });

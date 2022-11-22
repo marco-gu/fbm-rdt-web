@@ -7,5 +7,9 @@
     "lastProfileSyncTime": "Last Profile Sync Time",
     "softwareUpdate": "Software update",
     "chinese": "Chinese",
-    "english": "English"
+    "english": "English",
+    "on": "ON",
+    "off": "OFF",
+    "camera": "Camera",
+    "bluetooth": "Bluetooth"
 }
