@@ -32,7 +32,7 @@
           </div>
         </template>
         <div style="display: flex; color: black; align-items: center">
-          <div v-if="receivingType">
+          <div v-if="receivingFlag">
             <q-radio
               v-model="scanType"
               val="Receiving"
@@ -40,7 +40,7 @@
               @click="onClick"
             />
           </div>
-          <div v-if="!receivingType">
+          <div v-if="!receivingFlag">
             <q-radio
               disable
               v-model="scanType"
@@ -49,7 +49,7 @@
               @click="onClick"
             />
           </div>
-          <div v-if="stuffingType">
+          <div v-if="stuffingFlag">
             <q-radio
               v-model="scanType"
               val="Stuffing"
@@ -57,7 +57,7 @@
               @click="onClick"
             />
           </div>
-          <div v-if="!stuffingType">
+          <div v-if="!stuffingFlag">
             <q-radio
               disable
               v-model="scanType"
@@ -120,7 +120,7 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { Attribute, ProfileDeail } from "@/models/profile";
+import { DisplayAttribute, ProfileDeail } from "@/models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import {
@@ -132,50 +132,57 @@ import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import { composeReg } from "../utils/composeReg";
+// Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
 }
-const enum InterfaceMandatoryField {
+// Define LP Search Condition
+const enum LpSearchCondition {
   SO = "SO",
   PO = "PO",
   SKU = "SKU",
 }
+// Define Display Attribute
+const enum DisplayAttributesLevel {
+  ORDER = "order",
+  CARTON_COMMON = "cartoncommon",
+}
+// Define fields for both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
+const scanOrTypeInList = ["PO", "SO", "SKU", "Container"];
 const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
+    const $q = useQuasar();
+    const i18n = useI18n();
     const profileName = ref("");
     const clientCode = ref("");
     const scanType = ref("");
+    const clientName = ref("");
+    // Define Page Elements
+    const pageViews = ref([]);
     const receivingViews = ref([]);
     const stuffingViews = ref([]);
-    const pageViews = ref([]);
-    const receivingType = ref(false);
-    const stuffingType = ref(false);
-    const i18n = useI18n();
-    const clientName = ref("");
+    // Define Receiving or Stuffing Radio Status
+    const receivingFlag = ref(false);
+    const stuffingFlag = ref(false);
     i18n.category.value = "LpSearchView";
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
-    // 2- Search criteria input supports both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
-    const scanOrTypeInList = ["PO", "SO", "SKU", "Container"];
-    const $q = useQuasar();
     onMounted(() => {
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
       ) as ProfileDeail;
       clientName.value = initData.client;
-      bridge.call("getSettingLanguage", null, (res: string) => {
-        i18n.locale.value = res;
-      });
       profileName.value = initData.profileCode;
       clientCode.value = initData.profileName;
-      receivingType.value = initData.receivingScanFlag == 1 ? true : false;
-      stuffingType.value = initData.stuffingScanFlag == 1 ? true : false;
+      receivingFlag.value = initData.receivingScanFlag == 1 ? true : false;
+      stuffingFlag.value = initData.stuffingScanFlag == 1 ? true : false;
       scanType.value =
-        receivingType.value == true ? ScanType.RECEIVING : ScanType.STUFFING;
-      initData.attributes.forEach((attr: Attribute) => {
+        receivingFlag.value == true ? ScanType.RECEIVING : ScanType.STUFFING;
+      initData.attributes.forEach((attr: DisplayAttribute) => {
         if (attr.type == ScanType.RECEIVING) {
           receivingViews.value.push(composeViewElements(attr) as never);
         } else if (attr.type == ScanType.STUFFING) {
@@ -187,65 +194,48 @@ const LpSearchView = defineComponent({
           ? receivingViews.value
           : stuffingViews.value;
     });
-    const composeViewElements = (attr: Attribute) => {
+    // Compose View
+    const composeViewElements = (attr: DisplayAttribute) => {
       const viewElement = {} as any;
-      viewElement.dataFieldName = attr.dataFieldName;
-      viewElement.mandatory = attr.mandatory;
-      viewElement.model = ref("");
-      viewElement.reg = new RegExp(composeReg(attr.format));
-      viewElement.display = attr.combo;
-      viewElement.scan = attr.scan == "1" ? 1 : 0;
-      scanOrTypeInList.forEach((t) => {
-        if (t == viewElement.dataFieldName) {
-          viewElement.scan = 1;
-        }
-      });
-      /* 3- Validate the input data of the search criteria whether in right format
-       * as per Scan Profile rule, i.e. data in charater, numeric or alphanumeric,
-       * max length matched or not, the field is mandatory or not. detail refers to the client scan profile rule.
-       */
-      viewElement.valid = (val: string) => {
-        return new Promise((resolve) => {
-          if (viewElement.mandatory == 1 && !val) {
-            resolve(`Please input ${viewElement.dataFieldName}`);
-          } else {
-            if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
-              resolve(
-                `Please input not more than ${attr.maxLength} charactors`
-              );
-            } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
-              resolve(
-                `Please input not more or less than ${attr.maxLength} charactors`
-              );
-            } else if (!viewElement.reg.test(val)) {
-              resolve("Please input correct format");
-            } else {
-              resolve(true);
-            }
+      if (
+        attr.level == DisplayAttributesLevel.CARTON_COMMON ||
+        attr.level == DisplayAttributesLevel.ORDER
+      ) {
+        viewElement.dataFieldName = attr.dataFieldName;
+        viewElement.level = attr.level;
+        viewElement.mandatory = attr.mandatory;
+        viewElement.model = ref("");
+        viewElement.reg = new RegExp(composeReg(attr.format));
+        viewElement.display = attr.combo;
+        viewElement.scan = attr.scan == "1" ? 1 : 0;
+        scanOrTypeInList.forEach((t) => {
+          if (t == viewElement.dataFieldName) {
+            viewElement.scan = 1;
           }
         });
-      };
-      return viewElement;
-    };
-    const composeReg = (format: string) => {
-      let reg = "";
-      for (let i = 0; i < format.length; i++) {
-        switch (format[i]) {
-          case "A":
-            reg += "[a-zA-Z]";
-            break;
-          case "9":
-            reg += "[0-9]";
-            break;
-          case "#":
-            reg += "[0-9]|[\\s]";
-            break;
-          case "X":
-            reg += "[.]";
-            break;
-        }
+        viewElement.valid = (val: string) => {
+          return new Promise((resolve) => {
+            if (viewElement.mandatory == 1 && !val) {
+              resolve(`Please input ${viewElement.dataFieldName}`);
+            } else {
+              if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
+                resolve(
+                  `Please input not more than ${attr.maxLength} charactors`
+                );
+              } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
+                resolve(
+                  `Please input not more or less than ${attr.maxLength} charactors`
+                );
+              } else if (!viewElement.reg.test(val)) {
+                resolve("Please input correct format");
+              } else {
+                resolve(true);
+              }
+            }
+          });
+        };
+        return viewElement;
       }
-      return reg;
     };
     const composeApiAndRouteParams = (
       apiParams: any,
@@ -257,13 +247,13 @@ const LpSearchView = defineComponent({
           routeParams[view.dataFieldName] = view.model;
         }
         switch (view.dataFieldName) {
-          case InterfaceMandatoryField.SO:
+          case LpSearchCondition.SO:
             apiParams.so = view.model;
             break;
-          case InterfaceMandatoryField.PO:
+          case LpSearchCondition.PO:
             apiParams.po = view.model;
             break;
-          case InterfaceMandatoryField.SKU:
+          case LpSearchCondition.SKU:
             apiParams.sku = view.model;
         }
       });
@@ -274,18 +264,19 @@ const LpSearchView = defineComponent({
           ? receivingViews.value
           : stuffingViews.value;
     };
-    // 6- Submit the search criteria and download the LP from LNS web.
     const onSubmit = () => {
       showLoading($q);
       const apiParams = {
-        profileName: profileName.value,
-        clientCode: clientCode.value,
         so: "",
         po: "",
         sku: "",
+        profileName: profileName.value,
+        clientCode: clientCode.value,
         scanType: scanType.value == ScanType.RECEIVING ? 0 : 1,
+        // Prevalidation
         validationType: 0,
       };
+
       const routeParams = {
         scanned: "0",
         total: "0",
@@ -384,8 +375,8 @@ const LpSearchView = defineComponent({
       onSubmit,
       back,
       home,
-      receivingType,
-      stuffingType,
+      receivingFlag,
+      stuffingFlag,
       pageViews,
       onClick,
       scan,

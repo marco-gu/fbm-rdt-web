@@ -26,10 +26,10 @@ export interface ProfileDeail {
   stuffingScanFlag: number;
   scanPackFlag: number;
   profileCode: string;
-  attributes: Attribute[];
+  attributes: DisplayAttribute[];
 }
 
-export interface Attribute {
+export interface DisplayAttribute {
   type: string;
   typeDescription: string;
   dataFieldName: string;
@@ -44,6 +44,7 @@ export interface Attribute {
   scan: string;
   irecType: string;
   uniqueId: string;
+  level: string
 }
 
 export interface LpSearch {
