@@ -12,6 +12,7 @@ import SettingView from "../views/SettingView.vue";
 import LanguageView from "../views/LanguageView.vue";
 import RingVoiceView from "../views/RingVoiceView.vue";
 import ScanDeviceView from "../views/ScanDeviceView.vue";
+import CartonDetailView from "../views/CartonDetailView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -52,6 +53,11 @@ const routes: Array<RouteRecordRaw> = [
     component: MixCartonView,
   },
   {
+    path: "/cartonDetail",
+    name: "cartonDetail",
+    component: CartonDetailView,
+  },
+  {
     path: "/setting",
     name: "setting",
     component: SettingView,
@@ -82,6 +88,9 @@ let fromPath = "/";
 router.beforeEach((to, from, next) => {
   if (to.path == "mixcarton") {
     next("/mixCarton");
+  }
+  if (to.path == "cartonDetail") {
+    next("/cartonDetail");
   }
   fromPath = from.path;
   if (from.path == "/" && to.path == "/") {

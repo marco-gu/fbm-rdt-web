@@ -77,3 +77,32 @@ export interface MixCartonRendering {
   cartonID: string;
   mixCartonProfile: MixCartonProfile[];
 }
+
+
+// Define Type for Profile
+export type LpSearchCondition = {
+  SO: string;
+  PO: string;
+  ContainerNumber: string;
+  SKU: string;
+}
+
+export type ProfileSoLevel = {
+  TotalCBM: string;
+  TotalWeight: string;
+}
+
+export type ProfileCartonLevel = {
+  Style: string;
+  HUB: string;
+  Quantity: string;
+}
+
+export type ProfileMixCartonLevel = {
+  UPC: string;
+  Style: string;
+  SKU: string;
+  Color: string;
+  Size: string;
+  Quantity: string
+}
