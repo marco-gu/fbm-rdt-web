@@ -33,18 +33,30 @@ const routes: Array<RouteRecordRaw> = [
     component: ResetPwdView,
   },
   {
-    path: "/profile",
+    path: "/profile/:id",
     name: "profile",
+    children: [
+      { path: "online", name: "profileOnline", component: ProfileView },
+      { path: "offline", name: "profileOffline", component: ProfileView },
+    ],
     component: ProfileView,
   },
   {
-    path: "/lpSearch",
+    path: "/lpSearch/:id",
     name: "lpSearch",
+    children: [
+      { path: "online", name: "lpSearchOnline", component: LpSearchView },
+      { path: "offline", name: "lpSearchOffline", component: LpSearchView },
+    ],
     component: LpSearchView,
   },
   {
-    path: "/scan",
+    path: "/scan/:id",
     name: "scan",
+    children: [
+      { path: "online", name: "scanOnline", component: ScanView },
+      { path: "offline", name: "scanOffline", component: ScanView },
+    ],
     component: ScanView,
   },
   {

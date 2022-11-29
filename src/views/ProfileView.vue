@@ -44,7 +44,7 @@
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { ProfileMaster } from "../models/profile";
 import { useStore } from "@/store";
 import {
@@ -62,6 +62,7 @@ const ProfileView = defineComponent({
   setup() {
     const $q = useQuasar();
     const router = useRouter();
+    const route = useRoute();
     const i18n = useI18n();
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
@@ -94,7 +95,8 @@ const ProfileView = defineComponent({
         })
         .then(() => {
           localStorage.setItem("profile", JSON.stringify(profileItem));
-          router.push("/lpSearch");
+          const page = route.params.id;
+          router.push("/lpSearch/" + page);
         });
     };
     const getProfileList = () => {

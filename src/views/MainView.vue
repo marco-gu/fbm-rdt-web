@@ -6,7 +6,7 @@
     <div @click="goOnline()">
       <q-img no-spinner :src="onlineLogo" width="80%" />
     </div>
-    <div>
+    <div @click="goOffline()">
       <q-img no-spinner :src="offlineLogo" width="80%" />
     </div>
     <div>
@@ -21,7 +21,7 @@ import continueJob from "../assets/images/continue.png";
 import { useRouter } from "vue-router";
 import logo from "../assets/images/Maersk_Logo_Neg.svg";
 export default {
-  name: " MainView",
+  name: "MainView",
   components: {},
   setup() {
     const router = useRouter();
@@ -30,7 +30,11 @@ export default {
     const continueLogo = continueJob;
     const logoIcon = logo;
     const goOnline = () => {
-      router.push("/profile");
+      router.push("/profile/online");
+    };
+
+    const goOffline = () => {
+      router.push("/profile/offline");
     };
 
     return {
@@ -39,6 +43,7 @@ export default {
       offlineLogo,
       continueLogo,
       goOnline,
+      goOffline,
       logoIcon,
     };
   },

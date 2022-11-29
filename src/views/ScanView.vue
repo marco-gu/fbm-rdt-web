@@ -145,13 +145,7 @@ const ScanView = defineComponent({
         taskID: taskID.value,
         type: type.value,
         profileCode: profileCode.value,
-        // clientCode: clientCode.value,
-        // clientName: clientName.value,
-        // soNumber: soNumber.value,
-        // poNumber: poNumber.value,
-        // skuNumber: skuNumber.value,
-        // containerNumber: containerNumber.value,
-        // style: style.value,
+        pageType: route.params.id,
       };
       bridge.call("scan", args);
     };

@@ -136,7 +136,7 @@ import {
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -166,6 +166,7 @@ const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber"];
 const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
+    const route = useRoute();
     const $q = useQuasar();
     const i18n = useI18n();
     const profileName = ref("");
@@ -334,6 +335,10 @@ const LpSearchView = defineComponent({
         type: "",
         clientName: "",
       };
+      // TODO call native offline or online
+      const page = route.params.id;
+      alert(page);
+
       composeApiParam(apiParams, pageViews.value);
       composeRouteParam(routeParams, pageViews.value);
       bridge.call("fetchLp", apiParams, (res: string) => {
@@ -386,7 +391,7 @@ const LpSearchView = defineComponent({
       { immediate: true }
     );
     const back = () => {
-      router.push("/profile");
+      router.push("/profile/" + route.params.id);
     };
     const home = () => {
       router.push("/home");
