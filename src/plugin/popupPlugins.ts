@@ -13,7 +13,7 @@ export function popupSuccessMsg($q: QVueGlobals, message: string) {
   $q.notify({
     position: "center",
     type: "positive",
-    timeout: 1000,
+    timeout: 500,
     message: message,
   });
 }

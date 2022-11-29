@@ -120,7 +120,12 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { DisplayAttribute, ProfileDeail } from "@/models/profile";
+import {
+  DisplayAttribute,
+  ProfileCartonCommonLevel,
+  ProfileDeail,
+  ProfileOrderLevel,
+} from "@/models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import {
@@ -130,27 +135,34 @@ import {
 } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { composeReg } from "../utils/composeReg";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
 }
-// Define LP Search Condition
-const enum LpSearchCondition {
-  SO = "SO",
-  PO = "PO",
-  SKU = "SKU",
+// Define Validation Type
+const enum ValidationType {
+  PREVALIDATION = "PreValidation",
 }
 // Define Display Attribute
 const enum DisplayAttributesLevel {
   ORDER = "order",
   CARTON_COMMON = "cartoncommon",
 }
+type ViewElement = {
+  dataFieldName: string;
+  level: string;
+  mandatory: number;
+  model: Ref<unknown>;
+  reg: RegExp;
+  display: number;
+  scan: number;
+  valid: (val: string) => Promise<unknown>;
+};
 // Define fields for both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
-const scanOrTypeInList = ["PO", "SO", "SKU", "Container"];
+const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber"];
 const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
@@ -161,9 +173,9 @@ const LpSearchView = defineComponent({
     const scanType = ref("");
     const clientName = ref("");
     // Define Page Elements
-    const pageViews = ref([]);
-    const receivingViews = ref([]);
-    const stuffingViews = ref([]);
+    const pageViews = ref([{} as ViewElement]);
+    const receivingViews = ref([{} as ViewElement]);
+    const stuffingViews = ref([{} as ViewElement]);
     // Define Receiving or Stuffing Radio Status
     const receivingFlag = ref(false);
     const stuffingFlag = ref(false);
@@ -184,9 +196,15 @@ const LpSearchView = defineComponent({
         receivingFlag.value == true ? ScanType.RECEIVING : ScanType.STUFFING;
       initData.attributes.forEach((attr: DisplayAttribute) => {
         if (attr.type == ScanType.RECEIVING) {
-          receivingViews.value.push(composeViewElements(attr) as never);
+          const element = composeViewElements(attr);
+          if (element) {
+            receivingViews.value.push(element);
+          }
         } else if (attr.type == ScanType.STUFFING) {
-          stuffingViews.value.push(composeViewElements(attr) as never);
+          const element = composeViewElements(attr);
+          if (element) {
+            stuffingViews.value.push(element);
+          }
         }
       });
       pageViews.value =
@@ -195,8 +213,8 @@ const LpSearchView = defineComponent({
           : stuffingViews.value;
     });
     // Compose View
-    const composeViewElements = (attr: DisplayAttribute) => {
-      const viewElement = {} as any;
+    const composeViewElements = (attr: DisplayAttribute): ViewElement => {
+      const viewElement = {} as ViewElement;
       if (
         attr.level == DisplayAttributesLevel.CARTON_COMMON ||
         attr.level == DisplayAttributesLevel.ORDER
@@ -234,27 +252,60 @@ const LpSearchView = defineComponent({
             }
           });
         };
-        return viewElement;
       }
+      return viewElement;
     };
-    const composeApiAndRouteParams = (
-      apiParams: any,
-      routeParams: any,
-      source: any
-    ) => {
-      source.forEach((view: any) => {
+    const composeReg = (format: string) => {
+      let reg = "";
+      for (let i = 0; i < format.length; i++) {
+        switch (format[i]) {
+          case "A":
+            reg += "[a-zA-Z]";
+            break;
+          case "9":
+            reg += "[0-9]";
+            break;
+          case "#":
+            reg += "[0-9]|[\\s]";
+            break;
+          case "X":
+            reg += "[.]";
+            break;
+          default:
+            reg += format[i];
+        }
+      }
+      return reg;
+    };
+
+    const composeRouteParam = (routeParams: any, source: any) => {
+      source.forEach((view: ViewElement) => {
         if (view.display == 1) {
           routeParams[view.dataFieldName] = view.model;
         }
-        switch (view.dataFieldName) {
-          case LpSearchCondition.SO:
-            apiParams.so = view.model;
-            break;
-          case LpSearchCondition.PO:
-            apiParams.po = view.model;
-            break;
-          case LpSearchCondition.SKU:
-            apiParams.sku = view.model;
+      });
+    };
+    const composeApiParam = (apiParams: any, source: any) => {
+      const profileOrderLevel = new ProfileOrderLevel();
+      const profileCartonCommonLevel = new ProfileCartonCommonLevel();
+      let j: keyof ProfileOrderLevel;
+      let k: keyof ProfileCartonCommonLevel;
+      for (j in profileOrderLevel) {
+        apiParams[j] = "";
+      }
+      for (k in profileCartonCommonLevel) {
+        apiParams[k] = "";
+      }
+      source.forEach((view: ViewElement) => {
+        for (j in profileOrderLevel) {
+          if (j == view.dataFieldName) {
+            apiParams[j] = view.model;
+          }
+        }
+        for (k in profileCartonCommonLevel) {
+          if (k == view.dataFieldName) {
+            apiParams[k] = view.model;
+          }
         }
       });
     };
@@ -267,14 +318,11 @@ const LpSearchView = defineComponent({
     const onSubmit = () => {
       showLoading($q);
       const apiParams = {
-        so: "",
-        po: "",
-        sku: "",
         profileName: profileName.value,
         clientCode: clientCode.value,
-        scanType: scanType.value == ScanType.RECEIVING ? 0 : 1,
-        // Prevalidation
-        validationType: 0,
+        clientName: clientName.value,
+        scanType: scanType.value,
+        validationType: ValidationType.PREVALIDATION,
       };
 
       const routeParams = {
@@ -286,7 +334,8 @@ const LpSearchView = defineComponent({
         type: "",
         clientName: "",
       };
-      composeApiAndRouteParams(apiParams, routeParams, pageViews.value);
+      composeApiParam(apiParams, pageViews.value);
+      composeRouteParam(routeParams, pageViews.value);
       bridge.call("fetchLp", apiParams, (res: string) => {
         closeLoading($q);
         i18n.category.value = "MessageCode";

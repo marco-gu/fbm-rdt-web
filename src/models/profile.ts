@@ -1,4 +1,3 @@
-
 export interface ProfileMaster {
   profileCode: string;
   effectiveDate: string;
@@ -44,7 +43,7 @@ export interface DisplayAttribute {
   scan: string;
   irecType: string;
   uniqueId: string;
-  level: string
+  level: string;
 }
 
 export interface LpSearch {
@@ -52,10 +51,10 @@ export interface LpSearch {
   type: string;
   mode: string;
   so: string;
-  po: string
+  po: string;
 }
 
-export interface MixCartonProfile {
+export interface ProfileDetail {
   cartonID: string;
   uniqueId: string;
   masterUniqueId: string;
@@ -74,36 +73,58 @@ export interface MixCartonProfile {
   irecType: string;
 }
 
-export interface MixCartonRendering {
+export interface CartonRendering {
   cartonID: string;
-  mixCartonProfile: MixCartonProfile[];
+  profileDetailList: ProfileDetail[];
 }
 
-
-// Define Type for Profile
-export type LpSearchCondition = {
-  SO: string;
-  PO: string;
-  ContainerNumber: string;
-  SKU: string;
-}
-
-export type ProfileSoLevel = {
+export class ProfileOrderLevel {
   TotalCBM: string;
   TotalWeight: string;
+  constructor() {
+    this.TotalCBM = "";
+    this.TotalWeight = "";
+  }
 }
 
-export type ProfileCartonLevel = {
+export class ProfileCartonCommonLevel {
+  SO: string;
+  PO: string;
+  SKU: string;
+  ContainerNumber: string;
+  constructor() {
+    this.SO = "";
+    this.PO = "";
+    this.SKU = "";
+    this.ContainerNumber = "";
+  }
+}
+
+export class ProfileCartonIndividualLevel {
   Style: string;
   HUB: string;
   Quantity: string;
+  constructor() {
+    this.Style = "";
+    this.HUB = "";
+    this.Quantity = "";
+  }
 }
 
-export type ProfileMixCartonLevel = {
+export class ProfileMixCartonLevel {
   UPC: string;
   Style: string;
   SKU: string;
   Color: string;
   Size: string;
-  Quantity: string
+  Quantity: string;
+
+  constructor() {
+    this.UPC = "";
+    this.Style = "";
+    this.SKU = "";
+    this.Color = "";
+    this.Size = "";
+    this.Quantity = "";
+  }
 }

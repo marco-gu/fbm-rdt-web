@@ -74,15 +74,15 @@ const ScanView = defineComponent({
     const router = useRouter();
     const route = useRoute();
     const profileCode = ref("");
-    const clientCode = ref("");
-    const clientName = ref("");
+    // const clientCode = ref("");
+    // const clientName = ref("");
     const taskID = ref("");
     const type = ref("");
-    const soNumber = ref("");
-    const poNumber = ref("");
-    const skuNumber = ref("");
-    const containerNumber = ref("");
-    const style = ref("");
+    // const soNumber = ref("");
+    // const poNumber = ref("");
+    // const skuNumber = ref("");
+    // const containerNumber = ref("");
+    // const style = ref("");
     const scanned = ref(0);
     const total = ref(0);
     const views = ref([]);
@@ -96,11 +96,14 @@ const ScanView = defineComponent({
           total.value = data.value[key];
         } else if (key == "taskID") {
           taskID.value = data.value[key];
-        } else if (key == "clientCode") {
-          clientCode.value = data.value[key];
-        } else if (key == "clientName") {
-          clientName.value = data.value[key];
-        } else if (key == "profileCode") {
+        }
+        // else if (key == "clientCode") {
+        //   clientCode.value = data.value[key];
+        // }
+        //  else if (key == "clientName") {
+        //   clientName.value = data.value[key];
+        // }
+        else if (key == "profileCode") {
           profileCode.value = data.value[key];
         } else {
           if (key == "type") {
@@ -111,17 +114,17 @@ const ScanView = defineComponent({
             };
             views.value.push(element as never);
           } else {
-            if (key == "SO") {
-              soNumber.value = data.value[key];
-            } else if (key == "PO") {
-              poNumber.value = data.value[key];
-            } else if (key == "SKU") {
-              skuNumber.value = data.value[key];
-            } else if (key == "ContainerNumber") {
-              containerNumber.value = data.value[key];
-            } else if (key == "Style") {
-              style.value = data.value[key];
-            }
+            // if (key == "SO") {
+            //   soNumber.value = data.value[key];
+            // } else if (key == "PO") {
+            //   poNumber.value = data.value[key];
+            // } else if (key == "SKU") {
+            //   skuNumber.value = data.value[key];
+            // } else if (key == "ContainerNumber") {
+            //   containerNumber.value = data.value[key];
+            // } else if (key == "Style") {
+            //   style.value = data.value[key];
+            // }
             const element = {
               key: key.charAt(0).toUpperCase() + key.slice(1),
               value: data.value[key],
@@ -140,15 +143,15 @@ const ScanView = defineComponent({
     const onSubmit = () => {
       const args = {
         taskID: taskID.value,
-        clientCode: clientCode.value,
-        clientName: clientName.value,
         type: type.value,
-        soNumber: soNumber.value,
-        poNumber: poNumber.value,
-        skuNumber: skuNumber.value,
-        containerNumber: containerNumber.value,
-        style: style.value,
         profileCode: profileCode.value,
+        // clientCode: clientCode.value,
+        // clientName: clientName.value,
+        // soNumber: soNumber.value,
+        // poNumber: poNumber.value,
+        // skuNumber: skuNumber.value,
+        // containerNumber: containerNumber.value,
+        // style: style.value,
       };
       bridge.call("scan", args);
     };

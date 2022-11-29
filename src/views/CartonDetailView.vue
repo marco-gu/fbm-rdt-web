@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="header">
       <q-item clickable style="width: 100%">
-        <q-item-section avatar>
+        <q-item-section avatar @click="cancel()">
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
@@ -14,7 +14,7 @@
     <div class="carton-info">
       <span>{{ cartonID }}</span>
     </div>
-    <!-- <q-form style="background: #fff" @submit="onSubmit">
+    <q-form style="background: #fff" @submit="onSubmit">
       <div v-for="(item, i) in pageViews" :key="i">
         <div
           style="
@@ -41,23 +41,164 @@
         </div>
         <q-separator color="grey-5" />
       </div>
-      <div class="bottom" :ref="two">
-        <q-btn no-caps style="width: 48%" flat push type="submit">Add</q-btn>
+      <div class="bottom">
+        <q-btn no-caps style="width: 48%" flat push type="submit">Save</q-btn>
         <q-separator vertical inset color="white" />
-        <q-btn no-caps style="width: 52%" flat push @click="complete"
-          >Complete</q-btn
+        <q-btn no-caps style="width: 52%" flat push @click="cancel"
+          >Cancel</q-btn
         >
       </div>
-    </q-form> -->
+    </q-form>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import {
+  CartonRendering,
+  ProfileCartonIndividualLevel,
+} from "@/models/profile";
+import { popupErrorMsg } from "@/plugin/popupPlugins";
+import bridge from "dsbridge";
+import { useQuasar } from "quasar";
+import { defineComponent, nextTick, ref } from "vue";
+interface PageView {
+  name: string;
+  value: unknown;
+  mandatory: number;
+  format: RegExp;
+  rule: unknown;
+  canScan: number;
+  ref: unknown;
+}
 const CartonDetailView = defineComponent({
   setup() {
-    const cartonID = ref("11");
+    const cartonID = ref();
+    const $q = useQuasar();
+    const pageViews = ref([] as PageView[]);
+    let hasRendered = false;
+    let result = {} as CartonRendering;
+    const inputRef = ref(null);
+    if (hasRendered == false) {
+      bridge.register("getCartonDetail", (res: string) => {
+        result = JSON.parse(res);
+        if (!hasRendered) {
+          hasRendered = true;
+          result.profileDetailList.forEach((t) => {
+            const element = composeViews(t);
+            if (element) {
+              pageViews.value.push(composeViews(t));
+            }
+          });
+        }
+        cartonID.value = result.cartonID;
+      });
+    }
+    const composeViews = (attr: any) => {
+      const view = {} as PageView;
+      view.name = attr.dataFieldName;
+      view.mandatory = attr.mandatory;
+      view.value = ref("");
+      view.format = new RegExp(composeFormat(attr.format));
+      view.rule = (val: string) => {
+        return new Promise((resolve) => {
+          if (view.mandatory == 1 && !val) {
+            resolve(`Please input ${view.name}`);
+          } else {
+            if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
+              resolve(
+                `Please input not more than ${Math.abs(
+                  attr.maxLength
+                )} charactors`
+              );
+            } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
+              resolve(
+                `Please input not more or less than ${attr.maxLength} charactors`
+              );
+            } else if (!view.format.test(val)) {
+              resolve("Please input correct format");
+            } else {
+              resolve(true);
+            }
+          }
+        });
+      };
+      return view;
+    };
+    const composeFormat = (format: string) => {
+      let reg = "";
+      for (let i = 0; i < format.length; i++) {
+        switch (format[i]) {
+          case "A":
+            reg += "[a-zA-Z]";
+            break;
+          case "9":
+            reg += "[0-9]";
+            break;
+          case "#":
+            reg += "[0-9]|[\\s]";
+            break;
+          case "X":
+            reg += "[.]";
+            break;
+        }
+      }
+      return reg;
+    };
+    const composeApiParam = (apiParams: any, source: any) => {
+      const profileCartonIndividualLevel = new ProfileCartonIndividualLevel();
+      let j: keyof ProfileCartonIndividualLevel;
+      for (j in profileCartonIndividualLevel) {
+        apiParams[j] = "";
+      }
+      source.forEach((view: any) => {
+        for (j in profileCartonIndividualLevel) {
+          if (j == view.name) {
+            apiParams[j] = view.value;
+          }
+        }
+      });
+    };
+    const reset = (param: any) => {
+      param.forEach((t: any) => {
+        if (t) {
+          t.resetValidation();
+        }
+      });
+      pageViews.value.forEach((t) => {
+        t.value = "";
+      });
+    };
+    const cancel = () => {
+      nextTick(() => {
+        reset(inputRef.value);
+      });
+      pageViews.value.forEach((t) => {
+        const funtion = t.rule as any;
+        funtion(t.value).then((resolve: any) => {
+          if (resolve == true) {
+            bridge.call("completeCartonDetail");
+          } else {
+            popupErrorMsg($q, resolve);
+          }
+        });
+      });
+      // bridge.call("completeCartonDetail");
+    };
+    const onSubmit = () => {
+      const apiParams = {
+        cartonID: cartonID.value,
+      };
+      composeApiParam(apiParams, pageViews.value);
+      nextTick(() => {
+        reset(inputRef.value);
+      });
+      bridge.call("addCartonDetail", apiParams);
+    };
     return {
       cartonID,
+      pageViews,
+      cancel,
+      onSubmit,
+      inputRef,
     };
   },
 });

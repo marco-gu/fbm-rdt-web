@@ -43,7 +43,7 @@
         </div>
         <q-separator color="grey-5" />
       </div>
-      <div class="bottom" :ref="two">
+      <div class="bottom">
         <q-btn no-caps style="width: 48%" flat push type="submit">Add</q-btn>
         <q-separator vertical inset color="white" />
         <q-btn no-caps style="width: 52%" flat push @click="complete"
@@ -54,8 +54,10 @@
   </div>
 </template>
 <script lang="ts">
-import { MixCartonRendering } from "@/models/profile";
+import { CartonRendering } from "@/models/profile";
+import { popupSuccessMsg } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
+import { useQuasar } from "quasar";
 import { defineComponent, nextTick, ref } from "vue";
 interface PageView {
   name: string;
@@ -71,18 +73,17 @@ const MixCartonView = defineComponent({
     const pageViews = ref([] as PageView[]);
     const cartonID = ref("");
     const itemCount = ref(0);
+    const $q = useQuasar();
     let hasRendered = false;
-    let isFirstAdd = true;
-    let completeMixCarton = false;
-    let result = {} as MixCartonRendering;
+    const completeMixCarton = ref(false);
+    let result = {} as CartonRendering;
     const inputRef = ref(null);
     if (hasRendered == false) {
       bridge.register("getMixCartonProfile", (res: string) => {
         result = JSON.parse(res);
         if (!hasRendered) {
           hasRendered = true;
-          isFirstAdd = true;
-          result.mixCartonProfile.forEach((t) => {
+          result.profileDetailList.forEach((t) => {
             pageViews.value.push(composeViews(t));
           });
         }
@@ -90,21 +91,6 @@ const MixCartonView = defineComponent({
         itemCount.value = 0;
       });
     }
-    // onMounted(() => {
-    //   if (hasRendered == false) {
-    //     bridge.register("getMixCartonProfile", (res: string) => {
-    //       result = JSON.parse(res);
-    //       if (!hasRendered) {
-    //         hasRendered = true;
-    //         result.mixCartonProfile.forEach((t) => {
-    //           pageViews.value.push(composeViews(t));
-    //         });
-    //       }
-    //       cartonID.value = result.cartonID;
-    //       itemCount.value = 0;
-    //     });
-    //   }
-    // });
     const composeViews = (attr: any) => {
       const view = {} as PageView;
       view.name = attr.dataFieldName;
@@ -162,7 +148,7 @@ const MixCartonView = defineComponent({
         const funtion = t.rule as any;
         funtion(t.value).then((resolve: any) => {
           if (resolve == true) {
-            completeMixCarton = true;
+            completeMixCarton.value = true;
             onSubmit();
           } else {
             reset(inputRef.value);
@@ -213,36 +199,24 @@ const MixCartonView = defineComponent({
             break;
         }
       });
-      if (isFirstAdd) {
-        bridge.call("addMixCartonForFirst", args, (res: string) => {
-          nextTick(() => {
-            reset(inputRef.value);
-          });
-          if (completeMixCarton) {
-            alert("Add Complete");
-            bridge.call("completeMixCarton");
-          } else {
-            alert("add success");
-            isFirstAdd = false;
-          }
+      bridge.call("addMixCarton", args, (res: string) => {
+        nextTick(() => {
+          reset(inputRef.value);
         });
-      } else {
-        bridge.call("addMixCarton", args, (res: string) => {
-          nextTick(() => {
-            reset(inputRef.value);
-          });
-          if (completeMixCarton) {
-            alert("Add Complete");
-            bridge.call("completeMixCarton");
-          } else {
-            alert("add success");
-          }
-        });
-      }
-      itemCount.value++;
+        itemCount.value++;
+        if (completeMixCarton.value) {
+          popupSuccessMsg($q, "Add Complete");
+          completeMixCarton.value = false;
+          bridge.call("completeMixCarton");
+        } else {
+          popupSuccessMsg($q, "Add success");
+        }
+      });
     };
+
     const back = () => {
-      bridge.call("backToScan", null);
+      reset(inputRef.value);
+      bridge.call("completeMixCarton", null);
     };
     return {
       onSubmit,
