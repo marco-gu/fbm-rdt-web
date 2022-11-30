@@ -59,6 +59,7 @@ import { popupSuccessMsg } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, ref } from "vue";
+import { composeReg } from "../utils/regUtil";
 interface PageView {
   name: string;
   value: unknown;
@@ -97,7 +98,7 @@ const MixCartonView = defineComponent({
       view.mandatory = attr.mandatory;
       view.value = ref(null);
       view.ref = ref(null);
-      view.format = new RegExp(composeFormat(attr.format));
+      view.format = new RegExp(composeReg(attr.format));
       view.rule = (val: string) => {
         return new Promise((resolve) => {
           if (view.mandatory == 1 && !val) {
@@ -122,26 +123,6 @@ const MixCartonView = defineComponent({
         });
       };
       return view;
-    };
-    const composeFormat = (format: string) => {
-      let reg = "";
-      for (let i = 0; i < format.length; i++) {
-        switch (format[i]) {
-          case "A":
-            reg += "[a-zA-Z]";
-            break;
-          case "9":
-            reg += "[0-9]";
-            break;
-          case "#":
-            reg += "[0-9]|[\\s]";
-            break;
-          case "X":
-            reg += "[.]";
-            break;
-        }
-      }
-      return reg;
     };
     const complete = () => {
       pageViews.value.forEach((t) => {

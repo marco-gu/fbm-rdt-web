@@ -137,6 +137,7 @@ import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import { composeReg } from "../utils/regUtil";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -255,29 +256,6 @@ const LpSearchView = defineComponent({
       }
       return viewElement;
     };
-    const composeReg = (format: string) => {
-      let reg = "";
-      for (let i = 0; i < format.length; i++) {
-        switch (format[i]) {
-          case "A":
-            reg += "[a-zA-Z]";
-            break;
-          case "9":
-            reg += "[0-9]";
-            break;
-          case "#":
-            reg += "[0-9]|[\\s]";
-            break;
-          case "X":
-            reg += "[.]";
-            break;
-          default:
-            reg += format[i];
-        }
-      }
-      return reg;
-    };
-
     const composeRouteParam = (routeParams: any, source: any) => {
       source.forEach((view: ViewElement) => {
         if (view.display == 1) {
