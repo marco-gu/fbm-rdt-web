@@ -133,7 +133,11 @@ const MixCartonView = defineComponent({
             onSubmit();
           } else {
             reset(inputRef.value);
-            bridge.call("completeMixCarton");
+            bridge.call("completeMixCarton", null, () => {
+              nextTick(() => {
+                reset(inputRef.value);
+              });
+            });
           }
         });
       });

@@ -162,17 +162,17 @@ const CartonDetailView = defineComponent({
           }
         });
       });
-      // bridge.call("completeCartonDetail");
     };
     const onSubmit = () => {
       const apiParams = {
         cartonID: cartonID.value,
       };
       composeApiParam(apiParams, pageViews.value);
-      nextTick(() => {
-        reset(inputRef.value);
+      bridge.call("addCartonDetail", apiParams, () => {
+        nextTick(() => {
+          reset(inputRef.value);
+        });
       });
-      bridge.call("addCartonDetail", apiParams);
     };
     return {
       cartonID,

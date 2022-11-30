@@ -307,10 +307,8 @@ const LpSearchView = defineComponent({
         scanned: "0",
         total: "0",
         taskID: "",
-        clientCode: "",
         profileCode: profileName.value,
         type: "",
-        clientName: "",
       };
       composeApiParam(apiParams, pageViews.value);
       composeRouteParam(routeParams, pageViews.value);
@@ -322,9 +320,7 @@ const LpSearchView = defineComponent({
           routeParams.scanned = androidResponse.data.scanned;
           routeParams.total = androidResponse.data.total;
           routeParams.taskID = androidResponse.data.taskID;
-          routeParams.clientCode = clientCode.value;
           routeParams.type = scanType.value;
-          routeParams.clientName = clientName.value;
           const message = i18n.$t("E93-05-0005");
           popupSuccessMsg($q, message);
           setTimeout(() => {
