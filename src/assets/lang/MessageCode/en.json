@@ -18,5 +18,6 @@
     "E93-02-0007": "Please input new password, again!",
     "E93-05-0006": "No Record is found!",
     "E93-05-0005": "LP has been successfully downloaded!",
-    "E92-99-0001": "Network is not available!"
+    "E92-99-0001": "Network is not available!",
+    "E92-99-0002": "Please contact Administrator!"
 }
