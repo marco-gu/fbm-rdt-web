@@ -14,6 +14,8 @@ import RingVoiceView from "../views/RingVoiceView.vue";
 import ScanDeviceView from "../views/ScanDeviceView.vue";
 import CartonDetailView from "../views/CartonDetailView.vue";
 import ProfileManagementView from "../views/ProfileManagementView.vue";
+import TaskListView from "../views/TaskListView.vue";
+import LPListView from "../views/LPListView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -94,6 +96,16 @@ const routes: Array<RouteRecordRaw> = [
     path: "/profileManagement",
     name: "profileManagement",
     component: ProfileManagementView,
+  },
+  {
+    path: "/taskList",
+    name: "taskList",
+    component: TaskListView,
+  },
+  {
+    path: "/lpList",
+    name: "lpList",
+    component: LPListView,
   },
 ];
 
