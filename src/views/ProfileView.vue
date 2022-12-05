@@ -28,7 +28,8 @@
           <q-item clickable @click="onClickProfile(item)">
             <q-item-section style="text-align: left">
               <q-item-label>{{ item.profileCode }}</q-item-label>
-              <q-item-label caption>{{ item.effectiveDate }}</q-item-label>
+              <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
+              <!-- <q-item-label caption>{{ item.effectiveDate }}</q-item-label> -->
             </q-item-section>
             <q-item-section side>
               <q-icon name="chevron_right" color="black" />
@@ -52,7 +53,7 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import { useI18n } from "@/plugin/i18nPlugins";
-import { popupErrorMsg } from "@/plugin/popupPlugins";
+import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 const ProfileView = defineComponent({
   methods: {
     home() {
@@ -77,6 +78,7 @@ const ProfileView = defineComponent({
         >;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           getProfileList();
+          popupSuccessMsg($q, "Synchronize completed!");
           done();
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           i18n.category.value = "MessageCode";
@@ -86,7 +88,11 @@ const ProfileView = defineComponent({
         }
       });
     };
-
+    const sortProfileList = (profileListDisplay: any[]) => {
+      profileListDisplay.sort((a: any, b: any) => {
+        return (a.profileCode + "").localeCompare(b.profileCode + "");
+      });
+    };
     const onClickProfile = (profileItem: any) => {
       store
         .dispatch("profileModule/saveProfile", {
@@ -108,10 +114,13 @@ const ProfileView = defineComponent({
           }).onOk(() => {
             refresh(() => void 0);
           });
+        } else {
+          sortProfileList(profileListDisplay.value);
         }
       });
     };
     onMounted(() => {
+      // Initialize
       getProfileList();
     });
     watch(search, () => {

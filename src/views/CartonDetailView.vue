@@ -34,6 +34,7 @@
             input-class="text-right"
             lazy-rules
             :rules="[item.rule]"
+            :maxlength="item.length"
             borderless
             style="padding: 0px 16px"
           >
@@ -69,6 +70,7 @@ interface PageView {
   rule: unknown;
   canScan: number;
   ref: unknown;
+  length: number;
 }
 const CartonDetailView = defineComponent({
   setup() {
@@ -78,6 +80,9 @@ const CartonDetailView = defineComponent({
     let hasRendered = false;
     let result = {} as CartonRendering;
     const inputRef = ref(null);
+    bridge.register("closeCartonDetail", () => {
+      cancel();
+    });
     if (hasRendered == false) {
       bridge.register("getCartonDetail", (res: string) => {
         result = JSON.parse(res);
@@ -99,6 +104,7 @@ const CartonDetailView = defineComponent({
       view.mandatory = attr.mandatory;
       view.value = ref("");
       view.format = new RegExp(composeReg(attr.format));
+      view.length = Math.abs(attr.maxLength);
       view.rule = (val: string) => {
         return new Promise((resolve) => {
           if (view.mandatory == 1 && !val) {

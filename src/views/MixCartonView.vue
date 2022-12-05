@@ -36,6 +36,7 @@
             input-class="text-right"
             lazy-rules
             :rules="[item.rule]"
+            :maxlength="item.length"
             borderless
             style="padding: 0px 16px"
           >
@@ -68,6 +69,7 @@ interface PageView {
   rule: unknown;
   canScan: number;
   ref: unknown;
+  length: number;
 }
 const MixCartonView = defineComponent({
   setup() {
@@ -79,6 +81,9 @@ const MixCartonView = defineComponent({
     const completeMixCarton = ref(false);
     let result = {} as CartonRendering;
     const inputRef = ref(null);
+    bridge.register("closeMixCarton", () => {
+      back();
+    });
     if (hasRendered == false) {
       bridge.register("getMixCartonProfile", (res: string) => {
         result = JSON.parse(res);
@@ -99,6 +104,7 @@ const MixCartonView = defineComponent({
       view.value = ref(null);
       view.ref = ref(null);
       view.format = new RegExp(composeReg(attr.format));
+      view.length = Math.abs(attr.maxLength);
       view.rule = (val: string) => {
         return new Promise((resolve) => {
           if (view.mandatory == 1 && !val) {
@@ -132,7 +138,6 @@ const MixCartonView = defineComponent({
             completeMixCarton.value = true;
             onSubmit();
           } else {
-            reset(inputRef.value);
             bridge.call("completeMixCarton", null, () => {
               nextTick(() => {
                 reset(inputRef.value);
@@ -184,15 +189,19 @@ const MixCartonView = defineComponent({
             break;
         }
       });
-      bridge.call("addMixCarton", args, (res: string) => {
+      bridge.call("addMixCarton", args, () => {
         nextTick(() => {
           reset(inputRef.value);
         });
         itemCount.value++;
         if (completeMixCarton.value) {
-          popupSuccessMsg($q, "Add Complete");
+          // popupSuccessMsg($q, "Add Complete");
           completeMixCarton.value = false;
-          bridge.call("completeMixCarton");
+          bridge.call("completeMixCarton", null, () => {
+            nextTick(() => {
+              reset(inputRef.value);
+            });
+          });
         } else {
           popupSuccessMsg($q, "Add success");
         }

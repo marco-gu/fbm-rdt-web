@@ -32,40 +32,20 @@
           </div>
         </template>
         <div style="display: flex; color: black; align-items: center">
-          <div v-if="receivingFlag">
-            <q-radio
-              v-model="scanType"
-              val="Receiving"
-              label="Receiving"
-              @click="onClick"
-            />
-          </div>
-          <div v-if="!receivingFlag">
-            <q-radio
-              disable
-              v-model="scanType"
-              val="Receiving"
-              label="Receiving"
-              @click="onClick"
-            />
-          </div>
-          <div v-if="stuffingFlag">
-            <q-radio
-              v-model="scanType"
-              val="Stuffing"
-              label="Stuffing"
-              @click="onClick"
-            />
-          </div>
-          <div v-if="!stuffingFlag">
-            <q-radio
-              disable
-              v-model="scanType"
-              val="Stuffing"
-              label="Stuffing"
-              @click="onClick"
-            />
-          </div>
+          <q-radio
+            :disable="!receivingFlag"
+            v-model="scanType"
+            val="Receiving"
+            label="Receiving"
+            @click="onClick"
+          />
+          <q-radio
+            :disable="!stuffingFlag"
+            v-model="scanType"
+            val="Stuffing"
+            label="Stuffing"
+            @click="onClick"
+          />
         </div>
       </q-field>
       <q-separator color="grey-5" />
@@ -82,8 +62,11 @@
               {{ item.dataFieldName }}
             </span>
             <q-input
+              ref="inputRef"
               v-model="item.model"
+              @paste="validPaste($event, i)"
               clearable
+              :maxlength="item.length"
               input-class="text-right"
               lazy-rules
               :rules="[item.valid]"
@@ -134,8 +117,8 @@ import {
   popupSuccessMsg,
 } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
-import { useQuasar } from "quasar";
-import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { event, useQuasar } from "quasar";
+import { defineComponent, nextTick, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { composeReg } from "../utils/regUtil";
 // Define Scan Type
@@ -160,6 +143,7 @@ type ViewElement = {
   reg: RegExp;
   display: number;
   scan: number;
+  length: number;
   valid: (val: string) => Promise<unknown>;
 };
 // Define fields for both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
@@ -168,6 +152,7 @@ const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
     const $q = useQuasar();
+    const inputRef = ref(null);
     const i18n = useI18n();
     const profileName = ref("");
     const clientCode = ref("");
@@ -214,12 +199,12 @@ const LpSearchView = defineComponent({
           : stuffingViews.value;
     });
     // Compose View
-    const composeViewElements = (attr: DisplayAttribute): ViewElement => {
-      const viewElement = {} as ViewElement;
+    const composeViewElements = (attr: DisplayAttribute) => {
       if (
         attr.level == DisplayAttributesLevel.CARTON_COMMON ||
         attr.level == DisplayAttributesLevel.ORDER
       ) {
+        const viewElement = {} as ViewElement;
         viewElement.dataFieldName = attr.dataFieldName;
         viewElement.level = attr.level;
         viewElement.mandatory = attr.mandatory;
@@ -227,6 +212,7 @@ const LpSearchView = defineComponent({
         viewElement.reg = new RegExp(composeReg(attr.format));
         viewElement.display = attr.combo;
         viewElement.scan = attr.scan == "1" ? 1 : 0;
+        viewElement.length = Math.abs(attr.maxLength);
         scanOrTypeInList.forEach((t) => {
           if (t == viewElement.dataFieldName) {
             viewElement.scan = 1;
@@ -239,7 +225,9 @@ const LpSearchView = defineComponent({
             } else {
               if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
                 resolve(
-                  `Please input not more than ${attr.maxLength} charactors`
+                  `Please input not more than ${Math.abs(
+                    attr.maxLength
+                  )} charactors`
                 );
               } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
                 resolve(
@@ -253,8 +241,8 @@ const LpSearchView = defineComponent({
             }
           });
         };
+        return viewElement;
       }
-      return viewElement;
     };
     const composeRouteParam = (routeParams: any, source: any) => {
       source.forEach((view: ViewElement) => {
@@ -287,7 +275,19 @@ const LpSearchView = defineComponent({
         }
       });
     };
+    const reset = (param: any) => {
+      param.forEach((t: any) => {
+        if (t.modelValue == "") {
+          t.resetValidation();
+        } else {
+          t.validate(t.modelValue);
+        }
+      });
+    };
     const onClick = () => {
+      nextTick(() => {
+        reset(inputRef.value);
+      });
       pageViews.value =
         scanType.value == ScanType.RECEIVING
           ? receivingViews.value
@@ -349,7 +349,8 @@ const LpSearchView = defineComponent({
               t.model = t.model.toUpperCase();
             }
           });
-        } else if (stuffingViews.value.length > 0) {
+        }
+        if (stuffingViews.value.length > 0) {
           stuffingViews.value.forEach((t: any) => {
             if (t.model != null && t.model.length > 1) {
               t.model = t.model.toUpperCase();
@@ -365,6 +366,25 @@ const LpSearchView = defineComponent({
     const home = () => {
       router.push("/home");
     };
+    const validPaste = (event: any, index: number) => {
+      if (event.clipboardData && event.clipboardData.getData("Text")) {
+        const text = event.clipboardData.getData("Text");
+        // validatePasteValue(inputRef.value, text, index);
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (index - 1 == i) {
+            t.validate(text);
+          }
+        });
+      }
+    };
+    // const validatePasteValue = (param: any, text: string, index: number) => {
+    //   param.forEach((t: any, i: number) => {
+    //     if (index - 1 == i) {
+    //       t.validate(text);
+    //     }
+    //   });
+    // };
     const scan = (dataFieldName: string) => {
       const reqParams = {
         scanType: scanType.value,
@@ -403,6 +423,8 @@ const LpSearchView = defineComponent({
       pageViews,
       onClick,
       scan,
+      inputRef,
+      validPaste,
     };
   },
 });
