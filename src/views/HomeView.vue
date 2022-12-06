@@ -94,7 +94,7 @@
   </q-layout>
 </template>
 <script lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import bridge from "dsbridge";
 import {

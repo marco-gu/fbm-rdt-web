@@ -36,6 +36,7 @@
             input-class="text-right"
             lazy-rules
             :rules="[item.rule]"
+            :maxlength="item.length"
             borderless
             style="padding: 0px 16px"
           >
@@ -59,6 +60,7 @@ import { popupSuccessMsg } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, ref } from "vue";
+import { composeReg } from "../utils/regUtil";
 interface PageView {
   name: string;
   value: unknown;
@@ -67,6 +69,7 @@ interface PageView {
   rule: unknown;
   canScan: number;
   ref: unknown;
+  length: number;
 }
 const MixCartonView = defineComponent({
   setup() {
@@ -78,6 +81,9 @@ const MixCartonView = defineComponent({
     const completeMixCarton = ref(false);
     let result = {} as CartonRendering;
     const inputRef = ref(null);
+    bridge.register("closeMixCarton", () => {
+      back();
+    });
     if (hasRendered == false) {
       bridge.register("getMixCartonProfile", (res: string) => {
         result = JSON.parse(res);
@@ -97,7 +103,8 @@ const MixCartonView = defineComponent({
       view.mandatory = attr.mandatory;
       view.value = ref(null);
       view.ref = ref(null);
-      view.format = new RegExp(composeFormat(attr.format));
+      view.format = new RegExp(composeReg(attr.format));
+      view.length = Math.abs(attr.maxLength);
       view.rule = (val: string) => {
         return new Promise((resolve) => {
           if (view.mandatory == 1 && !val) {
@@ -123,26 +130,6 @@ const MixCartonView = defineComponent({
       };
       return view;
     };
-    const composeFormat = (format: string) => {
-      let reg = "";
-      for (let i = 0; i < format.length; i++) {
-        switch (format[i]) {
-          case "A":
-            reg += "[a-zA-Z]";
-            break;
-          case "9":
-            reg += "[0-9]";
-            break;
-          case "#":
-            reg += "[0-9]|[\\s]";
-            break;
-          case "X":
-            reg += "[.]";
-            break;
-        }
-      }
-      return reg;
-    };
     const complete = () => {
       pageViews.value.forEach((t) => {
         const funtion = t.rule as any;
@@ -151,8 +138,11 @@ const MixCartonView = defineComponent({
             completeMixCarton.value = true;
             onSubmit();
           } else {
-            reset(inputRef.value);
-            bridge.call("completeMixCarton");
+            bridge.call("completeMixCarton", null, () => {
+              nextTick(() => {
+                reset(inputRef.value);
+              });
+            });
           }
         });
       });
@@ -199,15 +189,19 @@ const MixCartonView = defineComponent({
             break;
         }
       });
-      bridge.call("addMixCarton", args, (res: string) => {
+      bridge.call("addMixCarton", args, () => {
         nextTick(() => {
           reset(inputRef.value);
         });
         itemCount.value++;
         if (completeMixCarton.value) {
-          popupSuccessMsg($q, "Add Complete");
+          // popupSuccessMsg($q, "Add Complete");
           completeMixCarton.value = false;
-          bridge.call("completeMixCarton");
+          bridge.call("completeMixCarton", null, () => {
+            nextTick(() => {
+              reset(inputRef.value);
+            });
+          });
         } else {
           popupSuccessMsg($q, "Add success");
         }

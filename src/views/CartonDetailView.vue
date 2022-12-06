@@ -34,6 +34,7 @@
             input-class="text-right"
             lazy-rules
             :rules="[item.rule]"
+            :maxlength="item.length"
             borderless
             style="padding: 0px 16px"
           >
@@ -60,6 +61,7 @@ import { popupErrorMsg } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, ref } from "vue";
+import { composeReg } from "../utils/regUtil";
 interface PageView {
   name: string;
   value: unknown;
@@ -68,6 +70,7 @@ interface PageView {
   rule: unknown;
   canScan: number;
   ref: unknown;
+  length: number;
 }
 const CartonDetailView = defineComponent({
   setup() {
@@ -77,6 +80,9 @@ const CartonDetailView = defineComponent({
     let hasRendered = false;
     let result = {} as CartonRendering;
     const inputRef = ref(null);
+    bridge.register("closeCartonDetail", () => {
+      cancel();
+    });
     if (hasRendered == false) {
       bridge.register("getCartonDetail", (res: string) => {
         result = JSON.parse(res);
@@ -97,7 +103,8 @@ const CartonDetailView = defineComponent({
       view.name = attr.dataFieldName;
       view.mandatory = attr.mandatory;
       view.value = ref("");
-      view.format = new RegExp(composeFormat(attr.format));
+      view.format = new RegExp(composeReg(attr.format));
+      view.length = Math.abs(attr.maxLength);
       view.rule = (val: string) => {
         return new Promise((resolve) => {
           if (view.mandatory == 1 && !val) {
@@ -122,26 +129,6 @@ const CartonDetailView = defineComponent({
         });
       };
       return view;
-    };
-    const composeFormat = (format: string) => {
-      let reg = "";
-      for (let i = 0; i < format.length; i++) {
-        switch (format[i]) {
-          case "A":
-            reg += "[a-zA-Z]";
-            break;
-          case "9":
-            reg += "[0-9]";
-            break;
-          case "#":
-            reg += "[0-9]|[\\s]";
-            break;
-          case "X":
-            reg += "[.]";
-            break;
-        }
-      }
-      return reg;
     };
     const composeApiParam = (apiParams: any, source: any) => {
       const profileCartonIndividualLevel = new ProfileCartonIndividualLevel();
@@ -181,17 +168,17 @@ const CartonDetailView = defineComponent({
           }
         });
       });
-      // bridge.call("completeCartonDetail");
     };
     const onSubmit = () => {
       const apiParams = {
         cartonID: cartonID.value,
       };
       composeApiParam(apiParams, pageViews.value);
-      nextTick(() => {
-        reset(inputRef.value);
+      bridge.call("addCartonDetail", apiParams, () => {
+        nextTick(() => {
+          reset(inputRef.value);
+        });
       });
-      bridge.call("addCartonDetail", apiParams);
     };
     return {
       cartonID,
