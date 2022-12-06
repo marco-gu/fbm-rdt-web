@@ -146,6 +146,7 @@ export default {
     };
     const goMyProfile = () => {
       isBackShow.value = true;
+      router.push("/profileManagement");
     };
     const goDataManagement = () => {
       alert("Data Management");

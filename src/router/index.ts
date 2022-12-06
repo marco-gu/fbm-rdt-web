@@ -13,6 +13,7 @@ import LanguageView from "../views/LanguageView.vue";
 import RingVoiceView from "../views/RingVoiceView.vue";
 import ScanDeviceView from "../views/ScanDeviceView.vue";
 import CartonDetailView from "../views/CartonDetailView.vue";
+import ProfileManagementView from "../views/ProfileManagementView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -88,6 +89,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/settingScanDevice",
     name: "scanDevice",
     component: ScanDeviceView,
+  },
+  {
+    path: "/profileManagement",
+    name: "profileManagement",
+    component: ProfileManagementView,
   },
 ];
 
