@@ -177,7 +177,7 @@ export default {
       router.push("/setting");
     };
     const goLPList = () => {
-      router.push("/taskList");
+      router.push("/lpList");
     };
     return {
       leftDrawerOpen,
