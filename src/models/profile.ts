@@ -128,3 +128,35 @@ export class ProfileMixCartonLevel {
     this.Quantity = "";
   }
 }
+
+export type Task = {
+  taskId: string;
+  profileName: string;
+  scanType: number;
+  validationType: number;
+  uploadStatus: number;
+  createUser: string;
+  createDatetime: string;
+  updateUser: string;
+  updateDatetime: string;
+};
+
+export type LP = {
+  id: number;
+  taskId: string;
+  clientCode: string;
+  lpId: string;
+  cartonId: string;
+  scanStatus: string;
+  sku: string;
+  quantity: string;
+  weight: string;
+  height: string;
+  length: string;
+  width: string;
+  containerNumber: string;
+  createUser: string;
+  createDatetime: string;
+  updateUser: string;
+  updateDatetime: string;
+};
