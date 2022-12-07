@@ -125,10 +125,7 @@ const ScanView = defineComponent({
         taskID: taskID.value,
         type: type.value,
         profileCode: profileCode.value,
-<<<<<<< HEAD
         pageType: route.params.id,
-=======
->>>>>>> origin/factor_1124
       };
       bridge.call("scan", args);
     };
