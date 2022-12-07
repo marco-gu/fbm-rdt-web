@@ -33,16 +33,9 @@
               <q-item-label caption>{{ item.createDatetime }}</q-item-label>
             </q-item-section>
             <q-item-section side>
-              <q-circular-progress
-                show-value
-                class="text-light-blue"
-                size="50px"
-                :value="(item.lpDone * 100) / item.lpSize + 50"
-                color="blue-5"
-                track-color="light-blue-2"
-              >
+              <q-circular-progress show-value size="50px" :value="100">
                 <div style="color: black">
-                  {{ item.lpDone }} / {{ item.lpSize }}
+                  {{ item.lpSize }}
                 </div></q-circular-progress
               >
             </q-item-section>
@@ -139,6 +132,8 @@ export default TaskListView;
 </script>
 <style lang="scss" scoped>
 .wrapper {
+  // background-color: #e5e5e5;
+  height: 100vh;
   .header {
     display: flex;
     background: #fff;
@@ -152,7 +147,7 @@ export default TaskListView;
     width: 100%;
   }
   .q-item {
-    background-color: #ffffff;
+    background-color: #fff;
     text-align: left;
     width: 100%;
   }
