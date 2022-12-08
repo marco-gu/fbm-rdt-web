@@ -35,7 +35,7 @@ import bridge from "dsbridge";
 
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { LP } from "../models/profile";
+import { LPDetail } from "../models/profile";
 
 import { useI18n } from "@/plugin/i18nPlugins";
 
@@ -54,11 +54,11 @@ const LPDetailListView = defineComponent({
       i18n.locale.value = res;
     });
 
-    const lpListDisplay: Ref<LP[]> = ref([]);
+    const lpListDisplay: Ref<LPDetail[]> = ref([]);
 
     const back = () => {
       router.push({
-        path: "/taskList",
+        path: "/lpList",
       });
     };
 
@@ -67,7 +67,7 @@ const LPDetailListView = defineComponent({
         taskId: taskId,
       };
       bridge.call("fetchLPByTaskId", args, (res: string) => {
-        lpListDisplay.value = JSON.parse(res) as LP[];
+        lpListDisplay.value = JSON.parse(res) as LPDetail[];
       });
     };
 

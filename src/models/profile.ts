@@ -129,7 +129,7 @@ export class ProfileMixCartonLevel {
   }
 }
 
-export type Task = {
+export type LP = {
   taskId: string;
   profileName: string;
   scanType: number;
@@ -141,7 +141,7 @@ export type Task = {
   updateDatetime: string;
 };
 
-export type LP = {
+export type LPDetail = {
   id: number;
   taskId: string;
   clientCode: string;

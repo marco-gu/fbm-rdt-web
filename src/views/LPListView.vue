@@ -53,7 +53,7 @@
 import bridge from "dsbridge";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { Task } from "../models/profile";
+import { LP } from "../models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
 
 const LPListView = defineComponent({
@@ -69,8 +69,8 @@ const LPListView = defineComponent({
       i18n.locale.value = res;
     });
 
-    let result: Task[] = [];
-    const taskListDisplay: Ref<Task[]> = ref([]);
+    let result: LP[] = [];
+    const taskListDisplay: Ref<LP[]> = ref([]);
     const search = ref("");
     const refresh = (done: any) => {
       getTaskList();
@@ -97,8 +97,8 @@ const LPListView = defineComponent({
 
     const getTaskList = () => {
       bridge.call("fetchTask", null, (res: string) => {
-        result = JSON.parse(res) as Task[];
-        taskListDisplay.value = JSON.parse(res) as Task[];
+        result = JSON.parse(res) as LP[];
+        taskListDisplay.value = JSON.parse(res) as LP[];
       });
     };
 
