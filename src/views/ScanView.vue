@@ -69,6 +69,10 @@
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import bridge from "dsbridge";
+type ViewElement = {
+  key: string;
+  value: string;
+};
 const ScanView = defineComponent({
   setup() {
     const router = useRouter();
@@ -78,44 +82,54 @@ const ScanView = defineComponent({
     const type = ref("");
     const scanned = ref(0);
     const total = ref(0);
-    const views = ref([]);
+    const views = ref([] as ViewElement[]);
     const data = ref();
     onMounted(() => {
       data.value = route.params as any;
       for (const key in data.value) {
-        if (key == "scanned") {
-          scanned.value = data.value[key];
-        } else if (key == "total") {
-          total.value = data.value[key];
-        } else if (key == "taskID") {
-          taskID.value = data.value[key];
-        } else if (key == "profileCode") {
-          profileCode.value = data.value[key];
-          const element = {
-            key: "Profile",
-            value: data.value[key],
-          };
-          views.value.push(element as never);
-        } else {
-          if (key == "type") {
+        switch (key) {
+          case "id":
+            break;
+          case "scanned":
+            scanned.value = data.value[key];
+            break;
+          case "total":
+            total.value = data.value[key];
+            break;
+          case "taskID":
+            taskID.value = data.value[key];
+            break;
+          case "profileCode": {
+            profileCode.value = data.value[key];
+            const element: ViewElement = {
+              key: "Profile",
+              value: data.value[key],
+            };
+            views.value.push(element);
+            break;
+          }
+          case "type": {
             type.value = data.value[key];
-            const element = {
+            const element: ViewElement = {
               key: "Scan Type",
               value: data.value[key],
             };
-            views.value.push(element as never);
-          } else {
-            const element = {
+            views.value.push(element);
+            break;
+          }
+          default: {
+            const element: ViewElement = {
               key: key.charAt(0).toUpperCase() + key.slice(1),
               value: data.value[key],
             };
-            views.value.push(element as never);
+            views.value.push(element);
+            break;
           }
         }
       }
     });
     const back = () => {
-      router.push("/lpSearch");
+      router.push("/lpSearch/" + route.params.id);
     };
     const home = () => {
       router.push("/home");
@@ -125,15 +139,12 @@ const ScanView = defineComponent({
         taskID: taskID.value,
         type: type.value,
         profileCode: profileCode.value,
-<<<<<<< HEAD
         pageType: route.params.id,
-=======
->>>>>>> origin/factor_1124
       };
+      alert(JSON.stringify(args));
       bridge.call("scan", args);
     };
     return {
-      router,
       scanned,
       total,
       onSubmit,

@@ -118,7 +118,15 @@ import {
 } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, nextTick, onMounted, Ref, ref, watch } from "vue";
+import {
+  defineComponent,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  Ref,
+  ref,
+  watch,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { composeReg } from "../utils/regUtil";
 // Define Scan Type
@@ -129,6 +137,7 @@ const enum ScanType {
 // Define Validation Type
 const enum ValidationType {
   PREVALIDATION = "PreValidation",
+  OFFLINE = "Offline",
 }
 // Define Display Attribute
 const enum DisplayAttributesLevel {
@@ -160,13 +169,15 @@ const LpSearchView = defineComponent({
     const scanType = ref("");
     const clientName = ref("");
     // Define Page Elements
-    const pageViews = ref([{} as ViewElement]);
-    const receivingViews = ref([{} as ViewElement]);
-    const stuffingViews = ref([{} as ViewElement]);
+    const pageViews = ref([] as ViewElement[]);
+    const receivingViews = ref([] as ViewElement[]);
+    const stuffingViews = ref([] as ViewElement[]);
     // Define Receiving or Stuffing Radio Status
     const receivingFlag = ref(false);
     const stuffingFlag = ref(false);
+    const mode = route.params.id as string;
     i18n.category.value = "LpSearchView";
+    // const pageID = route.params.id;
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -252,7 +263,12 @@ const LpSearchView = defineComponent({
         }
       });
     };
-    const composeApiParam = (apiParams: any, source: any) => {
+    const composeApiParam = (apiParams: any, source: any, mode: string) => {
+      if (mode == "online") {
+        apiParams.validationType = ValidationType.PREVALIDATION;
+      } else {
+        apiParams.validationType = ValidationType.OFFLINE;
+      }
       const profileOrderLevel = new ProfileOrderLevel();
       const profileCartonCommonLevel = new ProfileCartonCommonLevel();
       let j: keyof ProfileOrderLevel;
@@ -296,52 +312,77 @@ const LpSearchView = defineComponent({
     };
     const onSubmit = () => {
       showLoading($q);
+      // the same for online & offline
+      const routeParams = {
+        scanned: 0,
+        total: 0,
+        taskID: "",
+        profileCode: profileName.value,
+        type: "",
+      };
+      // the same for online & offline
       const apiParams = {
         profileName: profileName.value,
         clientCode: clientCode.value,
         clientName: clientName.value,
         scanType: scanType.value,
-        validationType: ValidationType.PREVALIDATION,
+        validationType: "",
       };
-
-      const routeParams = {
-        scanned: "0",
-        total: "0",
-        taskID: "",
-        profileCode: profileName.value,
-        type: "",
-      };
-      // TODO call native offline or online
-      const page = route.params.id;
-      alert(page);
-
-      composeApiParam(apiParams, pageViews.value);
+      composeApiParam(apiParams, pageViews.value, mode);
       composeRouteParam(routeParams, pageViews.value);
-      bridge.call("fetchLp", apiParams, (res: string) => {
-        closeLoading($q);
-        i18n.category.value = "MessageCode";
-        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          routeParams.scanned = androidResponse.data.scanned;
-          routeParams.total = androidResponse.data.total;
-          routeParams.taskID = androidResponse.data.taskID;
-          routeParams.type = scanType.value;
-          const message = i18n.$t("E93-05-0005");
-          popupSuccessMsg($q, message);
-          setTimeout(() => {
-            router.push({
-              name: "scan",
-              params: routeParams,
-            });
-          }, 2000);
-        } else if (androidResponse.status == AndroidResponseStatus.INFO) {
-          const message = i18n.$t(androidResponse.messageCode);
-          popupInfoMsg($q, message);
-        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.$t(androidResponse.messageCode);
-          popupErrorMsg($q, message);
-        }
-      });
+      if (mode == "online") {
+        bridge.call("fetchLp", apiParams, (res: string) => {
+          closeLoading($q);
+          i18n.category.value = "MessageCode";
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            routeParams.scanned = androidResponse.data.scanned;
+            routeParams.total = androidResponse.data.total;
+            routeParams.taskID = androidResponse.data.taskID;
+            routeParams.type = scanType.value;
+            const message = i18n.$t("E93-05-0005");
+            popupSuccessMsg($q, message);
+            setTimeout(() => {
+              router.push({
+                name: "scan",
+                params: routeParams,
+              });
+            }, 2000);
+          } else if (androidResponse.status == AndroidResponseStatus.INFO) {
+            const message = i18n.$t(androidResponse.messageCode);
+            popupInfoMsg($q, message);
+          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+            const message = i18n.$t(androidResponse.messageCode);
+            popupErrorMsg($q, message);
+          }
+        });
+      } else {
+        bridge.call("createTask", apiParams, (res: string) => {
+          closeLoading($q);
+          i18n.category.value = "MessageCode";
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            // routeParams.scanned = androidResponse.data.scanned;
+            // routeParams.total = androidResponse.data.total;
+            routeParams.taskID = androidResponse.data.taskID;
+            routeParams.type = scanType.value;
+            const message = i18n.$t("E93-05-0007");
+            popupSuccessMsg($q, message);
+            setTimeout(() => {
+              router.push({
+                name: "scan",
+                params: routeParams,
+              });
+            }, 2000);
+          } else if (androidResponse.status == AndroidResponseStatus.INFO) {
+            const message = i18n.$t(androidResponse.messageCode);
+            popupInfoMsg($q, message);
+          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+            const message = i18n.$t(androidResponse.messageCode);
+            popupErrorMsg($q, message);
+          }
+        });
+      }
     };
     // 4- Convert the input data value into upper case if it is not
     const multiWatchSources = [receivingViews.value, stuffingViews.value];
@@ -374,7 +415,6 @@ const LpSearchView = defineComponent({
     const validPaste = (event: any, index: number) => {
       if (event.clipboardData && event.clipboardData.getData("Text")) {
         const text = event.clipboardData.getData("Text");
-        // validatePasteValue(inputRef.value, text, index);
         const param = inputRef.value as any;
         param.forEach((t: any, i: number) => {
           if (index - 1 == i) {
@@ -383,13 +423,6 @@ const LpSearchView = defineComponent({
         });
       }
     };
-    // const validatePasteValue = (param: any, text: string, index: number) => {
-    //   param.forEach((t: any, i: number) => {
-    //     if (index - 1 == i) {
-    //       t.validate(text);
-    //     }
-    //   });
-    // };
     const scan = (dataFieldName: string) => {
       const reqParams = {
         scanType: scanType.value,
@@ -415,9 +448,10 @@ const LpSearchView = defineComponent({
         });
       }
     });
+    onUnmounted(() => {
+      closeLoading($q);
+    });
     return {
-      i18n,
-      router,
       profileName,
       scanType,
       onSubmit,

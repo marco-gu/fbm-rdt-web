@@ -102,7 +102,6 @@ const ProfileView = defineComponent({
         .then(() => {
           localStorage.setItem("profile", JSON.stringify(profileItem));
           const page = route.params.id;
-          alert(page);
           router.push("/lpSearch/" + page);
         });
     };
