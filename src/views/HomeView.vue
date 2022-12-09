@@ -44,7 +44,7 @@
                 <q-item-label>Data Management</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple>
+            <q-item clickable @click="goLPList" v-ripple>
               <q-item-section avatar>
                 <q-img :src="lpListIcon" />
               </q-item-section>
@@ -146,6 +146,7 @@ export default {
     };
     const goMyProfile = () => {
       isBackShow.value = true;
+      router.push("/profileManagement");
     };
     const goDataManagement = () => {
       alert("Data Management");
@@ -175,6 +176,9 @@ export default {
     const goSetting = () => {
       router.push("/setting");
     };
+    const goLPList = () => {
+      router.push("/lpList");
+    };
     return {
       leftDrawerOpen,
       toggleLeftDrawer,
@@ -192,6 +196,7 @@ export default {
       logoutIcon,
       logoIcon,
       goSetting,
+      goLPList,
     };
   },
 };
