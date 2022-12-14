@@ -149,7 +149,12 @@ export default {
       router.push("/profileManagement");
     };
     const goDataManagement = () => {
-      alert("Data Management");
+      router.push({
+        path: "/dataMgmtGD",
+        query: {
+          pageType: "Group",
+        },
+      });
     };
     const logout = () => {
       i18n.category.value = "MessageCode";

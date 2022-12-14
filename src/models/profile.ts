@@ -132,6 +132,8 @@ export class ProfileMixCartonLevel {
 export type LP = {
   taskId: string;
   profileName: string;
+  so: string;
+  po: string;
   scanType: number;
   validationType: number;
   uploadStatus: number;
@@ -141,20 +143,19 @@ export type LP = {
   updateDatetime: string;
 };
 
-export type LPDetail = {
+export type Carton = {
   id: number;
   taskId: string;
-  clientCode: string;
+  so: string;
+  po: string;
+  sku: string;
+  containerNumber: string;
+  style: string;
+  quantity: string;
+  hub: string;
   lpId: string;
   cartonId: string;
   scanStatus: string;
-  sku: string;
-  quantity: string;
-  weight: string;
-  height: string;
-  length: string;
-  width: string;
-  containerNumber: string;
   createUser: string;
   createDatetime: string;
   updateUser: string;

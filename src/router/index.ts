@@ -16,6 +16,9 @@ import CartonDetailView from "../views/CartonDetailView.vue";
 import ProfileManagementView from "../views/ProfileManagementView.vue";
 import LPListView from "../views/LPListView.vue";
 import LPDetailListView from "../views/LPDetailListView.vue";
+import DataMgmtGDView from "../views/DataMgmtGDView.vue";
+import DataMgmtGDEditView from "../views/DataMgmtGDEditView.vue";
+import DataMgmtMixView from "../views/DataMgmtMixView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -106,6 +109,21 @@ const routes: Array<RouteRecordRaw> = [
     path: "/lpDetailList",
     name: "lpDetailList",
     component: LPDetailListView,
+  },
+  {
+    path: "/dataMgmtGD",
+    name: "dataMgmtGD",
+    component: DataMgmtGDView,
+  },
+  {
+    path: "/dataMgmtGDEdit",
+    name: "dataMgmtGDEdit",
+    component: DataMgmtGDEditView,
+  },
+  {
+    path: "/dataMgmtMixEdit",
+    name: "dataMgmtMixEdit",
+    component: DataMgmtMixView,
   },
 ];
 
