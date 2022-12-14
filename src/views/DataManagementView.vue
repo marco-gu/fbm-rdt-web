@@ -194,12 +194,11 @@ const DataManagementView = defineComponent({
       }
     });
     const onClickScanTask = (scanTask: any) => {
-      // TODO
-      alert(`onClickScanTask - ${scanTask.taskId}`);
       router.push({
         path: "/dataMgmtGD",
         query: {
           taskId: scanTask.taskId,
+          pageType: "Group",
         },
       });
     };

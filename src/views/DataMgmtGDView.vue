@@ -107,9 +107,8 @@ const DataMgmtView = defineComponent({
     const route = useRoute();
     const i18n = useI18n();
     const taskId = ref(route.query.taskId);
-    const pageType = ref(route.query.pageType);
+    const pageType = ref("Group");
 
-    taskId.value = "NIKE_SGN5727886_4700522258_Receiving";
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -150,10 +149,7 @@ const DataMgmtView = defineComponent({
 
     const back = () => {
       router.push({
-        path: "/home",
-        query: {
-          leftDrawerOpen: "true",
-        },
+        path: "/dataManagement",
       });
     };
 
@@ -171,6 +167,9 @@ const DataMgmtView = defineComponent({
     onMounted(() => {
       getTaskList();
       getLPDetailList();
+      if (typeof route.query.pageType === "string") {
+        pageType.value = route.query.pageType;
+      }
     });
 
     return {
