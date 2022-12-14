@@ -28,7 +28,6 @@
     <div>
       <div v-for="(item, i) in dynamicViews" :key="i">
         <div
-          v-show="item.editable === true"
           style="
             display: flex;
             align-items: center;
@@ -190,6 +189,7 @@ const DataManagementDetailView = defineComponent({
       router.push({
         path: "/dataMgmtGD",
         query: {
+          taskId: taskId.value,
           pageType: pageType.value,
         },
       });
