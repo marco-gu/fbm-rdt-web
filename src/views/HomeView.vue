@@ -149,7 +149,7 @@ export default {
       router.push("/profileManagement");
     };
     const goDataManagement = () => {
-      alert("Data Management");
+      router.push("/dataManagement");
     };
     const logout = () => {
       i18n.category.value = "MessageCode";

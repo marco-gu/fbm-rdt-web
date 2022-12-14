@@ -16,6 +16,7 @@ import CartonDetailView from "../views/CartonDetailView.vue";
 import ProfileManagementView from "../views/ProfileManagementView.vue";
 import LPListView from "../views/LPListView.vue";
 import LPDetailListView from "../views/LPDetailListView.vue";
+import DataManagementView from "../views/DataManagementView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -106,6 +107,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/lpDetailList",
     name: "lpDetailList",
     component: LPDetailListView,
+  },
+  {
+    path: "/dataManagement",
+    name: "dataManagement",
+    component: DataManagementView,
   },
 ];
 

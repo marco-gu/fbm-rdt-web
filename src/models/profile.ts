@@ -160,3 +160,11 @@ export type LPDetail = {
   updateUser: string;
   updateDatetime: string;
 };
+
+export interface ScanDataManagement {
+  taskId: string;
+  status: string;
+  updateDatetime: string;
+  scannedCartonNumber: number;
+  allCartonNumber: number;
+}
