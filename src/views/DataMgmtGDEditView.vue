@@ -28,6 +28,7 @@
     <div>
       <div v-for="(item, i) in dynamicViews" :key="i">
         <div
+          v-show="item.editable === true"
           style="
             display: flex;
             align-items: center;
@@ -222,16 +223,21 @@ const DataManagementDetailView = defineComponent({
         const viewElement = {} as ViewElement;
         viewElement.dataFieldName = attr.dataFieldName;
         viewElement.editable = false;
+        if (pageType.value === "Group") {
+          viewElement.editable = true;
+        }
         switch (viewElement.dataFieldName) {
           case "PO":
             viewElement.model = ref(cartonDetail.po);
             break;
           case "SO":
             viewElement.model = ref(cartonDetail.so);
-            viewElement.editable = true;
             break;
           case "CartonID":
             viewElement.model = ref(cartonDetail.cartonId);
+            if (pageType.value === "Detail") {
+              viewElement.editable = true;
+            }
             break;
           case "ContainerNumber":
             viewElement.model = ref(cartonDetail.containerNumber);
