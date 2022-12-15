@@ -32,20 +32,22 @@
           </div>
         </template>
         <div style="display: flex; color: black; align-items: center">
-          <q-radio
-            :disable="!receivingFlag"
-            v-model="scanType"
-            val="Receiving"
-            label="Receiving"
-            @click="changeScanType('Receiving')"
-          />
-          <q-radio
-            :disable="!stuffingFlag"
-            v-model="scanType"
-            val="Stuffing"
-            label="Stuffing"
-            @click="changeScanType('Stuffing')"
-          />
+          <div v-if="receivingFlag">
+            <q-radio
+              v-model="scanType"
+              val="Receiving"
+              label="Receiving"
+              @click="changeScanType('Receiving')"
+            />
+          </div>
+          <div v-if="stuffingFlag">
+            <q-radio
+              v-model="scanType"
+              val="Stuffing"
+              label="Stuffing"
+              @click="changeScanType('Stuffing')"
+            />
+          </div>
         </div>
       </q-field>
       <q-separator color="grey-5" />
