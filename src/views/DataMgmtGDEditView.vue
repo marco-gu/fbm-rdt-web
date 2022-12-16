@@ -477,12 +477,8 @@ const DataManagementDetailView = defineComponent({
         bridge.call("updateTaskForDataManagement", apiParams, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            popupSuccessMsg($q, "Save Successfully");
             back();
-          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            i18n.category.value = "MessageCode";
-            const message = i18n.$t(androidResponse.messageCode);
-            popupErrorMsg($q, message);
+            popupSuccessMsg($q, "Updated Successfully");
           }
         });
       } else if (pageType.value === "Detail") {
