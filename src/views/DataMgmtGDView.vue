@@ -127,7 +127,6 @@ const DataMgmtView = defineComponent({
         query: {
           taskId: item.taskId,
           pageType: pageType.value,
-          soId: item.so,
         },
       });
     };

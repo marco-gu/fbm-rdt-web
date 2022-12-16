@@ -141,6 +141,8 @@ export type LP = {
   createDatetime: string;
   updateUser: string;
   updateDatetime: string;
+  totalCBM: string;
+  totalWeight: string;
 };
 
 export type Carton = {
