@@ -169,3 +169,11 @@ export interface ScanDataManagement {
   scannedCartonNumber: number;
   allCartonNumber: number;
 }
+
+export interface MixCartonProduct {
+  lpId: string;
+  upc: string;
+  color: string;
+  size: string;
+  quantity: string;
+}

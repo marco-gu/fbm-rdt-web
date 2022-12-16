@@ -221,7 +221,6 @@ const DataManagementView = defineComponent({
       return taskIdList;
     };
     const handleUpload = () => {
-      // TODO
       let taskIdList = getSelectedTaskIdList();
       if (taskIdList.length > 0) {
         const args = {

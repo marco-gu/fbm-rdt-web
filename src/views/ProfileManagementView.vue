@@ -221,30 +221,29 @@ export default ProfileManagementView;
 .wrapper {
   height: 100vh;
   position: relative;
-}
-.header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background-color: #ffffff;
-  z-index: 1;
-  .q-item {
-    background-color: #ffffff;
-    height: 60px;
+  .header {
+    position: sticky;
+    top: 0;
     width: 100%;
+    background-color: #ffffff;
+    z-index: 1;
+    .q-item {
+      background-color: #ffffff;
+      height: 60px;
+      width: 100%;
+    }
+    .title-text {
+      font-size: 21px;
+    }
   }
-
-  .title-text {
-    font-size: 21px;
+  .bottom {
+    position: fixed;
+    bottom: 0px;
+    display: flex;
+    background: #42b0d5;
+    color: white;
+    width: 100%;
+    height: 50px;
   }
-}
-.bottom {
-  position: fixed;
-  bottom: 0px;
-  display: flex;
-  background: #42b0d5;
-  color: white;
-  width: 100%;
-  height: 50px;
 }
 </style>

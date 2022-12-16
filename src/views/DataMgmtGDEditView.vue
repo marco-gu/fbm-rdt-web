@@ -179,9 +179,10 @@ const DataManagementDetailView = defineComponent({
 
     const goToMix = () => {
       router.push({
-        path: "/dataMgmtMixEdit",
+        path: "/dataManagementMixCartonList",
         query: {
           taskId: taskId.value,
+          cartonId: cartonDetail.cartonId,
         },
       });
     };
