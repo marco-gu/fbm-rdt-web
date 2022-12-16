@@ -129,6 +129,11 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 
+const enum ScanType {
+  RECEIVING = "Receiving",
+  STUFFING = "Stuffing",
+}
+
 // Define Display Attribute
 const enum DisplayAttributesLevel {
   ORDER = "order",
@@ -159,30 +164,32 @@ const DataManagementDetailView = defineComponent({
     },
   },
   setup() {
-    const inputRef = ref(null);
+    const inputRef: Ref<any> = ref(null);
     const router = useRouter();
     const route = useRoute();
     const i18n = useI18n();
     const $q = useQuasar();
     const taskId = ref(route.query.taskId);
-    const scanType =
-      taskId.value?.indexOf("Receiving") !== -1 ? "Receiving" : "Stuffing";
-
+    const scanType = ref("");
+    var pageType = ref(route.query.pageType);
+    const pageViews: Ref<ViewElement[]> = ref([]);
     var lpModel: LP;
-    //根据taskId获取到的其中一个carton, 给Group用
-    var lpCarton: Carton;
-
-    //前一个页面存的carton, 给Detail用
+    var lpCarton: Carton; //根据taskId获取到的其中一个carton, 给Group用
     const cartonDetail = JSON.parse(
       localStorage.getItem("dataMgmtCarton") as never
-    ) as Carton;
-
-    var pageType = ref(route.query.pageType);
-
-    const pageViews: Ref<ViewElement[]> = ref([]);
+    ) as Carton; //前一个页面存的carton, 给Detail用
 
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
+    });
+
+    onMounted(() => {
+      scanType.value =
+        taskId.value?.indexOf("Receiving") !== -1 ? "Receiving" : "Stuffing";
+      if (typeof taskId.value === "string") {
+        fetchTaskByTaskId(taskId.value);
+        getCartonByTaskId(taskId.value);
+      }
     });
 
     const profileAttrListDisplay: Ref<DisplayAttribute[]> = ref([]);
@@ -237,7 +244,7 @@ const DataManagementDetailView = defineComponent({
       bridge.call("fetchProfileByProfileCode", args, (res: string) => {
         profileAttrListDisplay.value = JSON.parse(res) as DisplayAttribute[];
         profileAttrListDisplay.value.forEach((attr: DisplayAttribute) => {
-          if (attr.type == scanType) {
+          if (attr.type == scanType.value) {
             if (pageType.value === "Group") {
               const element = composeGroupViewElements(attr);
 
@@ -408,6 +415,23 @@ const DataManagementDetailView = defineComponent({
       }
     };
 
+    const scan = (dataFieldName: string) => {
+      const reqParams = {
+        scanType: scanType,
+        fieldName: dataFieldName,
+      };
+      bridge.call("scanForInput", reqParams);
+    };
+
+    bridge.register("getScanResult", (res: string) => {
+      pageViews.value.forEach((view: any) => {
+        const key = scanType.value + "_" + view.dataFieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          view.model = res.substring(res.lastIndexOf("_") + 1);
+        }
+      });
+    });
+
     const composeSaveGroupParam = (params: any, source: any) => {
       source.forEach((view: ViewElement) => {
         if (view.editable == true) {
@@ -425,6 +449,19 @@ const DataManagementDetailView = defineComponent({
     };
 
     const handleSave = () => {
+      inputRef.value.forEach((element: any) => {
+        element.validate();
+      });
+      let hasError = false;
+      inputRef.value.forEach((element: any) => {
+        if (element.hasError) {
+          hasError = true;
+        }
+      });
+      if (hasError) {
+        return;
+      }
+
       if (pageType.value === "Group") {
         const apiParams = {
           taskId: taskId.value,
@@ -438,8 +475,15 @@ const DataManagementDetailView = defineComponent({
         composeSaveGroupParam(apiParams, pageViews.value);
 
         bridge.call("updateTaskForDataManagement", apiParams, (res: string) => {
-          back();
-          popupSuccessMsg($q, "Updated Successfully");
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            popupSuccessMsg($q, "Save Successfully");
+            back();
+          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+            i18n.category.value = "MessageCode";
+            const message = i18n.$t(androidResponse.messageCode);
+            popupErrorMsg($q, message);
+          }
         });
       } else if (pageType.value === "Detail") {
         const apiParams = {
@@ -465,7 +509,7 @@ const DataManagementDetailView = defineComponent({
         };
         bridge.call("deleteTaskForDataManagement", args, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-          alert(androidResponse.status);
+
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             popupSuccessMsg($q, "Deleted Successfully");
             back();
@@ -492,13 +536,6 @@ const DataManagementDetailView = defineComponent({
         });
       }
     };
-
-    onMounted(() => {
-      if (typeof taskId.value === "string") {
-        fetchTaskByTaskId(taskId.value);
-        getCartonByTaskId(taskId.value);
-      }
-    });
 
     const validPaste = (event: any, index: number) => {
       if (event.clipboardData && event.clipboardData.getData("Text")) {
@@ -528,6 +565,7 @@ const DataManagementDetailView = defineComponent({
       inputRef,
       handleSave,
       validPaste,
+      scan,
     };
   },
 });

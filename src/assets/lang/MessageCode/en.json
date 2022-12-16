@@ -28,5 +28,7 @@
     "E93-05-0004": "Invalid data format!",
     "E93-05-0005": "LP has been successfully downloaded!",
     "E93-05-0006": "No Record is found!",
-    "E93-06-0001": "Logout Success!"
+    "E93-06-0001": "Logout Success!",
+
+    "E93-07-0001": "Save Failed. Duplicate entries."
 }
