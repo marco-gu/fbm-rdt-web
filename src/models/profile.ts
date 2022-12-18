@@ -3,32 +3,37 @@ export interface ProfileMaster {
   effectiveDate: string;
 }
 
-export interface ProfileDeail {
-  id: number;
-  profileName: string;
-  fileName: string;
-  systemFlag: number;
-  createUser: string;
-  createDatetime: string;
-  updateUser: string;
-  updateDatetime: string;
-  profileContent: string;
-  code: number;
-  version: any;
+export interface ProfileDetail {
   client: string;
-  effectiveDate: string;
-  translationType: string;
-  receivingScanFlag: number;
-  putawayScanFlag: number;
-  cycleCountFlag: number;
-  pickingScanFlag: number;
-  stuffingScanFlag: number;
-  scanPackFlag: number;
   profileCode: string;
-  attributes: DisplayAttribute[];
+  profileName: string;
+  receivingScanFlag: number;
+  stuffingScanFlag: number;
+  attributes: ProfileDisplayAttribute[];
+  // id: number;
+  // profileName: string;
+  // fileName: string;
+  // systemFlag: number;
+  // createUser: string;
+  // createDatetime: string;
+  // updateUser: string;
+  // updateDatetime: string;
+  // profileContent: string;
+  // code: number;
+  // version: any;
+  // client: string;
+  // effectiveDate: string;
+  // translationType: string;
+  // receivingScanFlag: number;
+  // putawayScanFlag: number;
+  // cycleCountFlag: number;
+  // pickingScanFlag: number;
+  // stuffingScanFlag: number;
+  // scanPackFlag: number;
+  // profileCode: string;
 }
 
-export interface DisplayAttribute {
+export interface ProfileDisplayAttribute {
   type: string;
   typeDescription: string;
   dataFieldName: string;
@@ -46,36 +51,36 @@ export interface DisplayAttribute {
   level: string;
 }
 
-export interface LpSearch {
-  profileName: string;
-  type: string;
-  mode: string;
-  so: string;
-  po: string;
-}
+// export interface LpSearch {
+//   profileName: string;
+//   type: string;
+//   mode: string;
+//   so: string;
+//   po: string;
+// }
 
-export interface ProfileDetail {
-  cartonID: string;
-  uniqueId: string;
-  masterUniqueId: string;
-  type: string;
-  typeDescription: string;
-  dataFieldName: string;
-  displayDataFieldName: string;
-  format: string;
-  maxLength: number;
-  mandatory: number;
-  duplicate: number;
-  isKey: number;
-  verification: number;
-  combo: number;
-  scan: string;
-  irecType: string;
-}
+// export interface ProfileDetail {
+//   cartonID: string;
+//   uniqueId: string;
+//   masterUniqueId: string;
+//   type: string;
+//   typeDescription: string;
+//   dataFieldName: string;
+//   displayDataFieldName: string;
+//   format: string;
+//   maxLength: number;
+//   mandatory: number;
+//   duplicate: number;
+//   isKey: number;
+//   verification: number;
+//   combo: number;
+//   scan: string;
+//   irecType: string;
+// }
 
-export interface CartonRendering {
+export interface CartonDetailAttribute {
   cartonID: string;
-  profileDetailList: ProfileDetail[];
+  profileDetails: ProfileDisplayAttribute[];
 }
 
 export class ProfileOrderLevel {

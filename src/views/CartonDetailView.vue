@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="header">
       <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="cancel()">
+        <q-item-section avatar @click="back()">
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
@@ -16,158 +16,138 @@
     </div>
     <q-form style="background: #fff" @submit="onSubmit">
       <div v-for="(item, i) in pageViews" :key="i">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          "
-        >
-          <span style="padding-left: 1rem; color: black">
-            {{ item.name }}
-          </span>
-
-          <q-input
-            ref="inputRef"
-            v-model="item.value"
-            clearable
-            input-class="text-right"
-            lazy-rules
-            :rules="[item.rule]"
-            :maxlength="item.length"
-            borderless
-            style="padding: 0px 16px"
+        <div v-if="item.display == 1">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            "
           >
-          </q-input>
+            <span style="padding-left: 1rem; color: black">
+              {{ item.displayFieldName }}
+            </span>
+
+            <q-input
+              ref="inputRef"
+              v-model="item.model"
+              @paste="validPaste($event, i)"
+              clearable
+              input-class="text-right"
+              lazy-rules
+              :rules="[item.valid]"
+              :maxlength="item.length"
+              borderless
+              style="padding: 0px 16px"
+            >
+              <template v-slot:append>
+                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
+                  <q-icon name="qr_code_scanner" />
+                </q-avatar>
+              </template>
+            </q-input>
+          </div>
+          <q-separator color="grey-5" />
         </div>
-        <q-separator color="grey-5" />
       </div>
       <div class="bottom">
         <q-btn no-caps style="width: 48%" flat push type="submit">Save</q-btn>
         <q-separator vertical inset color="white" />
-        <q-btn no-caps style="width: 52%" flat push @click="cancel"
-          >Cancel</q-btn
-        >
+        <q-btn no-caps style="width: 52%" flat push @click="back">Cancel</q-btn>
       </div>
     </q-form>
   </div>
 </template>
 <script lang="ts">
 import {
-  CartonRendering,
+  CartonDetailAttribute,
   ProfileCartonIndividualLevel,
 } from "@/models/profile";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
+import {
+  composeViewElement,
+  ProfileElementLevel,
+  ViewDisplayAttribute,
+  toUpperCaseElementInput,
+  validPasteInput,
+} from "@/utils/profile.render";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, ref } from "vue";
-import { composeReg } from "../utils/regUtil";
-interface PageView {
-  name: string;
-  value: unknown;
-  mandatory: number;
-  format: RegExp;
-  rule: unknown;
-  canScan: number;
-  ref: unknown;
-  length: number;
-}
 const CartonDetailView = defineComponent({
   setup() {
+    const pageViews = ref([] as ViewDisplayAttribute[]);
     const cartonID = ref();
     const $q = useQuasar();
-    const pageViews = ref([] as PageView[]);
-    let hasRendered = false;
-    let result = {} as CartonRendering;
+    let alreadyRendered = false;
+    let cartonView = {} as CartonDetailAttribute;
     const inputRef = ref(null);
     bridge.register("closeCartonDetail", () => {
-      cancel();
+      back();
     });
-    if (hasRendered == false) {
+    if (alreadyRendered == false) {
       bridge.register("getCartonDetail", (res: string) => {
-        result = JSON.parse(res);
-        if (!hasRendered) {
-          hasRendered = true;
-          result.profileDetailList.forEach((t) => {
-            const element = composeViews(t);
-            if (element) {
-              pageViews.value.push(composeViews(t));
+        cartonView = JSON.parse(res);
+        if (!alreadyRendered) {
+          alreadyRendered = true;
+          cartonView.profileDetails.forEach((item) => {
+            if (item.level == ProfileElementLevel.CARTON_INDIVIDUAL) {
+              const element = composeViewElement(item);
+              pageViews.value.push(element);
             }
           });
         }
-        cartonID.value = result.cartonID;
+        cartonID.value = cartonView.cartonID;
       });
     }
-    const composeViews = (attr: any) => {
-      const view = {} as PageView;
-      view.name = attr.dataFieldName;
-      view.mandatory = attr.mandatory;
-      view.value = ref("");
-      view.format = new RegExp(composeReg(attr.format));
-      view.length = Math.abs(attr.maxLength);
-      view.rule = (val: string) => {
-        return new Promise((resolve) => {
-          if (view.mandatory == 1 && !val) {
-            resolve(`Please input ${view.name}`);
-          } else {
-            if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
-              resolve(
-                `Please input not more than ${Math.abs(
-                  attr.maxLength
-                )} charactors`
-              );
-            } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
-              resolve(
-                `Please input not more or less than ${attr.maxLength} charactors`
-              );
-            } else if (!view.format.test(val)) {
-              resolve("Please input correct format");
-            } else {
-              resolve(true);
-            }
-          }
-        });
-      };
-      return view;
-    };
-    const composeApiParam = (apiParams: any, source: any) => {
+    const composeApiParam = (apiParams: any, source: any[]) => {
       const profileCartonIndividualLevel = new ProfileCartonIndividualLevel();
       let j: keyof ProfileCartonIndividualLevel;
       for (j in profileCartonIndividualLevel) {
         apiParams[j] = "";
       }
-      source.forEach((view: any) => {
+      source.forEach((view: ViewDisplayAttribute) => {
         for (j in profileCartonIndividualLevel) {
-          if (j == view.name) {
-            apiParams[j] = view.value;
+          if (j == view.fieldName) {
+            apiParams[j] = view.model;
           }
         }
       });
     };
     const reset = (param: any) => {
+      pageViews.value.forEach((t) => {
+        t.model = "";
+      });
       param.forEach((t: any) => {
         if (t) {
           t.resetValidation();
         }
       });
-      pageViews.value.forEach((t) => {
-        t.value = "";
-      });
     };
-    const cancel = () => {
-      nextTick(() => {
-        reset(inputRef.value);
-      });
-      pageViews.value.forEach((t) => {
-        const funtion = t.rule as any;
-        funtion(t.value).then((resolve: any) => {
-          if (resolve == true) {
-            bridge.call("completeCartonDetail");
+    const back = () => {
+      const param = inputRef.value as any;
+      let stop = false;
+      param.forEach((t: any, i: number) => {
+        t.validate(t.modelValue).then((resovle: any) => {
+          if (i < param.length - 1) {
+            if (resovle == false && stop == false) {
+              stop = true;
+            }
           } else {
-            popupErrorMsg($q, resolve);
+            if (resovle != false && stop == false) {
+              bridge.call("completeCartonDetail", null, () => {
+                alert("completeCartonDetail");
+                nextTick(() => {
+                  reset(inputRef.value);
+                });
+              });
+            }
           }
         });
       });
+    };
+    const validPaste = (event: any, index: number) => {
+      validPasteInput(inputRef, event, index);
     };
     const onSubmit = () => {
       const apiParams = {
@@ -180,12 +160,39 @@ const CartonDetailView = defineComponent({
         });
       });
     };
+    const multiWatchSources = [pageViews.value];
+    toUpperCaseElementInput(multiWatchSources);
+    const scan = (fieldName: string) => {
+      const reqParams = {
+        scanType: "Default",
+        fieldName: fieldName,
+      };
+      bridge.call("scanForInput", reqParams);
+    };
+    bridge.register("getScanResult", (res: string) => {
+      const param = inputRef.value as any;
+      let scanFieldName = "";
+      pageViews.value.forEach((pageView: any) => {
+        const key = "Default_" + pageView.fieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          pageView.model = res.substring(res.lastIndexOf("_") + 1);
+          scanFieldName = pageView.fieldName;
+        }
+      });
+      param.forEach((t: any, i: number) => {
+        if (pageViews.value[i].fieldName == scanFieldName) {
+          t.validate(pageViews.value[i].model);
+        }
+      });
+    });
     return {
       cartonID,
       pageViews,
-      cancel,
+      back,
       onSubmit,
       inputRef,
+      validPaste,
+      scan,
     };
   },
 });

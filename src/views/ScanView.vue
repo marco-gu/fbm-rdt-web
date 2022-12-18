@@ -143,6 +143,9 @@ const ScanView = defineComponent({
       };
       bridge.call("scan", args);
     };
+    bridge.register("returnLpSearch", () => {
+      router.push("/lpSearch");
+    });
     return {
       scanned,
       total,

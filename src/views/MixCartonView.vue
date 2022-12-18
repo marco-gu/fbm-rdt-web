@@ -18,31 +18,38 @@
     </div>
     <q-form style="background: #fff" @submit="onSubmit">
       <div v-for="(item, i) in pageViews" :key="i">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          "
-        >
-          <span style="padding-left: 1rem; color: black">
-            {{ item.name }}
-          </span>
-
-          <q-input
-            ref="inputRef"
-            v-model="item.value"
-            clearable
-            input-class="text-right"
-            lazy-rules
-            :rules="[item.rule]"
-            :maxlength="item.length"
-            borderless
-            style="padding: 0px 16px"
+        <div v-if="item.display == 1">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            "
           >
-          </q-input>
+            <span style="padding-left: 1rem; color: black">
+              {{ item.displayFieldName }}
+            </span>
+            <q-input
+              ref="inputRef"
+              v-model="item.model"
+              @paste="validPaste($event, i)"
+              clearable
+              input-class="text-right"
+              lazy-rules
+              :rules="[item.valid]"
+              :maxlength="item.length"
+              borderless
+              style="padding: 0px 16px"
+            >
+              <template v-slot:append>
+                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
+                  <q-icon name="qr_code_scanner" />
+                </q-avatar>
+              </template>
+            </q-input>
+          </div>
+          <q-separator color="grey-5" />
         </div>
-        <q-separator color="grey-5" />
       </div>
       <div class="bottom">
         <q-btn no-caps style="width: 48%" flat push type="submit">Add</q-btn>
@@ -55,108 +62,104 @@
   </div>
 </template>
 <script lang="ts">
-import { CartonRendering } from "@/models/profile";
+import { CartonDetailAttribute } from "@/models/profile";
 import { popupSuccessMsg } from "@/plugin/popupPlugins";
+import {
+  composeViewElement,
+  ProfileElementLevel,
+  ViewDisplayAttribute,
+  toUpperCaseElementInput,
+  validPasteInput,
+} from "@/utils/profile.render";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, ref } from "vue";
-import { composeReg } from "../utils/regUtil";
-interface PageView {
-  name: string;
-  value: unknown;
-  mandatory: number;
-  format: RegExp;
-  rule: unknown;
-  canScan: number;
-  ref: unknown;
-  length: number;
-}
 const MixCartonView = defineComponent({
   setup() {
-    const pageViews = ref([] as PageView[]);
+    const pageViews = ref([] as ViewDisplayAttribute[]);
     const cartonID = ref("");
     const itemCount = ref(0);
     const $q = useQuasar();
-    let hasRendered = false;
-    const completeMixCarton = ref(false);
-    let result = {} as CartonRendering;
     const inputRef = ref(null);
+    let alreadyRendered = false;
+    const completeMixCarton = ref(false);
+    let mixCartonView = {} as CartonDetailAttribute;
     bridge.register("closeMixCarton", () => {
       back();
     });
-    if (hasRendered == false) {
+    if (alreadyRendered == false) {
       bridge.register("getMixCartonProfile", (res: string) => {
-        result = JSON.parse(res);
-        if (!hasRendered) {
-          hasRendered = true;
-          result.profileDetailList.forEach((t) => {
-            pageViews.value.push(composeViews(t));
+        mixCartonView = JSON.parse(res);
+        if (!alreadyRendered) {
+          alreadyRendered = true;
+          mixCartonView.profileDetails.forEach((item) => {
+            if (item.level == ProfileElementLevel.CARTON_UPC) {
+              const element = composeViewElement(item);
+              pageViews.value.push(element);
+            }
           });
         }
-        cartonID.value = result.cartonID;
+        cartonID.value = mixCartonView.cartonID;
         itemCount.value = 0;
       });
     }
-    const composeViews = (attr: any) => {
-      const view = {} as PageView;
-      view.name = attr.dataFieldName;
-      view.mandatory = attr.mandatory;
-      view.value = ref(null);
-      view.ref = ref(null);
-      view.format = new RegExp(composeReg(attr.format));
-      view.length = Math.abs(attr.maxLength);
-      view.rule = (val: string) => {
-        return new Promise((resolve) => {
-          if (view.mandatory == 1 && !val) {
-            resolve(`Please input ${view.name}`);
-          } else {
-            if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
-              resolve(
-                `Please input not more than ${Math.abs(
-                  attr.maxLength
-                )} charactors`
-              );
-            } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
-              resolve(
-                `Please input not more or less than ${attr.maxLength} charactors`
-              );
-            } else if (!view.format.test(val)) {
-              resolve("Please input correct format");
-            } else {
-              resolve(true);
-            }
-          }
-        });
-      };
-      return view;
-    };
     const complete = () => {
-      pageViews.value.forEach((t) => {
-        const funtion = t.rule as any;
-        funtion(t.value).then((resolve: any) => {
-          if (resolve == true) {
-            completeMixCarton.value = true;
-            onSubmit();
-          } else {
-            bridge.call("completeMixCarton", null, () => {
-              nextTick(() => {
-                reset(inputRef.value);
+      const param = inputRef.value as any;
+      let stop = false;
+      param.forEach((t: any, i: number) => {
+        t.validate(t.modelValue).then((resovle: any) => {
+          if (i < param.length - 1) {
+            if (resovle == false && stop == false) {
+              stop = true;
+              bridge.call("completeMixCarton", null, () => {
+                nextTick(() => {
+                  reset(inputRef.value);
+                });
               });
-            });
+            }
+          } else {
+            if (resovle != false && stop == false) {
+              let stop = false;
+              completeMixCarton.value = true;
+              onSubmit();
+            }
           }
         });
       });
     };
     const reset = (param: any) => {
+      pageViews.value.forEach((t) => {
+        t.model = "";
+      });
       param.forEach((t: any) => {
         if (t) {
           t.resetValidation();
         }
       });
-      pageViews.value.forEach((t) => {
-        t.value = "";
-      });
     };
+    const scan = (fieldName: string) => {
+      const reqParams = {
+        scanType: "Default",
+        fieldName: fieldName,
+      };
+      bridge.call("scanForInput", reqParams);
+    };
+    bridge.register("getScanResult", (res: string) => {
+      const param = inputRef.value as any;
+      let scanFieldName = "";
+      pageViews.value.forEach((pageView: any) => {
+        const key = "Default_" + pageView.fieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          pageView.model = res.substring(res.lastIndexOf("_") + 1);
+          scanFieldName = pageView.fieldName;
+        }
+      });
+      param.forEach((t: any, i: number) => {
+        if (pageViews.value[i].fieldName == scanFieldName) {
+          t.validate(pageViews.value[i].model);
+        }
+      });
+    });
     const onSubmit = () => {
       const args: any = {
         cartonID: cartonID.value,
@@ -168,24 +171,24 @@ const MixCartonView = defineComponent({
         Quantity: "",
       };
       pageViews.value.forEach((t) => {
-        switch (t.name) {
+        switch (t.fieldName) {
           case "UPC":
-            args["UPC"] = t.value;
+            args["UPC"] = t.model;
             break;
           case "Style":
-            args["Style"] = t.value;
+            args["Style"] = t.model;
             break;
           case "SKU":
-            args["SKU"] = t.value;
+            args["SKU"] = t.model;
             break;
           case "Color":
-            args["Color"] = t.value;
+            args["Color"] = t.model;
             break;
           case "Size":
-            args["Size"] = t.value;
+            args["Size"] = t.model;
             break;
           case "Quantity":
-            args["Quantity"] = t.value;
+            args["Quantity"] = t.model;
             break;
         }
       });
@@ -195,7 +198,6 @@ const MixCartonView = defineComponent({
         });
         itemCount.value++;
         if (completeMixCarton.value) {
-          // popupSuccessMsg($q, "Add Complete");
           completeMixCarton.value = false;
           bridge.call("completeMixCarton", null, () => {
             nextTick(() => {
@@ -209,9 +211,17 @@ const MixCartonView = defineComponent({
     };
 
     const back = () => {
-      reset(inputRef.value);
-      bridge.call("completeMixCarton", null);
+      bridge.call("completeMixCarton", null, () => {
+        nextTick(() => {
+          reset(inputRef.value);
+        });
+      });
     };
+    const validPaste = (event: any, index: number) => {
+      validPasteInput(inputRef, event, index);
+    };
+    const multiWatchSources = [pageViews.value];
+    toUpperCaseElementInput(multiWatchSources);
     return {
       onSubmit,
       complete,
@@ -220,6 +230,8 @@ const MixCartonView = defineComponent({
       cartonID,
       inputRef,
       back,
+      validPaste,
+      scan,
     };
   },
 });

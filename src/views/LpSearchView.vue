@@ -32,20 +32,22 @@
           </div>
         </template>
         <div style="display: flex; color: black; align-items: center">
-          <q-radio
-            :disable="!receivingFlag"
-            v-model="scanType"
-            val="Receiving"
-            label="Receiving"
-            @click="onClick"
-          />
-          <q-radio
-            :disable="!stuffingFlag"
-            v-model="scanType"
-            val="Stuffing"
-            label="Stuffing"
-            @click="onClick"
-          />
+          <div v-if="receivingFlag">
+            <q-radio
+              v-model="scanType"
+              val="Receiving"
+              label="Receiving"
+              @click="changeScanType('Receiving')"
+            />
+          </div>
+          <div v-if="stuffingFlag">
+            <q-radio
+              v-model="scanType"
+              val="Stuffing"
+              label="Stuffing"
+              @click="changeScanType('Stuffing')"
+            />
+          </div>
         </div>
       </q-field>
       <q-separator color="grey-5" />
@@ -59,7 +61,7 @@
             "
           >
             <span style="padding-left: 1rem; color: black">
-              {{ item.dataFieldName }}
+              {{ item.displayFieldName }}
             </span>
             <q-input
               ref="inputRef"
@@ -74,10 +76,7 @@
               style="padding: 0px 16px"
             >
               <template v-slot:append>
-                <q-avatar
-                  v-if="item.scan == 1"
-                  @click="scan(item.dataFieldName)"
-                >
+                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
                   <q-icon name="qr_code_scanner" />
                 </q-avatar>
               </template>
@@ -104,9 +103,9 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import {
-  DisplayAttribute,
+  ProfileDisplayAttribute,
   ProfileCartonCommonLevel,
-  ProfileDeail,
+  ProfileDetail,
   ProfileOrderLevel,
 } from "@/models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
@@ -118,17 +117,15 @@ import {
 } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import {
-  defineComponent,
-  nextTick,
-  onMounted,
-  onUnmounted,
-  Ref,
-  ref,
-  watch,
-} from "vue";
+import { defineComponent, nextTick, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { composeReg } from "../utils/regUtil";
+import {
+  ViewDisplayAttribute,
+  composeViewElement,
+  ProfileElementLevel,
+  toUpperCaseElementInput,
+  validPasteInput,
+} from "@/utils/profile.render";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -139,24 +136,6 @@ const enum ValidationType {
   PREVALIDATION = "PreValidation",
   OFFLINE = "Offline",
 }
-// Define Display Attribute
-const enum DisplayAttributesLevel {
-  ORDER = "order",
-  CARTON_COMMON = "cartoncommon",
-}
-type ViewElement = {
-  dataFieldName: string;
-  level: string;
-  mandatory: number;
-  model: Ref<unknown>;
-  reg: RegExp;
-  display: number;
-  scan: number;
-  length: number;
-  valid: (val: string) => Promise<unknown>;
-};
-// Define fields for both manual type-in or scanning for PO/SO/SKU/Container, the rests are based on scan profile definition
-const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber"];
 const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
@@ -169,9 +148,9 @@ const LpSearchView = defineComponent({
     const scanType = ref("");
     const clientName = ref("");
     // Define Page Elements
-    const pageViews = ref([] as ViewElement[]);
-    const receivingViews = ref([] as ViewElement[]);
-    const stuffingViews = ref([] as ViewElement[]);
+    const pageViews = ref([] as ViewDisplayAttribute[]);
+    const receivingViews = ref([] as ViewDisplayAttribute[]);
+    const stuffingViews = ref([] as ViewDisplayAttribute[]);
     // Define Receiving or Stuffing Radio Status
     const receivingFlag = ref(false);
     const stuffingFlag = ref(false);
@@ -184,7 +163,7 @@ const LpSearchView = defineComponent({
     onMounted(() => {
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
-      ) as ProfileDeail;
+      ) as ProfileDetail;
       clientName.value = initData.client;
       profileName.value = initData.profileCode;
       clientCode.value = initData.profileName;
@@ -192,15 +171,15 @@ const LpSearchView = defineComponent({
       stuffingFlag.value = initData.stuffingScanFlag == 1 ? true : false;
       scanType.value =
         receivingFlag.value == true ? ScanType.RECEIVING : ScanType.STUFFING;
-      initData.attributes.forEach((attr: DisplayAttribute) => {
-        if (attr.type == ScanType.RECEIVING) {
-          const element = composeViewElements(attr);
-          if (element) {
+      initData.attributes.forEach((item: ProfileDisplayAttribute) => {
+        if (
+          item.level == ProfileElementLevel.CARTON_COMMON ||
+          item.level == ProfileElementLevel.ORDER
+        ) {
+          const element = composeViewElement(item);
+          if (item.type == ScanType.RECEIVING) {
             receivingViews.value.push(element);
-          }
-        } else if (attr.type == ScanType.STUFFING) {
-          const element = composeViewElements(attr);
-          if (element) {
+          } else {
             stuffingViews.value.push(element);
           }
         }
@@ -210,56 +189,10 @@ const LpSearchView = defineComponent({
           ? receivingViews.value
           : stuffingViews.value;
     });
-    // Compose View
-    const composeViewElements = (attr: DisplayAttribute) => {
-      if (
-        attr.level == DisplayAttributesLevel.CARTON_COMMON ||
-        attr.level == DisplayAttributesLevel.ORDER
-      ) {
-        const viewElement = {} as ViewElement;
-        viewElement.dataFieldName = attr.dataFieldName;
-        viewElement.level = attr.level;
-        viewElement.mandatory = attr.mandatory;
-        viewElement.model = ref("");
-        viewElement.reg = new RegExp(composeReg(attr.format));
-        viewElement.display = attr.combo;
-        viewElement.scan = attr.scan == "1" ? 1 : 0;
-        viewElement.length = Math.abs(attr.maxLength);
-        scanOrTypeInList.forEach((t) => {
-          if (t == viewElement.dataFieldName) {
-            viewElement.scan = 1;
-          }
-        });
-        viewElement.valid = (val: string) => {
-          return new Promise((resolve) => {
-            if (viewElement.mandatory == 1 && !val) {
-              resolve(`Please input ${viewElement.dataFieldName}`);
-            } else {
-              if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
-                resolve(
-                  `Please input not more than ${Math.abs(
-                    attr.maxLength
-                  )} charactors`
-                );
-              } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
-                resolve(
-                  `Please input not more or less than ${attr.maxLength} charactors`
-                );
-              } else if (!viewElement.reg.test(val)) {
-                resolve("Please input correct format");
-              } else {
-                resolve(true);
-              }
-            }
-          });
-        };
-        return viewElement;
-      }
-    };
     const composeRouteParam = (routeParams: any, source: any) => {
-      source.forEach((view: ViewElement) => {
+      source.forEach((view: ViewDisplayAttribute) => {
         if (view.display == 1) {
-          routeParams[view.dataFieldName] = view.model;
+          routeParams[view.fieldName] = view.model;
         }
       });
     };
@@ -279,14 +212,14 @@ const LpSearchView = defineComponent({
       for (k in profileCartonCommonLevel) {
         apiParams[k] = "";
       }
-      source.forEach((view: ViewElement) => {
+      source.forEach((view: ViewDisplayAttribute) => {
         for (j in profileOrderLevel) {
-          if (j == view.dataFieldName) {
+          if (j == view.fieldName) {
             apiParams[j] = view.model;
           }
         }
         for (k in profileCartonCommonLevel) {
-          if (k == view.dataFieldName) {
+          if (k == view.fieldName) {
             apiParams[k] = view.model;
           }
         }
@@ -301,14 +234,19 @@ const LpSearchView = defineComponent({
         }
       });
     };
-    const onClick = () => {
-      nextTick(() => {
-        reset(inputRef.value);
-      });
-      pageViews.value =
-        scanType.value == ScanType.RECEIVING
-          ? receivingViews.value
-          : stuffingViews.value;
+    const changeScanType = (val: string) => {
+      if (
+        (receivingFlag.value && val == ScanType.RECEIVING) ||
+        (stuffingFlag.value && val == ScanType.STUFFING)
+      ) {
+        nextTick(() => {
+          reset(inputRef.value);
+        });
+        pageViews.value =
+          scanType.value == ScanType.RECEIVING
+            ? receivingViews.value
+            : stuffingViews.value;
+      }
     };
     const onSubmit = () => {
       showLoading($q);
@@ -362,8 +300,6 @@ const LpSearchView = defineComponent({
           i18n.category.value = "MessageCode";
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            // routeParams.scanned = androidResponse.data.scanned;
-            // routeParams.total = androidResponse.data.total;
             routeParams.taskID = androidResponse.data.taskID;
             routeParams.type = scanType.value;
             const message = i18n.$t("E93-05-0007");
@@ -386,26 +322,7 @@ const LpSearchView = defineComponent({
     };
     // 4- Convert the input data value into upper case if it is not
     const multiWatchSources = [receivingViews.value, stuffingViews.value];
-    watch(
-      multiWatchSources,
-      () => {
-        if (receivingViews.value.length > 0) {
-          receivingViews.value.forEach((t: any) => {
-            if (t.model != null && t.model.length > 1) {
-              t.model = t.model.toUpperCase();
-            }
-          });
-        }
-        if (stuffingViews.value.length > 0) {
-          stuffingViews.value.forEach((t: any) => {
-            if (t.model != null && t.model.length > 1) {
-              t.model = t.model.toUpperCase();
-            }
-          });
-        }
-      },
-      { immediate: true }
-    );
+    toUpperCaseElementInput(multiWatchSources);
     const back = () => {
       router.push("/profile/" + route.params.id);
     };
@@ -413,37 +330,42 @@ const LpSearchView = defineComponent({
       router.push("/home");
     };
     const validPaste = (event: any, index: number) => {
-      if (event.clipboardData && event.clipboardData.getData("Text")) {
-        const text = event.clipboardData.getData("Text");
-        const param = inputRef.value as any;
-        param.forEach((t: any, i: number) => {
-          if (index - 1 == i) {
-            t.validate(text);
-          }
-        });
-      }
+      validPasteInput(inputRef, event, index);
     };
-    const scan = (dataFieldName: string) => {
+    const scan = (fieldName: string) => {
       const reqParams = {
         scanType: scanType.value,
-        fieldName: dataFieldName,
+        fieldName: fieldName,
       };
       bridge.call("scanForInput", reqParams);
     };
-
     bridge.register("getScanResult", (res: string) => {
+      const param = inputRef.value as any;
+      let scanFieldName = "";
       if (scanType.value == ScanType.RECEIVING) {
         receivingViews.value.forEach((receivingView: any) => {
-          const key = scanType.value + "_" + receivingView.dataFieldName;
+          const key = scanType.value + "_" + receivingView.fieldName;
           if (key == res.substring(0, res.lastIndexOf("_"))) {
             receivingView.model = res.substring(res.lastIndexOf("_") + 1);
+            scanFieldName = receivingView.fieldName;
+          }
+        });
+        param.forEach((t: any, i: number) => {
+          if (receivingViews.value[i].fieldName == scanFieldName) {
+            t.validate(receivingViews.value[i].model);
           }
         });
       } else {
         stuffingViews.value.forEach((stuffingView: any) => {
-          const key = scanType.value + "_" + stuffingView.dataFieldName;
+          const key = scanType.value + "_" + stuffingView.fieldName;
           if (key == res.substring(0, res.lastIndexOf("_"))) {
             stuffingView.model = res.substring(res.lastIndexOf("_") + 1);
+            scanFieldName = stuffingView.fieldName;
+          }
+        });
+        param.forEach((t: any, i: number) => {
+          if (receivingViews.value[i].fieldName == scanFieldName) {
+            t.validate(receivingViews.value[i].model);
           }
         });
       }
@@ -460,7 +382,7 @@ const LpSearchView = defineComponent({
       receivingFlag,
       stuffingFlag,
       pageViews,
-      onClick,
+      changeScanType,
       scan,
       inputRef,
       validPaste,
