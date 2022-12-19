@@ -98,7 +98,7 @@ const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
 }
-const enum DisplayAttributesLevel {
+const enum ProfileDisplayAttributesLevel {
   CARTON_UPC = "cartonupc",
 }
 type ViewElement = {
@@ -158,7 +158,7 @@ const DataManagementMixCartonView = defineComponent({
           (attr: ProfileDisplayAttribute) => {
             if (
               attr.type == scanType.value &&
-              attr.level == DisplayAttributesLevel.CARTON_UPC &&
+              attr.level == ProfileDisplayAttributesLevel.CARTON_UPC &&
               (attr.dataFieldName == "UPC" ||
                 attr.dataFieldName == "Color" ||
                 attr.dataFieldName == "Size" ||
@@ -312,6 +312,30 @@ const DataManagementMixCartonView = defineComponent({
         }
       });
     };
+
+    function composeReg(format: string) {
+      let reg = "";
+      for (let i = 0; i < format.length; i++) {
+        switch (format[i]) {
+          case "A":
+            reg += "[\\s\\S]";
+            break;
+          case "9":
+            reg += "[0-9]";
+            break;
+          case "#":
+            reg += "[0-9\\s]";
+            break;
+          case "X":
+            reg += "[a-zA-Z]";
+            break;
+          default:
+            reg += format[i];
+        }
+      }
+      return reg;
+    }
+
     return {
       back,
       dynamicViews,

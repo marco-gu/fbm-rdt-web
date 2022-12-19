@@ -135,7 +135,7 @@ const enum ScanType {
 }
 
 // Define Display Attribute
-const enum DisplayAttributesLevel {
+const enum ProfileDisplayAttributesLevel {
   ORDER = "order",
   CARTON_COMMON = "cartoncommon",
   CARTON_INDIVIDUAL = "cartonindividual",
@@ -269,8 +269,8 @@ const DataManagementDetailView = defineComponent({
     // Compose Group View
     const composeGroupViewElements = (attr: ProfileDisplayAttribute) => {
       if (
-        attr.level == DisplayAttributesLevel.CARTON_COMMON ||
-        attr.level == DisplayAttributesLevel.ORDER
+        attr.level == ProfileDisplayAttributesLevel.CARTON_COMMON ||
+        attr.level == ProfileDisplayAttributesLevel.ORDER
       ) {
         const viewElement = {} as ViewElement;
         viewElement.dataFieldName = attr.dataFieldName;
@@ -342,9 +342,9 @@ const DataManagementDetailView = defineComponent({
     // Compose Detail View
     const composeCartonViewElements = (attr: ProfileDisplayAttribute) => {
       if (
-        attr.level == DisplayAttributesLevel.CARTON_COMMON ||
-        attr.level == DisplayAttributesLevel.ORDER ||
-        attr.level == DisplayAttributesLevel.CARTON_INDIVIDUAL
+        attr.level == ProfileDisplayAttributesLevel.CARTON_COMMON ||
+        attr.level == ProfileDisplayAttributesLevel.ORDER ||
+        attr.level == ProfileDisplayAttributesLevel.CARTON_INDIVIDUAL
       ) {
         const viewElement = {} as ViewElement;
         viewElement.dataFieldName = attr.dataFieldName;
@@ -549,6 +549,29 @@ const DataManagementDetailView = defineComponent({
         });
       }
     };
+
+    function composeReg(format: string) {
+      let reg = "";
+      for (let i = 0; i < format.length; i++) {
+        switch (format[i]) {
+          case "A":
+            reg += "[\\s\\S]";
+            break;
+          case "9":
+            reg += "[0-9]";
+            break;
+          case "#":
+            reg += "[0-9\\s]";
+            break;
+          case "X":
+            reg += "[a-zA-Z]";
+            break;
+          default:
+            reg += format[i];
+        }
+      }
+      return reg;
+    }
 
     return {
       router,
