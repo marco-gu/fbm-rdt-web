@@ -84,11 +84,10 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { composeReg } from "../utils/regUtil";
 import { useI18n } from "@/plugin/i18nPlugins";
 import { useRoute, useRouter } from "vue-router";
 import { defineComponent, onMounted, Ref, ref } from "vue";
-import { DisplayAttribute, MixCartonProduct } from "@/models/profile";
+import { ProfileDisplayAttribute, MixCartonProduct } from "@/models/profile";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import {
   AndroidResponse,
@@ -98,7 +97,7 @@ const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
 }
-const enum DisplayAttributesLevel {
+const enum ProfileDisplayAttributesLevel {
   CARTON_UPC = "cartonupc",
 }
 type ViewElement = {
@@ -130,7 +129,7 @@ const DataManagementMixCartonView = defineComponent({
     const inputRef = ref(null);
     const dynamicViews: Ref<ViewElement[]> = ref([]);
     const mixCartonProduct = ref();
-    const profileAttrListDisplay: Ref<DisplayAttribute[]> = ref([]);
+    const profileAttrListDisplay: Ref<ProfileDisplayAttribute[]> = ref([]);
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -151,22 +150,26 @@ const DataManagementMixCartonView = defineComponent({
         taskId: taskId.value,
       };
       bridge.call("fetchProfileByProfileCode", args, (res: string) => {
-        profileAttrListDisplay.value = JSON.parse(res) as DisplayAttribute[];
-        profileAttrListDisplay.value.forEach((attr: DisplayAttribute) => {
-          if (
-            attr.type == scanType.value &&
-            attr.level == DisplayAttributesLevel.CARTON_UPC &&
-            (attr.dataFieldName == "UPC" ||
-              attr.dataFieldName == "Color" ||
-              attr.dataFieldName == "Size" ||
-              attr.dataFieldName == "Quantity")
-          ) {
-            dynamicViews.value.push(composeViewElements(attr));
+        profileAttrListDisplay.value = JSON.parse(
+          res
+        ) as ProfileDisplayAttribute[];
+        profileAttrListDisplay.value.forEach(
+          (attr: ProfileDisplayAttribute) => {
+            if (
+              attr.type == scanType.value &&
+              attr.level == ProfileDisplayAttributesLevel.CARTON_UPC &&
+              (attr.dataFieldName == "UPC" ||
+                attr.dataFieldName == "Color" ||
+                attr.dataFieldName == "Size" ||
+                attr.dataFieldName == "Quantity")
+            ) {
+              dynamicViews.value.push(composeViewElements(attr));
+            }
           }
-        });
+        );
       });
     };
-    const composeViewElements = (attr: DisplayAttribute) => {
+    const composeViewElements = (attr: ProfileDisplayAttribute) => {
       const viewElement = {} as ViewElement;
       viewElement.dataFieldName = attr.dataFieldName;
       viewElement.displayName = attr.dataFieldName;
@@ -308,6 +311,30 @@ const DataManagementMixCartonView = defineComponent({
         }
       });
     };
+
+    function composeReg(format: string) {
+      let reg = "";
+      for (let i = 0; i < format.length; i++) {
+        switch (format[i]) {
+          case "A":
+            reg += "[\\s\\S]";
+            break;
+          case "9":
+            reg += "[0-9]";
+            break;
+          case "#":
+            reg += "[0-9\\s]";
+            break;
+          case "X":
+            reg += "[a-zA-Z]";
+            break;
+          default:
+            reg += format[i];
+        }
+      }
+      return reg;
+    }
+
     return {
       back,
       dynamicViews,
