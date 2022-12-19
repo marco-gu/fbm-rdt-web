@@ -178,6 +178,7 @@ export interface ScanDataManagement {
 }
 
 export interface MixCartonProduct {
+  id: number;
   lpId: string;
   upc: string;
   color: string;

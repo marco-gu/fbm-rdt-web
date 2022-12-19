@@ -266,6 +266,7 @@ const DataManagementMixCartonView = defineComponent({
     };
     const composeSaveApiArgs = () => {
       let args = {
+        id: mixCartonProduct.value.id,
         lpId: lpId.value,
         upc: mixCartonProduct.value.upc,
         color: mixCartonProduct.value.color,
@@ -294,7 +295,7 @@ const DataManagementMixCartonView = defineComponent({
     };
     const handleDelete = () => {
       const args = {
-        lpId: lpId.value,
+        id: mixCartonProduct.value.id,
       };
       bridge.call("deleteCartonProduct", args, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
