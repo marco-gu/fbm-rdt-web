@@ -120,14 +120,14 @@ import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { Carton, DisplayAttribute, LP } from "../models/profile";
+import { Carton, ProfileDisplayAttribute, LP } from "../models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
-import { composeReg } from "../utils/regUtil";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
+import { composeReg } from "@/utils/profile.render";
 
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -192,7 +192,7 @@ const DataManagementDetailView = defineComponent({
       }
     });
 
-    const profileAttrListDisplay: Ref<DisplayAttribute[]> = ref([]);
+    const profileAttrListDisplay: Ref<ProfileDisplayAttribute[]> = ref([]);
     const search = ref("");
 
     const goToMix = () => {
@@ -242,28 +242,32 @@ const DataManagementDetailView = defineComponent({
         taskId: taskId,
       };
       bridge.call("fetchProfileByProfileCode", args, (res: string) => {
-        profileAttrListDisplay.value = JSON.parse(res) as DisplayAttribute[];
-        profileAttrListDisplay.value.forEach((attr: DisplayAttribute) => {
-          if (attr.type == scanType.value) {
-            if (pageType.value === "Group") {
-              const element = composeGroupViewElements(attr);
+        profileAttrListDisplay.value = JSON.parse(
+          res
+        ) as ProfileDisplayAttribute[];
+        profileAttrListDisplay.value.forEach(
+          (attr: ProfileDisplayAttribute) => {
+            if (attr.type == scanType.value) {
+              if (pageType.value === "Group") {
+                const element = composeGroupViewElements(attr);
 
-              if (element) {
-                pageViews.value.push(element);
-              }
-            } else if (pageType.value === "Detail") {
-              const element = composeCartonViewElements(attr);
-              if (element) {
-                pageViews.value.push(element);
+                if (element) {
+                  pageViews.value.push(element);
+                }
+              } else if (pageType.value === "Detail") {
+                const element = composeCartonViewElements(attr);
+                if (element) {
+                  pageViews.value.push(element);
+                }
               }
             }
           }
-        });
+        );
       });
     };
 
     // Compose Group View
-    const composeGroupViewElements = (attr: DisplayAttribute) => {
+    const composeGroupViewElements = (attr: ProfileDisplayAttribute) => {
       if (
         attr.level == DisplayAttributesLevel.CARTON_COMMON ||
         attr.level == DisplayAttributesLevel.ORDER
@@ -336,7 +340,7 @@ const DataManagementDetailView = defineComponent({
     };
 
     // Compose Detail View
-    const composeCartonViewElements = (attr: DisplayAttribute) => {
+    const composeCartonViewElements = (attr: ProfileDisplayAttribute) => {
       if (
         attr.level == DisplayAttributesLevel.CARTON_COMMON ||
         attr.level == DisplayAttributesLevel.ORDER ||

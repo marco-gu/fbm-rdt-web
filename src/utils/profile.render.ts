@@ -101,7 +101,7 @@ export function validPasteInput(inputRef: any, event: any, index: number) {
   }
 }
 
-function composeReg(format: string) {
+export function composeReg(format: string) {
   let reg = "";
   for (let i = 0; i < format.length; i++) {
     switch (format[i]) {
