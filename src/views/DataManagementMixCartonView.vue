@@ -16,69 +16,74 @@
         <span>{{ taskId }}</span>
       </div>
     </div>
-    <div class="mix-carton-container">
-      <div v-for="(item, i) in dynamicViews" :key="i">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          "
-        >
-          <span style="padding-left: 1rem; color: black">
-            {{ item.displayName }}
-          </span>
-          <q-input
-            ref="inputRef"
-            v-model="item.model"
-            @paste="validPaste($event, i)"
-            clearable
-            :maxlength="item.length"
-            input-class="text-right"
-            lazy-rules
-            :rules="[item.valid]"
-            borderless
-            style="padding: 0px 16px"
+    <q-form @submit="handleSave">
+      <div class="mix-carton-container">
+        <div v-for="(item, i) in dynamicViews" :key="i">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            "
           >
-            <template v-slot:append>
-              <q-avatar v-if="item.scan == 1" @click="scan(item.dataFieldName)">
-                <q-icon name="qr_code_scanner" />
-              </q-avatar>
-            </template>
-          </q-input>
+            <span style="padding-left: 1rem; color: black">
+              {{ item.displayName }}
+            </span>
+            <q-input
+              ref="inputRef"
+              v-model="item.model"
+              @paste="validPaste($event, i)"
+              clearable
+              :maxlength="item.length"
+              input-class="text-right"
+              lazy-rules
+              :rules="[item.valid]"
+              borderless
+              style="padding: 0px 16px"
+            >
+              <template v-slot:append>
+                <q-avatar
+                  v-if="item.scan == 1"
+                  @click="scan(item.dataFieldName)"
+                >
+                  <q-icon name="qr_code_scanner" />
+                </q-avatar>
+              </template>
+            </q-input>
+          </div>
+          <q-separator color="grey-5" />
         </div>
-        <q-separator color="grey-5" />
       </div>
-    </div>
-    <div class="bottom">
-      <q-btn
-        no-caps
-        style="width: 48%"
-        flat
-        push
-        label="Save"
-        @click="handleSave"
-      />
-      <q-separator vertical inset color="white" />
-      <q-btn
-        no-caps
-        style="width: 48%"
-        flat
-        push
-        label="Delete"
-        @click="handleDelete"
-      />
-      <q-separator vertical inset color="white" />
-      <q-btn
-        no-caps
-        style="width: 52%"
-        flat
-        type="submit"
-        push
-        label="Cancel"
-        @click="back"
-      />
-    </div>
+      <div class="bottom">
+        <q-btn
+          no-caps
+          style="width: 48%"
+          flat
+          push
+          label="Save"
+          type="submit"
+        />
+        <q-separator vertical inset color="white" />
+        <q-btn
+          no-caps
+          style="width: 48%"
+          flat
+          push
+          label="Delete"
+          @click="handleDelete"
+        />
+        <q-separator vertical inset color="white" />
+        <q-btn
+          no-caps
+          style="width: 48%"
+          flat
+          type="submit"
+          push
+          label="Cancel"
+          @click="back"
+        />
+      </div>
+    </q-form>
   </div>
 </template>
 <script lang="ts">
@@ -87,19 +92,16 @@ import { useQuasar } from "quasar";
 import { useI18n } from "@/plugin/i18nPlugins";
 import { useRoute, useRouter } from "vue-router";
 import { defineComponent, onMounted, Ref, ref } from "vue";
-import { ProfileDisplayAttribute, MixCartonProduct } from "@/models/profile";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
+import { ProfileElementLevel, composeReg } from "@/utils/profile.render";
+import { ProfileDisplayAttribute, MixCartonProduct } from "@/models/profile";
 import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { composeReg } from "@/utils/profile.render";
 const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
-}
-const enum ProfileDisplayAttributesLevel {
-  CARTON_UPC = "cartonupc",
 }
 type ViewElement = {
   dataFieldName: string;
@@ -158,7 +160,7 @@ const DataManagementMixCartonView = defineComponent({
           (attr: ProfileDisplayAttribute) => {
             if (
               attr.type == scanType.value &&
-              attr.level == ProfileDisplayAttributesLevel.CARTON_UPC &&
+              attr.level == ProfileElementLevel.CARTON_UPC &&
               (attr.dataFieldName == "UPC" ||
                 attr.dataFieldName == "Color" ||
                 attr.dataFieldName == "Size" ||
@@ -312,30 +314,6 @@ const DataManagementMixCartonView = defineComponent({
         }
       });
     };
-
-    function composeReg(format: string) {
-      let reg = "";
-      for (let i = 0; i < format.length; i++) {
-        switch (format[i]) {
-          case "A":
-            reg += "[\\s\\S]";
-            break;
-          case "9":
-            reg += "[0-9]";
-            break;
-          case "#":
-            reg += "[0-9\\s]";
-            break;
-          case "X":
-            reg += "[a-zA-Z]";
-            break;
-          default:
-            reg += format[i];
-        }
-      }
-      return reg;
-    }
-
     return {
       back,
       dynamicViews,
