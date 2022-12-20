@@ -277,7 +277,7 @@ const DataManagementDetailView = defineComponent({
             viewElement.model = ref(lpCarton.so);
             break;
           case "SKU":
-            viewElement.model = ref(lpCarton.so);
+            viewElement.model = ref(lpCarton.sku);
             break;
           case "ContainerNumber":
             viewElement.model = ref(lpCarton.containerNumber);
