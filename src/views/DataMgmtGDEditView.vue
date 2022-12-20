@@ -474,6 +474,7 @@ const DataManagementDetailView = defineComponent({
         bridge.call("updateTaskForDataManagement", apiParams, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            taskId.value = androidResponse.data;
             back();
             popupSuccessMsg($q, "Updated Successfully");
           }
@@ -505,7 +506,9 @@ const DataManagementDetailView = defineComponent({
 
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             popupSuccessMsg($q, "Deleted Successfully");
-            back();
+            router.push({
+              path: "/dataManagement",
+            });
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
             i18n.category.value = "MessageCode";
             const message = i18n.$t(androidResponse.messageCode);
