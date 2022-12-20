@@ -1,0 +1,15 @@
+{
+    "cancelLabel": "Cancel",
+    "deleteLabel": "Delete",
+    "detailViewLabel": "DetailView",
+    "finishedLabel": "Finished",
+    "groupViewLabel": "GroupView",
+    "mixLabel": "Mix",
+    "pageTitle": "Data Management",
+    "pendingLabel": "Pending",
+    "saveLabel": "Save",
+    "searchPlaceHolder": "Search",
+    "statusLabel": "Pending",
+    "uploadedLabel": "Uploaded",
+    "uploadLabel": "Upload"
+}

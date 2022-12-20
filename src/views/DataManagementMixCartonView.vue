@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">Data Management</span>
+          <span style="font-size: 21px">{{ pageTitle }}</span>
         </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -60,7 +60,7 @@
           style="width: 48%"
           flat
           push
-          label="Save"
+          :label="saveLabel"
           type="submit"
         />
         <q-separator vertical inset color="white" />
@@ -69,7 +69,7 @@
           style="width: 48%"
           flat
           push
-          label="Delete"
+          :label="deleteLabel"
           @click="handleDelete"
         />
         <q-separator vertical inset color="white" />
@@ -79,7 +79,7 @@
           flat
           type="submit"
           push
-          label="Cancel"
+          :label="cancelLabel"
           @click="back"
         />
       </div>
@@ -133,8 +133,17 @@ const DataManagementMixCartonView = defineComponent({
     const dynamicViews: Ref<ViewElement[]> = ref([]);
     const mixCartonProduct = ref();
     const profileAttrListDisplay: Ref<ProfileDisplayAttribute[]> = ref([]);
+    const pageTitle = ref("");
+    const cancelLabel = ref("");
+    const deleteLabel = ref("");
+    const saveLabel = ref("");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
+      i18n.category.value = "DataManagementView";
+      pageTitle.value = i18n.$t("pageTitle");
+      cancelLabel.value = i18n.$t("cancelLabel");
+      deleteLabel.value = i18n.$t("deleteLabel");
+      saveLabel.value = i18n.$t("saveLabel");
     });
     onMounted(() => {
       if (route.query.taskId) {
@@ -317,11 +326,15 @@ const DataManagementMixCartonView = defineComponent({
     };
     return {
       back,
+      cancelLabel,
+      deleteLabel,
       dynamicViews,
       handleSave,
       handleDelete,
       inputRef,
+      pageTitle,
       router,
+      saveLabel,
       scan,
       taskId,
     };

@@ -35,6 +35,14 @@ const App = defineComponent({
           zh: require("../src/assets/lang/ResetPwdView/zh.json"),
           en: require("../src/assets/lang/ResetPwdView/en.json"),
         },
+        ProfileManagementView: {
+          zh: require("../src/assets/lang/ProfileManagementView/zh.json"),
+          en: require("../src/assets/lang/ProfileManagementView/en.json"),
+        },
+        DataManagementView: {
+          zh: require("../src/assets/lang/DataManagementView/zh.json"),
+          en: require("../src/assets/lang/DataManagementView/en.json"),
+        },
       },
     });
     const router = useRouter();

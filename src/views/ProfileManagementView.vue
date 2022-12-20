@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span class="title-text">My Client Profile</span></q-item-section
+          <span class="title-text">{{ pageTitle }}</span></q-item-section
         >
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -14,7 +14,13 @@
       </q-item>
       <q-separator color="grey-5" />
       <div class="search q-pa-sm" v-show="!isEditMode">
-        <q-input v-model="search" outlined dense placeholder="Search" clearable>
+        <q-input
+          v-model="search"
+          outlined
+          dense
+          :placeholder="searchPlaceHolder"
+          clearable
+        >
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -54,7 +60,7 @@
         style="width: 48%"
         flat
         push
-        label="Delete"
+        :label="deleteLabel"
         @click="deleteProfile"
       />
       <q-separator vertical inset color="white" />
@@ -64,7 +70,7 @@
         flat
         type="submit"
         push
-        label="Cancel"
+        :label="cancelLabel"
         @click="cancelEditMode"
       />
     </div>
@@ -73,7 +79,6 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import { ProfileMaster } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
@@ -88,13 +93,21 @@ const ProfileManagementView = defineComponent({
     const $q = useQuasar();
     const router = useRouter();
     const i18n = useI18n();
-    const store = useStore();
     const search = ref("");
     const isEditMode = ref(false);
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
+    const pageTitle = ref("");
+    const searchPlaceHolder = ref("");
+    const deleteLabel = ref("");
+    const cancelLabel = ref("");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
+      i18n.category.value = "ProfileManagementView";
+      pageTitle.value = i18n.$t("pageTitle");
+      searchPlaceHolder.value = i18n.$t("searchPlaceHolder");
+      deleteLabel.value = i18n.$t("deleteLabel");
+      cancelLabel.value = i18n.$t("cancelLabel");
     });
     onMounted(() => {
       getProfileList();
@@ -202,16 +215,20 @@ const ProfileManagementView = defineComponent({
       isEditMode.value = false;
     };
     return {
-      router,
-      back,
-      home,
-      refresh,
-      profileListDisplay,
-      search,
-      handleHold,
-      isEditMode,
-      deleteProfile,
       cancelEditMode,
+      cancelLabel,
+      back,
+      deleteLabel,
+      deleteProfile,
+      pageTitle,
+      handleHold,
+      home,
+      isEditMode,
+      profileListDisplay,
+      refresh,
+      router,
+      search,
+      searchPlaceHolder,
     };
   },
 });

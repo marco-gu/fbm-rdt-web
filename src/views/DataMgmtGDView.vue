@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">Data Management</span>
+          <span style="font-size: 21px">{{ pageTitle }}</span>
         </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -70,7 +70,7 @@
         :class="pageType == 'Group' ? 'btnSelected' : ''"
         flat
         push
-        label="GroupView"
+        :label="groupViewLabel"
         @click="changPageType('Group')"
       />
       <q-separator vertical inset color="white" />
@@ -81,7 +81,7 @@
         flat
         type="submit"
         push
-        label="DetailView"
+        :label="detailViewLabel"
         @click="changPageType('Detail')"
       />
     </div>
@@ -106,9 +106,16 @@ const DataMgmtView = defineComponent({
     const i18n = useI18n();
     const taskId = ref(route.query.taskId);
     const pageType = ref("Group");
+    const pageTitle = ref("");
+    const detailViewLabel = ref("");
+    const groupViewLabel = ref("");
 
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
+      i18n.category.value = "DataManagementView";
+      pageTitle.value = i18n.$t("pageTitle");
+      detailViewLabel.value = i18n.$t("detailViewLabel");
+      groupViewLabel.value = i18n.$t("groupViewLabel");
     });
 
     const taskDisplay: Ref<LP> = ref({} as LP);
@@ -183,6 +190,9 @@ const DataMgmtView = defineComponent({
       pageType,
       changPageType,
       onClickCarton,
+      pageTitle,
+      detailViewLabel,
+      groupViewLabel,
     };
   },
 });

@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">Data Management</span>
+          <span style="font-size: 21px">{{ pageTitle }}</span>
         </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -86,7 +86,7 @@
         style="background: #42b0d5; color: white"
         flat
         push
-        label="Save"
+        :label="saveLabel"
         @click="handleSave"
       />
       <q-separator vertical inset color="white" />
@@ -97,7 +97,7 @@
         flat
         type="submit"
         push
-        label="Delete"
+        :label="deleteLabel"
         @click="handleDelete"
       />
       <q-separator vertical inset color="white" />
@@ -109,7 +109,7 @@
         flat
         type="submit"
         push
-        label="Mix"
+        :label="mixLabel"
         @click="goToMix"
       />
     </div>
@@ -172,8 +172,17 @@ const DataManagementDetailView = defineComponent({
       localStorage.getItem("dataMgmtCarton") as never
     ) as Carton; //前一个页面存的carton, 给Detail用
 
+    const pageTitle = ref("");
+    const deleteLabel = ref("");
+    const saveLabel = ref("");
+    const mixLabel = ref("");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
+      i18n.category.value = "DataManagementView";
+      pageTitle.value = i18n.$t("pageTitle");
+      deleteLabel.value = i18n.$t("deleteLabel");
+      saveLabel.value = i18n.$t("saveLabel");
+      mixLabel.value = i18n.$t("mixLabel");
     });
 
     onMounted(() => {
@@ -562,6 +571,10 @@ const DataManagementDetailView = defineComponent({
       handleSave,
       validPaste,
       scan,
+      pageTitle,
+      deleteLabel,
+      saveLabel,
+      mixLabel,
     };
   },
 });
