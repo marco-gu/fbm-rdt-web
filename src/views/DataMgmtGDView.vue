@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">Data Management</span>
+          <span style="font-size: 21px">{{ pageTitle }}</span>
         </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -33,16 +33,14 @@
         <div class="col"></div>
       </div>
 
-      <q-list v-for="(item, index) in taskListDisplay" :key="index">
-        <div class="groupList row items-center" @click="onClickLP(item)">
-          <div class="col-4">{{ item.so }}</div>
-          <div class="col-4">{{ item.po }}</div>
-          <div class="col">{{ item.cartonSize }}</div>
-          <div class="col">
-            <q-icon size="md" name="chevron_right" color="black" />
-          </div>
+      <div class="groupList row items-center" @click="onClickLP(taskDisplay)">
+        <div class="col-4">{{ taskDisplay.so }}</div>
+        <div class="col-4">{{ taskDisplay.po }}</div>
+        <div class="col">{{ taskDisplay.cartonSize }}</div>
+        <div class="col">
+          <q-icon size="md" name="chevron_right" color="black" />
         </div>
-      </q-list>
+      </div>
     </div>
 
     <div v-show="pageType == 'Detail'">
@@ -72,7 +70,7 @@
         :class="pageType == 'Group' ? 'btnSelected' : ''"
         flat
         push
-        label="GroupView"
+        :label="groupViewLabel"
         @click="changPageType('Group')"
       />
       <q-separator vertical inset color="white" />
@@ -83,7 +81,7 @@
         flat
         type="submit"
         push
-        label="DetailView"
+        :label="detailViewLabel"
         @click="changPageType('Detail')"
       />
     </div>
@@ -108,18 +106,20 @@ const DataMgmtView = defineComponent({
     const i18n = useI18n();
     const taskId = ref(route.query.taskId);
     const pageType = ref("Group");
+    const pageTitle = ref("");
+    const detailViewLabel = ref("");
+    const groupViewLabel = ref("");
 
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
+      i18n.category.value = "DataManagementView";
+      pageTitle.value = i18n.$t("pageTitle");
+      detailViewLabel.value = i18n.$t("detailViewLabel");
+      groupViewLabel.value = i18n.$t("groupViewLabel");
     });
 
-    const taskListDisplay: Ref<LP[]> = ref([]);
+    const taskDisplay: Ref<LP> = ref({} as LP);
     const cartonListDisplay: Ref<Carton[]> = ref([]);
-
-    const refresh = (done: any) => {
-      getTaskList();
-      done();
-    };
 
     const onClickLP = (item: any) => {
       router.push({
@@ -152,20 +152,29 @@ const DataMgmtView = defineComponent({
       });
     };
 
-    const getTaskList = () => {
-      bridge.call("fetchTask", null, (res: string) => {
-        taskListDisplay.value = JSON.parse(res) as LP[];
+    const fetchTaskByTaskId = (taskId: string) => {
+      const args = {
+        taskId: taskId,
+      };
+      bridge.call("fetchTaskByTaskId", args, (res: string) => {
+        taskDisplay.value = JSON.parse(res) as LP;
       });
     };
-    const getLPDetailList = () => {
-      bridge.call("fetchCartons", null, (res: string) => {
+
+    const getLPDetailList = (taskId: string) => {
+      const args = {
+        taskId: taskId,
+      };
+      bridge.call("fetchLPByTaskId", args, (res: string) => {
         cartonListDisplay.value = JSON.parse(res) as Carton[];
       });
     };
 
     onMounted(() => {
-      getTaskList();
-      getLPDetailList();
+      if (typeof taskId.value === "string") {
+        fetchTaskByTaskId(taskId.value);
+        getLPDetailList(taskId.value);
+      }
       if (typeof route.query.pageType === "string") {
         pageType.value = route.query.pageType;
       }
@@ -173,15 +182,17 @@ const DataMgmtView = defineComponent({
 
     return {
       router,
-      refresh,
       onClickLP,
-      taskListDisplay,
+      taskDisplay,
       cartonListDisplay,
       back,
       taskId,
       pageType,
       changPageType,
       onClickCarton,
+      pageTitle,
+      detailViewLabel,
+      groupViewLabel,
     };
   },
 });

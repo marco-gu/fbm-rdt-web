@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">Data Management</span>
+          <span style="font-size: 21px">{{ pageTitle }}</span>
         </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -56,8 +56,11 @@ const DataManagementMixCartonListView = defineComponent({
     const taskId = ref(route.query.taskId);
     const cartonId = ref(route.query.cartonId);
     const mixCartonListDisplay: Ref<MixCartonProduct[]> = ref([]);
+    const pageTitle = ref("");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
+      i18n.category.value = "DataManagementView";
+      pageTitle.value = i18n.$t("pageTitle");
     });
     onMounted(() => {
       getMixCartonList();
@@ -92,11 +95,12 @@ const DataManagementMixCartonListView = defineComponent({
       });
     };
     return {
-      router,
       back,
-      taskId,
-      onClickMixCarton,
       mixCartonListDisplay,
+      onClickMixCarton,
+      pageTitle,
+      router,
+      taskId,
     };
   },
 });

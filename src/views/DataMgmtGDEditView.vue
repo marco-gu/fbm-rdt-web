@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">Data Management</span>
+          <span style="font-size: 21px">{{ pageTitle }}</span>
         </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -86,7 +86,7 @@
         style="background: #42b0d5; color: white"
         flat
         push
-        label="Save"
+        :label="saveLabel"
         @click="handleSave"
       />
       <q-separator vertical inset color="white" />
@@ -97,7 +97,7 @@
         flat
         type="submit"
         push
-        label="Delete"
+        :label="deleteLabel"
         @click="handleDelete"
       />
       <q-separator vertical inset color="white" />
@@ -109,7 +109,7 @@
         flat
         type="submit"
         push
-        label="Mix"
+        :label="mixLabel"
         @click="goToMix"
       />
     </div>
@@ -122,23 +122,16 @@ import { defineComponent, onMounted, Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Carton, ProfileDisplayAttribute, LP } from "../models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
+import { ProfileElementLevel, composeReg } from "@/utils/profile.render";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { composeReg } from "@/utils/profile.render";
 
 const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
-}
-
-// Define Display Attribute
-const enum ProfileDisplayAttributesLevel {
-  ORDER = "order",
-  CARTON_COMMON = "cartoncommon",
-  CARTON_INDIVIDUAL = "cartonindividual",
 }
 
 type ViewElement = {
@@ -179,8 +172,17 @@ const DataManagementDetailView = defineComponent({
       localStorage.getItem("dataMgmtCarton") as never
     ) as Carton; //前一个页面存的carton, 给Detail用
 
+    const pageTitle = ref("");
+    const deleteLabel = ref("");
+    const saveLabel = ref("");
+    const mixLabel = ref("");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
+      i18n.category.value = "DataManagementView";
+      pageTitle.value = i18n.$t("pageTitle");
+      deleteLabel.value = i18n.$t("deleteLabel");
+      saveLabel.value = i18n.$t("saveLabel");
+      mixLabel.value = i18n.$t("mixLabel");
     });
 
     onMounted(() => {
@@ -269,8 +271,8 @@ const DataManagementDetailView = defineComponent({
     // Compose Group View
     const composeGroupViewElements = (attr: ProfileDisplayAttribute) => {
       if (
-        attr.level == ProfileDisplayAttributesLevel.CARTON_COMMON ||
-        attr.level == ProfileDisplayAttributesLevel.ORDER
+        attr.level == ProfileElementLevel.CARTON_COMMON ||
+        attr.level == ProfileElementLevel.ORDER
       ) {
         const viewElement = {} as ViewElement;
         viewElement.dataFieldName = attr.dataFieldName;
@@ -284,7 +286,7 @@ const DataManagementDetailView = defineComponent({
             viewElement.model = ref(lpCarton.so);
             break;
           case "SKU":
-            viewElement.model = ref(lpCarton.so);
+            viewElement.model = ref(lpCarton.sku);
             break;
           case "ContainerNumber":
             viewElement.model = ref(lpCarton.containerNumber);
@@ -342,9 +344,9 @@ const DataManagementDetailView = defineComponent({
     // Compose Detail View
     const composeCartonViewElements = (attr: ProfileDisplayAttribute) => {
       if (
-        attr.level == ProfileDisplayAttributesLevel.CARTON_COMMON ||
-        attr.level == ProfileDisplayAttributesLevel.ORDER ||
-        attr.level == ProfileDisplayAttributesLevel.CARTON_INDIVIDUAL
+        attr.level == ProfileElementLevel.CARTON_COMMON ||
+        attr.level == ProfileElementLevel.ORDER ||
+        attr.level == ProfileElementLevel.CARTON_INDIVIDUAL
       ) {
         const viewElement = {} as ViewElement;
         viewElement.dataFieldName = attr.dataFieldName;
@@ -481,6 +483,7 @@ const DataManagementDetailView = defineComponent({
         bridge.call("updateTaskForDataManagement", apiParams, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            taskId.value = androidResponse.data;
             back();
             popupSuccessMsg($q, "Updated Successfully");
           }
@@ -512,7 +515,9 @@ const DataManagementDetailView = defineComponent({
 
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             popupSuccessMsg($q, "Deleted Successfully");
-            back();
+            router.push({
+              path: "/dataManagement",
+            });
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
             i18n.category.value = "MessageCode";
             const message = i18n.$t(androidResponse.messageCode);
@@ -550,29 +555,6 @@ const DataManagementDetailView = defineComponent({
       }
     };
 
-    function composeReg(format: string) {
-      let reg = "";
-      for (let i = 0; i < format.length; i++) {
-        switch (format[i]) {
-          case "A":
-            reg += "[\\s\\S]";
-            break;
-          case "9":
-            reg += "[0-9]";
-            break;
-          case "#":
-            reg += "[0-9\\s]";
-            break;
-          case "X":
-            reg += "[a-zA-Z]";
-            break;
-          default:
-            reg += format[i];
-        }
-      }
-      return reg;
-    }
-
     return {
       router,
       goToMix,
@@ -589,6 +571,10 @@ const DataManagementDetailView = defineComponent({
       handleSave,
       validPaste,
       scan,
+      pageTitle,
+      deleteLabel,
+      saveLabel,
+      mixLabel,
     };
   },
 });

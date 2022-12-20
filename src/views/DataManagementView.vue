@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span class="title-text">Data Management</span></q-item-section
+          <span class="title-text">{{ pageTitle }}</span></q-item-section
         >
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -14,23 +14,29 @@
       </q-item>
       <q-separator color="grey-5" />
       <div class="search q-pa-sm" v-show="!isEditMode">
-        <q-input v-model="search" outlined dense placeholder="Search" clearable>
+        <q-input
+          v-model="search"
+          outlined
+          dense
+          :placeholder="searchPlaceHolder"
+          clearable
+        >
           <template v-slot:append>
             <q-icon name="search" />
           </template>
         </q-input>
       </div>
       <div class="status q-pa-xs" style="text-align: left">
-        <q-btn-dropdown flat :label="status">
+        <q-btn-dropdown flat :label="statusLabel">
           <q-list>
-            <q-item clickable v-close-popup @click="status = 'pending'">
-              <q-item-section>Pending</q-item-section>
+            <q-item clickable v-close-popup @click="onSelectStatus('pending')">
+              <q-item-section>{{ pendingLabel }}</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup @click="status = 'finished'">
-              <q-item-section>Finished</q-item-section>
+            <q-item clickable v-close-popup @click="onSelectStatus('finished')">
+              <q-item-section>{{ finishedLabel }}</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup @click="status = 'uploaded'">
-              <q-item-section>Uploaded</q-item-section>
+            <q-item clickable v-close-popup @click="onSelectStatus('uploaded')">
+              <q-item-section>{{ uploadLabel }}</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
@@ -104,7 +110,7 @@
         style="width: 48%"
         flat
         push
-        label="Upload"
+        :label="uploadLabel"
         @click="handleUpload"
       />
       <q-separator vertical inset color="white" />
@@ -113,7 +119,7 @@
         style="width: 48%"
         flat
         push
-        label="Delete"
+        :label="deleteLabel"
         @click="handleDelete"
       />
       <q-separator vertical inset color="white" />
@@ -123,7 +129,7 @@
         flat
         type="submit"
         push
-        label="Cancel"
+        :label="cancelLabel"
         @click="cancelEditMode"
       />
     </div>
@@ -156,8 +162,27 @@ const DataManagementView = defineComponent({
     const status = ref("pending");
     let result: ScanDataManagement[] = [];
     const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
+    const pageTitle = ref("");
+    const cancelLabel = ref("");
+    const deleteLabel = ref("");
+    const finishedLabel = ref("");
+    const pendingLabel = ref("");
+    const searchPlaceHolder = ref("");
+    const statusLabel = ref("");
+    const uploadLabel = ref("");
+    const uploadedLabel = ref("");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
+      i18n.category.value = "DataManagementView";
+      pageTitle.value = i18n.$t("pageTitle");
+      cancelLabel.value = i18n.$t("cancelLabel");
+      deleteLabel.value = i18n.$t("deleteLabel");
+      finishedLabel.value = i18n.$t("finishedLabel");
+      pendingLabel.value = i18n.$t("pendingLabel");
+      searchPlaceHolder.value = i18n.$t("searchPlaceHolder");
+      statusLabel.value = i18n.$t("statusLabel");
+      uploadLabel.value = i18n.$t("uploadLabel");
+      uploadedLabel.value = i18n.$t("uploadedLabel");
     });
     onMounted(() => {
       getScanDataList();
@@ -269,18 +294,44 @@ const DataManagementView = defineComponent({
     const cancelEditMode = () => {
       isEditMode.value = false;
     };
+    const onSelectStatus = (item: string) => {
+      status.value = item;
+      switch (item) {
+        case "pending":
+          statusLabel.value = pendingLabel.value;
+          break;
+        case "finished":
+          statusLabel.value = finishedLabel.value;
+          break;
+        case "uploaded":
+          statusLabel.value = uploadedLabel.value;
+          break;
+        default:
+          break;
+      }
+    };
     return {
-      router,
       back,
-      search,
-      status,
-      isEditMode,
+      cancelEditMode,
+      cancelLabel,
+      deleteLabel,
+      finishedLabel,
+      handleDelete,
       handleHold,
       handleUpload,
-      handleDelete,
-      cancelEditMode,
+      isEditMode,
       onClickScanTask,
+      onSelectStatus,
+      pageTitle,
+      pendingLabel,
+      router,
       scanDataListDisplay,
+      search,
+      searchPlaceHolder,
+      status,
+      statusLabel,
+      uploadedLabel,
+      uploadLabel,
     };
   },
 });

@@ -62,6 +62,7 @@ export function composeViewElement(attr: ProfileDisplayAttribute) {
               `Please input not more or less than ${attr.maxLength} charactors`
             );
           } else if (!element.reg.test(val)) {
+            alert(element.reg);
             resolve("Please input correct format");
           } else {
             resolve(true);
