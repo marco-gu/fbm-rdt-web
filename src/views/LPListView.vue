@@ -30,7 +30,7 @@
           <q-item clickable @click="onClickItem(item)">
             <q-item-section>
               <q-item-label>{{ item.taskId }}</q-item-label>
-              <q-item-label caption>{{ item.createDatetime }}</q-item-label>
+              <q-item-label caption>{{ item.finalDatetime }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-circular-progress show-value size="50px" :value="100">
@@ -99,6 +99,9 @@ const LPListView = defineComponent({
       bridge.call("fetchTask", null, (res: string) => {
         result = JSON.parse(res) as LP[];
         taskListDisplay.value = JSON.parse(res) as LP[];
+        taskListDisplay.value.sort((a, b) =>
+          b.finalDatetime.localeCompare(a.finalDatetime)
+        );
       });
     };
 

@@ -148,6 +148,7 @@ export type LP = {
   createDatetime: string;
   updateUser: string;
   updateDatetime: string;
+  finalDatetime: string;
   totalCBM: string;
   totalWeight: string;
 };

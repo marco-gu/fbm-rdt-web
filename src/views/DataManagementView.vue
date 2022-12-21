@@ -196,7 +196,7 @@ const DataManagementView = defineComponent({
     };
     const sortScanDataList = (scanDataListDisplay: any[]) => {
       scanDataListDisplay.sort((a: any, b: any) => {
-        return (a.taskId + "").localeCompare(b.taskId + "");
+        return b.updateDatetime.localeCompare(a.updateDatetime);
       });
     };
     const back = () => {
