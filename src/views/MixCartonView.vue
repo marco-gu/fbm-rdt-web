@@ -62,7 +62,7 @@
     <DialogComponent
       :dialogVisible="dialogVisible"
       @confirm="onConfirm"
-      @close="back"
+      @close="onClose"
     >
     </DialogComponent>
   </div>
@@ -111,7 +111,7 @@ const MixCartonView = defineComponent({
           });
         }
         cartonID.value = mixCartonView.cartonID;
-        itemCount.value = 0;
+        // itemCount.value = 0;
       });
     }
     const complete = () => {
@@ -212,16 +212,15 @@ const MixCartonView = defineComponent({
         // nextTick(() => {
         //   reset(inputRef.value);
         // });
-        // itemCount.value++;
         if (completeMixCarton.value) {
           completeMixCarton.value = false;
           bridge.call("completeMixCarton", null, () => {
+            itemCount.value++;
             nextTick(() => {
               reset(inputRef.value);
             });
           });
         } else {
-          // popupSuccessMsg($q, "Add success");
           dialogVisible.value = true;
         }
       });
@@ -238,7 +237,7 @@ const MixCartonView = defineComponent({
             }
           } else {
             if (resovle != false && stop == false) {
-              alert("Not allow to cancel");
+              alert("Not allow to back");
             } else {
               bridge.call("completeMixCarton", null, () => {
                 nextTick(() => {
@@ -249,11 +248,6 @@ const MixCartonView = defineComponent({
           }
         });
       });
-      // bridge.call("completeMixCarton", null, () => {
-      //   nextTick(() => {
-      //     reset(inputRef.value);
-      //   });
-      // });
     };
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
@@ -267,7 +261,16 @@ const MixCartonView = defineComponent({
       });
       itemCount.value++;
     };
+    const onClose = () => {
+      dialogVisible.value = false;
+      bridge.call("completeMixCarton", null, () => {
+        nextTick(() => {
+          reset(inputRef.value);
+        });
+      });
+    };
     return {
+      onClose,
       onConfirm,
       onSubmit,
       complete,
