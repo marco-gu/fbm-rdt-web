@@ -9,7 +9,7 @@
     <div @click="goOffline()">
       <q-img no-spinner :src="offlineLogo" width="80%" />
     </div>
-    <div>
+    <div @click="goContinue()">
       <q-img no-spinner :src="continueLogo" width="80%" />
     </div>
   </div>
@@ -37,6 +37,10 @@ export default {
       router.push("/profile/offline");
     };
 
+    const goContinue = () => {
+      router.push("/continueJobs");
+    };
+
     return {
       router,
       onlineLogo,
@@ -44,6 +48,7 @@ export default {
       continueLogo,
       goOnline,
       goOffline,
+      goContinue,
       logoIcon,
     };
   },

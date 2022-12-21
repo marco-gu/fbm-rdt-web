@@ -21,6 +21,7 @@ import DataMgmtGDView from "../views/DataMgmtGDView.vue";
 import DataMgmtGDEditView from "../views/DataMgmtGDEditView.vue";
 import DataManagementMixCartonView from "../views/DataManagementMixCartonView.vue";
 import DataManagementMixCartonListView from "../views/DataManagementMixCartonListView.vue";
+import MyJobsView from "../views/MyJobsView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -136,6 +137,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/dataManagementMixCartonList",
     name: "dataManagementMixCartonList",
     component: DataManagementMixCartonListView,
+  },
+  {
+    path: "/continueJobs",
+    name: "MyJobs",
+    component: MyJobsView,
   },
 ];
 

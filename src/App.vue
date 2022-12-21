@@ -43,6 +43,10 @@ const App = defineComponent({
           zh: require("../src/assets/lang/DataManagementView/zh.json"),
           en: require("../src/assets/lang/DataManagementView/en.json"),
         },
+        ContinueMyJobView: {
+          zh: require("../src/assets/lang/ContinueMyJobView/zh.json"),
+          en: require("../src/assets/lang/ContinueMyJobView/en.json"),
+        },
       },
     });
     const router = useRouter();
