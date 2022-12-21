@@ -26,11 +26,11 @@
         <div>
           <q-list>
             <q-item style="background-color: #42b0d5">
-              <q-img :src="logoIcon" />
+              <q-img no-spinner :src="logoIcon" />
             </q-item>
             <q-item clickable @click="goMyProfile()" v-ripple>
               <q-item-section avatar>
-                <q-img :src="userProfileIcon" />
+                <q-img no-spinner :src="userProfileIcon" />
               </q-item-section>
               <q-item-section avatar>
                 <q-item-label>My Client Profile</q-item-label>
@@ -38,7 +38,7 @@
             </q-item>
             <q-item clickable @click="goDataManagement()" v-ripple>
               <q-item-section avatar>
-                <q-img :src="dataManagementIcon" />
+                <q-img no-spinner :src="dataManagementIcon" />
               </q-item-section>
               <q-item-section avatar>
                 <q-item-label>Data Management</q-item-label>
@@ -46,7 +46,7 @@
             </q-item>
             <q-item clickable @click="goLPList" v-ripple>
               <q-item-section avatar>
-                <q-img :src="lpListIcon" />
+                <q-img no-spinner :src="lpListIcon" />
               </q-item-section>
               <q-item-section avatar>
                 <q-item-label>LP List</q-item-label>
@@ -54,7 +54,7 @@
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-img :src="cargoImageIcon" />
+                <q-img no-spinner :src="cargoImageIcon" />
               </q-item-section>
               <q-item-section avatar>
                 <q-item-label>Cargo Images</q-item-label>
@@ -62,7 +62,7 @@
             </q-item>
             <q-item clickable @click="goSetting" v-ripple>
               <q-item-section avatar>
-                <q-img :src="settingIcon" />
+                <q-img no-spinner :src="settingIcon" />
               </q-item-section>
               <q-item-section avatar>
                 <q-item-label>Setting</q-item-label>
@@ -70,7 +70,7 @@
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-img :src="userManualIcon" />
+                <q-img no-spinner :src="userManualIcon" />
               </q-item-section>
               <q-item-section avatar>
                 <q-item-label>User Manual</q-item-label>
@@ -79,7 +79,7 @@
           </q-list>
           <q-item clickable v-ripple>
             <q-item-section avatar>
-              <q-img :src="logoutIcon" />
+              <q-img no-spinner :src="logoutIcon" />
             </q-item-section>
             <q-item-section avatar @click="logout()">
               <q-item-label>Log out</q-item-label>

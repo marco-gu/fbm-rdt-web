@@ -59,9 +59,16 @@
         >
       </div>
     </q-form>
+    <DialogComponent
+      :dialogVisible="dialogVisible"
+      @confirm="onConfirm"
+      @close="back"
+    >
+    </DialogComponent>
   </div>
 </template>
 <script lang="ts">
+import DialogComponent from "@/components/DialogComponent.vue";
 import { CartonDetailAttribute } from "@/models/profile";
 import { popupSuccessMsg } from "@/plugin/popupPlugins";
 import {
@@ -75,12 +82,16 @@ import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, ref } from "vue";
 const MixCartonView = defineComponent({
+  components: {
+    DialogComponent,
+  },
   setup() {
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const cartonID = ref("");
     const itemCount = ref(0);
     const $q = useQuasar();
     const inputRef = ref(null);
+    const dialogVisible = ref(false);
     let alreadyRendered = false;
     const completeMixCarton = ref(false);
     let mixCartonView = {} as CartonDetailAttribute;
@@ -111,12 +122,17 @@ const MixCartonView = defineComponent({
           if (i < param.length - 1) {
             if (resovle == false && stop == false) {
               stop = true;
-              bridge.call("completeMixCarton", null, () => {
-                nextTick(() => {
-                  reset(inputRef.value);
-                });
-              });
+              // bridge.call("completeMixCarton", null, () => {
+              //   nextTick(() => {
+              //     reset(inputRef.value);
+              //   });
+              // });
             }
+            // else {
+            //   if (resovle != false && stop == false) {
+            //     alert("Not allow to cancel");
+            //   }
+            // }
           } else {
             if (resovle != false && stop == false) {
               let stop = false;
@@ -193,10 +209,10 @@ const MixCartonView = defineComponent({
         }
       });
       bridge.call("addMixCarton", args, () => {
-        nextTick(() => {
-          reset(inputRef.value);
-        });
-        itemCount.value++;
+        // nextTick(() => {
+        //   reset(inputRef.value);
+        // });
+        // itemCount.value++;
         if (completeMixCarton.value) {
           completeMixCarton.value = false;
           bridge.call("completeMixCarton", null, () => {
@@ -205,24 +221,54 @@ const MixCartonView = defineComponent({
             });
           });
         } else {
-          popupSuccessMsg($q, "Add success");
+          // popupSuccessMsg($q, "Add success");
+          dialogVisible.value = true;
         }
       });
     };
 
     const back = () => {
-      bridge.call("completeMixCarton", null, () => {
-        nextTick(() => {
-          reset(inputRef.value);
+      const param = inputRef.value as any;
+      let stop = false;
+      param.forEach((t: any, i: number) => {
+        t.validate(t.modelValue).then((resovle: any) => {
+          if (i < param.length - 1) {
+            if (resovle == false && stop == false) {
+              stop = true;
+            }
+          } else {
+            if (resovle != false && stop == false) {
+              alert("Not allow to cancel");
+            } else {
+              bridge.call("completeMixCarton", null, () => {
+                nextTick(() => {
+                  reset(inputRef.value);
+                });
+              });
+            }
+          }
         });
       });
+      // bridge.call("completeMixCarton", null, () => {
+      //   nextTick(() => {
+      //     reset(inputRef.value);
+      //   });
+      // });
     };
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
     };
     const multiWatchSources = [pageViews.value];
     toUpperCaseElementInput(multiWatchSources);
+    const onConfirm = () => {
+      dialogVisible.value = false;
+      nextTick(() => {
+        reset(inputRef.value);
+      });
+      itemCount.value++;
+    };
     return {
+      onConfirm,
       onSubmit,
       complete,
       pageViews,
@@ -232,6 +278,7 @@ const MixCartonView = defineComponent({
       back,
       validPaste,
       scan,
+      dialogVisible,
     };
   },
 });

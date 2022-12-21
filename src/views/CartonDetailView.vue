@@ -135,12 +135,7 @@ const CartonDetailView = defineComponent({
             }
           } else {
             if (resovle != false && stop == false) {
-              bridge.call("completeCartonDetail", null, () => {
-                alert("completeCartonDetail");
-                nextTick(() => {
-                  reset(inputRef.value);
-                });
-              });
+              alert("Not allow to cancel");
             }
           }
         });
