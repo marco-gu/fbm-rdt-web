@@ -139,6 +139,8 @@ export type LP = {
   profileName: string;
   so: string;
   po: string;
+  scannedCartonNumber: number;
+  expectedCartonNumber: number;
   scanType: number;
   validationType: number;
   uploadStatus: number;
@@ -162,11 +164,12 @@ export type Carton = {
   hub: string;
   lpId: string;
   cartonId: string;
-  scanStatus: string;
+  scanStatus: number;
   createUser: string;
   createDatetime: string;
   updateUser: string;
   updateDatetime: string;
+  expected: boolean;
 };
 
 export interface ScanDataManagement {

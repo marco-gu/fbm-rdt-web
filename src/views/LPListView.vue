@@ -35,7 +35,7 @@
             <q-item-section side>
               <q-circular-progress show-value size="50px" :value="100">
                 <div style="color: black">
-                  {{ item.cartonSize }}
+                  {{ item.expectedCartonNumber }}
                 </div></q-circular-progress
               >
             </q-item-section>
