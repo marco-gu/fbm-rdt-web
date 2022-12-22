@@ -65,6 +65,7 @@ const ProfileView = defineComponent({
     const router = useRouter();
     const route = useRoute();
     const i18n = useI18n();
+    let isFirstSync = true;
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -80,6 +81,7 @@ const ProfileView = defineComponent({
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           getProfileList();
           popupSuccessMsg($q, "Synchronize completed!");
+          isFirstSync = false;
           done();
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           i18n.category.value = "MessageCode";
@@ -110,12 +112,21 @@ const ProfileView = defineComponent({
         result = JSON.parse(res) as ProfileMaster[];
         profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
         if (result.length === 0) {
-          $q.dialog({
-            title: "Sync Profile",
-            message: "Please synchronize the latest profiles",
-          }).onOk(() => {
-            refresh(() => void 0);
-          });
+          if (isFirstSync) {
+            $q.dialog({
+              title: "Sync Profile",
+              message: "Please synchronize the latest profiles",
+            }).onOk(() => {
+              refresh(() => void 0);
+            });
+          } else {
+            $q.dialog({
+              title: "Sync Profile",
+              message: "No profile found for this user.",
+            }).onCancel(() => {
+              void 0;
+            });
+          }
         } else {
           sortProfileList(profileListDisplay.value);
         }
