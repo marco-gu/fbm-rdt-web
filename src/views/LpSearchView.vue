@@ -191,7 +191,7 @@ const LpSearchView = defineComponent({
     const composeRouteParam = (routeParams: any, source: any) => {
       source.forEach((view: ViewDisplayAttribute) => {
         if (view.display == 1) {
-          routeParams[view.fieldName] = view.model;
+          routeParams[view.displayFieldName] = view.model;
         }
       });
     };
