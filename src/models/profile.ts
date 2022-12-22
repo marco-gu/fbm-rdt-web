@@ -175,6 +175,8 @@ export type Carton = {
 
 export interface ScanDataManagement {
   taskId: string;
+  scanType: string;
+  validationType: string;
   status: string;
   updateDatetime: string;
   scannedCartonNumber: number;

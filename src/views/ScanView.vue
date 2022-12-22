@@ -141,8 +141,6 @@ const ScanView = defineComponent({
         profileCode: profileCode.value,
         pageType: route.params.id,
       };
-      alert(args.type);
-      alert(route.params.id);
       bridge.call("scan", args);
     };
     bridge.register("returnLpSearch", () => {

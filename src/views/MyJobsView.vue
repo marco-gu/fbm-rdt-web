@@ -26,29 +26,16 @@
           </template>
         </q-input>
       </div>
-      <div class="status q-pa-xs" style="text-align: left">
-        <q-btn-dropdown flat :label="statusLabel">
-          <q-list>
-            <q-item clickable v-close-popup @click="onSelectStatus('pending')">
-              <q-item-section>{{ pendingLabel }}</q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup @click="onSelectStatus('finished')">
-              <q-item-section>{{ finishedLabel }}</q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup @click="onSelectStatus('uploaded')">
-              <q-item-section>{{ uploadLabel }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-      </div>
     </div>
 
     <div class="data-list-container">
       <q-list v-for="(item, index) in scanDataListDisplay" :key="index">
-        <div v-if="item.status == status">
+        <div>
           <q-item clickable @click="onClickScanTask(item)">
             <q-item-section style="text-align: left">
-              <q-item-label>{{ item.taskId }}</q-item-label>
+              <q-item-label lines="2" style="word-wrap: break-word">{{
+                item.taskId
+              }}</q-item-label>
               <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
             </q-item-section>
             <q-item-section side>
@@ -81,13 +68,10 @@ import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from "@/plugin/i18nPlugins";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
+
 import { ScanDataManagement } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
-import {
-  AndroidResponse,
-  AndroidResponseStatus,
-} from "@/models/android.response";
+
 const MyJobsView = defineComponent({
   methods: {
     home() {
@@ -103,19 +87,14 @@ const MyJobsView = defineComponent({
     let result: ScanDataManagement[] = [];
     const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
     const pageTitle = ref("");
-    const finishedLabel = ref("");
-    const pendingLabel = ref("");
+
     const searchPlaceHolder = ref("");
-    const statusLabel = ref("");
-    const uploadLabel = ref("");
-    const uploadedLabel = ref("");
+
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
       i18n.category.value = "ContinueMyJobView";
       pageTitle.value = i18n.$t("pageTitle");
-      pendingLabel.value = i18n.$t("pendingLabel");
       searchPlaceHolder.value = i18n.$t("searchPlaceHolder");
-      statusLabel.value = i18n.$t("statusLabel");
     });
     onMounted(() => {
       getScanDataList();
@@ -129,7 +108,7 @@ const MyJobsView = defineComponent({
     };
     const sortScanDataList = (scanDataListDisplay: any[]) => {
       scanDataListDisplay.sort((a: any, b: any) => {
-        return (a.taskId + "").localeCompare(b.taskId + "");
+        return b.updateDatetime.localeCompare(a.updateDatetime);
       });
     };
     const back = () => {
@@ -151,46 +130,27 @@ const MyJobsView = defineComponent({
         scanDataListDisplay.value = result;
       }
     });
+
     const onClickScanTask = (scanTask: any) => {
-      router.push({
-        path: "/dataMgmtGD",
-        query: {
-          taskId: scanTask.taskId,
-          pageType: "Group",
-        },
-      });
+      const args = {
+        taskID: scanTask.taskId,
+        type: scanTask.scanType,
+        profileCode: scanTask.profileCode,
+        pageType:
+          scanTask.validationType == "PreValidation" ? "online" : "offline",
+      };
+      bridge.call("continueJobScan", args);
     };
 
-    const onSelectStatus = (item: string) => {
-      status.value = item;
-      switch (item) {
-        case "pending":
-          statusLabel.value = pendingLabel.value;
-          break;
-        case "finished":
-          statusLabel.value = finishedLabel.value;
-          break;
-        case "uploaded":
-          statusLabel.value = uploadedLabel.value;
-          break;
-        default:
-          break;
-      }
-    };
     return {
       back,
       onClickScanTask,
-      onSelectStatus,
       pageTitle,
-      pendingLabel,
       router,
       scanDataListDisplay,
       search,
       searchPlaceHolder,
       status,
-      statusLabel,
-      uploadedLabel,
-      uploadLabel,
     };
   },
 });
