@@ -9,14 +9,14 @@
       <q-card-actions align="right">
         <q-btn
           flat
-          label="Cancel"
+          label="Complete"
           color="primary"
           v-close-popup
           @click="onClose"
         />
         <q-btn
           flat
-          label="Confirm"
+          label="Add"
           color="primary"
           v-close-popup
           @click="onConfirm"

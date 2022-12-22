@@ -125,21 +125,23 @@ const CartonDetailView = defineComponent({
       });
     };
     const back = () => {
-      const param = inputRef.value as any;
-      let stop = false;
-      param.forEach((t: any, i: number) => {
-        t.validate(t.modelValue).then((resovle: any) => {
-          if (i < param.length - 1) {
-            if (resovle == false && stop == false) {
-              stop = true;
-            }
-          } else {
-            if (resovle != false && stop == false) {
-              alert("Not allow to cancel");
-            }
-          }
-        });
+      let allowReturn = true;
+      pageViews.value.forEach((view) => {
+        if (view.mandatory == 1) {
+          allowReturn = false;
+          return;
+        }
       });
+      if (!allowReturn) {
+        const message = "Don't allow to miss the input";
+        popupErrorMsg($q, message);
+      } else {
+        bridge.call("completeCartonDetail", null, () => {
+          nextTick(() => {
+            reset(inputRef.value);
+          });
+        });
+      }
     };
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);

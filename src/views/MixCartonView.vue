@@ -70,7 +70,7 @@
 <script lang="ts">
 import DialogComponent from "@/components/DialogComponent.vue";
 import { CartonDetailAttribute } from "@/models/profile";
-import { popupSuccessMsg } from "@/plugin/popupPlugins";
+import { popupErrorMsg } from "@/plugin/popupPlugins";
 import {
   composeViewElement,
   ProfileElementLevel,
@@ -92,50 +92,43 @@ const MixCartonView = defineComponent({
     const $q = useQuasar();
     const inputRef = ref(null);
     const dialogVisible = ref(false);
-    let alreadyRendered = false;
+    let firstRender = false;
     const completeMixCarton = ref(false);
     let mixCartonView = {} as CartonDetailAttribute;
     bridge.register("closeMixCarton", () => {
       back();
     });
-    if (alreadyRendered == false) {
-      bridge.register("getMixCartonProfile", (res: string) => {
-        mixCartonView = JSON.parse(res);
-        if (!alreadyRendered) {
-          alreadyRendered = true;
-          mixCartonView.profileDetails.forEach((item) => {
-            if (item.level == ProfileElementLevel.CARTON_UPC) {
-              const element = composeViewElement(item);
-              pageViews.value.push(element);
-            }
-          });
-        }
+    // if (!firstRender) {
+    bridge.register("getMixCartonProfile", (res: string) => {
+      mixCartonView = JSON.parse(res);
+      if (!firstRender) {
+        firstRender = true;
+        mixCartonView.profileDetails.forEach((item) => {
+          if (item.level == ProfileElementLevel.CARTON_UPC) {
+            const element = composeViewElement(item);
+            pageViews.value.push(element);
+          }
+        });
+      }
+      if (cartonID.value && cartonID.value == mixCartonView.cartonID) {
+        itemCount.value++;
+      } else {
         cartonID.value = mixCartonView.cartonID;
-        // itemCount.value = 0;
-      });
-    }
+        itemCount.value = 0;
+      }
+    });
+    // }
     const complete = () => {
       const param = inputRef.value as any;
-      let stop = false;
+      let invalid = false;
       param.forEach((t: any, i: number) => {
         t.validate(t.modelValue).then((resovle: any) => {
           if (i < param.length - 1) {
-            if (resovle == false && stop == false) {
-              stop = true;
-              // bridge.call("completeMixCarton", null, () => {
-              //   nextTick(() => {
-              //     reset(inputRef.value);
-              //   });
-              // });
+            if (resovle == false && invalid == false) {
+              invalid = true;
             }
-            // else {
-            //   if (resovle != false && stop == false) {
-            //     alert("Not allow to cancel");
-            //   }
-            // }
           } else {
-            if (resovle != false && stop == false) {
-              let stop = false;
+            if (resovle != false && invalid == false) {
               completeMixCarton.value = true;
               onSubmit();
             }
@@ -209,9 +202,6 @@ const MixCartonView = defineComponent({
         }
       });
       bridge.call("addMixCarton", args, () => {
-        // nextTick(() => {
-        //   reset(inputRef.value);
-        // });
         if (completeMixCarton.value) {
           completeMixCarton.value = false;
           bridge.call("completeMixCarton", null, () => {
@@ -227,27 +217,24 @@ const MixCartonView = defineComponent({
     };
 
     const back = () => {
-      const param = inputRef.value as any;
-      let stop = false;
-      param.forEach((t: any, i: number) => {
-        t.validate(t.modelValue).then((resovle: any) => {
-          if (i < param.length - 1) {
-            if (resovle == false && stop == false) {
-              stop = true;
-            }
-          } else {
-            if (resovle != false && stop == false) {
-              alert("Not allow to back");
-            } else {
-              bridge.call("completeMixCarton", null, () => {
-                nextTick(() => {
-                  reset(inputRef.value);
-                });
-              });
-            }
-          }
-        });
+      let allowReturn = true;
+      pageViews.value.forEach((view) => {
+        if (view.mandatory == 1) {
+          allowReturn = false;
+          return;
+        }
       });
+      if (!allowReturn) {
+        const message = "Don't allow to miss the input";
+        popupErrorMsg($q, message);
+      } else {
+        bridge.call("completeMixCarton", null, () => {
+          reset(inputRef.value);
+          // nextTick(() => {
+          //   reset(inputRef.value);
+          // });
+        });
+      }
     };
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
@@ -264,6 +251,7 @@ const MixCartonView = defineComponent({
     const onClose = () => {
       dialogVisible.value = false;
       bridge.call("completeMixCarton", null, () => {
+        itemCount.value++;
         nextTick(() => {
           reset(inputRef.value);
         });

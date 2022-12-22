@@ -41,32 +41,62 @@ export function composeViewElement(attr: ProfileDisplayAttribute) {
   element.length = Math.abs(attr.maxLength);
   element.valid = (val: string) => {
     return new Promise((resolve) => {
-      if (element.mandatory == 1 && !val) {
-        resolve(`Please input ${element.fieldName}`);
-      } else {
-        if (attr.maxLength < 0) {
-          // Only check format
-          const inputs = val.split("");
-          const inputLength = inputs.length;
-          const newAttrFormat = attr.format.substring(0, inputLength);
-          element.reg = new RegExp(composeReg(newAttrFormat));
-          if (!element.reg.test(val)) {
-            resolve("Please input correct format");
+      if (element.mandatory == 1) {
+        // input is mandatory, check isnull
+        if (!val) {
+          resolve(`Please input ${element.fieldName}`);
+        } else {
+          if (attr.maxLength < 0) {
+            // Only check format
+            const inputs = val.split("");
+            const inputLength = inputs.length;
+            const newAttrFormat = attr.format.substring(0, inputLength);
+            element.reg = new RegExp(composeReg(newAttrFormat));
+            if (!element.reg.test(val)) {
+              resolve("Please input correct format");
+            } else {
+              resolve(true);
+            }
           } else {
-            resolve(true);
+            // Check length && format
+            if (val.length != attr.maxLength) {
+              resolve(
+                `Please input not more or less than ${attr.maxLength} charactors`
+              );
+            } else if (!element.reg.test(val)) {
+              resolve("Please input correct format");
+            } else {
+              resolve(true);
+            }
+          }
+        }
+      } else {
+        if (val) {
+          if (attr.maxLength < 0) {
+            // Only check format
+            const inputs = val.split("");
+            const inputLength = inputs.length;
+            const newAttrFormat = attr.format.substring(0, inputLength);
+            element.reg = new RegExp(composeReg(newAttrFormat));
+            if (!element.reg.test(val)) {
+              resolve("Please input correct format");
+            } else {
+              resolve(true);
+            }
+          } else {
+            // Check length && format
+            if (val.length != attr.maxLength) {
+              resolve(
+                `Please input not more or less than ${attr.maxLength} charactors`
+              );
+            } else if (!element.reg.test(val)) {
+              resolve("Please input correct format");
+            } else {
+              resolve(true);
+            }
           }
         } else {
-          // Check length && format
-          if (val.length != attr.maxLength) {
-            resolve(
-              `Please input not more or less than ${attr.maxLength} charactors`
-            );
-          } else if (!element.reg.test(val)) {
-            alert(element.reg);
-            resolve("Please input correct format");
-          } else {
-            resolve(true);
-          }
+          resolve(true);
         }
       }
     });

@@ -156,7 +156,6 @@ const LpSearchView = defineComponent({
     const stuffingFlag = ref(false);
     const mode = route.params.id as string;
     i18n.category.value = "LpSearchView";
-    // const pageID = route.params.id;
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -215,12 +214,16 @@ const LpSearchView = defineComponent({
       source.forEach((view: ViewDisplayAttribute) => {
         for (j in profileOrderLevel) {
           if (j == view.fieldName) {
-            apiParams[j] = view.model;
+            if (view.model) {
+              apiParams[j] = view.model;
+            }
           }
         }
         for (k in profileCartonCommonLevel) {
           if (k == view.fieldName) {
-            apiParams[k] = view.model;
+            if (view.model) {
+              apiParams[k] = view.model;
+            }
           }
         }
       });
