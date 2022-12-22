@@ -116,6 +116,7 @@ const ProfileView = defineComponent({
             $q.dialog({
               title: "Sync Profile",
               message: "Please synchronize the latest profiles",
+              noBackdropDismiss: true,
             }).onOk(() => {
               refresh(() => void 0);
             });
