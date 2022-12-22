@@ -6,7 +6,7 @@
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span style="font-size: 21px">LP List</span>
+          <span style="font-size: 21px">LP Detail List</span>
         </q-item-section>
         <q-item-section avatar @click="home">
           <q-icon name="home" />
@@ -19,10 +19,10 @@
       {{ taskId }}
     </q-item-section>
     <div>
-      <q-list v-for="(item, index) in lpListDisplay" :key="index">
+      <q-list v-for="(item, index) in filterList" :key="index">
         <q-item clickable @click="onClickItem(item)">
           <q-item-section>
-            <q-item-label>Carton Id: {{ item.cartonId }}</q-item-label>
+            <q-item-label>CID: {{ item.cartonId }}</q-item-label>
           </q-item-section>
         </q-item>
         <q-separator spaced inset />
@@ -33,7 +33,7 @@
 <script lang="ts">
 import bridge from "dsbridge";
 
-import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Carton } from "../models/profile";
 
@@ -71,6 +71,10 @@ const LPDetailListView = defineComponent({
       });
     };
 
+    const filterList = computed(() =>
+      lpListDisplay.value.filter((item) => item.expected == true)
+    );
+
     onMounted(() => {
       if (typeof taskId.value === "string") {
         getLPListByTaskId(taskId.value);
@@ -80,6 +84,7 @@ const LPDetailListView = defineComponent({
     return {
       router,
       lpListDisplay,
+      filterList,
       back,
       taskId,
     };

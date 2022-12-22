@@ -29,13 +29,15 @@
         <q-list v-for="(item, index) in taskListDisplay" :key="index">
           <q-item clickable @click="onClickItem(item)">
             <q-item-section>
-              <q-item-label>{{ item.taskId }}</q-item-label>
-              <q-item-label caption>{{ item.createDatetime }}</q-item-label>
+              <q-item-label lines="2" style="word-wrap: break-word">{{
+                item.taskId
+              }}</q-item-label>
+              <q-item-label caption>{{ item.finalDatetime }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-circular-progress show-value size="50px" :value="100">
                 <div style="color: black">
-                  {{ item.cartonSize }}
+                  {{ item.expectedCartonNumber }}
                 </div></q-circular-progress
               >
             </q-item-section>
@@ -99,6 +101,9 @@ const LPListView = defineComponent({
       bridge.call("fetchTask", null, (res: string) => {
         result = JSON.parse(res) as LP[];
         taskListDisplay.value = JSON.parse(res) as LP[];
+        taskListDisplay.value.sort((a, b) =>
+          b.finalDatetime.localeCompare(a.finalDatetime)
+        );
       });
     };
 

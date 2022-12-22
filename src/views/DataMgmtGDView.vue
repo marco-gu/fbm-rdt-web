@@ -33,10 +33,14 @@
         <div class="col"></div>
       </div>
 
-      <div class="groupList row items-center" @click="onClickLP(taskDisplay)">
+      <div
+        v-show="taskDisplay.scannedCartonNumber > 0"
+        class="groupList row items-center"
+        @click="onClickLP(taskDisplay)"
+      >
         <div class="col-4">{{ taskDisplay.so }}</div>
         <div class="col-4">{{ taskDisplay.po }}</div>
-        <div class="col">{{ taskDisplay.cartonSize }}</div>
+        <div class="col">{{ taskDisplay.scannedCartonNumber }}</div>
         <div class="col">
           <q-icon size="md" name="chevron_right" color="black" />
         </div>
@@ -51,7 +55,7 @@
         <div></div>
       </div>
 
-      <q-list v-for="(item, index) in cartonListDisplay" :key="index">
+      <q-list v-for="(item, index) in cartonfilterList" :key="index">
         <div class="detailList row items-center" @click="onClickCarton(item)">
           <div class="col-4">{{ item.so }}</div>
           <div class="col-4">{{ item.po }}</div>
@@ -89,7 +93,7 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { LP, Carton } from "../models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
@@ -170,6 +174,10 @@ const DataMgmtView = defineComponent({
       });
     };
 
+    const cartonfilterList = computed(() =>
+      cartonListDisplay.value.filter((item) => item.scanStatus == 1)
+    );
+
     onMounted(() => {
       if (typeof taskId.value === "string") {
         fetchTaskByTaskId(taskId.value);
@@ -193,6 +201,7 @@ const DataMgmtView = defineComponent({
       pageTitle,
       detailViewLabel,
       groupViewLabel,
+      cartonfilterList,
     };
   },
 });

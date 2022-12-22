@@ -78,7 +78,9 @@
         <div v-if="item.status == status">
           <q-item clickable @click="onClickScanTask(item)">
             <q-item-section style="text-align: left">
-              <q-item-label>{{ item.taskId }}</q-item-label>
+              <q-item-label lines="2" style="word-wrap: break-word">{{
+                item.taskId
+              }}</q-item-label>
               <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
             </q-item-section>
             <q-item-section side>
@@ -196,7 +198,7 @@ const DataManagementView = defineComponent({
     };
     const sortScanDataList = (scanDataListDisplay: any[]) => {
       scanDataListDisplay.sort((a: any, b: any) => {
-        return (a.taskId + "").localeCompare(b.taskId + "");
+        return b.updateDatetime.localeCompare(a.updateDatetime);
       });
     };
     const back = () => {
