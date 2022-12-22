@@ -29,7 +29,9 @@
         <q-list v-for="(item, index) in taskListDisplay" :key="index">
           <q-item clickable @click="onClickItem(item)">
             <q-item-section>
-              <q-item-label>{{ item.taskId }}</q-item-label>
+              <q-item-label lines="2" style="word-wrap: break-word">{{
+                item.taskId
+              }}</q-item-label>
               <q-item-label caption>{{ item.finalDatetime }}</q-item-label>
             </q-item-section>
             <q-item-section side>
