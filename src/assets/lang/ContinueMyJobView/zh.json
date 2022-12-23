@@ -1,15 +1,5 @@
 {
-    "cancelLabel": "取消",
-    "deleteLabel": "删除",
-    "detailViewLabel": "详细视图",
-    "finishedLabel": "已完成",
-    "groupViewLabel": "组合视图",
-    "mixLabel": "混装",
-    "pageTitle": "我的工作",
-    "pendingLabel": "正在进行",
-    "saveLabel": "保存",
+    "pageTitle": "我的工作列表",
     "searchPlaceHolder": "搜索",
-    "statusLabel": "正在进行",
-    "uploadedLabel": "已上传",
-    "uploadLabel": "上传"
+    "instruction":"请选择一个工作继续"
 }

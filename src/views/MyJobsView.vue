@@ -61,6 +61,8 @@
         </div>
       </q-list>
     </div>
+
+    <div class="footer">{{ instruction }}</div>
   </div>
 </template>
 <script lang="ts">
@@ -89,12 +91,14 @@ const MyJobsView = defineComponent({
     const pageTitle = ref("");
 
     const searchPlaceHolder = ref("");
+    const instruction = ref("");
 
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
       i18n.category.value = "ContinueMyJobView";
       pageTitle.value = i18n.$t("pageTitle");
       searchPlaceHolder.value = i18n.$t("searchPlaceHolder");
+      instruction.value = i18n.$t("instruction");
     });
     onMounted(() => {
       getScanDataList();
@@ -151,6 +155,7 @@ const MyJobsView = defineComponent({
       search,
       searchPlaceHolder,
       status,
+      instruction,
     };
   },
 });
@@ -173,16 +178,17 @@ export default MyJobsView;
     width: 100%;
   }
   .title-text {
+    text-align: left;
     font-size: 21px;
   }
 }
-.bottom {
+.footer {
   position: fixed;
   bottom: 0px;
-  display: flex;
-  background: #42b0d5;
-  color: white;
-  width: 100%;
+  text-align: center;
   height: 50px;
+  width: 100%;
+  font-size: 16px;
+  color: #757575;
 }
 </style>

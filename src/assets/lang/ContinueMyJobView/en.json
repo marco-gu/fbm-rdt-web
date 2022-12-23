@@ -1,15 +1,5 @@
 {
-    "cancelLabel": "Cancel",
-    "deleteLabel": "Delete",
-    "detailViewLabel": "DetailView",
-    "finishedLabel": "Finished",
-    "groupViewLabel": "GroupView",
-    "mixLabel": "Mix",
-    "pageTitle": "My Jobs",
-    "pendingLabel": "Pending",
-    "saveLabel": "Save",
+    "pageTitle": "My Job List",
     "searchPlaceHolder": "Search",
-    "statusLabel": "Pending",
-    "uploadedLabel": "Uploaded",
-    "uploadLabel": "Upload"
+    "instruction":"Please select one job and continue"
 }
