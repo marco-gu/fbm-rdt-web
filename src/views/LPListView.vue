@@ -32,15 +32,12 @@
               <q-item-label lines="2" style="word-wrap: break-word">{{
                 item.taskId
               }}</q-item-label>
+              <q-item-label caption
+                >Total: {{ item.expectedCartonNumber }}</q-item-label
+              >
               <q-item-label caption>{{ item.finalDatetime }}</q-item-label>
             </q-item-section>
-            <q-item-section side>
-              <q-circular-progress show-value size="50px" :value="100">
-                <div style="color: black">
-                  {{ item.expectedCartonNumber }}
-                </div></q-circular-progress
-              >
-            </q-item-section>
+
             <q-item-section side>
               <q-icon name="chevron_right" color="black" />
             </q-item-section>

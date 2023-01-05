@@ -38,6 +38,7 @@
               }}</q-item-label>
               <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
             </q-item-section>
+
             <q-item-section side>
               <q-circular-progress
                 rounded
@@ -67,7 +68,6 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from "@/plugin/i18nPlugins";
 
@@ -83,9 +83,9 @@ const MyJobsView = defineComponent({
   setup() {
     const router = useRouter();
     const i18n = useI18n();
-    const $q = useQuasar();
+
     const search = ref("");
-    const status = ref("pending");
+
     let result: ScanDataManagement[] = [];
     const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
     const pageTitle = ref("");
@@ -154,7 +154,6 @@ const MyJobsView = defineComponent({
       scanDataListDisplay,
       search,
       searchPlaceHolder,
-      status,
       instruction,
     };
   },
