@@ -5,6 +5,7 @@
       <div class="login-form">
         <div class="input-label">{{ $t("login.account") }}</div>
         <q-input
+          ref="inputUsername"
           clearable
           v-model="username"
           outlined
@@ -15,6 +16,7 @@
         />
         <div class="input-label">{{ $t("login.password") }}</div>
         <q-input
+          ref="inputPassword"
           clearable
           v-model="password"
           outlined
@@ -64,7 +66,7 @@
 <script lang="ts">
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
 import logo from "../assets/images/Maersk_Logo_RGB.svg";
 import { useQuasar } from "quasar";
 import {
@@ -77,7 +79,7 @@ import ForgotPwdComponent from "@/components/ForgotPwdComponent.vue";
 import UserManual from "@/components/UserManualComponent.vue";
 import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
-import * as config from "../assets/config.json";
+import { app_version } from "../assets/config.json";
 import { useI18n } from "vue-i18n";
 const LoginView = defineComponent({
   components: {
@@ -91,17 +93,25 @@ const LoginView = defineComponent({
     const maerskLogo = logo;
     const username = ref("");
     const password = ref("");
+    const inputUsername = ref();
+    const inputPassword = ref();
     const forgotPwdVisible = ref(false);
     const userManualVisible = ref(false);
     const isPwd = ref(true);
     const versionNum = ref();
     onMounted(() => {
-      bridge.call("checkUserUid", null, (res: string) => {
+      bridge.call("checkUserUid", null, async (res: string) => {
         if (res) {
           username.value = res.toUpperCase();
         }
+        await nextTick();
+        if (!username.value) {
+          inputUsername.value.focus();
+        } else {
+          inputPassword.value.focus();
+        }
       });
-      versionNum.value = config.app_version;
+      versionNum.value = app_version;
     });
     watch(
       username,
@@ -152,6 +162,8 @@ const LoginView = defineComponent({
       onSubmit,
       i18n,
       versionNum,
+      inputUsername,
+      inputPassword,
     };
   },
 });
@@ -196,7 +208,7 @@ export default LoginView;
   margin-top: 15%;
 }
 .login-bottom {
-  position: fixed;
+  position: absolute;
   bottom: 10px;
   left: 0;
   right: 0;
