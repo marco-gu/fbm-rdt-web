@@ -1,0 +1,51 @@
+{
+  "messageCode": {
+    "E91-01-0001": "Password is not correct!",
+    "E91-01-0002": "Username does not exist!",
+    "E91-01-0003": "User has logged on another device!",
+    "E91-01-0004": "Please enter your username (UID)",
+    "E91-01-0005": "Please enter your password",
+    "E91-02-0001": "Email does not exist!",
+    "E92-99-0001": "Network is not available!",
+    "E92-99-0002": "Please contact Administrator!",
+    "E92-99-0003": "Token Expired",
+    "E93-01-0001": "Please input Username!",
+    "E93-01-0002": "Please input Password!",
+    "E93-02-0001": "Password is changed!",
+    "E93-02-0002": "New password is not same as the new password confirm box!",
+    "E93-02-0003": "Initial password is incorrect!",
+    "E93-02-0004": "New changed password is required to be at least 8 characters in length,  contains both numbers and letters in upper & lower cases",
+    "E93-02-0005": "Please input initial password!",
+    "E93-02-0006": "Please input new password!",
+    "E93-02-0007": "Please input new password, again!",
+    "E93-03-0001": "New password has been sent to your mailbox!",
+    "E93-03-0002": "Please input the correct format mail address!",
+    "E93-03-0003": "Please input Mail Address!",
+    "E93-04-0001": "Your client scan profile is updated!",
+    "E93-04-0002": "No client scan profile is assigned to this user!",
+    "E93-04-0003": "Failed to delete client scan profile!",
+    "E93-04-0004": "No client scan profile selected!",
+    "E93-05-0001": "Please input ...",
+    "E93-05-0002": "Please input not more than ... characters in length",
+    "E93-05-0003": "Please input not more than or less than ... characters in length!",
+    "E93-05-0004": "Invalid data format!",
+    "E93-05-0005": "LP has been successfully downloaded!",
+    "E93-05-0006": "No Record is found!",
+    "E93-05-0007": "Offline input completed",
+    "E93-06-0001": "Logout Success!"
+  },
+  "common": {
+    "confirm": "Confirm",
+    "service_unavailable": "Service Unavailable"
+  },
+  "login": {
+    "login": "Log in",
+    "help": "Login Help",
+    "account": "Account",
+    "password": "Password",
+    "account_hint": "Please enter your username (UID)",
+    "password_hint": "Please enter your password",
+    "forgot_password": "Forgot Password",
+    "forgot_password_hint": "Please enter your email"
+  }
+}

@@ -1,29 +1,28 @@
 <template>
   <div class="container">
-    <q-img
-      :src="maerskLogo"
-      no-spinner
-      style="max-width: 300px; max-height: 180px"
-    />
+    <q-img :src="maerskLogo" no-spinner class="logo-image" />
     <q-form @submit="onSubmit">
       <div class="login-form">
+        <div class="input-label">{{ $t("login.account") }}</div>
         <q-input
           clearable
           v-model="username"
-          filled
-          placeholder="Username"
+          outlined
+          dense
+          :placeholder="$t('login.account_hint')"
           lazy-rules
-          :rules="[userNameRule]"
+          :rules="[(val) => !!val || $t('messageCode.E91-01-0004')]"
         />
+        <div class="input-label">{{ $t("login.password") }}</div>
         <q-input
-          style="margin-top: 5px"
           clearable
           v-model="password"
-          filled
-          placeholder="Password"
+          outlined
+          dense
+          :placeholder="$t('login.password_hint')"
           :type="isPwd ? 'password' : 'text'"
           lazy-rules
-          :rules="[passwordRule]"
+          :rules="[(val) => !!val || $t('messageCode.E91-01-0005')]"
         >
           <template v-slot:append>
             <q-icon
@@ -34,30 +33,31 @@
           </template>
         </q-input>
       </div>
-      <q-btn class="login-button" push type="submit">
-        {{ loginLabel }}
-      </q-btn>
       <div class="login-link">
-        <span @click="clickUserManual">
-          <a href="#">{{ helpLabel }}</a>
+        <span @click="userManualVisible = true">
+          <a>{{ $t("login.help") }}</a>
         </span>
-        <span @click="clickForgotPwd">
-          <a href="#">{{ forgotPwdLabel }}?</a>
+        <span @click="forgotPwdVisible = true">
+          <a>{{ $t("login.forgot_password") }}?</a>
         </span>
       </div>
+      <q-btn class="login-button" unelevated type="submit" color="secondary">
+        {{ $t("login.login") }}
+      </q-btn>
     </q-form>
-    <UserManual :dialogVisible="userManualVisible" @close="onCloseUserManual">
+    <UserManual
+      :dialogVisible="userManualVisible"
+      @close="userManualVisible = false"
+    >
     </UserManual>
     <ForgotPwdComponent
       :dialogVisible="forgotPwdVisible"
-      @confirm="onConfirmForgotPassword"
-      @close="onCloseForgotPassword"
+      @confirm="forgotPwdVisible = false"
+      @close="forgotPwdVisible = false"
     >
     </ForgotPwdComponent>
     <div class="login-bottom">
-      <q-badge transparent align="middle" color="orange" outline>
-        Ver 0.1 Beta, Prod
-      </q-badge>
+      <span> {{ versionNum }} </span>
     </div>
   </div>
 </template>
@@ -75,9 +75,10 @@ import { LoginResponse } from "../models/login.response";
 import md5 from "md5";
 import ForgotPwdComponent from "@/components/ForgotPwdComponent.vue";
 import UserManual from "@/components/UserManualComponent.vue";
-import { useI18n } from "@/plugin/i18nPlugins";
 import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
+import * as config from "../assets/config.json";
+import { useI18n } from "vue-i18n";
 const LoginView = defineComponent({
   components: {
     UserManual,
@@ -88,65 +89,20 @@ const LoginView = defineComponent({
     const i18n = useI18n();
     const $q = useQuasar();
     const maerskLogo = logo;
-    const loginLabel = ref("");
-    const helpLabel = ref("");
-    const forgotPwdLabel = ref("");
     const username = ref("");
     const password = ref("");
     const forgotPwdVisible = ref(false);
     const userManualVisible = ref(false);
     const isPwd = ref(true);
+    const versionNum = ref();
     onMounted(() => {
-      bridge.call("getSettingLanguage", null, (res: string) => {
-        i18n.category.value = "LoginView";
-        i18n.locale.value = res;
-        loginLabel.value = i18n.$t("login");
-        helpLabel.value = i18n.$t("help");
-        forgotPwdLabel.value = i18n.$t("forgotPassword");
-      });
       bridge.call("checkUserUid", null, (res: string) => {
         if (res) {
           username.value = res.toUpperCase();
         }
       });
+      versionNum.value = config.app_version;
     });
-    const clickUserManual = () => {
-      userManualVisible.value = true;
-    };
-    const onCloseUserManual = () => {
-      userManualVisible.value = false;
-    };
-    const clickForgotPwd = () => {
-      forgotPwdVisible.value = true;
-    };
-    const onCloseForgotPassword = () => {
-      forgotPwdVisible.value = false;
-    };
-    const onConfirmForgotPassword = () => {
-      forgotPwdVisible.value = false;
-    };
-    const userNameRule = (val: string) => {
-      i18n.category.value = "MessageCode";
-      return new Promise((resolve) => {
-        if (!val) {
-          const errMsg = i18n.$t("E93-01-0001");
-          resolve(errMsg);
-        } else {
-          resolve(true);
-        }
-      });
-    };
-    const passwordRule = (val: string) => {
-      i18n.category.value = "MessageCode";
-      return new Promise((resolve) => {
-        if (!val) {
-          const errMsg = i18n.$t("E93-01-0002");
-          resolve(errMsg);
-        } else {
-          resolve(true);
-        }
-      });
-    };
     watch(
       username,
       () => {
@@ -181,68 +137,69 @@ const LoginView = defineComponent({
             router.push("/home");
           }
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          i18n.category.value = "MessageCode";
-          const message = i18n.$t(androidResponse.messageCode);
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
       });
     };
     return {
       username,
-      userNameRule,
       password,
-      passwordRule,
-      forgotPwdLabel,
-      loginLabel,
-      helpLabel,
       maerskLogo,
       isPwd,
       forgotPwdVisible,
       userManualVisible,
       onSubmit,
-      clickUserManual,
-      onCloseUserManual,
-      clickForgotPwd,
-      onCloseForgotPassword,
-      onConfirmForgotPassword,
+      i18n,
+      versionNum,
     };
   },
 });
 export default LoginView;
 </script>
-<style scoped>
+<style scoped lang="scss">
 .container {
   position: relative;
-  width: 360px;
-  padding: 15% 0 0;
-  margin: auto;
+  width: 100%;
   min-height: 600px;
   height: 100vh;
+  font-size: 14px;
+  padding-top: 15%;
+  .logo-image {
+    max-width: 90%;
+  }
 }
 .login-form {
   width: 85%;
   margin: auto;
+  .input-label {
+    color: #000000;
+    text-align: left;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
 }
 .login-link {
-  width: 84%;
+  width: 85%;
   margin: auto;
   display: flex;
   justify-content: space-between;
-}
-.login-link a {
-  color: black;
+  a {
+    color: #000000;
+    text-decoration: underline;
+  }
 }
 .login-button {
   width: 85%;
-  height: 50px;
-  margin: 15px auto 10px;
-  background-color: #00243d;
+  height: 40px;
   color: white;
+  margin-top: 15%;
 }
 .login-bottom {
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   left: 0;
   right: 0;
+  color: #b2b2b2;
 }
 </style>

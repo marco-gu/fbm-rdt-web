@@ -12,6 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
     "sourceMap": true,
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "types": [
       "webpack-env"
@@ -36,7 +37,7 @@
     "src/images.d.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-  ],
+, "src/assets/i18n/zh.json", "src/assets/i18n/en.json"  ],
   "exclude": [
     "node_modules"
   ]
