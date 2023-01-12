@@ -122,7 +122,11 @@ import { defineComponent, onMounted, Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Carton, ProfileDisplayAttribute, LP } from "../models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
-import { ProfileElementLevel, composeReg } from "@/utils/profile.render";
+import {
+  ProfileElementLevel,
+  composeReg,
+  toUpperCaseElementInput,
+} from "@/utils/profile.render";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import {
   AndroidResponse,
@@ -148,7 +152,7 @@ type ViewElement = {
 };
 
 // Define fields for both manual type-in or scanning for SO, the rests are based on scan profile definition
-const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber"];
+const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber", "CartonID"];
 
 const DataManagementDetailView = defineComponent({
   methods: {
@@ -316,7 +320,7 @@ const DataManagementDetailView = defineComponent({
         });
         viewElement.valid = (val: string) => {
           return new Promise((resolve) => {
-            if (viewElement.mandatory == 1 && !val) {
+            if ((viewElement.mandatory == 1 && !val) || val == null) {
               resolve(`Please input ${viewElement.dataFieldName}`);
             } else {
               if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
@@ -345,7 +349,6 @@ const DataManagementDetailView = defineComponent({
     const composeCartonViewElements = (attr: ProfileDisplayAttribute) => {
       if (
         attr.level == ProfileElementLevel.CARTON_COMMON ||
-        attr.level == ProfileElementLevel.ORDER ||
         attr.level == ProfileElementLevel.CARTON_INDIVIDUAL
       ) {
         const viewElement = {} as ViewElement;
@@ -396,7 +399,7 @@ const DataManagementDetailView = defineComponent({
         });
         viewElement.valid = (val: string) => {
           return new Promise((resolve) => {
-            if (viewElement.mandatory == 1 && !val) {
+            if ((viewElement.mandatory == 1 && !val) || val == null) {
               resolve(`Please input ${viewElement.dataFieldName}`);
             } else {
               if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
@@ -423,7 +426,7 @@ const DataManagementDetailView = defineComponent({
 
     const scan = (dataFieldName: string) => {
       const reqParams = {
-        scanType: scanType,
+        scanType: scanType.value,
         fieldName: dataFieldName,
       };
       bridge.call("scanForInput", reqParams);
@@ -541,7 +544,8 @@ const DataManagementDetailView = defineComponent({
         });
       }
     };
-
+    const multiWatchSources = [pageViews.value];
+    toUpperCaseElementInput(multiWatchSources);
     const validPaste = (event: any, index: number) => {
       if (event.clipboardData && event.clipboardData.getData("Text")) {
         const text = event.clipboardData.getData("Text");
