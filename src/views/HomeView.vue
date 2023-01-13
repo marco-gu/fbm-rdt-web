@@ -52,7 +52,7 @@
                 <q-item-label>LP List</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple>
+            <q-item clickable @click="goImageAccess" v-ripple>
               <q-item-section avatar>
                 <q-img no-spinner :src="cargoImageIcon" />
               </q-item-section>
@@ -179,6 +179,9 @@ export default {
     const goLPList = () => {
       router.push("/lpList");
     };
+    const goImageAccess = () => {
+      router.push("/imageAccess");
+    };
     return {
       leftDrawerOpen,
       toggleLeftDrawer,
@@ -197,6 +200,7 @@ export default {
       logoIcon,
       goSetting,
       goLPList,
+      goImageAccess,
     };
   },
 };

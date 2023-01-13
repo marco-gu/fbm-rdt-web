@@ -60,7 +60,7 @@
               justify-content: space-between;
             "
           >
-            <span style="padding-left: 1rem; color: black">
+            <span style="padding-left: 1rem; color: black; text-align: left">
               {{ item.displayFieldName }}
             </span>
             <q-input
