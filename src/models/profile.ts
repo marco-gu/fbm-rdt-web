@@ -177,7 +177,8 @@ export interface ScanDataManagement {
   taskId: string;
   scanType: string;
   validationType: string;
-  status: string;
+  uploadStatus: number;
+  finishStatus: number;
   updateDatetime: string;
   scannedCartonNumber: number;
   allCartonNumber: number;

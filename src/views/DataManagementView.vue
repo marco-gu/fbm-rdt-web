@@ -26,7 +26,7 @@
           </template>
         </q-input>
       </div>
-      <div class="status q-pa-xs" style="text-align: left">
+      <!-- <div class="status q-pa-xs" style="text-align: left">
         <q-btn-dropdown flat :label="statusLabel">
           <q-list>
             <q-item clickable v-close-popup @click="onSelectStatus('pending')">
@@ -40,18 +40,32 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-      </div>
+      </div> -->
     </div>
     <div class="data-list-container" v-if="isEditMode">
       <q-list v-for="(item, index) in scanDataListDisplay" :key="index">
-        <div v-if="item.status == status">
+        <div>
           <q-item>
             <q-item-section side>
               <q-checkbox v-model="item.isSelected" />
             </q-item-section>
             <q-item-section style="text-align: left">
-              <q-item-label>{{ item.taskId }}</q-item-label>
-              <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
+              <q-item-label lines="2" style="word-wrap: break-word">{{
+                item.taskId
+              }}</q-item-label>
+              <q-item-label caption
+                >{{ item.updateDatetime
+                }}<q-img
+                  v-show="item.uploadStatus == 1"
+                  no-spinner
+                  style="width: 17.3px; height: 11px; margin-left: 5px"
+                  :src="uploaded" />
+                <q-img
+                  v-show="item.finishStatus == 1"
+                  no-spinner
+                  style="width: 17.3px; height: 11px; margin-left: 5px"
+                  :src="finished"
+              /></q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-circular-progress
@@ -75,13 +89,25 @@
     </div>
     <div class="data-list-container" v-else v-touch-hold:1800="handleHold">
       <q-list v-for="(item, index) in scanDataListDisplay" :key="index">
-        <div v-if="item.status == status">
+        <div>
           <q-item clickable @click="onClickScanTask(item)">
             <q-item-section style="text-align: left">
               <q-item-label lines="2" style="word-wrap: break-word">{{
                 item.taskId
               }}</q-item-label>
-              <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
+              <q-item-label caption
+                >{{ item.updateDatetime
+                }}<q-img
+                  v-show="item.uploadStatus == 1"
+                  no-spinner
+                  style="width: 17.3px; height: 11px; margin-left: 5px"
+                  :src="uploaded" />
+                <q-img
+                  v-show="item.finishStatus == 1"
+                  no-spinner
+                  style="width: 17.3px; height: 11px; margin-left: 5px"
+                  :src="finished"
+              /></q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-circular-progress
@@ -145,6 +171,8 @@ import { useI18n } from "@/plugin/i18nPlugins";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { ScanDataManagement } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import uploadedUrl from "../assets/images/uploaded.png";
+import finishedUrl from "../assets/images/finished.png";
 import {
   AndroidResponse,
   AndroidResponseStatus,
@@ -158,6 +186,8 @@ const DataManagementView = defineComponent({
   setup() {
     const router = useRouter();
     const i18n = useI18n();
+    const uploaded = uploadedUrl;
+    const finished = finishedUrl;
     const $q = useQuasar();
     const search = ref("");
     const isEditMode = ref(false);
@@ -296,22 +326,22 @@ const DataManagementView = defineComponent({
     const cancelEditMode = () => {
       isEditMode.value = false;
     };
-    const onSelectStatus = (item: string) => {
-      status.value = item;
-      switch (item) {
-        case "pending":
-          statusLabel.value = pendingLabel.value;
-          break;
-        case "finished":
-          statusLabel.value = finishedLabel.value;
-          break;
-        case "uploaded":
-          statusLabel.value = uploadedLabel.value;
-          break;
-        default:
-          break;
-      }
-    };
+    // const onSelectStatus = (item: string) => {
+    //   status.value = item;
+    //   switch (item) {
+    //     case "pending":
+    //       statusLabel.value = pendingLabel.value;
+    //       break;
+    //     case "finished":
+    //       statusLabel.value = finishedLabel.value;
+    //       break;
+    //     case "uploaded":
+    //       statusLabel.value = uploadedLabel.value;
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // };
     return {
       back,
       cancelEditMode,
@@ -323,7 +353,7 @@ const DataManagementView = defineComponent({
       handleUpload,
       isEditMode,
       onClickScanTask,
-      onSelectStatus,
+      // onSelectStatus,
       pageTitle,
       pendingLabel,
       router,
@@ -334,6 +364,8 @@ const DataManagementView = defineComponent({
       statusLabel,
       uploadedLabel,
       uploadLabel,
+      uploaded,
+      finished,
     };
   },
 });
