@@ -36,6 +36,8 @@
   },
   "common": {
     "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
     "service_unavailable": "Service Unavailable"
   },
   "login": {
@@ -46,6 +48,13 @@
     "account_hint": "Please enter your username (UID)",
     "password_hint": "Please enter your password",
     "forgot_password": "Forgot Password",
-    "forgot_password_hint": "Please enter your email"
+    "forgot_password_hint": "Please enter your email",
+    "change_password": "Change Password",
+    "current_password": "Current Password",
+    "current_password_hint": "Please enter your current password",
+    "new_password": "New Password",
+    "new_password_hint": "Please enter your new password",
+    "retype_password": "Retype New Password",
+    "retype_password_hint": "Please retype the new password"
   }
 }
