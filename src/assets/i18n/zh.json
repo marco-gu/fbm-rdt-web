@@ -36,6 +36,8 @@
   },
   "common": {
     "confirm": "确认",
+    "cancel": "取消",
+    "save": "保存",
     "service_unavailable": "遇到了些问题，请重试"
   },
   "login": {
@@ -46,6 +48,28 @@
     "account_hint": "请输入UID",
     "password_hint": "请输入密码",
     "forgot_password": "忘记密码",
-    "forgot_password_hint": "请输入邮箱"
+    "forgot_password_hint": "请输入邮箱",
+    "change_password": "更改密码",
+    "current_password": "当前密码",
+    "current_password_hint": "请输入当前密码",
+    "new_password": "新密码",
+    "new_password_hint": "请输入新密码",
+    "retype_password": "重新输入新密码",
+    "retype_password_hint": "请重新输入新密码"
+  },
+  "home": {
+    "pre_validation": "预验证扫描",
+    "pre_validation_hint": "按照LP文件扫描",
+    "offline": "离线扫描",
+    "offline_hint": "不使用LP文件扫描",
+    "continue": "继续任务",
+    "continue_hint": "继续操作扫描未完成的任务",
+    "profile": "客人配置",
+    "data_management": "数据管理",
+    "lp_list": "LP管理",
+    "cargo_image": "货物图像",
+    "setting": "设置",
+    "user_manual": "用户手册",
+    "logout": "登出"
   }
 }

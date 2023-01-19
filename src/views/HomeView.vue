@@ -1,6 +1,6 @@
 <template>
-  <q-layout view="lHh Lpr lFf" class="bg-white">
-    <!-- <q-header elevated>
+  <q-layout view="lHh Lpr lFf">
+    <q-header class="header">
       <q-toolbar>
         <q-btn
           flat
@@ -9,23 +9,25 @@
           @click="toggleLeftDrawer"
           aria-label="Menu"
           icon="menu"
+          color="black"
         />
-        <q-toolbar-title>LNS</q-toolbar-title>
+        <q-space />
         <q-btn
-          v-if="isBackShow"
+          class="header-logout-btn"
           flat
           dense
           round
-          @click="back()"
-          icon="arrow_back"
+          @click="logout()"
+          icon="logout"
+          color="black"
         />
       </q-toolbar>
-    </q-header> -->
+    </q-header>
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-grey-2">
       <div class="drawer-content">
         <div>
           <q-list>
-            <q-item style="background-color: #42b0d5">
+            <q-item class="bg-secondary">
               <q-img no-spinner :src="logoIcon" />
             </q-item>
             <q-item clickable @click="goMyProfile()" v-ripple>
@@ -33,7 +35,7 @@
                 <q-img no-spinner :src="userProfileIcon" />
               </q-item-section>
               <q-item-section avatar>
-                <q-item-label>My Client Profile</q-item-label>
+                <q-item-label>{{ $t("home.profile") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable @click="goDataManagement()" v-ripple>
@@ -41,7 +43,7 @@
                 <q-img no-spinner :src="dataManagementIcon" />
               </q-item-section>
               <q-item-section avatar>
-                <q-item-label>Data Management</q-item-label>
+                <q-item-label>{{ $t("home.data_management") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable @click="goLPList" v-ripple>
@@ -49,7 +51,7 @@
                 <q-img no-spinner :src="lpListIcon" />
               </q-item-section>
               <q-item-section avatar>
-                <q-item-label>LP List</q-item-label>
+                <q-item-label>{{ $t("home.lp_list") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
@@ -57,7 +59,7 @@
                 <q-img no-spinner :src="cargoImageIcon" />
               </q-item-section>
               <q-item-section avatar>
-                <q-item-label>Cargo Images</q-item-label>
+                <q-item-label>{{ $t("home.cargo_image") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable @click="goSetting" v-ripple>
@@ -65,7 +67,7 @@
                 <q-img no-spinner :src="settingIcon" />
               </q-item-section>
               <q-item-section avatar>
-                <q-item-label>Setting</q-item-label>
+                <q-item-label>{{ $t("home.setting") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
@@ -73,7 +75,7 @@
                 <q-img no-spinner :src="userManualIcon" />
               </q-item-section>
               <q-item-section avatar>
-                <q-item-label>User Manual</q-item-label>
+                <q-item-label>{{ $t("home.user_manual") }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -82,7 +84,7 @@
               <q-img no-spinner :src="logoutIcon" />
             </q-item-section>
             <q-item-section avatar @click="logout()">
-              <q-item-label>Log out</q-item-label>
+              <q-item-label>{{ $t("home.logout") }}</q-item-label>
             </q-item-section>
           </q-item>
         </div>
@@ -111,9 +113,9 @@ import setting from "../assets/icon/setting.svg";
 import userManual from "../assets/icon/user-manual.svg";
 import logOut from "../assets/icon/logout.svg";
 import logo from "../assets/images/Maersk_Logo_Neg.svg";
-import { useI18n } from "@/plugin/i18nPlugins";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
+import { useI18n } from "vue-i18n";
 export default {
   name: "HomeView",
   components: {},
@@ -123,7 +125,6 @@ export default {
     const i18n = useI18n();
     const $q = useQuasar();
     const leftDrawerOpen = ref(false);
-    const isBackShow = ref(false);
     const userProfileIcon = userProfile;
     const dataManagementIcon = dataManagement;
     const lpListIcon = lpList;
@@ -132,10 +133,6 @@ export default {
     const userManualIcon = userManual;
     const logoutIcon = logOut;
     const logoIcon = logo;
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.category.value = "LoginView";
-      i18n.locale.value = res;
-    });
     onMounted(() => {
       if (route.query.leftDrawerOpen == "true") {
         toggleLeftDrawer();
@@ -145,14 +142,12 @@ export default {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     };
     const goMyProfile = () => {
-      isBackShow.value = true;
       router.push("/profileManagement");
     };
     const goDataManagement = () => {
       router.push("/dataManagement");
     };
     const logout = () => {
-      i18n.category.value = "MessageCode";
       showLoading($q);
       bridge.call("logout", null, (data: string) => {
         closeLoading($q);
@@ -160,18 +155,14 @@ export default {
           data
         ) as AndroidResponse<LogoutResponse>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          const msg = i18n.$t("E93-06-0001");
+          const msg = i18n.t("messageCode.E93-06-0001");
           router.push("/");
           popupSuccessMsg($q, msg);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.$t(androidResponse.messageCode);
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
       });
-    };
-    const back = () => {
-      router.go(-1);
-      isBackShow.value = false;
     };
     const goSetting = () => {
       router.push("/setting");
@@ -183,10 +174,8 @@ export default {
       leftDrawerOpen,
       toggleLeftDrawer,
       goMyProfile,
-      back,
       goDataManagement,
       logout,
-      isBackShow,
       userProfileIcon,
       dataManagementIcon,
       lpListIcon,
@@ -207,5 +196,17 @@ export default {
   justify-content: space-between;
   flex-direction: column;
   height: 100%;
+}
+.q-layout {
+  background: transparent;
+}
+.header {
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  .q-toolbar {
+    width: 100%;
+  }
 }
 </style>

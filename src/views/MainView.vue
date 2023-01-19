@@ -1,25 +1,49 @@
 <template>
   <div class="wrapper">
-    <div>
-      <q-img no-spinner :src="logoIcon" />
+    <div class="logo-container">
+      <q-img :src="maerskLogo" no-spinner class="logo-image" />
     </div>
-    <div @click="goOnline()">
-      <q-img no-spinner :src="onlineLogo" width="80%" />
+    <div class="card" @click="goOnline()">
+      <div class="image">
+        <q-img no-spinner :src="onlineLogo" width="100%" />
+      </div>
+      <div class="content">
+        <div class="title">{{ $t("home.pre_validation") }}</div>
+        <div class="sub-title">{{ $t("home.pre_validation_hint") }}</div>
+      </div>
     </div>
-    <div @click="goOffline()">
-      <q-img no-spinner :src="offlineLogo" width="80%" />
+    <div class="card" @click="goOffline()">
+      <div class="image">
+        <q-img no-spinner :src="offlineLogo" width="90%" />
+      </div>
+      <div class="content">
+        <div class="title">{{ $t("home.offline") }}</div>
+        <div class="sub-title">{{ $t("home.offline_hint") }}</div>
+      </div>
     </div>
-    <div @click="goContinue()">
-      <q-img no-spinner :src="continueLogo" width="80%" />
+    <div class="card" @click="goContinue()">
+      <div class="image">
+        <q-img no-spinner :src="continueLogo" width="85%" />
+      </div>
+      <div class="content">
+        <div class="title">{{ $t("home.continue") }}</div>
+        <div class="sub-title">{{ $t("home.continue_hint") }}</div>
+      </div>
+    </div>
+    <div class="login-bottom">
+      <span> {{ versionNum }} </span>
     </div>
   </div>
 </template>
 <script lang="ts">
-import online from "../assets/images/online.png";
-import offline from "../assets/images/offline.png";
-import continueJob from "../assets/images/continue.png";
+import online from "../assets/images/home_online.svg";
+import offline from "../assets/images/home_offline.svg";
+import continueJob from "../assets/images/home_continue.svg";
 import { useRouter } from "vue-router";
-import logo from "../assets/images/Maersk_Logo_Neg.svg";
+import logo from "../assets/images/Maersk_Logo_RGB.svg";
+import { onMounted, ref } from "vue";
+import config from "../assets/config.json";
+
 export default {
   name: "MainView",
   components: {},
@@ -28,19 +52,20 @@ export default {
     const onlineLogo = online;
     const offlineLogo = offline;
     const continueLogo = continueJob;
-    const logoIcon = logo;
+    const maerskLogo = logo;
+    const versionNum = ref();
     const goOnline = () => {
       router.push("/profile/online");
     };
-
     const goOffline = () => {
       router.push("/profile/offline");
     };
-
     const goContinue = () => {
       router.push("/continueJobs");
     };
-
+    onMounted(() => {
+      versionNum.value = config.app_version;
+    });
     return {
       router,
       onlineLogo,
@@ -49,23 +74,72 @@ export default {
       goOnline,
       goOffline,
       goContinue,
-      logoIcon,
+      maerskLogo,
+      versionNum,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
 .wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  justify-content: space-around;
-  background: #42b0d5;
+  height: calc(100vh - 50px);
+  position: relative;
+}
+.logo-container {
+  margin-bottom: 0;
+  height: 120px;
+  .logo-image {
+    max-width: 90%;
+  }
 }
 
-// .menu-item {
-//   background: #42b0d5;
-//   width: 50%;
-//   align-self: center;
-// }
+.card {
+  background-color: #ffffff;
+  width: 80%;
+  height: 130px;
+  margin: 20px auto;
+  box-shadow: 4px 4px 12px 2px rgba(0, 0, 0, 0.12);
+  display: flex;
+  justify-content: center;
+  padding: 0 10px;
+  &:first-child {
+    margin-top: 0px;
+  }
+  .image,
+  .content {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .image {
+    flex: 1;
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .content {
+    flex: 1.2;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 16px;
+    .title {
+      font-weight: bold;
+      color: #000000;
+    }
+    .sub-title {
+      text-align: left;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+  }
+  .login-bottom {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    color: #b2b2b2;
+  }
+}
 </style>

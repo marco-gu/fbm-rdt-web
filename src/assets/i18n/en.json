@@ -56,5 +56,20 @@
     "new_password_hint": "Please enter your new password",
     "retype_password": "Retype New Password",
     "retype_password_hint": "Please retype the new password"
+  },
+  "home": {
+    "pre_validation": "Pre-validation",
+    "pre_validation_hint": "Pre-validation scan cartons based on LPs",
+    "offline": "Offline",
+    "offline_hint": "Offline scan without LP downloaded",
+    "continue": "Continue",
+    "continue_hint": "Continue unfinished jobs",
+    "profile": "My Client Profile",
+    "data_management": "Data Management",
+    "lp_list": "LP List",
+    "cargo_image": "Cargo Image",
+    "setting": "Settings",
+    "user_manual": "User Manual",
+    "logout": "Logout"
   }
 }
