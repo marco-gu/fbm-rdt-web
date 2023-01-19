@@ -84,6 +84,13 @@
   </div>
 </template>
 <script lang="ts">
+import {
+  AndroidResponse,
+  AndroidResponseStatus,
+} from "@/models/android.response";
+import { popupErrorMsg } from "@/plugin/popupPlugins";
+import bridge from "dsbridge";
+import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 const cartonImageView = defineComponent({
@@ -91,6 +98,7 @@ const cartonImageView = defineComponent({
     const pageTitle = "Add Cargo";
     const router = useRouter();
     const reason = ref("Damage");
+    const $q = useQuasar();
     const pageViews = ref([] as any);
     const options = ["Damage", "Other"];
     onMounted(() => {
@@ -116,7 +124,39 @@ const cartonImageView = defineComponent({
       router.push("/home");
     };
     const save = () => {
-      // save
+      let cartonID = "";
+      const param = {
+        so: "",
+        po: "",
+      };
+      pageViews.value.forEach((t: any) => {
+        switch (t.displayFieldName) {
+          case "PO":
+            param.po = t.value;
+            break;
+          case "SO":
+            param.so = t.value;
+            break;
+          case "CID":
+            cartonID = t.value;
+            break;
+        }
+      });
+      bridge.call("checkSoAndPoExist", param, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          popupErrorMsg($q, "Not exist");
+        } else {
+          const param2 = {
+            cartonID: cartonID,
+            taskID: androidResponse.data.taskId,
+          };
+          bridge.call("createCargoImageTask", param2);
+          setTimeout(() => {
+            router.push("/imageAccess");
+          }, 500);
+        }
+      });
     };
     return {
       pageTitle,
