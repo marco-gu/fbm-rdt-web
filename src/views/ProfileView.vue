@@ -1,19 +1,15 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable>
-        <q-item-section avatar @click="home">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span class="title-text">Profile</span></q-item-section
-        >
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <q-separator color="grey-5" />
-      <div class="search q-pa-sm">
+      <q-toolbar class="common-toolbar">
+        <q-btn flat round dense icon="arrow_back" @click="home" />
+        <q-toolbar-title :shrink="false">
+          {{ $t("profile.profile") }}
+        </q-toolbar-title>
+        <q-space />
+        <q-btn flat round dense icon="home" @click="home" />
+      </q-toolbar>
+      <div class="search">
         <q-input v-model="search" outlined dense placeholder="Search" clearable>
           <template v-slot:append>
             <q-icon name="search" />
@@ -21,21 +17,20 @@
         </q-input>
       </div>
     </div>
-
     <div class="profile-list-container">
       <q-pull-to-refresh @refresh="refresh">
         <q-list v-for="(item, index) in profileListDisplay" :key="index">
-          <q-item clickable @click="onClickProfile(item)">
-            <q-item-section style="text-align: left">
+          <q-item class="list-item" clickable @click="onClickProfile(item)">
+            <q-item-section class="item-labels">
               <q-item-label>{{ item.profileCode }}</q-item-label>
-              <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
-              <!-- <q-item-label caption>{{ item.effectiveDate }}</q-item-label> -->
+              <q-item-label class="sub-text">{{
+                item.updateDatetime
+              }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-icon name="chevron_right" color="black" />
             </q-item-section>
           </q-item>
-          <q-separator spaced inset />
         </q-list>
       </q-pull-to-refresh>
     </div>
@@ -52,8 +47,8 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { useI18n } from "@/plugin/i18nPlugins";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
+import { useI18n } from "vue-i18n";
 const ProfileView = defineComponent({
   methods: {
     home() {
@@ -66,9 +61,6 @@ const ProfileView = defineComponent({
     const route = useRoute();
     const i18n = useI18n();
     let isFirstSync = true;
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-    });
     const store = useStore();
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
@@ -80,12 +72,11 @@ const ProfileView = defineComponent({
         >;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           getProfileList();
-          popupSuccessMsg($q, "Synchronize completed!");
+          popupSuccessMsg($q, i18n.t("profile.sync_complete"));
           isFirstSync = false;
           done();
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          i18n.category.value = "MessageCode";
-          const message = i18n.$t(androidResponse.messageCode);
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
           done();
         }
@@ -114,16 +105,16 @@ const ProfileView = defineComponent({
         if (result.length === 0) {
           if (isFirstSync) {
             $q.dialog({
-              title: "Sync Profile",
-              message: "Please synchronize the latest profiles",
+              title: i18n.t("profile.sync_profile"),
+              message: i18n.t("profile.sync_latest"),
               noBackdropDismiss: true,
             }).onOk(() => {
               refresh(() => void 0);
             });
           } else {
             $q.dialog({
-              title: "Sync Profile",
-              message: "No profile found for this user.",
+              title: i18n.t("profile.sync_profile"),
+              message: i18n.t("profile.no_profile"),
             }).onCancel(() => {
               void 0;
             });
@@ -171,19 +162,38 @@ export default ProfileView;
   top: 0;
   width: 100%;
   // height: 60px;
-  background-color: #ffffff;
   z-index: 1;
+  background-image: url("../assets/images/lns_bg.png");
+  background-size: cover;
   .q-item {
-    background-color: #ffffff;
     height: 60px;
     width: 100%;
   }
-
   .title-text {
-    font-size: 21px;
+    font-size: 20px;
+  }
+
+  .search {
+    padding: 0 20px;
+    input {
+      background-color: #ffffff;
+    }
   }
 }
-
-// .profile-list-container {
-// }
+.list-item {
+  margin: 20px;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  font-size: 16px;
+  .item-labels {
+    text-align: left;
+    color: black;
+    .sub-text {
+      color: #757575;
+      font-size: 14px;
+    }
+  }
+}
 </style>

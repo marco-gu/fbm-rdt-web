@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header class="header">
+    <q-header class="common-header-toolbar">
       <q-toolbar>
         <q-btn
           flat
@@ -199,14 +199,5 @@ export default {
 }
 .q-layout {
   background: transparent;
-}
-.header {
-  background: transparent;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  .q-toolbar {
-    width: 100%;
-  }
 }
 </style>

@@ -32,7 +32,8 @@
     "E93-05-0005": "LP has been successfully downloaded!",
     "E93-05-0006": "No Record is found!",
     "E93-05-0007": "Offline input completed",
-    "E93-06-0001": "Logout Success!"
+    "E93-06-0001": "Logout Success!",
+    "SYS-01-001": "Network not available"
   },
   "common": {
     "confirm": "Confirm",
@@ -71,5 +72,12 @@
     "setting": "Settings",
     "user_manual": "User Manual",
     "logout": "Logout"
+  },
+  "profile":{
+    "profile": "Client Profile",
+    "sync_complete": "Synchronize completed!",
+    "sync_profile": "Sync Profile",
+    "sync_latest": "Please synchronize the latest profiles",
+    "no_profile":"No profile found for this user."
   }
 }

@@ -100,6 +100,7 @@ export default {
   margin: 20px auto;
   box-shadow: 4px 4px 12px 2px rgba(0, 0, 0, 0.12);
   display: flex;
+  border-radius: 5px;
   justify-content: center;
   padding: 0 10px;
   &:first-child {

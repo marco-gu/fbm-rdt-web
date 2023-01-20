@@ -28,3 +28,17 @@ nav {
     font-weight: bold;
   }
 }
+.common-header-toolbar {
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  .q-toolbar {
+    width: 100%;
+  }
+  .common-toolbar {
+    width: 100%;
+    background: transparent;
+    color: rgba(0, 0, 0, 1);
+  }
+}

@@ -32,7 +32,8 @@
     "E93-05-0005": "LP已经成功下载!",
     "E93-05-0006": "没有纪录!",
     "E93-05-0007": "完成输入",
-    "E93-06-0001": "成功登出!"
+    "E93-06-0001": "成功登出!",
+    "SYS-01-001": "网络不通"
   },
   "common": {
     "confirm": "确认",
@@ -71,5 +72,12 @@
     "setting": "设置",
     "user_manual": "用户手册",
     "logout": "登出"
+  },
+  "profile":{
+    "profile": "用户Profile",
+    "sync_complete": "同步完成",
+    "sync_profile": "同步Profile",
+    "sync_latest": "请同步最新的profile",
+    "no_profile":"当前用户无profile配置"
   }
 }
