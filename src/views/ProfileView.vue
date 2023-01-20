@@ -172,7 +172,6 @@ export default ProfileView;
   .title-text {
     font-size: 20px;
   }
-
   .search {
     margin: 0 20px;
     background-color: #ffffff;
