@@ -174,10 +174,8 @@ export default ProfileView;
   }
 
   .search {
-    padding: 0 20px;
-    input {
-      background-color: #ffffff;
-    }
+    margin: 0 20px;
+    background-color: #ffffff;
   }
 }
 .list-item {
