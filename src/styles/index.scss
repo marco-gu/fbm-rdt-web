@@ -36,13 +36,13 @@ nav {
   .q-toolbar {
     width: 100%;
   }
-  .common-toolbar {
-    width: 100%;
-    background: transparent;
-    color: rgba(0, 0, 0, 1);
-    .q-toolbar__title {
-      font-weight: bold;
-      font-size: 18px;
-    }
+}
+.common-toolbar {
+  width: 100%;
+  background: transparent;
+  color: rgba(0, 0, 0, 1);
+  .q-toolbar__title {
+    font-weight: bold;
+    font-size: 20px;
   }
 }
