@@ -82,7 +82,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .wrapper {
-  height: calc(100vh - 40px);
+  height: calc(100vh - 50px);
   position: relative;
 }
 .logo-container {
