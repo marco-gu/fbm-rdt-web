@@ -39,7 +39,11 @@
     "confirm": "确认",
     "cancel": "取消",
     "save": "保存",
-    "service_unavailable": "遇到了些问题，请重试"
+    "service_unavailable": "遇到了些问题，请重试",
+    "receiving": "收货",
+    "stuffing": "出货",
+    "search": "搜索",
+    "delete": "删除"
   },
   "login": {
     "login": "登录",
@@ -81,6 +85,8 @@
     "no_profile":"当前用户无profile配置"
   },
   "lp":{
-    "lp_search": "搜索LP"
+    "lp_search": "搜索LP",
+    "generate": "生成",
+    "scan_type": "收货模式"
   }
 }

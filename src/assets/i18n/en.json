@@ -39,7 +39,11 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "save": "Save",
-    "service_unavailable": "Service Unavailable"
+    "service_unavailable": "Service Unavailable",
+    "receiving": "Receiving",
+    "stuffing": "Stuffing",
+    "search": "Search",
+    "delete": "Delete"
   },
   "login": {
     "login": "Log in",
@@ -81,6 +85,8 @@
     "no_profile":"No profile found for this user."
   },
   "lp":{
-    "lp_search": "LP Search"
+    "lp_search": "LP Search",
+    "generate": "Genrate",
+    "scan_type": "Scan Type"
   }
 }

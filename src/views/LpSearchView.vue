@@ -1,68 +1,52 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">LP Search</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
+      <q-toolbar class="common-toolbar">
+        <q-btn flat round dense icon="arrow_back" @click="back" />
+        <q-toolbar-title :shrink="false">
+          {{ $t("lp.lp_search") }}
+        </q-toolbar-title>
+        <q-space />
+        <q-btn flat round dense icon="home" @click="home" />
+      </q-toolbar>
     </div>
-    <q-separator color="grey-5" />
-    <q-form @submit="onSubmit" style="background: #fff">
+    <q-form @submit="onSubmit" class="content">
       <q-input
         v-model="profileName"
         prefix="Profile"
         input-class="text-right"
         readonly
         borderless
-        style="padding: 0px 16px"
+        dense
+        class="common-input mb-15"
       >
       </q-input>
-      <q-separator color="grey-5" />
-      <q-field borderless style="padding: 0px 16px" item-aligned>
-        <template v-slot:control>
-          <div>
-            <span>Scan Type</span>
-          </div>
-        </template>
-        <div style="display: flex; color: black; align-items: center">
-          <div v-if="receivingFlag">
-            <q-radio
-              v-model="scanType"
-              val="Receiving"
-              label="Receiving"
-              @click="changeScanType('Receiving')"
-            />
-          </div>
-          <div v-if="stuffingFlag">
-            <q-radio
-              v-model="scanType"
-              val="Stuffing"
-              label="Stuffing"
-              @click="changeScanType('Stuffing')"
-            />
-          </div>
+      <div class="item-container mb-15">
+        <div class="label">{{ $t("lp.scan_type") }}</div>
+        <div class="input">
+          <q-radio
+            v-if="receivingFlag"
+            v-model="scanType"
+            val="Receiving"
+            :label="$t('common.receiving')"
+            @click="changeScanType('Receiving')"
+          />
+          <q-radio
+            v-if="stuffingFlag"
+            v-model="scanType"
+            val="Stuffing"
+            :label="$t('common.stuffing')"
+            @click="changeScanType('Stuffing')"
+          />
         </div>
-      </q-field>
-      <q-separator color="grey-5" />
+      </div>
+
       <div v-for="(item, i) in pageViews" :key="i">
         <div v-if="item.display == 1">
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-            "
-          >
-            <span style="padding-left: 1rem; color: black">
+          <div class="item-container mb-15">
+            <div>
               {{ item.displayFieldName }}
-            </span>
+            </div>
             <q-input
               ref="inputRef"
               v-model="item.model"
@@ -73,7 +57,8 @@
               lazy-rules
               :rules="[item.valid]"
               borderless
-              style="padding: 0px 16px"
+              dense
+              class="common-input no-shadow"
             >
               <template v-slot:append>
                 <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
@@ -82,16 +67,15 @@
               </template>
             </q-input>
           </div>
-          <q-separator color="grey-5" />
         </div>
       </div>
-      <div style="position: fixed; bottom: 0px; width: 100%">
+      <div class="button-bottom">
         <q-btn
-          no-caps
+          unelevated
           type="submit"
           class="full-width"
-          label="Generate"
-          style="background: #42b0d5; color: #fff; height: 40px"
+          :label="$t('lp.generate')"
+          color="secondary"
         />
       </div>
     </q-form>
@@ -108,7 +92,6 @@ import {
   ProfileDetail,
   ProfileOrderLevel,
 } from "@/models/profile";
-import { useI18n } from "@/plugin/i18nPlugins";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import {
   popupErrorMsg,
@@ -126,6 +109,7 @@ import {
   toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
+import { useI18n } from "vue-i18n";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -155,10 +139,6 @@ const LpSearchView = defineComponent({
     const receivingFlag = ref(false);
     const stuffingFlag = ref(false);
     const mode = route.params.id as string;
-    i18n.category.value = "LpSearchView";
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-    });
     onMounted(() => {
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
@@ -274,14 +254,13 @@ const LpSearchView = defineComponent({
       if (mode == "online") {
         bridge.call("fetchLp", apiParams, (res: string) => {
           closeLoading($q);
-          i18n.category.value = "MessageCode";
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             routeParams.scanned = androidResponse.data.scanned;
             routeParams.total = androidResponse.data.total;
             routeParams.taskID = androidResponse.data.taskID;
             routeParams.type = scanType.value;
-            const message = i18n.$t("E93-05-0005");
+            const message = i18n.t("messageCode.E93-05-0005");
             popupSuccessMsg($q, message);
             setTimeout(() => {
               router.push({
@@ -290,22 +269,25 @@ const LpSearchView = defineComponent({
               });
             }, 2000);
           } else if (androidResponse.status == AndroidResponseStatus.INFO) {
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupInfoMsg($q, message);
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupErrorMsg($q, message);
           }
         });
       } else {
         bridge.call("createTask", apiParams, (res: string) => {
           closeLoading($q);
-          i18n.category.value = "MessageCode";
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             routeParams.taskID = androidResponse.data.taskID;
             routeParams.type = scanType.value;
-            const message = i18n.$t("E93-05-0007");
+            const message = i18n.t("messageCode.E93-05-0007");
             popupSuccessMsg($q, message);
             setTimeout(() => {
               router.push({
@@ -314,10 +296,14 @@ const LpSearchView = defineComponent({
               });
             }, 2000);
           } else if (androidResponse.status == AndroidResponseStatus.INFO) {
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupInfoMsg($q, message);
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupErrorMsg($q, message);
           }
         });
@@ -397,15 +383,45 @@ export default LpSearchView;
 <style lang="scss" scoped>
 .wrapper {
   height: 100vh;
-  display: flex;
-  flex-flow: column;
-  background: rgb(233, 229, 229);
+  color: #000000;
+  font-size: 14px;
+}
+.content {
+  padding: 0 20px;
 }
 .header {
   display: flex;
-  background: #fff;
   justify-content: space-around;
   height: 60px;
+  align-items: center;
+}
+.common-input {
+  background: #ffffff;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 0 15px;
+  &.no-shadow {
+    box-shadow: none;
+  }
+}
+.button-bottom {
+  position: fixed;
+  bottom: 10px;
+  width: calc(100% - 40px);
+}
+.mb-15 {
+  margin-bottom: 20px;
+}
+
+.item-container {
+  text-align: left;
+  height: 40px;
+  background-color: #ffffff;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 </style>

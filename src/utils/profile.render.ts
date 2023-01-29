@@ -6,12 +6,12 @@ export type ViewDisplayAttribute = {
   fieldName: string;
   level: string;
   mandatory: number;
-  model: Ref<unknown>;
+  model: Ref<any>;
   reg: RegExp;
   display: number;
   scan: number;
   length: number;
-  valid: (val: string) => Promise<unknown>;
+  valid: (val: string) => Promise<any>;
 };
 
 export enum ProfileElementLevel {
