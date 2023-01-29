@@ -79,5 +79,8 @@
     "sync_profile": "同步Profile",
     "sync_latest": "请同步最新的profile",
     "no_profile":"当前用户无profile配置"
+  },
+  "lp":{
+    "lp_search": "搜索LP"
   }
 }

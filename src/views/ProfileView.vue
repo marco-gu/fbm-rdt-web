@@ -154,7 +154,7 @@ export default ProfileView;
 </script>
 <style lang="scss" scoped>
 .wrapper {
-  height: 100vh;
+  height: 100%;
   position: relative;
 }
 .header {

@@ -79,5 +79,8 @@
     "sync_profile": "Sync Profile",
     "sync_latest": "Please synchronize the latest profiles",
     "no_profile":"No profile found for this user."
+  },
+  "lp":{
+    "lp_search": "LP Search"
   }
 }
