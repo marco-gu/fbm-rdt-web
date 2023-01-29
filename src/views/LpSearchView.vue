@@ -62,7 +62,7 @@
             >
               <template v-slot:append>
                 <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                  <q-icon name="qr_code_scanner" />
+                  <q-icon name="center_focus_weak" right size="14px" />
                 </q-avatar>
               </template>
             </q-input>
