@@ -18,7 +18,7 @@
         readonly
         borderless
         dense
-        class="common-input mb-15"
+        class="common-input mb-15 mt-15"
       >
       </q-input>
       <div class="item-container mb-15">
@@ -388,6 +388,7 @@ export default LpSearchView;
 }
 .content {
   padding: 0 20px;
+  margin-top: 10px;
 }
 .header {
   display: flex;
@@ -412,7 +413,6 @@ export default LpSearchView;
 .mb-15 {
   margin-bottom: 20px;
 }
-
 .item-container {
   text-align: left;
   height: 40px;
