@@ -156,6 +156,7 @@ export default ProfileView;
 .wrapper {
   height: 100%;
   position: relative;
+  padding-bottom: 10px;
 }
 .header {
   position: sticky;
