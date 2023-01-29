@@ -87,6 +87,10 @@
   "lp":{
     "lp_search": "搜索LP",
     "generate": "生成",
-    "scan_type": "收货模式"
+    "scan_type": "收货模式",
+    "scan": "扫描",
+    "scanned": "已扫",
+    "total_number": "总数",
+    "start_scan": "开始扫描"
   }
 }

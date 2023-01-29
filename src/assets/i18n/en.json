@@ -87,6 +87,10 @@
   "lp":{
     "lp_search": "LP Search",
     "generate": "Genrate",
-    "scan_type": "Scan Type"
+    "scan_type": "Scan Type",
+    "scan": "Scan",
+    "scanned": "Scanned",
+    "total_number": "Total Number",
+    "start_scan": "Start Scan Carton ID"
   }
 }
