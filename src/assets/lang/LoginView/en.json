@@ -1,6 +1,10 @@
 {
-    "login": "LOG IN",
-    "help": "Help",
+    "login": "Log in",
+    "help": "Login Help",
+    "account": "Account",
+    "password": "Password",
+    "account-hint": "Please enter your UID",
+    "password-hint": "Please enter your password",
     "forgotPassword": "Forgot Password",
     "E00-01-0001": "Username not exist",
     "E00-01-0002": "Password not correct",

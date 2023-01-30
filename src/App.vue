@@ -2,12 +2,30 @@
   <router-view />
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 import bridge from "dsbridge";
 import { useRouter } from "vue-router";
 import { provideI18n } from "./plugin/i18nPlugins";
+import { useI18n } from "vue-i18n";
+import { useStore } from "vuex";
 const App = defineComponent({
   setup() {
+    const i18n = useI18n();
+    bridge.call("getSettingLanguage", null, (res: string) => {
+      i18n.locale.value = res;
+    });
+    // store i18n in store for changing
+    // const store = useStore();
+    // watch(
+    //   () => store.getters.currentLang,
+    //   (newVal) => {
+    //     i18n.locale.value = store.getters.currentLang;
+    //   },
+    //   {
+    //     immediate: true,
+    //   }
+    // );
+
     provideI18n({
       locale: "en",
       messages: {

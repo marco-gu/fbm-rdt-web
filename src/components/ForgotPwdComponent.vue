@@ -10,7 +10,9 @@
         <q-form @submit="onConfirm">
           <q-toolbar>
             <q-toolbar-title
-              ><span class="text-weight-bold">{{ forgotPwdLabel }}</span>
+              ><span class="toolbar-title">{{
+                $t("login.forgot_password")
+              }}</span>
             </q-toolbar-title>
             <q-btn
               @click="onClose"
@@ -24,10 +26,11 @@
           <q-card-section>
             <q-input
               clearable
-              filled
+              outlined
+              dense
               v-model="mail"
+              :placeholder="$t('login.forgot_password_hint')"
               type="email"
-              prefix="Email:"
               lazy-rules
               :rules="[mailRule]"
             >
@@ -35,11 +38,12 @@
                 <q-icon name="mail" />
               </template>
             </q-input>
+            <div class="button-container">
+              <q-btn unelevated type="submit" color="secondary">
+                {{ $t("common.confirm") }}
+              </q-btn>
+            </div>
           </q-card-section>
-          <q-separator />
-          <q-card-actions align="right" class="bg-white text-teal">
-            <q-btn flat type="submit"> {{ confirmLabel }}</q-btn>
-          </q-card-actions>
         </q-form>
       </q-card>
     </q-dialog>
@@ -50,12 +54,13 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { useI18n } from "@/plugin/i18nPlugins";
+
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, ref, toRefs, watch } from "vue";
+import { useI18n } from "vue-i18n";
 const ForgotPwdComponent = defineComponent({
   props: {
     dialogVisible: {
@@ -68,16 +73,9 @@ const ForgotPwdComponent = defineComponent({
     const { dialogVisible } = toRefs(props);
     const i18n = useI18n();
     const $q = useQuasar();
-    const forgotPwdLabel = ref("");
-    const confirmLabel = ref("");
     const mail = ref("");
     const visible = ref(false);
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.category.value = "ForgotPwdComponent";
-      i18n.locale.value = res;
-      forgotPwdLabel.value = i18n.$t("forgotPassword");
-      confirmLabel.value = i18n.$t("confirm");
-    });
+
     const onClose = () => {
       mail.value = "";
       context.emit("close");
@@ -90,28 +88,26 @@ const ForgotPwdComponent = defineComponent({
       bridge.call("forgotPassword", args, (res: string) => {
         closeLoading($q);
         const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
-        i18n.category.value = "MessageCode";
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           context.emit("confirm");
-          const message = i18n.$t("E93-03-0001");
+          const message = i18n.t("messageCode.E93-03-0001");
           popupSuccessMsg($q, message);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.$t(androidResponse.messageCode);
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
       });
     };
     const mailRule = (val: string) => {
-      i18n.category.value = "MessageCode";
       return new Promise((resolve) => {
         const reg =
           /[a-zA-Z0-9]+([-_.][A-Za-zd]+)*@([a-zA-Z0-9]+[-.])+[A-Za-zd]{2,5}$/g;
         if (!val) {
-          const errMsg = i18n.$t("E93-03-0003");
+          const errMsg = i18n.t("messageCode.E93-03-0003");
           resolve(errMsg);
         } else {
           if (!reg.test(mail.value)) {
-            const errMsg = i18n.$t("E93-03-0002");
+            const errMsg = i18n.t("messageCode.E93-03-0002");
             resolve(errMsg);
           } else {
             resolve(true);
@@ -127,8 +123,6 @@ const ForgotPwdComponent = defineComponent({
       { immediate: true }
     );
     return {
-      forgotPwdLabel,
-      confirmLabel,
       mail,
       visible,
       onClose,
@@ -139,3 +133,19 @@ const ForgotPwdComponent = defineComponent({
 });
 export default ForgotPwdComponent;
 </script>
+<style lang="scss" scoped>
+.toolbar-title {
+  font-size: 14px;
+  font-weight: normal;
+}
+.q-card__section--vert {
+  padding: 0 12px;
+}
+.button-container {
+  width: 100%;
+  padding-bottom: 12px;
+  button {
+    width: 100%;
+  }
+}
+</style>

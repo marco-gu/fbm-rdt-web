@@ -61,13 +61,18 @@ const routes: Array<RouteRecordRaw> = [
     ],
     component: LpSearchView,
   },
+  // {
+  //   path: "/scan/:id",
+  //   name: "scan",
+  //   children: [
+  //     { path: "online", name: "scanOnline", component: ScanView },
+  //     { path: "offline", name: "scanOffline", component: ScanView },
+  //   ],
+  //   component: ScanView,
+  // },
   {
-    path: "/scan/:id",
+    path: "/scan",
     name: "scan",
-    children: [
-      { path: "online", name: "scanOnline", component: ScanView },
-      { path: "offline", name: "scanOffline", component: ScanView },
-    ],
     component: ScanView,
   },
   {

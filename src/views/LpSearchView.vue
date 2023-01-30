@@ -90,9 +90,10 @@
           no-caps
           type="submit"
           class="full-width"
-          label="Generate"
           style="background: #42b0d5; color: #fff; height: 40px"
-        />
+        >
+          {{ bottomButtonLable }}
+        </q-btn>
       </div>
     </q-form>
   </div>
@@ -108,7 +109,6 @@ import {
   ProfileDetail,
   ProfileOrderLevel,
 } from "@/models/profile";
-import { useI18n } from "@/plugin/i18nPlugins";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import {
   popupErrorMsg,
@@ -126,6 +126,7 @@ import {
   toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
+import { useI18n } from "vue-i18n";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -155,7 +156,10 @@ const LpSearchView = defineComponent({
     const receivingFlag = ref(false);
     const stuffingFlag = ref(false);
     const mode = route.params.id as string;
-    i18n.category.value = "LpSearchView";
+    const bottomButtonLable =
+      mode == "online"
+        ? i18n.t("lpSearch.onlineBottomButton")
+        : i18n.t("lpSearch.offlineBottomButton");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -274,14 +278,13 @@ const LpSearchView = defineComponent({
       if (mode == "online") {
         bridge.call("fetchLp", apiParams, (res: string) => {
           closeLoading($q);
-          i18n.category.value = "MessageCode";
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             routeParams.scanned = androidResponse.data.scanned;
             routeParams.total = androidResponse.data.total;
             routeParams.taskID = androidResponse.data.taskID;
             routeParams.type = scanType.value;
-            const message = i18n.$t("E93-05-0005");
+            const message = i18n.t("messageCode.E93-05-0005");
             popupSuccessMsg($q, message);
             setTimeout(() => {
               router.push({
@@ -290,36 +293,25 @@ const LpSearchView = defineComponent({
               });
             }, 2000);
           } else if (androidResponse.status == AndroidResponseStatus.INFO) {
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupInfoMsg($q, message);
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupErrorMsg($q, message);
           }
         });
       } else {
-        bridge.call("createTask", apiParams, (res: string) => {
-          closeLoading($q);
-          i18n.category.value = "MessageCode";
-          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            routeParams.taskID = androidResponse.data.taskID;
-            routeParams.type = scanType.value;
-            const message = i18n.$t("E93-05-0007");
-            popupSuccessMsg($q, message);
-            setTimeout(() => {
-              router.push({
-                name: "scan",
-                params: routeParams,
-              });
-            }, 2000);
-          } else if (androidResponse.status == AndroidResponseStatus.INFO) {
-            const message = i18n.$t(androidResponse.messageCode);
-            popupInfoMsg($q, message);
-          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.$t(androidResponse.messageCode);
-            popupErrorMsg($q, message);
-          }
+        bridge.call("createTask", apiParams);
+        closeLoading($q);
+        pageViews.value.forEach((t) => {
+          t.model = "";
+        });
+        nextTick(() => {
+          reset(inputRef.value);
         });
       }
     };
@@ -389,6 +381,7 @@ const LpSearchView = defineComponent({
       scan,
       inputRef,
       validPaste,
+      bottomButtonLable,
     };
   },
 });

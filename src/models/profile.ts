@@ -1,6 +1,7 @@
 export interface ProfileMaster {
   profileCode: string;
   effectiveDate: string;
+  updateDatetime: string;
 }
 
 export interface ProfileDetail {

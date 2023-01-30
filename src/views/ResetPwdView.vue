@@ -1,89 +1,89 @@
 <template>
-  <div class="wrapper">
-    <div class="header">
+  <div class="container">
+    <div class="common-header">
       <q-item clickable>
         <q-item-section avatar @click="back">
           <q-icon name="arrow_back" />
         </q-item-section>
         <q-item-section>
-          <span class="header-title">{{ changePwdTitle }}</span></q-item-section
-        >
+          <span class="common-header--title">
+            {{ $t("login.change_password") }}
+          </span>
+        </q-item-section>
       </q-item>
     </div>
-    <q-separator />
-    <q-card class="content-card">
+    <div class="content-card">
       <q-form @submit="onSubmit">
-        <div class="content-input">
-          <q-input
-            v-model="currentPwd"
-            filled
-            :type="isPwd ? 'password' : 'text'"
-            :placeholder="currentPwdLabel"
-            lazy-rules
-            :rules="[initPwdRule]"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
-          <q-input
-            v-model="newPwd"
-            filled
-            :type="isPwd ? 'password' : 'text'"
-            :placeholder="newPwdLabel"
-            lazy-rules
-            :rules="[newPwdRule]"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
-          <q-input
-            v-model="reNewPwd"
-            filled
-            :type="isPwd ? 'password' : 'text'"
-            :placeholder="retypeNewPwdLabel"
-            lazy-rules
-            :rules="[reNewPwdRule]"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
-        </div>
-        <div class="bottom">
+        <div class="input-title">{{ $t("login.current_password") }}</div>
+        <q-input
+          v-model="currentPwd"
+          outlined
+          dense
+          :type="isPwd ? 'password' : 'text'"
+          :placeholder="$t('login.current_password_hint')"
+          lazy-rules
+          :rules="[initPwdRule]"
+        >
+          <template v-slot:append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
+        <div class="input-title">{{ $t("login.new_password") }}</div>
+        <q-input
+          v-model="newPwd"
+          outlined
+          dense
+          :type="isPwd ? 'password' : 'text'"
+          :placeholder="$t('login.new_password_hint')"
+          lazy-rules
+          :rules="[newPwdRule]"
+        >
+          <template v-slot:append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
+        <div class="input-title">{{ $t("login.retype_password") }}</div>
+        <q-input
+          v-model="reNewPwd"
+          outlined
+          dense
+          :type="isPwd ? 'password' : 'text'"
+          :placeholder="$t('login.retype_password_hint')"
+          lazy-rules
+          :rules="[reNewPwdRule]"
+        >
+          <template v-slot:append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
+        <div class="button-bottom">
           <q-btn
-            no-caps
-            style="width: 48%"
-            flat
-            push
-            :label="cancelLabel"
+            outline
+            text-color="grey"
+            :label="$t('common.cancel')"
             @click="cancel"
           />
-          <q-separator vertical inset color="white" />
           <q-btn
-            no-caps
-            style="width: 52%"
-            flat
+            unelevated
+            color="secondary"
             type="submit"
-            push
-            :label="saveLabel"
+            :label="$t('common.save')"
           />
         </div>
       </q-form>
-    </q-card>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -98,8 +98,8 @@ import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import md5 from "md5";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
-import { useI18n } from "@/plugin/i18nPlugins";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
+import { useI18n } from "vue-i18n";
 
 const ResetPwdView = defineComponent({
   setup() {
@@ -114,26 +114,10 @@ const ResetPwdView = defineComponent({
     const initPwd = ref();
     const from = ref("");
     const isPwd = ref(true);
-    const changePwdTitle = ref("");
-    const currentPwdLabel = ref("");
-    const newPwdLabel = ref("");
-    const retypeNewPwdLabel = ref("");
-    const cancelLabel = ref("");
-    const saveLabel = ref("");
     onMounted(() => {
       from.value = route.params.from as string;
       username.value = route.params.username as string;
       initPwd.value = route.params.password as string;
-      bridge.call("getSettingLanguage", null, (res: string) => {
-        i18n.locale.value = res;
-        i18n.category.value = "ResetPwdView";
-        changePwdTitle.value = i18n.$t("changePwd");
-        currentPwdLabel.value = i18n.$t("currentPwd");
-        newPwdLabel.value = i18n.$t("newPwd");
-        retypeNewPwdLabel.value = i18n.$t("retypeNewPwd");
-        cancelLabel.value = i18n.$t("cancel");
-        saveLabel.value = i18n.$t("save");
-      });
     });
     const onSubmit = () => {
       showLoading($q);
@@ -146,7 +130,7 @@ const ResetPwdView = defineComponent({
         closeLoading($q);
         const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          const message = i18n.$t("E93-02-0001");
+          const message = i18n.t("messageCode.E93-02-0001");
           if (from.value == "LoginView") {
             router.push("/home");
           } else if (from.value == "SettingView") {
@@ -154,28 +138,27 @@ const ResetPwdView = defineComponent({
           }
           popupSuccessMsg($q, message);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.$t(androidResponse.messageCode);
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
       });
     };
     const initPwdRule = (val: string) => {
-      i18n.category.value = "MessageCode";
       return new Promise((resolve) => {
         if (!val) {
-          const message = i18n.$t("E93-02-0005");
+          const message = i18n.t("messageCode.E93-02-0005");
           resolve(message);
         } else {
           if (from.value === "SettingView") {
             if (md5(currentPwd.value) != initPwd.value) {
-              const message = i18n.$t("E93-02-0003");
+              const message = i18n.t("messageCode.E93-02-0003");
               resolve(message);
             } else {
               resolve(true);
             }
           } else {
             if (currentPwd.value != initPwd.value) {
-              const message = i18n.$t("E93-02-0003");
+              const message = i18n.t("messageCode.E93-02-0003");
               resolve(message);
             } else {
               resolve(true);
@@ -185,23 +168,22 @@ const ResetPwdView = defineComponent({
       });
     };
     const newPwdRule = (val: string) => {
-      i18n.category.value = "MessageCode";
       return new Promise((resolve) => {
         const reg = /[A-Z]+/g;
         const reg2 = /[0-9]+/g;
         if (!val) {
-          const message = i18n.$t("E93-02-0006");
+          const message = i18n.t("messageCode.E93-02-0006");
           resolve(message);
         } else {
           if (newPwd.value.length < 8) {
-            const message = i18n.$t("E93-02-0004");
+            const message = i18n.t("messageCode.E93-02-0004");
             resolve(message);
           } else {
             if (!reg.test(newPwd.value)) {
-              const message = i18n.$t("E93-02-0004");
+              const message = i18n.t("messageCode.E93-02-0004");
               resolve(message);
             } else if (!reg2.test(newPwd.value)) {
-              const message = i18n.$t("E93-02-0004");
+              const message = i18n.t("messageCode.E93-02-0004");
               resolve(message);
             } else {
               resolve(true);
@@ -211,14 +193,13 @@ const ResetPwdView = defineComponent({
       });
     };
     const reNewPwdRule = (val: string) => {
-      i18n.category.value = "MessageCode";
       return new Promise((resolve) => {
         if (!val) {
-          const message = i18n.$t("E93-02-0007");
+          const message = i18n.t("messageCode.E93-02-0007");
           resolve(message);
         } else {
           if (newPwd.value != reNewPwd.value) {
-            const message = i18n.$t("E93-02-0002");
+            const message = i18n.t("messageCode.E93-02-0002");
             resolve(message);
           } else {
             resolve(true);
@@ -233,7 +214,7 @@ const ResetPwdView = defineComponent({
             data
           ) as AndroidResponse<LogoutResponse>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            const message = i18n.$t("E93-06-0001");
+            const message = i18n.t("messageCode.E93-06-0001");
             router.push("/");
             popupSuccessMsg($q, message);
           }
@@ -260,51 +241,40 @@ const ResetPwdView = defineComponent({
       initPwdRule,
       newPwdRule,
       reNewPwdRule,
-      changePwdTitle,
-      currentPwdLabel,
-      newPwdLabel,
-      retypeNewPwdLabel,
-      cancelLabel,
-      saveLabel,
     };
   },
 });
 export default ResetPwdView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
+.container {
+  background-color: rgba(0, 0, 0, 0);
+  color: #000000;
+  position: relative;
   height: 100vh;
-  display: flex;
-  flex-flow: column;
-  background-color: #dbdbdb;
-}
-.header {
-  padding-top: 1px;
-  padding-bottom: 1px;
-  width: 100%;
-  background-color: white;
-  color: gray;
-}
-.header-title {
-  font-size: 21px;
-  color: black;
-  margin-left: -10%;
 }
 .content-card {
-  padding-top: 20px;
-  padding-bottom: 5px;
+  padding: 0 20px;
+  text-align: left;
+  .input-title {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+  .q-input {
+    margin-bottom: 0;
+  }
 }
-.content-input {
-  width: 95%;
-  margin: 0 auto;
-}
-.bottom {
+.button-bottom {
   position: fixed;
-  bottom: 0px;
+  bottom: 10px;
   display: flex;
-  background: #42b0d5;
-  color: white;
-  width: 100%;
-  height: 50px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  .q-btn {
+    margin-top: 10px;
+    width: 100%;
+  }
 }
 </style>
