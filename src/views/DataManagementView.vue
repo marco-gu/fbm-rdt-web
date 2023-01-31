@@ -26,21 +26,6 @@
           </template>
         </q-input>
       </div>
-      <!-- <div class="status q-pa-xs" style="text-align: left">
-        <q-btn-dropdown flat :label="statusLabel">
-          <q-list>
-            <q-item clickable v-close-popup @click="onSelectStatus('pending')">
-              <q-item-section>{{ pendingLabel }}</q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup @click="onSelectStatus('finished')">
-              <q-item-section>{{ finishedLabel }}</q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup @click="onSelectStatus('uploaded')">
-              <q-item-section>{{ uploadLabel }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-      </div> -->
     </div>
     <div class="data-list-container" v-if="isEditMode">
       <q-list v-for="(item, index) in scanDataListDisplay" :key="index">
@@ -161,6 +146,29 @@
         @click="cancelEditMode"
       />
     </div>
+    <q-dialog v-model="dialogVisible" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">{{ dialogMessage }}</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="Confirm"
+            color="primary"
+            v-close-popup
+            @click="onConfirm"
+          />
+          <q-btn
+            flat
+            :label="cancelLabel"
+            color="primary"
+            v-close-popup
+            @click="onClose"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -177,6 +185,11 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
+const enum UploadAlertMsg {
+  MATCHED = "CIDs all matched",
+  PARTIALLY = "CIDs partially matched",
+  EXCEED = "Scanned carton number exceed expected carton number",
+}
 const DataManagementView = defineComponent({
   methods: {
     home() {
@@ -216,6 +229,8 @@ const DataManagementView = defineComponent({
       uploadLabel.value = i18n.$t("uploadLabel");
       uploadedLabel.value = i18n.$t("uploadedLabel");
     });
+    const dialogVisible = ref(false);
+    const dialogMessage = ref("");
     onMounted(() => {
       getScanDataList();
     });
@@ -280,25 +295,53 @@ const DataManagementView = defineComponent({
     const handleUpload = () => {
       let taskIdList = getSelectedTaskIdList();
       if (taskIdList.length > 0) {
-        const args = {
-          taskIdList: taskIdList,
-        };
-        bridge.call("uploadScanData", args, (res: string) => {
-          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            popupSuccessMsg($q, "Successfully uploaded");
-            isEditMode.value = false;
-            getScanDataList();
-          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            i18n.category.value = "MessageCode";
-            const message = i18n.$t(androidResponse.messageCode);
-            popupErrorMsg($q, message);
+        scanDataListDisplay.value.forEach((item: any) => {
+          if (item["isSelected"]) {
+            let alertMessage = "";
+            const scannedCartonNumber = item["scannedCartonNumber"];
+            const allCartonNumber = item["allCartonNumber"];
+            if (scannedCartonNumber == allCartonNumber) {
+              alertMessage = UploadAlertMsg.MATCHED;
+            } else if (scannedCartonNumber < allCartonNumber) {
+              alertMessage = UploadAlertMsg.PARTIALLY;
+            } else {
+              alertMessage = UploadAlertMsg.EXCEED;
+            }
+            dialogMessage.value += `${item["taskId"]}: ${alertMessage}.\n`;
           }
         });
+        dialogMessage.value += "\nConfirm to upload?";
+        dialogVisible.value = true;
       } else {
         i18n.category.value = "MessageCode";
         popupErrorMsg($q, "No record selected");
       }
+    };
+    const onConfirm = () => {
+      dialogVisible.value = false;
+      dialogMessage.value = "";
+      uploadScanData();
+    };
+    const onClose = () => {
+      dialogVisible.value = false;
+      dialogMessage.value = "";
+    };
+    const uploadScanData = () => {
+      const args = {
+        taskIdList: getSelectedTaskIdList(),
+      };
+      bridge.call("uploadScanData", args, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          popupSuccessMsg($q, "Successfully uploaded");
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          i18n.category.value = "MessageCode";
+          const message = i18n.$t(androidResponse.messageCode);
+          popupErrorMsg($q, message);
+        }
+        isEditMode.value = false;
+        getScanDataList();
+      });
     };
     const handleDelete = () => {
       let taskIdList = getSelectedTaskIdList();
@@ -326,34 +369,21 @@ const DataManagementView = defineComponent({
     const cancelEditMode = () => {
       isEditMode.value = false;
     };
-    // const onSelectStatus = (item: string) => {
-    //   status.value = item;
-    //   switch (item) {
-    //     case "pending":
-    //       statusLabel.value = pendingLabel.value;
-    //       break;
-    //     case "finished":
-    //       statusLabel.value = finishedLabel.value;
-    //       break;
-    //     case "uploaded":
-    //       statusLabel.value = uploadedLabel.value;
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // };
     return {
       back,
       cancelEditMode,
       cancelLabel,
       deleteLabel,
+      dialogMessage,
+      dialogVisible,
       finishedLabel,
       handleDelete,
       handleHold,
       handleUpload,
       isEditMode,
       onClickScanTask,
-      // onSelectStatus,
+      onClose,
+      onConfirm,
       pageTitle,
       pendingLabel,
       router,
