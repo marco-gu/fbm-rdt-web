@@ -127,7 +127,6 @@ import {
   ViewDisplayAttribute,
   composeViewElement,
   ProfileElementLevel,
-  composeReg,
   toUpperCaseElementInput,
 } from "@/utils/profile.render";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
@@ -135,27 +134,6 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-
-const enum ScanType {
-  RECEIVING = "Receiving",
-  STUFFING = "Stuffing",
-}
-
-// type ViewElement = {
-//   dataFieldName: string;
-//   level: string;
-//   mandatory: number;
-//   model: Ref<unknown>;
-//   reg: RegExp;
-//   display: number;
-//   scan: number;
-//   length: number;
-//   editable: boolean;
-//   valid: (val: string) => Promise<unknown>;
-// };
-
-// Define fields for both manual type-in or scanning for SO, the rests are based on scan profile definition
-// const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber", "CartonID"];
 
 const DataManagementDetailView = defineComponent({
   methods: {
@@ -342,17 +320,17 @@ const DataManagementDetailView = defineComponent({
       });
     };
 
-    const scan = (dataFieldName: string) => {
+    const scan = (fieldName: string) => {
       const reqParams = {
         scanType: scanType.value,
-        fieldName: dataFieldName,
+        fieldName: fieldName,
       };
       bridge.call("scanForInput", reqParams);
     };
 
     bridge.register("getScanResult", (res: string) => {
       pageViews.value.forEach((view: any) => {
-        const key = scanType.value + "_" + view.dataFieldName;
+        const key = scanType.value + "_" + view.fieldName;
         if (key == res.substring(0, res.lastIndexOf("_"))) {
           view.model = res.substring(res.lastIndexOf("_") + 1);
         }
