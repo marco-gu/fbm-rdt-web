@@ -39,7 +39,11 @@
         "confirm": "Confirm",
         "cancel": "Cancel",
         "save": "Save",
-        "service_unavailable": "Service Unavailable"
+        "service_unavailable": "Service Unavailable",
+        "receiving": "Receiving",
+        "stuffing": "Stuffing",
+        "search": "Search",
+        "delete": "Delete"
     },
     "login": {
         "login": "Log in",
@@ -80,7 +84,14 @@
         "sync_latest": "Please synchronize the latest profiles",
         "no_profile": "No profile found for this user."
     },
-    "lpSearch": {
+    "lp": {
+        "lp_search": "LP Search",
+        "generate": "Genrate",
+        "scan_type": "Scan Type",
+        "scan": "Scan",
+        "scanned": "Scanned",
+        "total_number": "Total Number",
+        "start_scan": "Start Scan Carton ID",
         "onlineBottomButton": "Generate",
         "offlineBottomButton": "Scan Carton"
     }

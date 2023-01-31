@@ -30,7 +30,7 @@
         <div class="sub-title">{{ $t("home.continue_hint") }}</div>
       </div>
     </div>
-    <div class="login-bottom">
+    <div class="version-bottom">
       <span> {{ versionNum }} </span>
     </div>
   </div>
@@ -93,6 +93,14 @@ export default {
   }
 }
 
+.version-bottom {
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  color: #b2b2b2;
+}
+
 .card {
   background-color: #ffffff;
   width: 80%;
@@ -134,13 +142,6 @@ export default {
       margin-top: 5px;
       font-size: 14px;
     }
-  }
-  .login-bottom {
-    position: fixed;
-    bottom: 10px;
-    left: 0;
-    right: 0;
-    color: #b2b2b2;
   }
 }
 </style>

@@ -1,68 +1,52 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">LP Search</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
+      <q-toolbar class="common-toolbar">
+        <q-btn flat round dense icon="arrow_back" @click="back" />
+        <q-toolbar-title :shrink="false">
+          {{ $t("lp.lp_search") }}
+        </q-toolbar-title>
+        <q-space />
+        <q-btn flat round dense icon="home" @click="home" />
+      </q-toolbar>
     </div>
-    <q-separator color="grey-5" />
-    <q-form @submit="onSubmit" style="background: #fff">
+    <q-form @submit="onSubmit" class="content">
       <q-input
         v-model="profileName"
         prefix="Profile"
         input-class="text-right"
         readonly
         borderless
-        style="padding: 0px 16px"
+        dense
+        class="common-input mb-15 mt-15"
       >
       </q-input>
-      <q-separator color="grey-5" />
-      <q-field borderless style="padding: 0px 16px" item-aligned>
-        <template v-slot:control>
-          <div>
-            <span>Scan Type</span>
-          </div>
-        </template>
-        <div style="display: flex; color: black; align-items: center">
-          <div v-if="receivingFlag">
-            <q-radio
-              v-model="scanType"
-              val="Receiving"
-              label="Receiving"
-              @click="changeScanType('Receiving')"
-            />
-          </div>
-          <div v-if="stuffingFlag">
-            <q-radio
-              v-model="scanType"
-              val="Stuffing"
-              label="Stuffing"
-              @click="changeScanType('Stuffing')"
-            />
-          </div>
+      <div class="item-container mb-15">
+        <div class="label">{{ $t("lp.scan_type") }}</div>
+        <div class="input">
+          <q-radio
+            v-if="receivingFlag"
+            v-model="scanType"
+            val="Receiving"
+            :label="$t('common.receiving')"
+            @click="changeScanType('Receiving')"
+          />
+          <q-radio
+            v-if="stuffingFlag"
+            v-model="scanType"
+            val="Stuffing"
+            :label="$t('common.stuffing')"
+            @click="changeScanType('Stuffing')"
+          />
         </div>
-      </q-field>
-      <q-separator color="grey-5" />
+      </div>
+
       <div v-for="(item, i) in pageViews" :key="i">
         <div v-if="item.display == 1">
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-            "
-          >
-            <span style="padding-left: 1rem; color: black; text-align: left">
+          <div class="item-container mb-15">
+            <div>
               {{ item.displayFieldName }}
-            </span>
+            </div>
             <q-input
               ref="inputRef"
               v-model="item.model"
@@ -73,23 +57,24 @@
               lazy-rules
               :rules="[item.valid]"
               borderless
-              style="padding: 0px 16px"
+              dense
+              class="common-input no-shadow"
             >
               <template v-slot:append>
                 <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                  <q-icon name="qr_code_scanner" />
+                  <q-icon name="center_focus_weak" right size="14px" />
                 </q-avatar>
               </template>
             </q-input>
           </div>
-          <q-separator color="grey-5" />
         </div>
       </div>
-      <div style="position: fixed; bottom: 0px; width: 100%">
+      <div class="button-bottom">
         <q-btn
-          no-caps
+          unelevated
           type="submit"
           class="full-width"
+          color="secondary"
           style="background: #42b0d5; color: #fff; height: 40px"
         >
           {{ bottomButtonLable }}
@@ -158,8 +143,8 @@ const LpSearchView = defineComponent({
     const mode = route.params.id as string;
     const bottomButtonLable =
       mode == "online"
-        ? i18n.t("lpSearch.onlineBottomButton")
-        : i18n.t("lpSearch.offlineBottomButton");
+        ? i18n.t("lp.onlineBottomButton")
+        : i18n.t("lp.offlineBottomButton");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -390,15 +375,52 @@ export default LpSearchView;
 <style lang="scss" scoped>
 .wrapper {
   height: 100vh;
-  display: flex;
-  flex-flow: column;
-  background: rgb(233, 229, 229);
+  color: #000000;
+  font-size: 14px;
+}
+.content {
+  padding: 0 20px;
+  margin-top: 10px;
 }
 .header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  // height: 60px;
+  z-index: 1;
+  background-image: url("../assets/images/lns_bg.png");
+  background-size: cover;
+  // display: flex;
+  // justify-content: space-around;
+  // height: 60px;
+  // align-items: center;
+}
+.common-input {
+  background: #ffffff;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 0 15px;
+  &.no-shadow {
+    box-shadow: none;
+  }
+}
+.button-bottom {
+  position: fixed;
+  bottom: 10px;
+  width: calc(100% - 40px);
+}
+.mb-15 {
+  margin-bottom: 20px;
+}
+.item-container {
+  text-align: left;
+  height: 40px;
+  background-color: #ffffff;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 0 15px;
   display: flex;
-  background: #fff;
-  justify-content: space-around;
-  height: 60px;
+  justify-content: space-between;
   align-items: center;
 }
 </style>

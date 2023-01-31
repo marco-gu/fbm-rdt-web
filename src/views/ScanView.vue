@@ -1,68 +1,47 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">Scan</span></q-item-section
-        >
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
+      <q-toolbar class="common-toolbar">
+        <q-btn flat round dense icon="arrow_back" @click="back" />
+        <q-toolbar-title :shrink="false">
+          {{ $t("lp.scan") }}
+        </q-toolbar-title>
+        <q-space />
+        <q-btn flat round dense icon="home" @click="home" />
+      </q-toolbar>
     </div>
-    <q-card class="my-card" flat bordered>
-      <q-card-section horizontal>
-        <q-card-section style="width: 50%">
-          <div>
-            <span style="font-size: 26px; color: white"> {{ scanned }} </span>
+    <div class="container">
+      <div class="scan-card">
+        <div class="scan-card__section">
+          <div class="scan-card__number">
+            {{ scanned }}
           </div>
-          <div><span style="font-size: 20px; color: white">Scanned</span></div>
-        </q-card-section>
-        <q-separator vertical inset color="white" />
-        <q-card-section style="width: 50%">
-          <div>
-            <span style="font-size: 26px; color: white">{{ total }}</span>
-          </div>
-          <div>
-            <span style="font-size: 20px; color: white">Total Number</span>
-          </div>
-        </q-card-section>
-      </q-card-section>
-    </q-card>
-    <q-form @submit="onSubmit" style="background: #fff">
-      <div v-for="(item, i) in views" :key="i">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          "
-        >
-          <label style="padding-left: 1rem; color: black">{{ item.key }}</label>
-          <q-input
-            v-model="item.value"
-            input-class="text-right"
-            borderless
-            style="padding: 0px 16px"
-            readonly
-          >
-          </q-input>
+          <div class="scan-card__label">{{ $t("lp.scanned") }}</div>
         </div>
-        <q-separator color="grey-5" />
+        <q-separator vertical inset color="white" />
+        <div class="scan-card__section">
+          <div class="scan-card__number">
+            {{ total }}
+          </div>
+          <div class="scan-card__label">{{ $t("lp.total_number") }}</div>
+        </div>
       </div>
-      <div style="position: fixed; bottom: 0px; width: 100%">
-        <q-btn
-          no-caps
-          type="submit"
-          class="full-width"
-          label="Start Scan Carton ID"
-          style="background: #42b0d5; color: #fff; height: 40px"
-        />
-      </div>
-    </q-form>
+      <q-form @submit="onSubmit">
+        <div v-for="(item, i) in views" :key="i" class="section-item">
+          <div>{{ item.key }}</div>
+          <div>{{ item.value }}</div>
+        </div>
+        <div class="button-bottom">
+          <q-btn
+            unelevated
+            type="submit"
+            class="full-width"
+            :label="$t('lp.start_scan')"
+            color="secondary"
+          />
+        </div>
+      </q-form>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -161,19 +140,56 @@ export default ScanView;
 <style lang="scss" scoped>
 .wrapper {
   height: 100vh;
-  display: flex;
-  flex-flow: column;
-  background: rgb(233, 229, 229);
+  .header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    // height: 60px;
+    z-index: 1;
+    background-image: url("../assets/images/lns_bg.png");
+    background-size: cover;
+  }
+  .container {
+    padding: 0 20px;
+  }
+  .button-bottom {
+    position: fixed;
+    bottom: 10px;
+    width: calc(100% - 40px);
+  }
+  .section-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #757575;
+  }
 }
-.header {
-  display: flex;
-  background: #fff;
-  justify-content: space-around;
-  height: 60px;
-  align-items: center;
-}
-.my-card {
-  width: 100%;
+
+.scan-card {
   background-color: #00243d;
+  border-radius: 10px;
+  width: 100%;
+  display: flex;
+  color: #ffffff;
+  text-align: center;
+  padding: 15px 0;
+  margin: 15px 0 25px 0;
+  justify-content: space-around;
+  &__section {
+    flex: 1;
+  }
+  &__number {
+    font-size: 36px;
+    font-weight: bold;
+  }
+  &__label {
+    font-size: 22px;
+  }
 }
 </style>
