@@ -37,7 +37,7 @@
             "
           >
             <span style="padding-left: 1rem; color: black">
-              {{ item.dataFieldName }}
+              {{ item.displayFieldName }}
             </span>
             <q-input
               ref="inputRef"
@@ -52,10 +52,7 @@
               style="padding: 0px 16px"
             >
               <template v-slot:append>
-                <q-avatar
-                  v-if="item.scan == 1"
-                  @click="scan(item.dataFieldName)"
-                >
+                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
                   <q-icon name="qr_code_scanner" />
                 </q-avatar>
               </template>
@@ -72,7 +69,7 @@
             "
           >
             <span style="padding-left: 1rem; color: #757575">
-              {{ item.dataFieldName }}
+              {{ item.displayFieldName }}
             </span>
             <div style="padding: 0px 16px; color: #757575">
               {{ item.model }}
@@ -127,6 +124,8 @@ import { useRouter, useRoute } from "vue-router";
 import { Carton, ProfileDisplayAttribute, LP } from "../models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
 import {
+  ViewDisplayAttribute,
+  composeViewElement,
   ProfileElementLevel,
   composeReg,
   toUpperCaseElementInput,
@@ -142,21 +141,21 @@ const enum ScanType {
   STUFFING = "Stuffing",
 }
 
-type ViewElement = {
-  dataFieldName: string;
-  level: string;
-  mandatory: number;
-  model: Ref<unknown>;
-  reg: RegExp;
-  display: number;
-  scan: number;
-  length: number;
-  editable: boolean;
-  valid: (val: string) => Promise<unknown>;
-};
+// type ViewElement = {
+//   dataFieldName: string;
+//   level: string;
+//   mandatory: number;
+//   model: Ref<unknown>;
+//   reg: RegExp;
+//   display: number;
+//   scan: number;
+//   length: number;
+//   editable: boolean;
+//   valid: (val: string) => Promise<unknown>;
+// };
 
 // Define fields for both manual type-in or scanning for SO, the rests are based on scan profile definition
-const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber", "CartonID"];
+// const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber", "CartonID"];
 
 const DataManagementDetailView = defineComponent({
   methods: {
@@ -173,7 +172,7 @@ const DataManagementDetailView = defineComponent({
     const taskId = ref(route.query.taskId);
     const scanType = ref("");
     var pageType = ref(route.query.pageType);
-    const pageViews: Ref<ViewElement[]> = ref([]);
+    const pageViews: Ref<ViewDisplayAttribute[]> = ref([]);
     var lpModel: LP;
     var lpCarton: Carton; //根据taskId获取到的其中一个carton, 给Group用
     const cartonDetail = JSON.parse(
@@ -256,255 +255,91 @@ const DataManagementDetailView = defineComponent({
           res
         ) as ProfileDisplayAttribute[];
         profileAttrListDisplay.value.forEach(
-          (attr: ProfileDisplayAttribute) => {
-            if (attr.type == scanType.value) {
+          (item: ProfileDisplayAttribute) => {
+            if (item.type == scanType.value) {
               if (pageType.value === "Group") {
-                const element = composeGroupViewElements(attr);
-
-                if (element) {
-                  pageViews.value.push(element);
+                if (
+                  item.level == ProfileElementLevel.CARTON_COMMON ||
+                  item.level == ProfileElementLevel.ORDER
+                ) {
+                  const element = composeViewElement(item);
+                  element.editable = true;
+                  switch (element.fieldName) {
+                    case "PO":
+                      element.model = ref(lpCarton.po);
+                      break;
+                    case "SO":
+                      element.model = ref(lpCarton.so);
+                      break;
+                    case "SKU":
+                      element.model = ref(lpCarton.sku);
+                      break;
+                    case "ContainerNumber":
+                      element.model = ref(lpCarton.containerNumber);
+                      break;
+                    case "CartonID":
+                      element.model = ref(lpCarton.cartonId);
+                      break;
+                    case "TotalCBM":
+                      element.model = ref(lpModel.totalCBM);
+                      break;
+                    case "TotalWeight":
+                      element.model = ref(lpModel.totalWeight);
+                      break;
+                    default:
+                      break;
+                  }
+                  if (element) {
+                    pageViews.value.push(element);
+                  }
                 }
               } else if (pageType.value === "Detail") {
-                const element = composeCartonViewElements(attr);
-                if (element) {
-                  pageViews.value.push(element);
+                if (
+                  item.level == ProfileElementLevel.CARTON_COMMON ||
+                  item.level == ProfileElementLevel.CARTON_INDIVIDUAL
+                ) {
+                  const element = composeViewElement(item);
+                  element.editable = false;
+                  if (item.dataFieldName === "CartonID") {
+                    element.editable = true;
+                  }
+                  switch (element.fieldName) {
+                    case "PO":
+                      element.model = ref(cartonDetail.po);
+                      break;
+                    case "SO":
+                      element.model = ref(cartonDetail.so);
+                      break;
+                    case "SKU":
+                      element.model = ref(cartonDetail.so);
+                      break;
+                    case "ContainerNumber":
+                      element.model = ref(cartonDetail.containerNumber);
+                      break;
+                    case "CartonID":
+                      element.model = ref(cartonDetail.cartonId);
+                      break;
+                    case "Style":
+                      element.model = ref(cartonDetail.style);
+                      break;
+                    case "Quantity":
+                      element.model = ref(cartonDetail.quantity);
+                      break;
+                    case "HUB":
+                      element.model = ref(cartonDetail.hub);
+                      break;
+                    default:
+                      break;
+                  }
+                  if (element) {
+                    pageViews.value.push(element);
+                  }
                 }
               }
             }
           }
         );
       });
-    };
-
-    // Compose Group View
-    const composeGroupViewElements = (attr: ProfileDisplayAttribute) => {
-      if (
-        attr.level == ProfileElementLevel.CARTON_COMMON ||
-        attr.level == ProfileElementLevel.ORDER
-      ) {
-        const viewElement = {} as ViewElement;
-        viewElement.dataFieldName = attr.dataFieldName;
-        viewElement.editable = true;
-        viewElement.model = ref("");
-        switch (viewElement.dataFieldName) {
-          case "PO":
-            viewElement.model = ref(lpCarton.po);
-            break;
-          case "SO":
-            viewElement.model = ref(lpCarton.so);
-            break;
-          case "SKU":
-            viewElement.model = ref(lpCarton.sku);
-            break;
-          case "ContainerNumber":
-            viewElement.model = ref(lpCarton.containerNumber);
-            break;
-          case "CartonID":
-            viewElement.model = ref(lpCarton.cartonId);
-            break;
-          case "TotalCBM":
-            viewElement.model = ref(lpModel.totalCBM);
-            break;
-          case "TotalWeight":
-            viewElement.model = ref(lpModel.totalWeight);
-            break;
-          default:
-            break;
-        }
-        viewElement.level = attr.level;
-        viewElement.mandatory = attr.mandatory;
-        viewElement.reg = new RegExp(composeReg(attr.format));
-
-        viewElement.display = attr.combo;
-        viewElement.scan = attr.scan == "1" ? 1 : 0;
-        viewElement.length = Math.abs(attr.maxLength);
-        scanOrTypeInList.forEach((t) => {
-          if (t == viewElement.dataFieldName) {
-            viewElement.scan = 1;
-          }
-        });
-        viewElement.valid = (val: string) => {
-          return new Promise((resolve) => {
-            if (viewElement.mandatory == 1) {
-              // input is mandatory, check isnull
-              if (!val) {
-                resolve(`Please input ${viewElement.dataFieldName}`);
-              } else {
-                if (attr.maxLength < 0) {
-                  // Only check format
-                  const inputs = val.split("");
-                  const inputLength = inputs.length;
-                  const newAttrFormat = attr.format.substring(0, inputLength);
-                  viewElement.reg = new RegExp(composeReg(newAttrFormat));
-                  if (!viewElement.reg.test(val)) {
-                    resolve("Please input correct format");
-                  } else {
-                    resolve(true);
-                  }
-                } else {
-                  // Check length && format
-                  if (val.length != attr.maxLength) {
-                    resolve(
-                      `Please input not more or less than ${attr.maxLength} charactors`
-                    );
-                  } else if (!viewElement.reg.test(val)) {
-                    resolve("Please input correct format");
-                  } else {
-                    resolve(true);
-                  }
-                }
-              }
-            } else {
-              if (val) {
-                if (attr.maxLength < 0) {
-                  // Only check format
-                  const inputs = val.split("");
-                  const inputLength = inputs.length;
-                  const newAttrFormat = attr.format.substring(0, inputLength);
-                  viewElement.reg = new RegExp(composeReg(newAttrFormat));
-                  if (!viewElement.reg.test(val)) {
-                    resolve("Please input correct format");
-                  } else {
-                    resolve(true);
-                  }
-                } else {
-                  // Check length && format
-                  if (val.length != attr.maxLength) {
-                    resolve(
-                      `Please input not more or less than ${attr.maxLength} charactors`
-                    );
-                  } else if (!viewElement.reg.test(val)) {
-                    resolve("Please input correct format");
-                  } else {
-                    resolve(true);
-                  }
-                }
-              } else {
-                resolve(true);
-              }
-            }
-          });
-        };
-        return viewElement;
-      }
-    };
-
-    // Compose Detail View
-    const composeCartonViewElements = (attr: ProfileDisplayAttribute) => {
-      if (
-        attr.level == ProfileElementLevel.CARTON_COMMON ||
-        attr.level == ProfileElementLevel.CARTON_INDIVIDUAL
-      ) {
-        const viewElement = {} as ViewElement;
-        viewElement.dataFieldName = attr.dataFieldName;
-        viewElement.editable = false;
-        viewElement.model = ref("");
-        switch (viewElement.dataFieldName) {
-          case "PO":
-            viewElement.model = ref(cartonDetail.po);
-            break;
-          case "SO":
-            viewElement.model = ref(cartonDetail.so);
-            break;
-          case "SKU":
-            viewElement.model = ref(cartonDetail.so);
-            break;
-          case "ContainerNumber":
-            viewElement.model = ref(cartonDetail.containerNumber);
-            break;
-          case "CartonID":
-            viewElement.model = ref(cartonDetail.cartonId);
-            if (pageType.value === "Detail") {
-              viewElement.editable = true;
-            }
-            break;
-          case "Style":
-            viewElement.model = ref(cartonDetail.style);
-            break;
-          case "Quantity":
-            viewElement.model = ref(cartonDetail.quantity);
-            break;
-          case "HUB":
-            viewElement.model = ref(cartonDetail.hub);
-            break;
-          default:
-            break;
-        }
-        viewElement.level = attr.level;
-        viewElement.mandatory = attr.mandatory;
-        viewElement.reg = new RegExp(composeReg(attr.format));
-        viewElement.display = attr.combo;
-        viewElement.scan = attr.scan == "1" ? 1 : 0;
-        viewElement.length = Math.abs(attr.maxLength);
-        scanOrTypeInList.forEach((t) => {
-          if (t == viewElement.dataFieldName) {
-            viewElement.scan = 1;
-          }
-        });
-        viewElement.valid = (val: string) => {
-          return new Promise((resolve) => {
-            if (viewElement.mandatory == 1) {
-              // input is mandatory, check isnull
-              if (!val) {
-                resolve(`Please input ${viewElement.dataFieldName}`);
-              } else {
-                if (attr.maxLength < 0) {
-                  // Only check format
-                  const inputs = val.split("");
-                  const inputLength = inputs.length;
-                  const newAttrFormat = attr.format.substring(0, inputLength);
-                  viewElement.reg = new RegExp(composeReg(newAttrFormat));
-                  if (!viewElement.reg.test(val)) {
-                    resolve("Please input correct format");
-                  } else {
-                    resolve(true);
-                  }
-                } else {
-                  // Check length && format
-                  if (val.length != attr.maxLength) {
-                    resolve(
-                      `Please input not more or less than ${attr.maxLength} charactors`
-                    );
-                  } else if (!viewElement.reg.test(val)) {
-                    resolve("Please input correct format");
-                  } else {
-                    resolve(true);
-                  }
-                }
-              }
-            } else {
-              if (val) {
-                if (attr.maxLength < 0) {
-                  // Only check format
-                  const inputs = val.split("");
-                  const inputLength = inputs.length;
-                  const newAttrFormat = attr.format.substring(0, inputLength);
-                  viewElement.reg = new RegExp(composeReg(newAttrFormat));
-                  if (!viewElement.reg.test(val)) {
-                    resolve("Please input correct format");
-                  } else {
-                    resolve(true);
-                  }
-                } else {
-                  // Check length && format
-                  if (val.length != attr.maxLength) {
-                    resolve(
-                      `Please input not more or less than ${attr.maxLength} charactors`
-                    );
-                  } else if (!viewElement.reg.test(val)) {
-                    resolve("Please input correct format");
-                  } else {
-                    resolve(true);
-                  }
-                }
-              } else {
-                resolve(true);
-              }
-            }
-          });
-        };
-        return viewElement;
-      }
     };
 
     const scan = (dataFieldName: string) => {
@@ -525,17 +360,17 @@ const DataManagementDetailView = defineComponent({
     });
 
     const composeSaveGroupParam = (params: any, source: any) => {
-      source.forEach((view: ViewElement) => {
+      source.forEach((view: ViewDisplayAttribute) => {
         if (view.editable == true) {
-          params[view.dataFieldName] = view.model;
+          params[view.fieldName] = view.model;
         }
       });
     };
 
     const composeSaveDetailParam = (params: any, source: any) => {
-      source.forEach((view: ViewElement) => {
+      source.forEach((view: ViewDisplayAttribute) => {
         if (view.editable == true) {
-          params[view.dataFieldName] = view.model;
+          params[view.fieldName] = view.model;
         }
       });
     };
