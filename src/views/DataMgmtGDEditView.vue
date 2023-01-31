@@ -16,103 +16,107 @@
     </div>
 
     <q-separator color="grey-5" />
-
-    <div>
-      <q-item class="taskIdHeader">
-        <q-item-section>
-          {{ taskId }}
-        </q-item-section>
-      </q-item>
-    </div>
-
-    <div>
-      <div v-for="(item, i) in pageViews" :key="i">
-        <div
-          v-show="item.editable === true"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #fff;
-          "
-        >
-          <span style="padding-left: 1rem; color: black">
-            {{ item.dataFieldName }}
-          </span>
-          <q-input
-            ref="inputRef"
-            v-model="item.model"
-            @paste="validPaste($event, i)"
-            clearable
-            :maxlength="item.length"
-            input-class="text-right"
-            lazy-rules
-            :rules="[item.valid]"
-            borderless
-            style="padding: 0px 16px"
-          >
-            <template v-slot:append>
-              <q-avatar v-if="item.scan == 1" @click="scan(item.dataFieldName)">
-                <q-icon name="qr_code_scanner" />
-              </q-avatar>
-            </template>
-          </q-input>
-        </div>
-        <div
-          v-show="item.editable === false && pageType === 'Detail'"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #fff;
-            height: 48.3px;
-          "
-        >
-          <span style="padding-left: 1rem; color: #757575">
-            {{ item.dataFieldName }}
-          </span>
-          <div style="padding: 0px 16px; color: #757575">
-            {{ item.model }}
-          </div>
-        </div>
-        <q-separator color="grey-5" />
+    <q-form @submit="onSubmit" style="background: #fff">
+      <div>
+        <q-item class="taskIdHeader">
+          <q-item-section>
+            {{ taskId }}
+          </q-item-section>
+        </q-item>
       </div>
-    </div>
 
-    <div class="bottom row">
-      <q-btn
-        class="col"
-        no-caps
-        style="background: #42b0d5; color: white"
-        flat
-        push
-        :label="saveLabel"
-        @click="handleSave"
-      />
-      <q-separator vertical inset color="white" />
-      <q-btn
-        class="col"
-        no-caps
-        style="background: #42b0d5; color: white"
-        flat
-        type="submit"
-        push
-        :label="deleteLabel"
-        @click="handleDelete"
-      />
-      <q-separator vertical inset color="white" />
-      <q-btn
-        v-show="pageType == 'Detail'"
-        class="col"
-        no-caps
-        style="background: #42b0d5; color: white"
-        flat
-        type="submit"
-        push
-        :label="mixLabel"
-        @click="goToMix"
-      />
-    </div>
+      <div>
+        <div v-for="(item, i) in pageViews" :key="i">
+          <div
+            v-show="item.editable === true"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              background: #fff;
+            "
+          >
+            <span style="padding-left: 1rem; color: black">
+              {{ item.dataFieldName }}
+            </span>
+            <q-input
+              ref="inputRef"
+              v-model="item.model"
+              @paste="validPaste($event, i)"
+              clearable
+              :maxlength="item.length"
+              input-class="text-right"
+              lazy-rules
+              :rules="[item.valid]"
+              borderless
+              style="padding: 0px 16px"
+            >
+              <template v-slot:append>
+                <q-avatar
+                  v-if="item.scan == 1"
+                  @click="scan(item.dataFieldName)"
+                >
+                  <q-icon name="qr_code_scanner" />
+                </q-avatar>
+              </template>
+            </q-input>
+          </div>
+          <div
+            v-show="item.editable === false && pageType === 'Detail'"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              background: #fff;
+              height: 48.3px;
+            "
+          >
+            <span style="padding-left: 1rem; color: #757575">
+              {{ item.dataFieldName }}
+            </span>
+            <div style="padding: 0px 16px; color: #757575">
+              {{ item.model }}
+            </div>
+          </div>
+          <q-separator color="grey-5" />
+        </div>
+      </div>
+
+      <div class="bottom row">
+        <q-btn
+          class="col"
+          no-caps
+          style="background: #42b0d5; color: white"
+          flat
+          push
+          type="submit"
+          :label="saveLabel"
+        />
+        <q-separator vertical inset color="white" />
+        <q-btn
+          class="col"
+          no-caps
+          style="background: #42b0d5; color: white"
+          flat
+          type="submit"
+          push
+          :label="deleteLabel"
+          @click="handleDelete"
+        />
+        <q-separator vertical inset color="white" />
+        <q-btn
+          v-show="pageType == 'Detail'"
+          class="col"
+          no-caps
+          style="background: #42b0d5; color: white"
+          flat
+          type="submit"
+          push
+          :label="mixLabel"
+          @click="goToMix"
+        />
+      </div>
+    </q-form>
   </div>
 </template>
 <script lang="ts">
@@ -281,7 +285,7 @@ const DataManagementDetailView = defineComponent({
         const viewElement = {} as ViewElement;
         viewElement.dataFieldName = attr.dataFieldName;
         viewElement.editable = true;
-
+        viewElement.model = ref("");
         switch (viewElement.dataFieldName) {
           case "PO":
             viewElement.model = ref(lpCarton.po);
@@ -310,6 +314,7 @@ const DataManagementDetailView = defineComponent({
         viewElement.level = attr.level;
         viewElement.mandatory = attr.mandatory;
         viewElement.reg = new RegExp(composeReg(attr.format));
+
         viewElement.display = attr.combo;
         viewElement.scan = attr.scan == "1" ? 1 : 0;
         viewElement.length = Math.abs(attr.maxLength);
@@ -320,21 +325,60 @@ const DataManagementDetailView = defineComponent({
         });
         viewElement.valid = (val: string) => {
           return new Promise((resolve) => {
-            if ((viewElement.mandatory == 1 && !val) || val == null) {
-              resolve(`Please input ${viewElement.dataFieldName}`);
+            if (viewElement.mandatory == 1) {
+              // input is mandatory, check isnull
+              if (!val) {
+                resolve(`Please input ${viewElement.dataFieldName}`);
+              } else {
+                if (attr.maxLength < 0) {
+                  // Only check format
+                  const inputs = val.split("");
+                  const inputLength = inputs.length;
+                  const newAttrFormat = attr.format.substring(0, inputLength);
+                  viewElement.reg = new RegExp(composeReg(newAttrFormat));
+                  if (!viewElement.reg.test(val)) {
+                    resolve("Please input correct format");
+                  } else {
+                    resolve(true);
+                  }
+                } else {
+                  // Check length && format
+                  if (val.length != attr.maxLength) {
+                    resolve(
+                      `Please input not more or less than ${attr.maxLength} charactors`
+                    );
+                  } else if (!viewElement.reg.test(val)) {
+                    resolve("Please input correct format");
+                  } else {
+                    resolve(true);
+                  }
+                }
+              }
             } else {
-              if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
-                resolve(
-                  `Please input not more than ${Math.abs(
-                    attr.maxLength
-                  )} charactors`
-                );
-              } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
-                resolve(
-                  `Please input not more or less than ${attr.maxLength} charactors`
-                );
-              } else if (!viewElement.reg.test(val)) {
-                resolve("Please input correct format");
+              if (val) {
+                if (attr.maxLength < 0) {
+                  // Only check format
+                  const inputs = val.split("");
+                  const inputLength = inputs.length;
+                  const newAttrFormat = attr.format.substring(0, inputLength);
+                  viewElement.reg = new RegExp(composeReg(newAttrFormat));
+                  if (!viewElement.reg.test(val)) {
+                    resolve("Please input correct format");
+                  } else {
+                    resolve(true);
+                  }
+                } else {
+                  // Check length && format
+                  if (val.length != attr.maxLength) {
+                    resolve(
+                      `Please input not more or less than ${attr.maxLength} charactors`
+                    );
+                  } else if (!viewElement.reg.test(val)) {
+                    resolve("Please input correct format");
+                  } else {
+                    resolve(true);
+                  }
+                }
               } else {
                 resolve(true);
               }
@@ -354,7 +398,7 @@ const DataManagementDetailView = defineComponent({
         const viewElement = {} as ViewElement;
         viewElement.dataFieldName = attr.dataFieldName;
         viewElement.editable = false;
-
+        viewElement.model = ref("");
         switch (viewElement.dataFieldName) {
           case "PO":
             viewElement.model = ref(cartonDetail.po);
@@ -399,21 +443,60 @@ const DataManagementDetailView = defineComponent({
         });
         viewElement.valid = (val: string) => {
           return new Promise((resolve) => {
-            if ((viewElement.mandatory == 1 && !val) || val == null) {
-              resolve(`Please input ${viewElement.dataFieldName}`);
+            if (viewElement.mandatory == 1) {
+              // input is mandatory, check isnull
+              if (!val) {
+                resolve(`Please input ${viewElement.dataFieldName}`);
+              } else {
+                if (attr.maxLength < 0) {
+                  // Only check format
+                  const inputs = val.split("");
+                  const inputLength = inputs.length;
+                  const newAttrFormat = attr.format.substring(0, inputLength);
+                  viewElement.reg = new RegExp(composeReg(newAttrFormat));
+                  if (!viewElement.reg.test(val)) {
+                    resolve("Please input correct format");
+                  } else {
+                    resolve(true);
+                  }
+                } else {
+                  // Check length && format
+                  if (val.length != attr.maxLength) {
+                    resolve(
+                      `Please input not more or less than ${attr.maxLength} charactors`
+                    );
+                  } else if (!viewElement.reg.test(val)) {
+                    resolve("Please input correct format");
+                  } else {
+                    resolve(true);
+                  }
+                }
+              }
             } else {
-              if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
-                resolve(
-                  `Please input not more than ${Math.abs(
-                    attr.maxLength
-                  )} charactors`
-                );
-              } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
-                resolve(
-                  `Please input not more or less than ${attr.maxLength} charactors`
-                );
-              } else if (!viewElement.reg.test(val)) {
-                resolve("Please input correct format");
+              if (val) {
+                if (attr.maxLength < 0) {
+                  // Only check format
+                  const inputs = val.split("");
+                  const inputLength = inputs.length;
+                  const newAttrFormat = attr.format.substring(0, inputLength);
+                  viewElement.reg = new RegExp(composeReg(newAttrFormat));
+                  if (!viewElement.reg.test(val)) {
+                    resolve("Please input correct format");
+                  } else {
+                    resolve(true);
+                  }
+                } else {
+                  // Check length && format
+                  if (val.length != attr.maxLength) {
+                    resolve(
+                      `Please input not more or less than ${attr.maxLength} charactors`
+                    );
+                  } else if (!viewElement.reg.test(val)) {
+                    resolve("Please input correct format");
+                  } else {
+                    resolve(true);
+                  }
+                }
               } else {
                 resolve(true);
               }
@@ -457,20 +540,7 @@ const DataManagementDetailView = defineComponent({
       });
     };
 
-    const handleSave = () => {
-      inputRef.value.forEach((element: any) => {
-        element.validate();
-      });
-      let hasError = false;
-      inputRef.value.forEach((element: any) => {
-        if (element.hasError) {
-          hasError = true;
-        }
-      });
-      if (hasError) {
-        return;
-      }
-
+    const onSubmit = () => {
       if (pageType.value === "Group") {
         const apiParams = {
           taskId: taskId.value,
@@ -572,7 +642,7 @@ const DataManagementDetailView = defineComponent({
       cartonDetail,
       handleDelete,
       inputRef,
-      handleSave,
+      onSubmit,
       validPaste,
       scan,
       pageTitle,
