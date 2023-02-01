@@ -39,6 +39,7 @@
             <span style="padding-left: 1rem; color: black">
               {{ item.displayFieldName }}
             </span>
+
             <q-input
               ref="inputRef"
               v-model="item.model"
@@ -95,7 +96,6 @@
           no-caps
           style="background: #42b0d5; color: white"
           flat
-          type="submit"
           push
           :label="deleteLabel"
           @click="handleDelete"
@@ -107,7 +107,6 @@
           no-caps
           style="background: #42b0d5; color: white"
           flat
-          type="submit"
           push
           :label="mixLabel"
           @click="goToMix"
@@ -278,8 +277,15 @@ const DataManagementDetailView = defineComponent({
                 ) {
                   const element = composeViewElement(item);
                   element.editable = false;
+                  //除了 CartonID, 其它不要校验
                   if (item.dataFieldName === "CartonID") {
                     element.editable = true;
+                  } else {
+                    element.valid = () => {
+                      return new Promise((resolve) => {
+                        resolve(true);
+                      });
+                    };
                   }
                   switch (element.fieldName) {
                     case "PO":
@@ -379,19 +385,29 @@ const DataManagementDetailView = defineComponent({
           LPID: cartonDetail.lpId,
           CartonID: "",
         };
+
         composeSaveDetailParam(apiParams, pageViews.value);
         bridge.call(
           "updateCartonForDataManagement",
           apiParams,
           (res: string) => {
-            back();
-            popupSuccessMsg($q, "Updated Successfully");
+            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+
+            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+              taskId.value = androidResponse.data;
+              back();
+              popupSuccessMsg($q, "Updated Successfully");
+            } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+              i18n.category.value = "MessageCode";
+              const message = i18n.$t(androidResponse.messageCode);
+              popupErrorMsg($q, message);
+            }
           }
         );
       }
     };
 
-    const handleDelete = (ids: [string]) => {
+    const handleDelete = () => {
       if (pageType.value === "Group") {
         const args = {
           taskIdList: [taskId.value],
