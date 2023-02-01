@@ -67,14 +67,14 @@
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
-        <q-item>
+        <q-item clickable @click="goSoftwareUpdate">
           <q-item-section style="text-align: left">
             <q-item-label>{{ softwareUpdateLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-btn flat dense icon-right="chevron_right">{{
-              softwareUpdate
-            }}</q-btn>
+            <q-btn flat dense icon-right="chevron_right"
+              >V {{ softwareUpdate }}</q-btn
+            >
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
@@ -109,7 +109,7 @@ export default {
     const lastProfileSyncTimeLabel = ref("");
     const lastProfileSyncTime = ref("2015-03-03 14:20:11");
     const softwareUpdateLabel = ref("");
-    const softwareUpdate = ref("V 1.0.1");
+    const softwareUpdate = ref("");
     const username = ref("");
     const password = ref("");
     bridge.call("getRingVoice", null, (res: string) => {
@@ -144,6 +144,13 @@ export default {
       bridge.call("getUserPassword", null, (res: string) => {
         if (res) {
           password.value = res;
+        }
+      });
+      bridge.call("getCurrentVersion", null, (res: string) => {
+        if (res) {
+          softwareUpdate.value = res;
+        } else {
+          // failed to get current version
         }
       });
     });
@@ -182,26 +189,33 @@ export default {
         query: { ringVoice: ringVoice.value },
       });
     };
+    const goSoftwareUpdate = () => {
+      router.push({
+        path: "/softwareUpdate",
+        query: { softwareUpdate: softwareUpdate.value },
+      });
+    };
     return {
-      router,
-      home,
-      goResetPwd,
-      goLanguage,
-      ringVoiceLabel,
-      ringVoiceDisplay,
-      languageLabel,
-      language,
-      scanningDeviceLabel,
-      scanningDevice,
-      resetPasswordLabel,
-      lastProfileSyncTimeLabel,
-      lastProfileSyncTime,
-      softwareUpdateLabel,
-      softwareUpdate,
       back,
-      settingTitle,
+      goLanguage,
+      goResetPwd,
       goRingVoice,
       goScanningDevice,
+      goSoftwareUpdate,
+      home,
+      languageLabel,
+      language,
+      lastProfileSyncTimeLabel,
+      lastProfileSyncTime,
+      resetPasswordLabel,
+      ringVoiceLabel,
+      ringVoiceDisplay,
+      router,
+      scanningDeviceLabel,
+      scanningDevice,
+      settingTitle,
+      softwareUpdateLabel,
+      softwareUpdate,
     };
   },
 };

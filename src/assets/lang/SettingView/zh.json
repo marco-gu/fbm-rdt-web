@@ -11,5 +11,8 @@
     "on": "打开",
     "off": "关闭",
     "camera": "相机",
-    "bluetooth": "蓝牙"
+    "bluetooth": "蓝牙",
+    "downloadLabel": "下载",
+    "alreadyLatestVersionLabel": "已更新到最新版本",
+    "latestVersionLabel": "最新版本"
 }

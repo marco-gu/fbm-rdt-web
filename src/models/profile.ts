@@ -192,3 +192,8 @@ export interface MixCartonProduct {
   size: string;
   quantity: string;
 }
+
+export interface VersionInfo {
+  version: string;
+  detail: string;
+}
