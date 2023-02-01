@@ -5,7 +5,7 @@
     </div>
     <div class="card" @click="goOnline()">
       <div class="image">
-        <q-img no-spinner :src="onlineLogo" width="100%" />
+        <q-img no-spinner :src="onlineLogo" width="120px" />
       </div>
       <div class="content">
         <div class="title">{{ $t("home.pre_validation") }}</div>
@@ -14,7 +14,7 @@
     </div>
     <div class="card" @click="goOffline()">
       <div class="image">
-        <q-img no-spinner :src="offlineLogo" width="90%" />
+        <q-img no-spinner :src="offlineLogo" width="100px" />
       </div>
       <div class="content">
         <div class="title">{{ $t("home.offline") }}</div>
@@ -23,7 +23,7 @@
     </div>
     <div class="card" @click="goContinue()">
       <div class="image">
-        <q-img no-spinner :src="continueLogo" width="85%" />
+        <q-img no-spinner :src="continueLogo" width="80px" />
       </div>
       <div class="content">
         <div class="title">{{ $t("home.continue") }}</div>
@@ -103,9 +103,9 @@ export default {
 
 .card {
   background-color: #ffffff;
-  width: 80%;
+  width: 75%;
   height: 130px;
-  margin: 20px auto;
+  margin: 25px auto;
   box-shadow: 4px 4px 12px 2px rgba(0, 0, 0, 0.12);
   display: flex;
   border-radius: 5px;
@@ -122,7 +122,7 @@ export default {
     justify-content: center;
   }
   .image {
-    flex: 1;
+    flex: 0.8;
     svg {
       width: 100%;
       height: 100%;
@@ -132,15 +132,17 @@ export default {
     flex: 1.2;
     flex-direction: column;
     align-items: flex-start;
-    font-size: 16px;
     .title {
       font-weight: bold;
       color: #000000;
+      font-size: 20px;
     }
     .sub-title {
       text-align: left;
       margin-top: 5px;
-      font-size: 14px;
+      color: #000000;
+      font-size: 17px;
+      line-height: 20px;
     }
   }
 }

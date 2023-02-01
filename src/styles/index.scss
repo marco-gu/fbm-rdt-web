@@ -6,6 +6,7 @@
   color: #2c3e50;
   background-image: url("../assets/images/lns_bg.png");
   background-size: cover;
+  font-size: 17px;
 }
 
 nav {
@@ -46,4 +47,11 @@ nav {
     font-size: 20px;
     text-align: left;
   }
+}
+.q-field--dense .q-field__control, .q-field--dense .q-field__marginal {
+  height: 43px;
+}
+.q-btn {
+  height: 49px;
+  font-size: 20px;
 }

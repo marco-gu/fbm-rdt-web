@@ -175,7 +175,7 @@ export default LoginView;
   width: 100%;
   min-height: 600px;
   height: 100vh;
-  font-size: 14px;
+  font-size: 17px;
   padding-top: 15%;
   .logo-image {
     max-width: 90%;
@@ -203,7 +203,6 @@ export default LoginView;
 }
 .login-button {
   width: 85%;
-  height: 40px;
   color: white;
   margin-top: 15%;
 }
@@ -213,5 +212,6 @@ export default LoginView;
   left: 0;
   right: 0;
   color: #b2b2b2;
+  font-size: 12px;
 }
 </style>
