@@ -87,7 +87,7 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import { useI18n } from "@/plugin/i18nPlugins";
-import { popupErrorMsg } from "@/plugin/popupPlugins";
+import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 const ProfileManagementView = defineComponent({
   setup() {
     const $q = useQuasar();
@@ -96,6 +96,7 @@ const ProfileManagementView = defineComponent({
     const search = ref("");
     const isEditMode = ref(false);
     let result: ProfileMaster[] = [];
+    let isFirstSync = true;
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const pageTitle = ref("");
     const searchPlaceHolder = ref("");
@@ -122,12 +123,22 @@ const ProfileManagementView = defineComponent({
         result = JSON.parse(res) as ProfileMaster[];
         profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
         if (result.length === 0) {
-          $q.dialog({
-            title: "Sync Profile",
-            message: "Please synchronize the latest profiles",
-          }).onOk(() => {
-            refresh(() => void 0);
-          });
+          if (isFirstSync) {
+            $q.dialog({
+              title: "Sync Profile",
+              message: "Please synchronize the latest profiles",
+              noBackdropDismiss: true,
+            }).onOk(() => {
+              refresh(() => void 0);
+            });
+          } else {
+            $q.dialog({
+              title: "Sync Profile",
+              message: "No profile found for this user.",
+            }).onCancel(() => {
+              void 0;
+            });
+          }
         } else {
           sortProfileList(profileListDisplay.value);
         }
@@ -152,6 +163,8 @@ const ProfileManagementView = defineComponent({
           >;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             getProfileList();
+            popupSuccessMsg($q, "Synchronize completed!");
+            isFirstSync = false;
             done();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
             i18n.category.value = "MessageCode";

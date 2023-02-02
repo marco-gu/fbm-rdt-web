@@ -24,6 +24,7 @@ import DataManagementMixCartonListView from "../views/DataManagementMixCartonLis
 import MyJobsView from "../views/MyJobsView.vue";
 import ImageAccessView from "../views/ImageAccessView.vue";
 import CargoImageView from "../views/CargoImageView.vue";
+import SoftwareUpdateView from "../views/SoftwareUpdateView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -154,6 +155,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/cargoImage",
     name: "cargoImage",
     component: CargoImageView,
+  },
+  {
+    path: "/softwareUpdate",
+    name: "SoftwareUpdateView",
+    component: SoftwareUpdateView,
   },
 ];
 
