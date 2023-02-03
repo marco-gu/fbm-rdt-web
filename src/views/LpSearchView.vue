@@ -19,8 +19,7 @@
         borderless
         dense
         class="common-input mb-15 mt-15"
-      >
-      </q-input>
+      />
       <div class="item-container mb-15">
         <div class="label">{{ $t("lp.scan_type") }}</div>
         <div class="input">
@@ -401,8 +400,11 @@ export default LpSearchView;
   background: #ffffff;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   border-radius: 5px;
-  padding: 0 15px;
   font-size: 18px;
+  height: 50px;
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
   &.no-shadow {
     box-shadow: none;
   }
@@ -417,11 +419,11 @@ export default LpSearchView;
 }
 .item-container {
   text-align: left;
-  height: 40px;
+  height: 50px;
   background-color: #ffffff;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   border-radius: 5px;
-  padding: 10px 15px;
+  padding: 0 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
