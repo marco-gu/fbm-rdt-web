@@ -212,6 +212,6 @@ export default LoginView;
   left: 0;
   right: 0;
   color: #b2b2b2;
-  font-size: 12px;
+  font-size: 14px;
 }
 </style>
