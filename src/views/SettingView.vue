@@ -146,13 +146,12 @@ export default {
           password.value = res;
         }
       });
-      bridge.call("getCurrentVersion", null, (res: string) => {
-        if (res) {
-          softwareUpdate.value = res;
-        } else {
-          // failed to get current version
-        }
-      });
+      // bridge.call("getCurrentVersion", null, (res: string) => {
+      //   if (res) {
+      //     softwareUpdate.value = res;
+      //   } else {
+      //   }
+      // });
     });
     const back = () => {
       router.push({
@@ -190,10 +189,10 @@ export default {
       });
     };
     const goSoftwareUpdate = () => {
-      router.push({
-        path: "/softwareUpdate",
-        query: { softwareUpdate: softwareUpdate.value },
-      });
+      // router.push({
+      //   path: "/softwareUpdate",
+      //   query: { softwareUpdate: softwareUpdate.value },
+      // });
     };
     return {
       back,
