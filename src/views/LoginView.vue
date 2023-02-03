@@ -43,7 +43,13 @@
           <a>{{ $t("login.forgot_password") }}?</a>
         </span>
       </div>
-      <q-btn class="login-button" unelevated type="submit" color="secondary">
+      <q-btn
+        no-caps
+        class="login-button"
+        unelevated
+        type="submit"
+        color="secondary"
+      >
         {{ $t("login.login") }}
       </q-btn>
     </q-form>

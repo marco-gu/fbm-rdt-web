@@ -39,7 +39,7 @@
               </template>
             </q-input>
             <div class="button-container">
-              <q-btn unelevated type="submit" color="secondary">
+              <q-btn no-caps unelevated type="submit" color="secondary">
                 {{ $t("common.confirm") }}
               </q-btn>
             </div>
@@ -135,7 +135,7 @@ export default ForgotPwdComponent;
 </script>
 <style lang="scss" scoped>
 .toolbar-title {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: normal;
 }
 .q-card__section--vert {
