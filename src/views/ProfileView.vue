@@ -190,13 +190,12 @@ export default ProfileView;
   background: #ffffff;
   border-radius: 5px;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  font-size: 16px;
+  font-size: 15px;
   .item-labels {
     text-align: left;
     color: black;
     .sub-text {
       color: #757575;
-      font-size: 14px;
     }
   }
   &:first-of-type {

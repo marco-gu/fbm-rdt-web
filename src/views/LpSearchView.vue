@@ -13,7 +13,7 @@
     <q-form @submit="onSubmit" class="content">
       <q-input
         v-model="profileName"
-        prefix="Profile"
+        :prefix="$t('profile.profile_text')"
         input-class="text-right"
         readonly
         borderless
@@ -71,6 +71,7 @@
       </div>
       <div class="button-bottom">
         <q-btn
+          no-caps
           unelevated
           type="submit"
           class="full-width"
@@ -384,7 +385,7 @@ export default LpSearchView;
 .wrapper {
   height: 100vh;
   color: #000000;
-  font-size: 14px;
+  font-size: 18px;
 }
 .content {
   padding: 0 20px;
@@ -401,6 +402,7 @@ export default LpSearchView;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   border-radius: 5px;
   padding: 0 15px;
+  font-size: 18px;
   &.no-shadow {
     box-shadow: none;
   }
@@ -419,7 +421,7 @@ export default LpSearchView;
   background-color: #ffffff;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   border-radius: 5px;
-  padding: 0 15px;
+  padding: 10px 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;

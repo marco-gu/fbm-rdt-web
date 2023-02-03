@@ -33,6 +33,7 @@
         </div>
         <div class="button-bottom">
           <q-btn
+            no-caps
             unelevated
             type="submit"
             class="full-width"
@@ -156,7 +157,7 @@ export default ScanView;
     box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
     border-radius: 5px;
     padding: 10px 15px;
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 15px;
     color: #757575;
   }

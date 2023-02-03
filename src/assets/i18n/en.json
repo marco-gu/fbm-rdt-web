@@ -83,7 +83,8 @@
     "sync_complete": "Synchronize completed!",
     "sync_profile": "Sync Profile",
     "sync_latest": "Please synchronize the latest profiles",
-    "no_profile":"No profile found for this user."
+    "no_profile":"No profile found for this user.",
+    "profile_text": "Profile"
   },
   "lp":{
     "lp_search": "LP Search",
