@@ -43,7 +43,13 @@
           <a>{{ $t("login.forgot_password") }}?</a>
         </span>
       </div>
-      <q-btn class="login-button" unelevated type="submit" color="secondary">
+      <q-btn
+        no-caps
+        class="login-button"
+        unelevated
+        type="submit"
+        color="secondary"
+      >
         {{ $t("login.login") }}
       </q-btn>
     </q-form>
@@ -175,7 +181,7 @@ export default LoginView;
   width: 100%;
   min-height: 600px;
   height: 100vh;
-  font-size: 14px;
+  font-size: 17px;
   padding-top: 15%;
   .logo-image {
     max-width: 90%;
@@ -203,7 +209,6 @@ export default LoginView;
 }
 .login-button {
   width: 85%;
-  height: 40px;
   color: white;
   margin-top: 15%;
 }
@@ -213,5 +218,7 @@ export default LoginView;
   left: 0;
   right: 0;
   color: #b2b2b2;
+  font-size: 14px;
+  text-size-adjust: none;
 }
 </style>

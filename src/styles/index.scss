@@ -1,49 +1,62 @@
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  background-image: url("../assets/images/lns_bg.png");
-  background-size: cover;
+    font-family: "Maersk Text", Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    background-image: url("../assets/images/lns_bg.png");
+    background-size: cover;
+    font-size: 17px;
 }
 
 nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+    padding: 30px;
+    a {
+        font-weight: bold;
+        color: #2c3e50;
+        &.router-link-exact-active {
+            color: #42b983;
+        }
     }
-  }
 }
 
 .common-header {
-  background-color: rgba(0, 0, 0, 0);
-  color: #000000;
-  text-align: left;
-  &--title {
-    font-size: 18px;
-    font-weight: bold;
-  }
-}
-.common-header-toolbar {
-  background: transparent;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  .q-toolbar {
-    width: 100%;
-  }
-}
-.common-toolbar {
-  width: 100%;
-  background: transparent;
-  color: rgba(0, 0, 0, 1);
-  .q-toolbar__title {
-    font-weight: bold;
-    font-size: 20px;
+    background-color: rgba(0, 0, 0, 0);
+    color: #000000;
     text-align: left;
-  }
+    &--title {
+        font-size: 23px;
+        font-weight: bold;
+    }
+}
+
+.common-header-toolbar {
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    .q-toolbar {
+        width: 100%;
+    }
+}
+
+.common-toolbar {
+    width: 100%;
+    background: transparent;
+    color: rgba(0, 0, 0, 1);
+    .q-toolbar__title {
+        font-weight: bold;
+        font-size: 20px;
+        text-align: left;
+    }
+}
+
+.q-field--dense .q-field__control,
+.q-field--dense .q-field__marginal {
+    height: 43px;
+}
+
+.q-btn {
+    height: 49px;
+    font-size: 20px;
 }

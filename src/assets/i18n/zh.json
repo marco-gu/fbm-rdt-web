@@ -8,7 +8,8 @@
     "E91-02-0001": "邮箱不存在!",
     "E92-99-0001": "网络不通!",
     "E92-99-0002": "请联系管理员!",
-    "E92-99-0003": "Token过期",
+    "E92-99-0003": "身份验证信息已过期",
+    "E92-99-0004": "身份验证信息已失效",
     "E93-01-0001": "请输入用户名!",
     "E93-01-0002": "请输入密码!",
     "E93-02-0001": "密码已经更新!",
@@ -82,7 +83,8 @@
     "sync_complete": "同步完成",
     "sync_profile": "同步Profile",
     "sync_latest": "请同步最新的profile",
-    "no_profile":"当前用户无profile配置"
+    "no_profile":"当前用户无profile配置",
+    "profile_text": "Profile"
   },
   "lp":{
     "lp_search": "搜索LP",
@@ -92,5 +94,10 @@
     "scanned": "已扫",
     "total_number": "总数",
     "start_scan": "开始扫描"
+  },
+  "continue": {
+    "job_list": "任务进度",
+    "instruction":"请选择一条任务并继续",
+    "no_record": "没找到任何任务进度"
   }
 }

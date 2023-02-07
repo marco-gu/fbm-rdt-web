@@ -9,6 +9,7 @@
         "E92-99-0001": "Network is not available!",
         "E92-99-0002": "Please contact Administrator!",
         "E92-99-0003": "Token Expired",
+        "E92-99-0004": "Token Invalid",
         "E93-01-0001": "Please input Username!",
         "E93-01-0002": "Please input Password!",
         "E93-02-0001": "Password is changed!",
@@ -82,7 +83,8 @@
         "sync_complete": "Synchronize completed!",
         "sync_profile": "Sync Profile",
         "sync_latest": "Please synchronize the latest profiles",
-        "no_profile": "No profile found for this user."
+        "no_profile": "No profile found for this user.",
+        "profile_text": "Profile"
     },
     "lp": {
         "lp_search": "LP Search",
@@ -92,7 +94,11 @@
         "scanned": "Scanned",
         "total_number": "Total Number",
         "start_scan": "Start Scan Carton ID",
-        "onlineBottomButton": "Generate",
-        "offlineBottomButton": "Scan Carton"
+        "onlineBottomButton": "Genrate"
+    },
+    "continue": {
+        "job_list": "My Job List",
+        "instruction": "Please select one job and continue",
+        "no_record": "No jobs found."
     }
 }

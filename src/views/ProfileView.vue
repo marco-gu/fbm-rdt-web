@@ -10,7 +10,13 @@
         <q-btn flat round dense icon="home" @click="home" />
       </q-toolbar>
       <div class="search">
-        <q-input v-model="search" outlined dense placeholder="Search" clearable>
+        <q-input
+          v-model="search"
+          outlined
+          dense
+          :placeholder="$t('common.search')"
+          clearable
+        >
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -162,10 +168,10 @@ export default ProfileView;
   position: sticky;
   top: 0;
   width: 100%;
-  // height: 60px;
   z-index: 1;
   background-image: url("../assets/images/lns_bg.png");
   background-size: cover;
+  padding-bottom: 10px;
   .q-item {
     height: 60px;
     width: 100%;
@@ -184,14 +190,16 @@ export default ProfileView;
   background: #ffffff;
   border-radius: 5px;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  font-size: 16px;
+  font-size: 15px;
   .item-labels {
     text-align: left;
     color: black;
     .sub-text {
       color: #757575;
-      font-size: 14px;
     }
+  }
+  &:first-of-type {
+    margin-top: 5px;
   }
 }
 </style>
