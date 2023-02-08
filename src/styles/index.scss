@@ -1,5 +1,7 @@
+@import "./reset.scss";
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Maersk Text", -apple-system, BlinkMacSystemFont, "Microsoft JhengHei",
+  "Microsoft Yahei", "微软雅黑", STXihei, "华文细黑", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -47,19 +49,4 @@ nav {
     font-size: 23px;
     text-align: left;
   }
-}
-.q-field__control {
-  height: 43px;
-  padding: 0 15px;
-}
-
-.q-btn {
-  height: 49px;
-  font-size: 20px;
-  border-radius: 3px;
-}
-
-.q-field__native, .q-placeholder {
-  padding: 5px 0;
-  font-size: 17px;
 }

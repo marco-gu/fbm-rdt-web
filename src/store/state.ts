@@ -1,3 +1,4 @@
+import { LanguageState } from "./module/language.module";
 import { ProfileState } from "./module/profile.module";
 
 export default interface RootState {
@@ -6,4 +7,5 @@ export default interface RootState {
 
 export interface State extends RootState {
   profileModule: ProfileState;
+  languageModule: LanguageState;
 }

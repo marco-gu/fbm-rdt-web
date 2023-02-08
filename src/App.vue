@@ -2,29 +2,18 @@
   <router-view />
 </template>
 <script lang="ts">
-import { defineComponent, watch } from "vue";
+import { defineComponent, onMounted, watch } from "vue";
 import bridge from "dsbridge";
 import { useRouter } from "vue-router";
 import { provideI18n } from "./plugin/i18nPlugins";
 import { useI18n } from "vue-i18n";
-import { useStore } from "vuex";
+import { useStore } from "@/store";
 const App = defineComponent({
   setup() {
     const i18n = useI18n();
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
-    // store i18n in store for changing
-    // const store = useStore();
-    // watch(
-    //   () => store.getters.currentLang,
-    //   (newVal) => {
-    //     i18n.locale.value = store.getters.currentLang;
-    //   },
-    //   {
-    //     immediate: true,
-    //   }
-    // );
 
     provideI18n({
       locale: "en",
@@ -73,6 +62,23 @@ const App = defineComponent({
     });
     bridge.register("onKeyCodeClick", (keycode: string) => {
       console.log("CUSTOM_KEY_CODE_WEBVIEW ===> " + keycode);
+    });
+
+    onMounted(() => {
+      // store i18n in store for changing
+      const store = useStore();
+      watch(
+        () => store.getters["languageModule/currentLang"],
+        (newVal) => {
+          const currentLang = i18n.locale.value;
+          if (currentLang !== newVal) {
+            i18n.locale.value = newVal;
+          }
+        },
+        {
+          immediate: true,
+        }
+      );
     });
   },
 });
