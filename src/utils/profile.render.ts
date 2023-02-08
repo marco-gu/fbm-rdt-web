@@ -12,6 +12,7 @@ export type ViewDisplayAttribute = {
   scan: number;
   length: number;
   valid: (val: string) => Promise<any>;
+  editable: boolean; //data mgmt
 };
 
 export enum ProfileElementLevel {
@@ -21,7 +22,7 @@ export enum ProfileElementLevel {
   CARTON_INDIVIDUAL = "cartonindividual",
 }
 
-const scanOrTypeInList = ["PO", "SO", "SKU", "Container", "UPC"];
+const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber", "UPC"];
 
 export function composeViewElement(attr: ProfileDisplayAttribute) {
   const element = {} as ViewDisplayAttribute;

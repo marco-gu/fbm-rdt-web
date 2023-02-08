@@ -11,5 +11,8 @@
     "on": "ON",
     "off": "OFF",
     "camera": "Camera",
-    "bluetooth": "Bluetooth"
+    "bluetooth": "Bluetooth",
+    "downloadLabel": "Download",
+    "alreadyLatestVersionLabel": "It is the latest version",
+    "latestVersionLabel": "The latest version"
 }

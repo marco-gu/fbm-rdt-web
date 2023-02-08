@@ -71,6 +71,9 @@ const App = defineComponent({
     bridge.register("reLogin", () => {
       router.push({ name: "login", params: { message: "TOKEN EXPIRED" } });
     });
+    bridge.register("onKeyCodeClick", (keycode: string) => {
+      console.log("CUSTOM_KEY_CODE_WEBVIEW ===> " + keycode);
+    });
   },
 });
 export default App;

@@ -95,7 +95,7 @@ const LPListView = defineComponent({
     };
 
     const getTaskList = () => {
-      bridge.call("fetchTask", null, (res: string) => {
+      bridge.call("fetchLPTasks", null, (res: string) => {
         result = JSON.parse(res) as LP[];
         taskListDisplay.value = JSON.parse(res) as LP[];
         taskListDisplay.value.sort((a, b) =>
