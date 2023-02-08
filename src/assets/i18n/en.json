@@ -82,7 +82,7 @@
     "logout": "Logout"
   },
   "profile":{
-    "profile": "Client Profile",
+    "profile": "My Client Profile",
     "sync_complete": "Synchronize completed!",
     "sync_profile": "Sync Profile",
     "sync_latest": "Please synchronize the latest profiles",
@@ -91,7 +91,7 @@
   },
   "lp":{
     "lp_search": "LP Search",
-    "generate": "Genrate",
+    "generate": "Generate",
     "scan_type": "Scan Type",
     "scan": "Scan",
     "scanned": "Scanned",

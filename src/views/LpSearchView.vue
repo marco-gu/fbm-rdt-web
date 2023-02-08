@@ -6,7 +6,6 @@
         <q-toolbar-title :shrink="false">
           {{ $t("lp.lp_search") }}
         </q-toolbar-title>
-        <q-space />
         <q-btn flat round dense icon="home" @click="home" />
       </q-toolbar>
     </div>
@@ -68,17 +67,17 @@
           </div>
         </div>
       </div>
-      <div class="button-bottom">
-        <q-btn
-          no-caps
-          unelevated
-          type="submit"
-          class="full-width"
-          :label="$t('lp.generate')"
-          color="secondary"
-        />
-      </div>
     </q-form>
+    <div class="button-bottom">
+      <q-btn
+        no-caps
+        unelevated
+        type="submit"
+        class="full-width"
+        :label="$t('lp.generate')"
+        color="secondary"
+      />
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -382,13 +381,16 @@ export default LpSearchView;
 </script>
 <style lang="scss" scoped>
 .wrapper {
-  height: 100vh;
+  min-height: 100vh;
+  height: 100%;
   color: #000000;
   font-size: 18px;
+  position: relative;
 }
 .content {
   padding: 0 20px;
   margin-top: 10px;
+  min-height: 500px;
 }
 .header {
   display: flex;
@@ -398,7 +400,7 @@ export default LpSearchView;
 }
 .common-input {
   background: #ffffff;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  box-shadow: 0px 2px 5px 1px rgba(11, 69, 95, 0.08);
   border-radius: 5px;
   font-size: 18px;
   height: 50px;
@@ -410,9 +412,10 @@ export default LpSearchView;
   }
 }
 .button-bottom {
-  position: fixed;
+  position: absolute;
   bottom: 10px;
   width: calc(100% - 40px);
+  margin: 0 20px;
 }
 .mb-15 {
   margin-bottom: 20px;

@@ -6,7 +6,6 @@
         <q-toolbar-title :shrink="false">
           {{ $t("profile.profile") }}
         </q-toolbar-title>
-        <q-space />
         <q-btn flat round dense icon="home" @click="home" />
       </q-toolbar>
       <div class="search">
@@ -185,8 +184,8 @@ export default ProfileView;
   }
 }
 .list-item {
-  margin: 20px;
-  padding: 15px;
+  margin: 0 23px 23px 23px;
+  padding: 8px 15px;
   background: #ffffff;
   border-radius: 5px;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
@@ -195,6 +194,7 @@ export default ProfileView;
     text-align: left;
     color: black;
     .sub-text {
+      margin-top: 8px;
       color: #757575;
     }
   }
