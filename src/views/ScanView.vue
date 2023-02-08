@@ -6,7 +6,6 @@
         <q-toolbar-title :shrink="false">
           {{ $t("lp.scan") }}
         </q-toolbar-title>
-        <q-space />
         <q-btn flat round dense icon="home" @click="home" />
       </q-toolbar>
     </div>

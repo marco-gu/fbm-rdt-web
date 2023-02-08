@@ -76,6 +76,7 @@
         class="full-width"
         :label="$t('lp.generate')"
         color="secondary"
+        @click="onSubmit"
       />
     </div>
   </div>
