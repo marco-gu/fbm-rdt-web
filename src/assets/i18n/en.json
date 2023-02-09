@@ -100,5 +100,9 @@
         "job_list": "My Job List",
         "instruction": "Please select one job and continue",
         "no_record": "No jobs found."
+    },
+    "image": {
+        "access_image_header": "Cargo Images",
+        "access_image_button": "Add"
     }
 }
