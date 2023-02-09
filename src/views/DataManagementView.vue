@@ -1,24 +1,19 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable>
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span class="title-text">{{ pageTitle }}</span></q-item-section
-        >
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <q-separator color="grey-5" />
-      <div class="search q-pa-sm" v-show="!isEditMode">
+      <q-toolbar class="common-toolbar">
+        <q-btn flat round dense icon="arrow_back" @click="back" />
+        <q-toolbar-title :shrink="false">
+          {{ $t("dataManagement.list_title") }}
+        </q-toolbar-title>
+        <q-btn flat round dense icon="home" @click="home" />
+      </q-toolbar>
+      <div class="search" v-show="!isEditMode">
         <q-input
           v-model="search"
           outlined
           dense
-          :placeholder="searchPlaceHolder"
+          :placeholder="$t('common.search')"
           clearable
         >
           <template v-slot:append>
@@ -27,7 +22,145 @@
         </q-input>
       </div>
     </div>
-    <div class="data-list-container" v-if="isEditMode">
+
+    <template v-if="scanDataListDisplay.length > 0">
+      <div v-if="isEditMode == false">
+        <div
+          class="data-list-container"
+          v-for="(item, index) in scanDataListDisplay"
+          :key="index"
+        >
+          <div
+            class="row"
+            v-touch-hold:1800="handleHold"
+            clickable
+            @click="onClickScanTask(item)"
+          >
+            <div style="width: 38%">
+              <div
+                style="
+                  font-size: 15px;
+                  line-hight: 18px;
+                  font-family: Maersk Text-Light, Maersk Text;
+                "
+                v-html="formatTaskId(item.taskId)"
+              ></div>
+              <div style="height: 8px"></div>
+              <div
+                style="
+                  font-size: 15px;
+                  font-family: Maersk Text-Light, Maersk Text;
+                "
+              >
+                {{ formatDate(item.updateDatetime) }}
+              </div>
+            </div>
+            <div
+              class="center"
+              style="
+                width: 26%;
+                font-size: 15px;
+                font-family: Maersk Text-Bold, Maersk Text;
+                font-weight: bold;
+              "
+            >
+              <div>
+                {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
+              </div>
+            </div>
+            <div class="center" style="text-align: center; width: 30%">
+              <div class="column center">
+                <q-img width="26px" height="26px" no-spinner :src="uploaded" />
+                <div style="height: 8px"></div>
+                <div class="center" style="font-size: 9px">UPLOADED</div>
+              </div>
+              <div style="width: 8px"></div>
+              <div class="column center">
+                <q-img width="26px" height="26px" no-spinner :src="finished" />
+                <div style="height: 8px"></div>
+                <div class="center" style="font-size: 9px">FINISHED</div>
+              </div>
+            </div>
+            <div class="center" style="width: 6%">
+              <q-icon name="chevron_right" color="black" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <div v-for="(item, index) in scanDataListDisplay" :key="index">
+          <div class="row">
+            <div class="center" style="width: 6%; margin-left: 15px">
+              <q-checkbox v-model="item.isSelected" />
+            </div>
+            <div class="row edit-data-list-container" style="width: 81%">
+              <div style="width: 42%">
+                <div
+                  style="
+                    font-size: 15px;
+                    line-hight: 18px;
+                    font-family: Maersk Text-Light, Maersk Text;
+                  "
+                >
+                  <div>NIKE<br />CGP7649272<br />4700522258</div>
+                </div>
+                <div style="height: 8px"></div>
+                <div
+                  style="
+                    font-size: 15px;
+                    font-family: Maersk Text-Light, Maersk Text;
+                  "
+                >
+                  {{ formatDate(item.updateDatetime) }}
+                </div>
+              </div>
+              <div
+                class="center"
+                style="
+                  width: 25%;
+                  font-size: 15px;
+                  font-family: Maersk Text-Bold, Maersk Text;
+                  font-weight: bold;
+                "
+              >
+                <div>
+                  <!-- {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }} -->
+                  9999/9999
+                </div>
+              </div>
+              <div class="center" style="text-align: center; width: 32%">
+                <div class="column center">
+                  <q-img
+                    width="26px"
+                    height="26px"
+                    no-spinner
+                    :src="uploaded"
+                  />
+                  <div style="height: 8px"></div>
+                  <div class="center" style="font-size: 9px">UPLOADED</div>
+                </div>
+                <div style="width: 8px"></div>
+                <div class="column center">
+                  <q-img
+                    width="26px"
+                    height="26px"
+                    no-spinner
+                    :src="finished"
+                  />
+                  <div style="height: 8px"></div>
+                  <div class="center" style="font-size: 9px">FINISHED</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template v-else>
+      <div class="no-record">{{ $t("continue.no_record") }}</div>
+    </template>
+
+    <!-- <div class="data-list-container" v-if="isEditMode">
       <q-list v-for="(item, index) in scanDataListDisplay" :key="index">
         <div>
           <q-item>
@@ -71,8 +204,9 @@
           <q-separator spaced inset />
         </div>
       </q-list>
-    </div>
-    <div class="data-list-container" v-else v-touch-hold:1800="handleHold">
+    </div> -->
+
+    <!-- <div class="data-list-container" v-touch-hold:1800="handleHold">
       <q-list v-for="(item, index) in scanDataListDisplay" :key="index">
         <div>
           <q-item clickable @click="onClickScanTask(item)">
@@ -116,33 +250,36 @@
           <q-separator spaced inset />
         </div>
       </q-list>
-    </div>
+    </div> -->
     <div class="bottom" v-show="isEditMode">
       <q-btn
         no-caps
+        class="bottomButton"
         style="width: 48%"
         flat
         push
-        :label="uploadLabel"
+        :label="$t('common.upload')"
         @click="handleUpload"
       />
       <q-separator vertical inset color="white" />
       <q-btn
         no-caps
+        class="bottomButton"
         style="width: 48%"
         flat
         push
-        :label="deleteLabel"
+        :label="$t('common.delete')"
         @click="handleDelete"
       />
       <q-separator vertical inset color="white" />
       <q-btn
         no-caps
+        class="bottomButton"
         style="width: 52%"
         flat
         type="submit"
         push
-        :label="cancelLabel"
+        :label="$t('common.cancel')"
         @click="cancelEditMode"
       />
     </div>
@@ -178,9 +315,9 @@ import { useRouter } from "vue-router";
 import { useI18n } from "@/plugin/i18nPlugins";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { ScanDataManagement } from "../models/profile";
-import { defineComponent, onMounted, Ref, ref, watch } from "vue";
-import uploadedUrl from "../assets/images/uploaded.png";
-import finishedUrl from "../assets/images/finished.png";
+import { computed, defineComponent, onMounted, Ref, ref, watch } from "vue";
+import uploadedUrl from "../assets/icon/finished.svg";
+import finishedUrl from "../assets/icon/uploaded.svg";
 import {
   AndroidResponse,
   AndroidResponseStatus,
@@ -215,20 +352,7 @@ const DataManagementView = defineComponent({
     const searchPlaceHolder = ref("");
     const statusLabel = ref("");
     const uploadLabel = ref("");
-    const uploadedLabel = ref("");
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.category.value = "DataManagementView";
-      pageTitle.value = i18n.$t("pageTitle");
-      cancelLabel.value = i18n.$t("cancelLabel");
-      deleteLabel.value = i18n.$t("deleteLabel");
-      finishedLabel.value = i18n.$t("finishedLabel");
-      pendingLabel.value = i18n.$t("pendingLabel");
-      searchPlaceHolder.value = i18n.$t("searchPlaceHolder");
-      statusLabel.value = i18n.$t("statusLabel");
-      uploadLabel.value = i18n.$t("uploadLabel");
-      uploadedLabel.value = i18n.$t("uploadedLabel");
-    });
+
     const dialogVisible = ref(false);
     const dialogMessage = ref("");
     onMounted(() => {
@@ -369,6 +493,32 @@ const DataManagementView = defineComponent({
     const cancelEditMode = () => {
       isEditMode.value = false;
     };
+
+    const formatTaskId = (taskId: string) => {
+      const a = taskId.split("_").join("<br/>");
+      return a;
+    };
+
+    // ✅ Format using reusable function
+    function padTo2Digits(num: number) {
+      return num.toString().padStart(2, "0");
+    }
+
+    // 👇️ format as "YYYY-MM-DD hh:mm"
+    function formatDate(dateStr: string) {
+      const date = new Date(dateStr);
+      return (
+        [
+          date.getFullYear(),
+          padTo2Digits(date.getMonth() + 1),
+          padTo2Digits(date.getDate()),
+        ].join("-") +
+        " " +
+        [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes())].join(
+          ":"
+        )
+      );
+    }
     return {
       back,
       cancelEditMode,
@@ -392,10 +542,11 @@ const DataManagementView = defineComponent({
       searchPlaceHolder,
       status,
       statusLabel,
-      uploadedLabel,
       uploadLabel,
       uploaded,
       finished,
+      formatTaskId,
+      formatDate,
     };
   },
 });
@@ -403,23 +554,73 @@ export default DataManagementView;
 </script>
 <style lang="scss" scoped>
 .wrapper {
-  height: 100vh;
+  height: 100%;
   position: relative;
+  padding-bottom: 20px;
+  min-height: 100vh;
 }
 .header {
   position: sticky;
   top: 0;
   width: 100%;
-  background-color: #ffffff;
   z-index: 1;
+  background-image: url("../assets/images/lns_bg.png");
+  background-size: cover;
+  padding-bottom: 10px;
   .q-item {
-    background-color: #ffffff;
     height: 60px;
     width: 100%;
   }
   .title-text {
-    font-size: 21px;
+    font-size: 20px;
   }
+  .search {
+    margin: 0 20px;
+    background-color: #ffffff;
+  }
+}
+.data-list-container {
+  margin: 20px;
+  padding-left: 15px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  text-align: left;
+  min-height: 99px;
+  &:first-of-type {
+    margin-top: 5px;
+  }
+}
+
+.edit-data-list-container {
+  margin-left: 15px;
+  margin-top: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  text-align: left;
+  min-height: 99px;
+  &:first-of-type {
+    margin-top: 5px;
+  }
+}
+.no-record {
+  text-align: center;
+  width: 100%;
+  color: #757575;
+}
+.footer {
+  position: absolute;
+  bottom: 10px;
+  text-align: center;
+  width: 100%;
+  color: #757575;
 }
 .bottom {
   position: fixed;
@@ -429,5 +630,17 @@ export default DataManagementView;
   color: white;
   width: 100%;
   height: 50px;
+}
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bottomButton {
+  font-size: 20px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 23px;
 }
 </style>

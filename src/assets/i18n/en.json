@@ -47,7 +47,8 @@
     "receiving": "Receiving",
     "stuffing": "Stuffing",
     "search": "Search",
-    "delete": "Delete"
+    "delete": "Delete",
+    "upload": "Upload"
   },
   "login": {
     "login": "Log in",
@@ -102,5 +103,12 @@
     "job_list": "My Job List",
     "instruction":"Please select one job and continue",
     "no_record": "No jobs found."
+  },
+  "dataManagement": {
+    "list_title": "Data Management",
+    "edit_group_title": "Data Management/Group",
+    "edit_detail_title": "Data Management/Detail",
+    "mix_title": "Data Management/Mix",
+    "no_record": "No data found."
   }
 }

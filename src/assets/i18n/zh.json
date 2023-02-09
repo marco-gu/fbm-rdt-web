@@ -47,7 +47,8 @@
     "receiving": "收货",
     "stuffing": "出货",
     "search": "搜索",
-    "delete": "删除"
+    "delete": "删除",
+    "upload": "上传"
   },
   "login": {
     "login": "登录",
@@ -102,5 +103,11 @@
     "job_list": "任务进度",
     "instruction":"请选择一条任务并继续",
     "no_record": "没找到任何任务进度"
+  },
+  "dataManagement": {
+    "list_title": "数据管理",
+    "edit_group_title": "数据管理/组",
+    "edit_detail_title": "数据管理/详情",
+    "mix_title": "数据管理/Mix"
   }
 }
