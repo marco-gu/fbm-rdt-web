@@ -11,6 +11,8 @@ import { useStore } from "@/store";
 const App = defineComponent({
   setup() {
     const i18n = useI18n();
+    const store = useStore();
+    const router = useRouter();
 
     provideI18n({
       locale: "en",
@@ -53,7 +55,7 @@ const App = defineComponent({
         },
       },
     });
-    const router = useRouter();
+
     bridge.register("reLogin", () => {
       router.push({ name: "login", params: { message: "TOKEN EXPIRED" } });
     });
@@ -64,19 +66,19 @@ const App = defineComponent({
     onMounted(() => {
       bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.locale.value = res;
+        store.dispatch("languageModule/setCurrentLang", res);
       });
-      // store i18n in store for changing
-      const store = useStore();
-      watch(
-        () => store.state.languageModule.currentLang,
-        (newVal) => {
-          i18n.locale.value = newVal;
-        },
-        {
-          immediate: true,
-        }
-      );
     });
+    // store i18n in store for changing
+    watch(
+      () => store.state.languageModule.currentLang,
+      (newVal) => {
+        i18n.locale.value = newVal;
+      },
+      {
+        immediate: true,
+      }
+    );
   },
 });
 export default App;

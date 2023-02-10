@@ -48,7 +48,8 @@
         "stuffing": "出货",
         "search": "搜索",
         "delete": "删除",
-        "download": "下载"
+        "download": "下载",
+        "ok": "确认"
     },
     "login": {
         "login": "登录",
@@ -80,7 +81,8 @@
         "cargo_image": "货物图像",
         "setting": "设置",
         "user_manual": "用户手册",
-        "logout": "登出"
+        "logout": "登出",
+        "logout_promot": "确认登出吗?"
     },
     "profile": {
         "profile": "用户Profile",

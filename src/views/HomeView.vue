@@ -79,7 +79,7 @@
               </q-item-section>
             </q-item>
           </q-list>
-          <q-item clickable @click="logout" v-ripple>
+          <q-item clickable @click="showLogoutDialog = true" v-ripple>
             <q-item-section avatar>
               <q-img no-spinner :src="logoutIcon" />
             </q-item-section>
@@ -93,6 +93,25 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+    <q-dialog v-model="showLogoutDialog" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("home.logout") }}
+          <q-icon name="close" v-close-popup />
+        </div>
+        <div class="dialog-container__content">
+          {{ $t("home.logout_promot") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button cancel" v-close-popup>
+            {{ $t("common.cancel") }}
+          </button>
+          <button class="dialog-button confirm" @click="logout">
+            {{ $t("common.ok") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
   </q-layout>
 </template>
 <script lang="ts">
@@ -133,6 +152,7 @@ export default {
     const userManualIcon = userManual;
     const logoutIcon = logOut;
     const logoIcon = logo;
+    const showLogoutDialog = ref(false);
     onMounted(() => {
       if (route.query.leftDrawerOpen == "true") {
         toggleLeftDrawer();
@@ -147,7 +167,9 @@ export default {
     const goDataManagement = () => {
       router.push("/dataManagement");
     };
+
     const logout = () => {
+      showLogoutDialog.value = false;
       showLoading($q);
       bridge.call("logout", null, (data: string) => {
         closeLoading($q);
@@ -190,6 +212,7 @@ export default {
       goSetting,
       goLPList,
       goImageAccess,
+      showLogoutDialog,
     };
   },
 };
@@ -203,5 +226,51 @@ export default {
 }
 .q-layout {
   background: transparent;
+}
+
+.dialog-container {
+  width: 86%;
+  border-radius: 5px;
+  border: 0px solid #757575;
+  font-size: 17px;
+  background-color: #ffffff;
+  &__title {
+    padding: 15px 15px 0 15px;
+    font-weight: bold;
+    .q-icon {
+      float: right;
+      right: 0;
+      top: 0;
+    }
+  }
+  &__content {
+    padding: 0 15px;
+    margin: 23px 0;
+  }
+  &__button {
+    padding: 15px;
+    text-align: right;
+    background: #f7f7f7;
+    border-radius: 0px 0px 5px 5px;
+    border: 0px solid #878787;
+    .dialog-button {
+      min-width: 99px;
+      padding: 8px;
+      border-radius: 5px;
+      font-size: 18px;
+
+      &.confirm {
+        background: #00243d;
+        color: #ffffff;
+      }
+
+      &.cancel {
+        border: 1px solid #42b0d5;
+        color: #42b0d5;
+        margin-right: 15px;
+        background: #ffffff;
+      }
+    }
+  }
 }
 </style>

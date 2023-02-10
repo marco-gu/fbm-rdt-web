@@ -48,7 +48,8 @@
         "stuffing": "Stuffing",
         "search": "Search",
         "delete": "Delete",
-        "download": "Download"
+        "download": "Download",
+        "ok": "OK"
     },
     "login": {
         "login": "Log in",
@@ -80,7 +81,8 @@
         "cargo_image": "Cargo Image",
         "setting": "Settings",
         "user_manual": "User Manual",
-        "logout": "Logout"
+        "logout": "Logout",
+        "logout_promot": "Are you sure?"
     },
     "profile": {
         "profile": "My Client Profile",
