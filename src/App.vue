@@ -11,9 +11,6 @@ import { useStore } from "@/store";
 const App = defineComponent({
   setup() {
     const i18n = useI18n();
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-    });
 
     provideI18n({
       locale: "en",
@@ -65,6 +62,9 @@ const App = defineComponent({
     });
 
     onMounted(() => {
+      bridge.call("getSettingLanguage", null, (res: string) => {
+        i18n.locale.value = res;
+      });
       // store i18n in store for changing
       const store = useStore();
       watch(
