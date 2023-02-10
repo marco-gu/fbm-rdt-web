@@ -1,6 +1,16 @@
 <template>
   <div class="wrapper">
     <div class="header">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("carton.carton_detail_header") }}
+        </div>
+      </div>
+    </div>
+    <!-- <div class="header">
       <q-item clickable style="width: 100%">
         <q-item-section avatar @click="back()">
           <q-icon name="arrow_back" />
@@ -9,12 +19,12 @@
           <span style="font-size: 21px">Carton Detail</span>
         </q-item-section>
       </q-item>
-    </div>
-    <q-separator color="grey-5" />
+    </div> -->
+    <!-- <q-separator color="grey-5" /> -->
     <div class="carton-info">
       <span>{{ cartonID }}</span>
     </div>
-    <q-form style="background: #fff" @submit="onSubmit">
+    <q-form @submit="onSubmit">
       <div v-for="(item, i) in pageViews" :key="i">
         <div v-if="item.display == 1">
           <div
@@ -74,6 +84,8 @@ import {
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, ref } from "vue";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const CartonDetailView = defineComponent({
   setup() {
     const pageViews = ref([] as ViewDisplayAttribute[]);
@@ -82,6 +94,8 @@ const CartonDetailView = defineComponent({
     let alreadyRendered = false;
     let cartonView = {} as CartonDetailAttribute;
     const inputRef = ref(null);
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     bridge.register("closeCartonDetail", () => {
       back();
     });
@@ -190,30 +204,33 @@ const CartonDetailView = defineComponent({
       inputRef,
       validPaste,
       scan,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default CartonDetailView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100vh;
-  display: flex;
-  flex-flow: column;
-  background: rgb(233, 229, 229);
-}
-.header {
-  display: flex;
-  background: #fff;
-  justify-content: space-around;
-  height: 60px;
-  align-items: center;
-}
+// .wrapper {
+//   height: 100vh;
+//   display: flex;
+//   flex-flow: column;
+//   background: rgb(233, 229, 229);
+// }
+// .header {
+//   display: flex;
+//   background: #fff;
+//   justify-content: space-around;
+//   height: 60px;
+//   align-items: center;
+// }
 .carton-info {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 60px;
+  height: 30px;
   background: #00243d;
   color: #fff;
   flex-flow: column;

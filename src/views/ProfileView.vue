@@ -1,14 +1,17 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-toolbar class="common-toolbar">
-        <q-btn flat round dense icon="arrow_back" @click="home" />
-        <q-toolbar-title :shrink="false">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="home" />
+        </div>
+        <div class="common-toolbar-middle">
           {{ $t("profile.profile") }}
-        </q-toolbar-title>
-        <q-space />
-        <q-btn flat round dense icon="home" @click="home" />
-      </q-toolbar>
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
       <div class="search">
         <q-input
           v-model="search"
@@ -17,7 +20,7 @@
           :placeholder="$t('common.search')"
           clearable
         >
-          <template v-slot:append>
+          <template v-slot:prepend>
             <q-icon name="search" />
           </template>
         </q-input>
@@ -55,6 +58,8 @@ import {
 } from "@/models/android.response";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const ProfileView = defineComponent({
   methods: {
     home() {
@@ -68,6 +73,8 @@ const ProfileView = defineComponent({
     const i18n = useI18n();
     let isFirstSync = true;
     const store = useStore();
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const search = ref("");
@@ -153,40 +160,17 @@ const ProfileView = defineComponent({
       onClickProfile,
       profileListDisplay,
       search,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default ProfileView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100%;
-  position: relative;
-  padding-bottom: 10px;
-}
-.header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-  background-image: url("../assets/images/lns_bg.png");
-  background-size: cover;
-  padding-bottom: 10px;
-  .q-item {
-    height: 60px;
-    width: 100%;
-  }
-  .title-text {
-    font-size: 20px;
-  }
-  .search {
-    margin: 0 20px;
-    background-color: #ffffff;
-  }
-}
 .list-item {
-  margin: 20px;
-  padding: 15px;
+  margin: 0 23px 23px 23px;
+  padding: 8px 15px;
   background: #ffffff;
   border-radius: 5px;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
@@ -195,6 +179,7 @@ export default ProfileView;
     text-align: left;
     color: black;
     .sub-text {
+      margin-top: 8px;
       color: #757575;
     }
   }

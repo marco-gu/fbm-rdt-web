@@ -1,6 +1,32 @@
 <template>
   <div class="wrapper">
     <div class="header">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("lp.lp_list") }}
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
+      <div class="search">
+        <q-input
+          v-model="search"
+          outlined
+          dense
+          :placeholder="$t('common.search')"
+          clearable
+        >
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </div>
+    </div>
+    <!-- <div class="header">
       <q-item clickable style="width: 100%">
         <q-item-section avatar @click="back">
           <q-icon name="arrow_back" />
@@ -22,7 +48,7 @@
           <q-icon name="search" />
         </template>
       </q-input>
-    </div>
+    </div> -->
 
     <div>
       <q-pull-to-refresh @refresh="refresh">
@@ -54,6 +80,8 @@ import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { LP } from "../models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 
 const LPListView = defineComponent({
   methods: {
@@ -71,6 +99,8 @@ const LPListView = defineComponent({
     let result: LP[] = [];
     const taskListDisplay: Ref<LP[]> = ref([]);
     const search = ref("");
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     const refresh = (done: any) => {
       getTaskList();
       done();
@@ -127,31 +157,37 @@ const LPListView = defineComponent({
       taskListDisplay,
       search,
       back,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default LPListView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  // background-color: #e5e5e5;
-  height: 100vh;
-  .header {
-    display: flex;
-    background: #fff;
-    justify-content: space-around;
-    height: 60px;
-    align-items: center;
-  }
-  .search {
-    background: #fff;
-    height: 60px;
-    width: 100%;
-  }
-  .q-item {
-    background-color: #fff;
-    text-align: left;
-    width: 100%;
-  }
+// .wrapper {
+//   // background-color: #e5e5e5;
+//   height: 100vh;
+//   .header {
+//     display: flex;
+//     background: #fff;
+//     justify-content: space-around;
+//     height: 60px;
+//     align-items: center;
+//   }
+//   .search {
+//     background: #fff;
+//     height: 60px;
+//     width: 100%;
+//   }
+//   .q-item {
+//     background-color: #fff;
+//     text-align: left;
+//     width: 100%;
+//   }
+// }
+.q-item {
+  text-align: left;
+  width: 100%;
 }
 </style>

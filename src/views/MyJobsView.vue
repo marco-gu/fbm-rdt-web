@@ -1,6 +1,32 @@
 <template>
   <div class="wrapper">
     <div class="header">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="home" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("continue.job_list") }}
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
+      <div class="search">
+        <q-input
+          v-model="search"
+          outlined
+          dense
+          :placeholder="$t('common.search')"
+          clearable
+        >
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </div>
+    </div>
+    <!-- <div class="header">
       <q-toolbar class="common-toolbar">
         <q-btn flat round dense icon="arrow_back" @click="home" />
         <q-toolbar-title :shrink="false">
@@ -22,7 +48,7 @@
           </template>
         </q-input>
       </div>
-    </div>
+    </div> -->
 
     <template v-if="scanDataListDisplay.length > 0">
       <div
@@ -72,7 +98,8 @@ import { useRouter } from "vue-router";
 
 import { ScanDataManagement } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
-
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const MyJobsView = defineComponent({
   methods: {
     home() {
@@ -85,7 +112,8 @@ const MyJobsView = defineComponent({
 
     let result: ScanDataManagement[] = [];
     const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
-
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     onMounted(() => {
       getScanDataList();
     });
@@ -138,38 +166,40 @@ const MyJobsView = defineComponent({
       router,
       scanDataListDisplay,
       search,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default MyJobsView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100%;
-  position: relative;
-  padding-bottom: 20px;
-  min-height: 100vh;
-}
-.header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-  background-image: url("../assets/images/lns_bg.png");
-  background-size: cover;
-  padding-bottom: 10px;
-  .q-item {
-    height: 60px;
-    width: 100%;
-  }
-  .title-text {
-    font-size: 20px;
-  }
-  .search {
-    margin: 0 20px;
-    background-color: #ffffff;
-  }
-}
+// .wrapper {
+//   height: 100%;
+//   position: relative;
+//   padding-bottom: 20px;
+//   min-height: 100vh;
+// }
+// .header {
+//   position: sticky;
+//   top: 0;
+//   width: 100%;
+//   z-index: 1;
+//   background-image: url("../assets/images/lns_bg.png");
+//   background-size: cover;
+//   padding-bottom: 10px;
+//   .q-item {
+//     height: 60px;
+//     width: 100%;
+//   }
+//   .title-text {
+//     font-size: 20px;
+//   }
+//   .search {
+//     margin: 0 20px;
+//     background-color: #ffffff;
+//   }
+// }
 .data-list-container {
   margin: 20px;
   background: #ffffff;

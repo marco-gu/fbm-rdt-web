@@ -6,6 +6,9 @@
         "E91-01-0004": "请输入您的账户信息(UID)",
         "E91-01-0005": "请输入密码",
         "E91-02-0001": "邮箱不存在!",
+        "E92-01-0001": "重复的Carton ID",
+        "E92-02-0001": "下载失败!",
+        "E92-02-0002": "更新失败!",
         "E92-99-0001": "网络不通!",
         "E92-99-0002": "请联系管理员!",
         "E92-99-0003": "身份验证信息已过期",
@@ -34,7 +37,7 @@
         "E93-05-0006": "没有纪录!",
         "E93-05-0007": "完成输入",
         "E93-06-0001": "成功登出!",
-        "SYS-01-001": "网络不通"
+        "SYS-01-001": "系统错误"
     },
     "common": {
         "confirm": "确认",
@@ -93,7 +96,9 @@
         "scan": "扫描",
         "scanned": "已扫",
         "total_number": "总数",
-        "start_scan": "开始扫描"
+        "start_scan": "开始扫描",
+        "lp_list": "LP列表",
+        "lp_detail_list": "LP列表详情"
     },
     "continue": {
         "job_list": "任务进度",
@@ -103,5 +108,18 @@
     "image": {
         "access_image_header": "货物图片",
         "access_image_button": "增加"
+    },
+    "dataManagement": {
+        "data_management_header": "货物管理"
+    },
+    "setting": {
+        "setting_header": "设置",
+        "setting_ringVoice": "播放声音",
+        "setting_language": "语言",
+        "setting_scanningDevice": "扫描设备"
+    },
+    "carton": {
+        "mix_carton_header": "混箱",
+        "carton_detail_header": "箱子详情"
     }
 }

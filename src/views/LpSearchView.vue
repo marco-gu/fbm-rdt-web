@@ -1,86 +1,89 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-toolbar class="common-toolbar">
-        <q-btn flat round dense icon="arrow_back" @click="back" />
-        <q-toolbar-title :shrink="false">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
           {{ $t("lp.lp_search") }}
-        </q-toolbar-title>
-        <q-space />
-        <q-btn flat round dense icon="home" @click="home" />
-      </q-toolbar>
-    </div>
-    <q-form @submit="onSubmit" class="content">
-      <q-input
-        v-model="profileName"
-        :prefix="$t('profile.profile_text')"
-        input-class="text-right"
-        readonly
-        borderless
-        dense
-        class="common-input mb-15 mt-15"
-      />
-      <div class="item-container mb-15">
-        <div class="label">{{ $t("lp.scan_type") }}</div>
-        <div class="input">
-          <q-radio
-            v-if="receivingFlag"
-            v-model="scanType"
-            val="Receiving"
-            :label="$t('common.receiving')"
-            @click="changeScanType('Receiving')"
-          />
-          <q-radio
-            v-if="stuffingFlag"
-            v-model="scanType"
-            val="Stuffing"
-            :label="$t('common.stuffing')"
-            @click="changeScanType('Stuffing')"
-          />
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
         </div>
       </div>
-
-      <div v-for="(item, i) in pageViews" :key="i">
-        <div v-if="item.display == 1">
-          <div class="item-container mb-15">
-            <div>
-              {{ item.displayFieldName }}
-            </div>
-            <q-input
-              ref="inputRef"
-              v-model="item.model"
-              @paste="validPaste($event, i)"
-              clearable
-              :maxlength="item.length"
-              input-class="text-right"
-              lazy-rules
-              :rules="[item.valid]"
-              borderless
-              dense
-              class="common-input no-shadow"
-            >
-              <template v-slot:append>
-                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                  <q-icon name="center_focus_weak" right size="14px" />
-                </q-avatar>
-              </template>
-            </q-input>
+    </div>
+    <div class="content">
+      <q-form @submit="onSubmit">
+        <q-input
+          class="common-input mb-15 mt-15"
+          v-model="profileName"
+          :prefix="$t('profile.profile_text')"
+          input-class="text-right"
+          readonly
+          borderless
+          dense
+        />
+        <div class="item-container mb-15">
+          <div class="label">{{ $t("lp.scan_type") }}</div>
+          <div class="input">
+            <q-radio
+              v-if="receivingFlag"
+              v-model="scanType"
+              val="Receiving"
+              :label="$t('common.receiving')"
+              @click="changeScanType('Receiving')"
+            />
+            <q-radio
+              v-if="stuffingFlag"
+              v-model="scanType"
+              val="Stuffing"
+              :label="$t('common.stuffing')"
+              @click="changeScanType('Stuffing')"
+            />
           </div>
         </div>
-      </div>
-      <div class="button-bottom">
-        <q-btn
-          no-caps
-          unelevated
-          type="submit"
-          class="full-width"
-          color="secondary"
-          style="background: #42b0d5; color: #fff; height: 40px"
-        >
-          {{ bottomButtonLable }}
-        </q-btn>
-      </div>
-    </q-form>
+        <div v-for="(item, i) in pageViews" :key="i">
+          <div v-if="item.display == 1">
+            <div class="item-container mb-15">
+              <div>
+                {{ item.displayFieldName }}
+              </div>
+              <q-input
+                ref="inputRef"
+                v-model="item.model"
+                @paste="validPaste($event, i)"
+                clearable
+                :maxlength="item.length"
+                input-class="text-right"
+                lazy-rules
+                :rules="[item.valid]"
+                borderless
+                dense
+                class="common-input no-shadow"
+              >
+                <template v-slot:append>
+                  <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
+                    <q-icon name="center_focus_weak" right size="14px" />
+                  </q-avatar>
+                </template>
+              </q-input>
+            </div>
+          </div>
+        </div>
+        <div class="button-bottom">
+          <q-btn
+            no-caps
+            unelevated
+            type="submit"
+            class="full-width"
+            color="secondary"
+          >
+            {{ bottomButtonLable }}
+          </q-btn>
+        </div>
+      </q-form>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -112,6 +115,8 @@ import {
   validPasteInput,
 } from "@/utils/profile.render";
 import { useI18n } from "vue-i18n";
+import homeImg from "../assets/images/home.svg";
+import arrow from "../assets/images/arrow.svg";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -141,10 +146,10 @@ const LpSearchView = defineComponent({
     const receivingFlag = ref(false);
     const stuffingFlag = ref(false);
     const mode = route.params.id as string;
+    const homeIcon = homeImg;
+    const arrowIcon = arrow;
     const bottomButtonLable =
-      mode == "online"
-        ? i18n.t("lp.onlineBottomButton")
-        : i18n.t("lp.offlineBottomButton");
+      mode == "online" ? i18n.t("lp.generate") : i18n.t("lp.start_scan");
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -367,37 +372,19 @@ const LpSearchView = defineComponent({
       inputRef,
       validPaste,
       bottomButtonLable,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default LpSearchView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100vh;
-  color: #000000;
-  font-family: "Maersk Text", Avenir, Helvetica, Arial, sans-serif;
-  font-size: 18px;
-}
 .content {
   padding: 0 20px;
   margin-top: 10px;
 }
-.header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  // height: 60px;
-  z-index: 1;
-  background-image: url("../assets/images/lns_bg.png");
-  background-size: cover;
-  // display: flex;
-  // justify-content: space-around;
-  // height: 60px;
-  // align-items: center;
-}
 .common-input {
-  font-family: "Maersk Text", Avenir, Helvetica, Arial, sans-serif;
   background: #ffffff;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   border-radius: 5px;
@@ -412,7 +399,7 @@ export default LpSearchView;
 }
 .button-bottom {
   position: fixed;
-  bottom: 10px;
+  bottom: 20px;
   width: calc(100% - 40px);
 }
 .mb-15 {

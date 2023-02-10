@@ -3,6 +3,9 @@
     "E91-01-0002": "Username does not exist!",
     "E91-01-0003": "User has logged on another device!",
     "E91-02-0001": "Email does not exist!",
+    "E92-01-0001": "Duplicate Carton ID",
+    "E92-02-0001": "Failed to download the latest version!",
+    "E92-02-0002": "Failed to install the latest version!",
     "E92-99-0001": "Network is not available!",
     "E92-99-0002": "Please contact Administrator!",
     "E92-99-0003": "Token Expired",
@@ -29,5 +32,6 @@
     "E93-05-0005": "LP has been successfully downloaded!",
     "E93-05-0006": "No Record is found!",
     "E93-05-0007": "Offline input completed",
-    "E93-06-0001": "Logout Success!"
+    "E93-06-0001": "Logout Success!",
+    "SYS-01-0001": "System error!"
 }

@@ -1,6 +1,19 @@
 <template>
   <div class="wrapper">
     <div class="header">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("setting.setting_scanningDevice") }}
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
+    </div>
+    <!-- <div class="header">
       <q-item clickable style="width: 100%">
         <q-item-section avatar @click="back">
           <q-icon name="arrow_back" />
@@ -12,7 +25,7 @@
           <q-icon name="home" />
         </q-item-section>
       </q-item>
-    </div>
+    </div> -->
     <q-separator color="grey-5" />
     <div class="setting-list-container">
       <q-list>
@@ -44,6 +57,8 @@ import { useRouter } from "vue-router";
 import { useI18n } from "@/plugin/i18nPlugins";
 import selected from "../assets/icon/selected.svg";
 import { ref } from "vue";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 export default {
   name: "LanguageView",
   components: {},
@@ -54,6 +69,8 @@ export default {
     const cameraLabel = ref("");
     const bluetoothLabel = ref("");
     var selectedDevice = ref("");
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     const title = ref("Scanning device");
 
     bridge.call("getSettingLanguage", null, (res: string) => {
@@ -96,27 +113,33 @@ export default {
       cameraLabel,
       bluetoothLabel,
       title,
+      homeIcon,
+      arrowIcon,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: rgb(233, 229, 229);
-  .header {
-    display: flex;
-    background: #fff;
-    justify-content: space-around;
-    height: 60px;
-    align-items: center;
-  }
-  .q-item {
-    background-color: #ffffff;
-    height: 50px;
-    width: 100%;
-  }
+// .wrapper {
+//   display: flex;
+//   flex-direction: column;
+//   height: 100vh;
+//   background: rgb(233, 229, 229);
+//   .header {
+//     display: flex;
+//     background: #fff;
+//     justify-content: space-around;
+//     height: 60px;
+//     align-items: center;
+//   }
+//   .q-item {
+//     background-color: #ffffff;
+//     height: 50px;
+//     width: 100%;
+//   }
+// }
+.q-item {
+  height: 50px;
+  width: 100%;
 }
 </style>

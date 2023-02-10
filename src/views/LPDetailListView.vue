@@ -1,6 +1,19 @@
 <template>
   <div class="wrapper">
     <div class="header">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("lp.lp_detail_list") }}
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
+    </div>
+    <!-- <div class="header">
       <q-item clickable style="width: 100%">
         <q-item-section avatar @click="back">
           <q-icon name="arrow_back" />
@@ -13,7 +26,7 @@
         </q-item-section>
       </q-item>
       <q-separator color="grey-5" />
-    </div>
+    </div> -->
     <q-separator color="grey-5" />
     <q-item-section class="taskIdHeader">
       {{ taskId }}
@@ -38,7 +51,8 @@ import { useRouter, useRoute } from "vue-router";
 import { Carton } from "../models/profile";
 
 import { useI18n } from "@/plugin/i18nPlugins";
-
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const LPDetailListView = defineComponent({
   methods: {
     home() {
@@ -50,6 +64,8 @@ const LPDetailListView = defineComponent({
     const route = useRoute();
     const i18n = useI18n();
     const taskId = ref(route.query.taskId);
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -87,34 +103,45 @@ const LPDetailListView = defineComponent({
       filterList,
       back,
       taskId,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default LPDetailListView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  .header {
-    display: flex;
-    background: #fff;
-    justify-content: space-around;
-    height: 60px;
-    align-items: center;
-  }
-  .search {
-    background: #fff;
-    height: 60px;
-    width: 100%;
-  }
-  .q-item {
-    background-color: #ffffff;
-    text-align: left;
-    width: 100%;
-  }
-  .taskIdHeader {
-    background: #040000;
-    color: #ffffff;
-    height: 44px;
-  }
+// .wrapper {
+//   .header {
+//     display: flex;
+//     background: #fff;
+//     justify-content: space-around;
+//     height: 60px;
+//     align-items: center;
+//   }
+//   .search {
+//     background: #fff;
+//     height: 60px;
+//     width: 100%;
+//   }
+//   .q-item {
+//     background-color: #ffffff;
+//     text-align: left;
+//     width: 100%;
+//   }
+//   .taskIdHeader {
+//     background: #040000;
+//     color: #ffffff;
+//     height: 44px;
+//   }
+// }
+.q-item {
+  text-align: left;
+  width: 100%;
+}
+.taskIdHeader {
+  background: #040000;
+  color: #ffffff;
+  height: 44px;
 }
 </style>

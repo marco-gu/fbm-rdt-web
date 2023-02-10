@@ -1,46 +1,30 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable>
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span class="title-text">{{ pageTitle }}</span></q-item-section
-        >
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <q-separator color="grey-5" />
-      <div class="search q-pa-sm" v-show="!isEditMode">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("dataManagement.data_management_header") }}
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
+      <div class="search">
         <q-input
           v-model="search"
           outlined
           dense
-          :placeholder="searchPlaceHolder"
+          :placeholder="$t('common.search')"
           clearable
         >
-          <template v-slot:append>
+          <template v-slot:prepend>
             <q-icon name="search" />
           </template>
         </q-input>
       </div>
-      <!-- <div class="status q-pa-xs" style="text-align: left">
-        <q-btn-dropdown flat :label="statusLabel">
-          <q-list>
-            <q-item clickable v-close-popup @click="onSelectStatus('pending')">
-              <q-item-section>{{ pendingLabel }}</q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup @click="onSelectStatus('finished')">
-              <q-item-section>{{ finishedLabel }}</q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup @click="onSelectStatus('uploaded')">
-              <q-item-section>{{ uploadLabel }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-      </div> -->
     </div>
     <div class="data-list-container" v-if="isEditMode">
       <q-list v-for="(item, index) in scanDataListDisplay" :key="index">
@@ -161,6 +145,29 @@
         @click="cancelEditMode"
       />
     </div>
+    <q-dialog v-model="dialogVisible" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">{{ dialogMessage }}</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="Confirm"
+            color="primary"
+            v-close-popup
+            @click="onConfirm"
+          />
+          <q-btn
+            flat
+            :label="cancelLabel"
+            color="primary"
+            v-close-popup
+            @click="onClose"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -177,6 +184,13 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
+const enum UploadAlertMsg {
+  MATCHED = "CIDs all matched",
+  PARTIALLY = "CIDs partially matched",
+  EXCEED = "Scanned carton number exceed expected carton number",
+}
 const DataManagementView = defineComponent({
   methods: {
     home() {
@@ -203,6 +217,8 @@ const DataManagementView = defineComponent({
     const statusLabel = ref("");
     const uploadLabel = ref("");
     const uploadedLabel = ref("");
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
       i18n.category.value = "DataManagementView";
@@ -216,6 +232,8 @@ const DataManagementView = defineComponent({
       uploadLabel.value = i18n.$t("uploadLabel");
       uploadedLabel.value = i18n.$t("uploadedLabel");
     });
+    const dialogVisible = ref(false);
+    const dialogMessage = ref("");
     onMounted(() => {
       getScanDataList();
     });
@@ -280,25 +298,53 @@ const DataManagementView = defineComponent({
     const handleUpload = () => {
       let taskIdList = getSelectedTaskIdList();
       if (taskIdList.length > 0) {
-        const args = {
-          taskIdList: taskIdList,
-        };
-        bridge.call("uploadScanData", args, (res: string) => {
-          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            popupSuccessMsg($q, "Successfully uploaded");
-            isEditMode.value = false;
-            getScanDataList();
-          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            i18n.category.value = "MessageCode";
-            const message = i18n.$t(androidResponse.messageCode);
-            popupErrorMsg($q, message);
+        scanDataListDisplay.value.forEach((item: any) => {
+          if (item["isSelected"]) {
+            let alertMessage = "";
+            const scannedCartonNumber = item["scannedCartonNumber"];
+            const allCartonNumber = item["allCartonNumber"];
+            if (scannedCartonNumber == allCartonNumber) {
+              alertMessage = UploadAlertMsg.MATCHED;
+            } else if (scannedCartonNumber < allCartonNumber) {
+              alertMessage = UploadAlertMsg.PARTIALLY;
+            } else {
+              alertMessage = UploadAlertMsg.EXCEED;
+            }
+            dialogMessage.value += `${item["taskId"]}: ${alertMessage}.\n`;
           }
         });
+        dialogMessage.value += "\nConfirm to upload?";
+        dialogVisible.value = true;
       } else {
         i18n.category.value = "MessageCode";
         popupErrorMsg($q, "No record selected");
       }
+    };
+    const onConfirm = () => {
+      dialogVisible.value = false;
+      dialogMessage.value = "";
+      uploadScanData();
+    };
+    const onClose = () => {
+      dialogVisible.value = false;
+      dialogMessage.value = "";
+    };
+    const uploadScanData = () => {
+      const args = {
+        taskIdList: getSelectedTaskIdList(),
+      };
+      bridge.call("uploadScanData", args, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          popupSuccessMsg($q, "Successfully uploaded");
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          i18n.category.value = "MessageCode";
+          const message = i18n.$t(androidResponse.messageCode);
+          popupErrorMsg($q, message);
+        }
+        isEditMode.value = false;
+        getScanDataList();
+      });
     };
     const handleDelete = () => {
       let taskIdList = getSelectedTaskIdList();
@@ -326,34 +372,21 @@ const DataManagementView = defineComponent({
     const cancelEditMode = () => {
       isEditMode.value = false;
     };
-    // const onSelectStatus = (item: string) => {
-    //   status.value = item;
-    //   switch (item) {
-    //     case "pending":
-    //       statusLabel.value = pendingLabel.value;
-    //       break;
-    //     case "finished":
-    //       statusLabel.value = finishedLabel.value;
-    //       break;
-    //     case "uploaded":
-    //       statusLabel.value = uploadedLabel.value;
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // };
     return {
       back,
       cancelEditMode,
       cancelLabel,
       deleteLabel,
+      dialogMessage,
+      dialogVisible,
       finishedLabel,
       handleDelete,
       handleHold,
       handleUpload,
       isEditMode,
       onClickScanTask,
-      // onSelectStatus,
+      onClose,
+      onConfirm,
       pageTitle,
       pendingLabel,
       router,
@@ -366,31 +399,33 @@ const DataManagementView = defineComponent({
       uploadLabel,
       uploaded,
       finished,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default DataManagementView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100vh;
-  position: relative;
-}
-.header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background-color: #ffffff;
-  z-index: 1;
-  .q-item {
-    background-color: #ffffff;
-    height: 60px;
-    width: 100%;
-  }
-  .title-text {
-    font-size: 21px;
-  }
-}
+// .wrapper {
+//   height: 100vh;
+//   position: relative;
+// }
+// .header {
+//   position: sticky;
+//   top: 0;
+//   width: 100%;
+//   background-color: #ffffff;
+//   z-index: 1;
+//   .q-item {
+//     background-color: #ffffff;
+//     height: 60px;
+//     width: 100%;
+//   }
+//   .title-text {
+//     font-size: 21px;
+//   }
+// }
 .bottom {
   position: fixed;
   bottom: 0px;

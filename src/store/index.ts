@@ -6,6 +6,7 @@ import {
   useStore as baseUseStore,
 } from "vuex";
 import profileModule from "./module/profile.module";
+import languageModule from "./module/language.module";
 
 import RootState, { State } from "./state";
 
@@ -16,6 +17,7 @@ export default createStore({
   actions: {},
   modules: {
     profileModule,
+    languageModule,
   },
   strict: debug,
   plugins: debug ? [createLogger()] : [],

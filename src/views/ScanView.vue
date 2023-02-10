@@ -1,14 +1,17 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-toolbar class="common-toolbar">
-        <q-btn flat round dense icon="arrow_back" @click="back" />
-        <q-toolbar-title :shrink="false">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
           {{ $t("lp.scan") }}
-        </q-toolbar-title>
-        <q-space />
-        <q-btn flat round dense icon="home" @click="home" />
-      </q-toolbar>
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
     </div>
     <div class="container">
       <div class="scan-card">
@@ -49,6 +52,8 @@
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import bridge from "dsbridge";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 type ViewElement = {
   key: string;
   value: string;
@@ -64,6 +69,8 @@ const ScanView = defineComponent({
     const total = ref(0);
     const views = ref([] as ViewElement[]);
     const data = ref();
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     onMounted(() => {
       data.value = route.params as any;
       for (const key in data.value) {
@@ -133,43 +140,33 @@ const ScanView = defineComponent({
       back,
       home,
       views,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default ScanView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100vh;
-  .header {
-    position: sticky;
-    top: 0;
-    width: 100%;
-    // height: 60px;
-    z-index: 1;
-    background-image: url("../assets/images/lns_bg.png");
-    background-size: cover;
-  }
-  .container {
-    padding: 0 20px;
-  }
-  .button-bottom {
-    position: fixed;
-    bottom: 10px;
-    width: calc(100% - 40px);
-  }
-  .section-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #ffffff;
-    box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-    border-radius: 5px;
-    padding: 10px 15px;
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: #757575;
-  }
+.container {
+  padding: 0 20px;
+}
+.button-bottom {
+  position: fixed;
+  bottom: 20px;
+  width: calc(100% - 40px);
+}
+.section-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #757575;
 }
 
 .scan-card {

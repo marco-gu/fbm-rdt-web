@@ -1,6 +1,19 @@
 <template>
   <div class="wrapper">
     <div class="header">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("setting.setting_header") }}
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
+    </div>
+    <!-- <div class="header">
       <q-item clickable style="width: 100%">
         <q-item-section avatar @click="back">
           <q-icon name="arrow_back" />
@@ -12,7 +25,7 @@
           <q-icon name="home" />
         </q-item-section>
       </q-item>
-    </div>
+    </div> -->
     <q-separator color="grey-5" />
     <div class="setting-list-container">
       <q-list>
@@ -67,14 +80,14 @@
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
-        <q-item>
+        <q-item clickable @click="goSoftwareUpdate">
           <q-item-section style="text-align: left">
             <q-item-label>{{ softwareUpdateLabel }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-btn flat dense icon-right="chevron_right">{{
-              softwareUpdate
-            }}</q-btn>
+            <q-btn flat dense icon-right="chevron_right"
+              >V {{ softwareUpdate }}</q-btn
+            >
           </q-item-section>
         </q-item>
         <q-separator color="grey-5" />
@@ -89,6 +102,8 @@ import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import { useI18n } from "@/plugin/i18nPlugins";
 import { onMounted, ref, watch } from "vue";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 export default {
   name: "SettingView",
   components: {},
@@ -109,9 +124,11 @@ export default {
     const lastProfileSyncTimeLabel = ref("");
     const lastProfileSyncTime = ref("2015-03-03 14:20:11");
     const softwareUpdateLabel = ref("");
-    const softwareUpdate = ref("V 1.0.1");
+    const softwareUpdate = ref("");
     const username = ref("");
     const password = ref("");
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     bridge.call("getRingVoice", null, (res: string) => {
       if (res) {
         ringVoice.value = res;
@@ -146,6 +163,12 @@ export default {
           password.value = res;
         }
       });
+      // bridge.call("getCurrentVersion", null, (res: string) => {
+      //   if (res) {
+      //     softwareUpdate.value = res;
+      //   } else {
+      //   }
+      // });
     });
     const back = () => {
       router.push({
@@ -182,47 +205,59 @@ export default {
         query: { ringVoice: ringVoice.value },
       });
     };
+    const goSoftwareUpdate = () => {
+      // router.push({
+      //   path: "/softwareUpdate",
+      //   query: { softwareUpdate: softwareUpdate.value },
+      // });
+    };
     return {
-      router,
-      home,
-      goResetPwd,
-      goLanguage,
-      ringVoiceLabel,
-      ringVoiceDisplay,
-      languageLabel,
-      language,
-      scanningDeviceLabel,
-      scanningDevice,
-      resetPasswordLabel,
-      lastProfileSyncTimeLabel,
-      lastProfileSyncTime,
-      softwareUpdateLabel,
-      softwareUpdate,
       back,
-      settingTitle,
+      goLanguage,
+      goResetPwd,
       goRingVoice,
       goScanningDevice,
+      goSoftwareUpdate,
+      home,
+      languageLabel,
+      language,
+      lastProfileSyncTimeLabel,
+      lastProfileSyncTime,
+      resetPasswordLabel,
+      ringVoiceLabel,
+      ringVoiceDisplay,
+      router,
+      scanningDeviceLabel,
+      scanningDevice,
+      settingTitle,
+      softwareUpdateLabel,
+      softwareUpdate,
+      homeIcon,
+      arrowIcon,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: rgb(233, 229, 229);
-  .header {
-    display: flex;
-    background: #fff;
-    justify-content: space-around;
-    height: 60px;
-    align-items: center;
-  }
-  .q-item {
-    background-color: #ffffff;
-    height: 50px;
-    width: 100%;
-  }
+// .wrapper {
+//   display: flex;
+//   flex-direction: column;
+//   height: 100vh;
+//   background: rgb(233, 229, 229);
+//   .header {
+//     display: flex;
+//     background: #fff;
+//     justify-content: space-around;
+//     height: 60px;
+//     align-items: center;
+//   }
+//   .q-item {
+//     background-color: #ffffff;
+//     height: 50px;
+//     width: 100%;
+//   }
+// }
+.q-item {
+  height: 50px;
 }
 </style>

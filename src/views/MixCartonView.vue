@@ -1,6 +1,16 @@
 <template>
   <div class="wrapper">
     <div class="header">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("carton.mix_carton_header") }}
+        </div>
+      </div>
+    </div>
+    <!-- <div class="header">
       <q-item clickable style="width: 100%">
         <q-item-section avatar @click="back()">
           <q-icon name="arrow_back" />
@@ -9,14 +19,13 @@
           <span style="font-size: 21px">Mix Carton</span>
         </q-item-section>
       </q-item>
-    </div>
-    <q-separator color="grey-5" />
+    </div> -->
     <div class="carton-info">
       <span>{{ cartonID }}</span>
 
       <span>Item count: {{ itemCount }}</span>
     </div>
-    <q-form style="background: #fff" @submit="onSubmit">
+    <q-form @submit="onSubmit">
       <div v-for="(item, i) in pageViews" :key="i">
         <div v-if="item.display == 1">
           <div
@@ -81,6 +90,8 @@ import {
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, ref } from "vue";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const MixCartonView = defineComponent({
   components: {
     DialogComponent,
@@ -95,6 +106,8 @@ const MixCartonView = defineComponent({
     let firstRender = false;
     const completeMixCarton = ref(false);
     let mixCartonView = {} as CartonDetailAttribute;
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     bridge.register("closeMixCarton", () => {
       back();
     });
@@ -270,30 +283,33 @@ const MixCartonView = defineComponent({
       validPaste,
       scan,
       dialogVisible,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default MixCartonView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100vh;
-  display: flex;
-  flex-flow: column;
-  background: rgb(233, 229, 229);
-}
-.header {
-  display: flex;
-  background: #fff;
-  justify-content: space-around;
-  height: 60px;
-  align-items: center;
-}
+// .wrapper {
+//   height: 100vh;
+//   display: flex;
+//   flex-flow: column;
+//   background: rgb(233, 229, 229);
+// }
+// .header {
+//   display: flex;
+//   background: #fff;
+//   justify-content: space-around;
+//   height: 60px;
+//   align-items: center;
+// }
 .carton-info {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 60px;
+  width: 100%;
   background: #00243d;
   color: #fff;
   flex-flow: column;

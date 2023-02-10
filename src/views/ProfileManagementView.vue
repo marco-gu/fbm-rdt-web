@@ -1,6 +1,32 @@
 <template>
   <div class="wrapper">
     <div class="header">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("profile.profile") }}
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
+      <div class="search">
+        <q-input
+          v-model="search"
+          outlined
+          dense
+          :placeholder="$t('common.search')"
+          clearable
+        >
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </div>
+    </div>
+    <!-- <div class="header">
       <q-item clickable>
         <q-item-section avatar @click="back">
           <q-icon name="arrow_back" />
@@ -26,7 +52,7 @@
           </template>
         </q-input>
       </div>
-    </div>
+    </div> -->
     <div class="profile-list-container" v-if="isEditMode">
       <q-list v-for="(item, index) in profileListDisplay" :key="index">
         <q-item>
@@ -87,7 +113,9 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import { useI18n } from "@/plugin/i18nPlugins";
-import { popupErrorMsg } from "@/plugin/popupPlugins";
+import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const ProfileManagementView = defineComponent({
   setup() {
     const $q = useQuasar();
@@ -96,11 +124,14 @@ const ProfileManagementView = defineComponent({
     const search = ref("");
     const isEditMode = ref(false);
     let result: ProfileMaster[] = [];
+    let isFirstSync = true;
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const pageTitle = ref("");
     const searchPlaceHolder = ref("");
     const deleteLabel = ref("");
     const cancelLabel = ref("");
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
       i18n.category.value = "ProfileManagementView";
@@ -122,12 +153,22 @@ const ProfileManagementView = defineComponent({
         result = JSON.parse(res) as ProfileMaster[];
         profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
         if (result.length === 0) {
-          $q.dialog({
-            title: "Sync Profile",
-            message: "Please synchronize the latest profiles",
-          }).onOk(() => {
-            refresh(() => void 0);
-          });
+          if (isFirstSync) {
+            $q.dialog({
+              title: "Sync Profile",
+              message: "Please synchronize the latest profiles",
+              noBackdropDismiss: true,
+            }).onOk(() => {
+              refresh(() => void 0);
+            });
+          } else {
+            $q.dialog({
+              title: "Sync Profile",
+              message: "No profile found for this user.",
+            }).onCancel(() => {
+              void 0;
+            });
+          }
         } else {
           sortProfileList(profileListDisplay.value);
         }
@@ -152,6 +193,8 @@ const ProfileManagementView = defineComponent({
           >;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             getProfileList();
+            popupSuccessMsg($q, "Synchronize completed!");
+            isFirstSync = false;
             done();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
             i18n.category.value = "MessageCode";
@@ -229,38 +272,49 @@ const ProfileManagementView = defineComponent({
       router,
       search,
       searchPlaceHolder,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default ProfileManagementView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100vh;
-  position: relative;
-  .header {
-    position: sticky;
-    top: 0;
-    width: 100%;
-    background-color: #ffffff;
-    z-index: 1;
-    .q-item {
-      background-color: #ffffff;
-      height: 60px;
-      width: 100%;
-    }
-    .title-text {
-      font-size: 21px;
-    }
-  }
-  .bottom {
-    position: fixed;
-    bottom: 0px;
-    display: flex;
-    background: #42b0d5;
-    color: white;
-    width: 100%;
-    height: 50px;
-  }
+// .wrapper {
+//   height: 100vh;
+//   position: relative;
+//   .header {
+//     position: sticky;
+//     top: 0;
+//     width: 100%;
+//     background-color: #ffffff;
+//     z-index: 1;
+//     .q-item {
+//       background-color: #ffffff;
+//       height: 60px;
+//       width: 100%;
+//     }
+//     .title-text {
+//       font-size: 21px;
+//     }
+//   }
+//   .bottom {
+//     position: fixed;
+//     bottom: 0px;
+//     display: flex;
+//     background: #42b0d5;
+//     color: white;
+//     width: 100%;
+//     height: 50px;
+//   }
+// }
+.bottom {
+  position: fixed;
+  bottom: 0px;
+  display: flex;
+  background: #42b0d5;
+  color: white;
+  width: 100%;
+  height: 50px;
 }
 </style>

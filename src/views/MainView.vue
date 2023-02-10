@@ -86,8 +86,7 @@ export default {
   position: relative;
 }
 .logo-container {
-  margin-bottom: 0;
-  height: 120px;
+  height: 140px;
   .logo-image {
     max-width: 90%;
   }
@@ -103,14 +102,14 @@ export default {
 
 .card {
   background-color: #ffffff;
-  width: 75%;
+  width: 76%;
   height: 130px;
   margin: 25px auto;
   box-shadow: 4px 4px 12px 2px rgba(0, 0, 0, 0.12);
   display: flex;
   border-radius: 5px;
   justify-content: center;
-  padding: 0 10px;
+  padding: 25px 15px;
   &:first-child {
     margin-top: 0px;
   }
@@ -139,7 +138,7 @@ export default {
     }
     .sub-title {
       text-align: left;
-      margin-top: 5px;
+      margin-top: 8px;
       color: #000000;
       font-size: 17px;
       line-height: 20px;

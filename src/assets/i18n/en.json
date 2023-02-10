@@ -6,6 +6,9 @@
         "E91-01-0004": "Please enter your username (UID)",
         "E91-01-0005": "Please enter your password",
         "E91-02-0001": "Email does not exist!",
+        "E92-01-0001": "Duplicate Carton ID",
+        "E92-02-0001": "Failed to download the latest version!",
+        "E92-02-0002": "Failed to install the latest version!",
         "E92-99-0001": "Network is not available!",
         "E92-99-0002": "Please contact Administrator!",
         "E92-99-0003": "Token Expired",
@@ -34,7 +37,7 @@
         "E93-05-0006": "No Record is found!",
         "E93-05-0007": "Offline input completed",
         "E93-06-0001": "Logout Success!",
-        "SYS-01-001": "Network not available"
+        "SYS-01-001": "System Error"
     },
     "common": {
         "confirm": "Confirm",
@@ -79,7 +82,7 @@
         "logout": "Logout"
     },
     "profile": {
-        "profile": "Client Profile",
+        "profile": "My Client Profile",
         "sync_complete": "Synchronize completed!",
         "sync_profile": "Sync Profile",
         "sync_latest": "Please synchronize the latest profiles",
@@ -88,13 +91,14 @@
     },
     "lp": {
         "lp_search": "LP Search",
-        "generate": "Genrate",
+        "generate": "Generate",
         "scan_type": "Scan Type",
         "scan": "Scan",
         "scanned": "Scanned",
         "total_number": "Total Number",
         "start_scan": "Start Scan Carton ID",
-        "onlineBottomButton": "Genrate"
+        "lp_list": "LP List",
+        "lp_detail_list": "LP Detail List"
     },
     "continue": {
         "job_list": "My Job List",
@@ -104,5 +108,18 @@
     "image": {
         "access_image_header": "Cargo Images",
         "access_image_button": "Add"
+    },
+    "dataManagement": {
+        "data_management_header": "Data Management"
+    },
+    "setting": {
+        "setting_header": "Settings",
+        "setting_ringVoice": "Ring voice",
+        "setting_language": "Language",
+        "setting_scanningDevice": "Scanning device"
+    },
+    "carton": {
+        "mix_carton_header": "Mix Carton",
+        "carton_detail_header": "Carton Detail"
     }
 }

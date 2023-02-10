@@ -1,6 +1,19 @@
 <template>
-  <div class="container">
-    <div class="common-header">
+  <div class="wrapper">
+    <div class="header">
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <q-img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("login.change_password") }}
+        </div>
+        <div class="common-toolbar-right">
+          <q-img :src="homeIcon" @click="home" />
+        </div>
+      </div>
+    </div>
+    <!-- <div class="common-header">
       <q-item clickable>
         <q-item-section avatar @click="back">
           <q-icon name="arrow_back" />
@@ -11,7 +24,7 @@
           </span>
         </q-item-section>
       </q-item>
-    </div>
+    </div> -->
     <div class="content-card">
       <q-form @submit="onSubmit">
         <div class="input-title">{{ $t("login.current_password") }}</div>
@@ -100,7 +113,8 @@ import md5 from "md5";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { useI18n } from "vue-i18n";
-
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const ResetPwdView = defineComponent({
   setup() {
     const route = useRoute();
@@ -114,6 +128,8 @@ const ResetPwdView = defineComponent({
     const initPwd = ref();
     const from = ref("");
     const isPwd = ref(true);
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     onMounted(() => {
       from.value = route.params.from as string;
       username.value = route.params.username as string;
@@ -241,18 +257,20 @@ const ResetPwdView = defineComponent({
       initPwdRule,
       newPwdRule,
       reNewPwdRule,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default ResetPwdView;
 </script>
 <style lang="scss" scoped>
-.container {
-  background-color: rgba(0, 0, 0, 0);
-  color: #000000;
-  position: relative;
-  height: 100vh;
-}
+// .container {
+//   background-color: rgba(0, 0, 0, 0);
+//   color: #000000;
+//   position: relative;
+//   height: 100vh;
+// }
 .content-card {
   padding: 0 20px;
   text-align: left;

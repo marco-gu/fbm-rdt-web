@@ -27,7 +27,7 @@
             "
           >
             <span style="padding-left: 1rem; color: black">
-              {{ item.displayName }}
+              {{ item.displayFieldName }}
             </span>
             <q-input
               ref="inputRef"
@@ -42,10 +42,7 @@
               style="padding: 0px 16px"
             >
               <template v-slot:append>
-                <q-avatar
-                  v-if="item.scan == 1"
-                  @click="scan(item.dataFieldName)"
-                >
+                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
                   <q-icon name="qr_code_scanner" />
                 </q-avatar>
               </template>
@@ -93,7 +90,12 @@ import { useI18n } from "@/plugin/i18nPlugins";
 import { useRoute, useRouter } from "vue-router";
 import { defineComponent, onMounted, Ref, ref } from "vue";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
-import { ProfileElementLevel, composeReg } from "@/utils/profile.render";
+import {
+  ViewDisplayAttribute,
+  composeViewElement,
+  ProfileElementLevel,
+  composeReg,
+} from "@/utils/profile.render";
 import { ProfileDisplayAttribute, MixCartonProduct } from "@/models/profile";
 import {
   AndroidResponse,
@@ -103,17 +105,7 @@ const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
 }
-type ViewElement = {
-  dataFieldName: string;
-  displayName: string;
-  mandatory: number;
-  model: Ref<unknown>;
-  reg: RegExp;
-  scan: number;
-  length: number;
-  editable: boolean;
-  valid: (val: string) => Promise<unknown>;
-};
+
 const DataManagementMixCartonView = defineComponent({
   methods: {
     home() {
@@ -130,7 +122,7 @@ const DataManagementMixCartonView = defineComponent({
     const cartonId = ref(route.query.cartonId);
     const scanType = ref("");
     const inputRef = ref(null);
-    const dynamicViews: Ref<ViewElement[]> = ref([]);
+    const dynamicViews: Ref<ViewDisplayAttribute[]> = ref([]);
     const mixCartonProduct = ref();
     const profileAttrListDisplay: Ref<ProfileDisplayAttribute[]> = ref([]);
     const pageTitle = ref("");
@@ -169,88 +161,54 @@ const DataManagementMixCartonView = defineComponent({
           (attr: ProfileDisplayAttribute) => {
             if (
               attr.type == scanType.value &&
-              attr.level == ProfileElementLevel.CARTON_UPC &&
-              (attr.dataFieldName == "UPC" ||
-                attr.dataFieldName == "Color" ||
-                attr.dataFieldName == "Size" ||
-                attr.dataFieldName == "Quantity")
+              attr.level == ProfileElementLevel.CARTON_UPC
             ) {
-              dynamicViews.value.push(composeViewElements(attr));
+              const element = composeViewElement(attr);
+
+              switch (element.fieldName) {
+                case "UPC":
+                  element.model.value = mixCartonProduct.value.upc;
+                  break;
+                case "Color":
+                  element.model.value = mixCartonProduct.value.color;
+                  break;
+                case "Style":
+                  element.model.value = mixCartonProduct.value.style;
+                  break;
+                case "Size":
+                  element.model.value = mixCartonProduct.value.size;
+                  break;
+                case "Quantity":
+                  element.model.value = mixCartonProduct.value.quantity;
+                  break;
+                default:
+                  break;
+              }
+
+              dynamicViews.value.push(element);
             }
           }
         );
       });
     };
-    const composeViewElements = (attr: ProfileDisplayAttribute) => {
-      const viewElement = {} as ViewElement;
-      viewElement.dataFieldName = attr.dataFieldName;
-      viewElement.displayName = attr.dataFieldName;
-      viewElement.mandatory = attr.mandatory;
-      viewElement.model = ref("");
-      viewElement.reg = new RegExp(composeReg(attr.format));
-      viewElement.scan = attr.scan == "1" ? 1 : 0;
-      viewElement.length = Math.abs(attr.maxLength);
-      viewElement.editable = true;
 
-      switch (viewElement.dataFieldName) {
-        case "UPC":
-          viewElement.model.value = mixCartonProduct.value.upc;
-          viewElement.displayName = "UPC code";
-          break;
-        case "Color":
-          viewElement.model.value = mixCartonProduct.value.color;
-          break;
-        case "Size":
-          viewElement.model.value = mixCartonProduct.value.size;
-          break;
-        case "Quantity":
-          viewElement.model.value = mixCartonProduct.value.quantity;
-          viewElement.displayName = "QTY";
-          break;
-        default:
-          break;
-      }
-
-      viewElement.valid = (val: string) => {
-        return new Promise((resolve) => {
-          if (viewElement.mandatory == 1 && !val) {
-            resolve(`Please input ${viewElement.dataFieldName}`);
-          } else {
-            if (attr.maxLength < 0 && val.length > Math.abs(attr.maxLength)) {
-              resolve(
-                `Please input not more than ${Math.abs(
-                  attr.maxLength
-                )} charactors`
-              );
-            } else if (attr.maxLength > 0 && val.length != attr.maxLength) {
-              resolve(
-                `Please input not more or less than ${attr.maxLength} charactors`
-              );
-            } else if (!viewElement.reg.test(val)) {
-              resolve("Please input correct format");
-            } else {
-              resolve(true);
-            }
-          }
-        });
-      };
-      return viewElement;
-    };
-    const scan = (dataFieldName: string) => {
+    const scan = (fieldName: string) => {
       const reqParams = {
         scanType: scanType.value,
-        fieldName: dataFieldName,
+        fieldName: fieldName,
       };
       bridge.call("scanForInput", reqParams);
     };
+
     bridge.register("getScanResult", (res: string) => {
       dynamicViews.value.forEach((view: any) => {
-        const key = scanType.value + "_" + view.dataFieldName;
+        const key = scanType.value + "_" + view.fieldName;
         if (key == res.substring(0, res.lastIndexOf("_"))) {
           view.model = res.substring(res.lastIndexOf("_") + 1);
         }
       });
     });
+
     const back = () => {
       router.push({
         path: "/dataManagementMixCartonList",
@@ -260,6 +218,7 @@ const DataManagementMixCartonView = defineComponent({
         },
       });
     };
+
     const handleSave = () => {
       const args = composeSaveApiArgs();
       bridge.call("updateCartonProduct", args, (res: string) => {
@@ -281,9 +240,10 @@ const DataManagementMixCartonView = defineComponent({
         color: mixCartonProduct.value.color,
         size: mixCartonProduct.value.size,
         qty: mixCartonProduct.value.qty,
+        style: mixCartonProduct.value.style,
       };
-      dynamicViews.value.forEach((viewElement: ViewElement) => {
-        switch (viewElement.dataFieldName) {
+      dynamicViews.value.forEach((viewElement: ViewDisplayAttribute) => {
+        switch (viewElement.fieldName) {
           case "UPC":
             args.upc = viewElement.model;
             break;
@@ -295,6 +255,9 @@ const DataManagementMixCartonView = defineComponent({
             break;
           case "Quantity":
             args.qty = viewElement.model;
+            break;
+          case "Style":
+            args.style = viewElement.model;
             break;
           default:
             break;
