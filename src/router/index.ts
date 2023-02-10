@@ -153,7 +153,7 @@ const routes: Array<RouteRecordRaw> = [
     component: CargoImageView,
   },
   {
-    path: "/softwareUpdate",
+    path: "/software-update",
     name: "SoftwareUpdateView",
     component: SoftwareUpdateView,
   },

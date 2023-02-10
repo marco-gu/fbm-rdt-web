@@ -171,8 +171,9 @@ export default {
       });
     };
     const goSoftwareUpdate = () => {
-      // TODO software update
-      void 0;
+      router.push({
+        path: "/software-update",
+      });
     };
     return {
       back,
