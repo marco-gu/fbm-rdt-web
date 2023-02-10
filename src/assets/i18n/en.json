@@ -113,7 +113,12 @@
         "access_image_button": "Add"
     },
     "dataManagement": {
-        "data_management_header": "Data Management"
+        "data_management_header": "Data Management",
+        "edit_group_title": "Data Management/Group",
+        "edit_detail_title": "Data Management/Detail",
+        "mix_title": "Data Management/Mix",
+        "no_record": "No data found.",
+        "upload": "upload"
     },
     "setting": {
         "setting_header": "Settings",
