@@ -40,11 +40,22 @@
       </q-item>
       <q-separator color="grey-5" />
       <div class="search q-pa-sm" v-show="!isEditMode">
+=======
+      <q-toolbar class="common-toolbar">
+        <q-btn flat round dense icon="arrow_back" @click="home" />
+        <q-toolbar-title :shrink="false">
+          {{ $t("profile.profile") }}
+        </q-toolbar-title>
+        <q-space />
+        <q-btn flat round dense icon="home" @click="home" />
+      </q-toolbar>
+      <div class="search" v-show="!isEditMode">
+>>>>>>> 8179849ab2723795a32c9223611c5b17a276271a
         <q-input
           v-model="search"
           outlined
           dense
-          :placeholder="searchPlaceHolder"
+          :placeholder="$t('common.search')"
           clearable
         >
           <template v-slot:append>
@@ -55,49 +66,54 @@
     </div> -->
     <div class="profile-list-container" v-if="isEditMode">
       <q-list v-for="(item, index) in profileListDisplay" :key="index">
-        <q-item>
-          <q-item-section side>
-            <q-checkbox v-model="item.isSelected" />
-          </q-item-section>
-          <q-item-section style="text-align: left">
-            <q-item-label>{{ item.profileCode }}</q-item-label>
-            <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-separator spaced inset />
+        <div class="edit-item-container row">
+          <q-checkbox
+            class="item-checkbox"
+            color="black"
+            v-model="item.isSelected"
+          />
+          <q-item class="list-item-edit">
+            <q-item-section class="item-labels">
+              <q-item-label>{{ item.profileCode }}</q-item-label>
+              <q-item-label class="sub-text">{{
+                item.updateDatetime
+              }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </div>
       </q-list>
     </div>
     <div class="profile-list-container" v-else v-touch-hold:1800="handleHold">
       <q-pull-to-refresh @refresh="refresh">
         <q-list v-for="(item, index) in profileListDisplay" :key="index">
-          <q-item>
-            <q-item-section style="text-align: left">
+          <q-item class="list-item">
+            <q-item-section class="item-labels">
               <q-item-label>{{ item.profileCode }}</q-item-label>
-              <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
+              <q-item-label class="sub-text">{{
+                item.updateDatetime
+              }}</q-item-label>
             </q-item-section>
           </q-item>
-          <q-separator spaced inset />
         </q-list>
       </q-pull-to-refresh>
     </div>
-    <div class="bottom" v-show="isEditMode">
+    <div class="button-container" v-show="isEditMode">
       <q-btn
         no-caps
-        style="width: 48%"
+        style="width: 50%"
         flat
         push
-        :label="deleteLabel"
-        @click="deleteProfile"
+        :label="$t('common.cancel')"
+        @click="cancelEditMode"
       />
       <q-separator vertical inset color="white" />
       <q-btn
         no-caps
-        style="width: 52%"
+        style="width: 50%"
         flat
-        type="submit"
         push
-        :label="cancelLabel"
-        @click="cancelEditMode"
+        :label="$t('common.delete')"
+        @click="deleteProfile"
       />
     </div>
   </div>
@@ -112,7 +128,7 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { useI18n } from "@/plugin/i18nPlugins";
+import { useI18n } from "vue-i18n";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
@@ -126,20 +142,8 @@ const ProfileManagementView = defineComponent({
     let result: ProfileMaster[] = [];
     let isFirstSync = true;
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
-    const pageTitle = ref("");
-    const searchPlaceHolder = ref("");
-    const deleteLabel = ref("");
-    const cancelLabel = ref("");
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.category.value = "ProfileManagementView";
-      pageTitle.value = i18n.$t("pageTitle");
-      searchPlaceHolder.value = i18n.$t("searchPlaceHolder");
-      deleteLabel.value = i18n.$t("deleteLabel");
-      cancelLabel.value = i18n.$t("cancelLabel");
-    });
     onMounted(() => {
       getProfileList();
     });
@@ -155,16 +159,16 @@ const ProfileManagementView = defineComponent({
         if (result.length === 0) {
           if (isFirstSync) {
             $q.dialog({
-              title: "Sync Profile",
-              message: "Please synchronize the latest profiles",
+              title: i18n.t("profile.sync_profile"),
+              message: i18n.t("profile.sync_latest"),
               noBackdropDismiss: true,
             }).onOk(() => {
               refresh(() => void 0);
             });
           } else {
             $q.dialog({
-              title: "Sync Profile",
-              message: "No profile found for this user.",
+              title: i18n.t("profile.sync_profile"),
+              message: i18n.t("profile.no_profile"),
             }).onCancel(() => {
               void 0;
             });
@@ -193,12 +197,13 @@ const ProfileManagementView = defineComponent({
           >;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             getProfileList();
-            popupSuccessMsg($q, "Synchronize completed!");
+            popupSuccessMsg($q, i18n.t("profile.sync_complete"));
             isFirstSync = false;
             done();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            i18n.category.value = "MessageCode";
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupErrorMsg($q, message);
             done();
           }
@@ -243,14 +248,14 @@ const ProfileManagementView = defineComponent({
             isEditMode.value = false;
             getProfileList();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            i18n.category.value = "MessageCode";
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupErrorMsg($q, message);
           }
         });
       } else {
-        i18n.category.value = "MessageCode";
-        const message = i18n.$t("E93-04-0004");
+        const message = i18n.t("messageCode.E93-04-0004");
         popupErrorMsg($q, message);
       }
     };
@@ -259,11 +264,8 @@ const ProfileManagementView = defineComponent({
     };
     return {
       cancelEditMode,
-      cancelLabel,
       back,
-      deleteLabel,
       deleteProfile,
-      pageTitle,
       handleHold,
       home,
       isEditMode,
@@ -271,7 +273,6 @@ const ProfileManagementView = defineComponent({
       refresh,
       router,
       search,
-      searchPlaceHolder,
       homeIcon,
       arrowIcon,
     };
@@ -280,41 +281,86 @@ const ProfileManagementView = defineComponent({
 export default ProfileManagementView;
 </script>
 <style lang="scss" scoped>
-// .wrapper {
-//   height: 100vh;
-//   position: relative;
-//   .header {
-//     position: sticky;
-//     top: 0;
-//     width: 100%;
-//     background-color: #ffffff;
-//     z-index: 1;
-//     .q-item {
-//       background-color: #ffffff;
-//       height: 60px;
-//       width: 100%;
-//     }
-//     .title-text {
-//       font-size: 21px;
-//     }
-//   }
-//   .bottom {
-//     position: fixed;
-//     bottom: 0px;
-//     display: flex;
-//     background: #42b0d5;
-//     color: white;
-//     width: 100%;
-//     height: 50px;
-//   }
-// }
-.bottom {
-  position: fixed;
-  bottom: 0px;
+.wrapper {
+  height: 100%;
+  position: relative;
+  padding-bottom: 10px;
+}
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  background-image: url("../assets/images/lns_bg.png");
+  background-size: cover;
+  padding-bottom: 10px;
+  .q-item {
+    height: 60px;
+    width: 100%;
+  }
+  .title-text {
+    font-size: 20px;
+  }
+  .search {
+    margin: 0 20px;
+    background-color: #ffffff;
+  }
+}
+.list-item {
+  margin: 0 23px 23px 23px;
+  padding: 8px 15px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  font-size: 15px;
+  .item-labels {
+    text-align: left;
+    color: black;
+    .sub-text {
+      margin-top: 8px;
+      color: #757575;
+    }
+  }
+  &:first-of-type {
+    margin-top: 5px;
+  }
+}
+.edit-item-container {
+  margin: 0 23px 23px 15px;
+  .item-checkbox {
+    margin-right: 8px;
+    border-radius: 3px;
+  }
+  .list-item-edit {
+    width: 87%;
+    padding: 8px 15px;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+    font-size: 15px;
+    .item-labels {
+      text-align: left;
+      color: black;
+      .sub-text {
+        margin-top: 8px;
+        color: #757575;
+      }
+    }
+  }
+  &:first-of-type {
+    margin-top: 5px;
+  }
+}
+.button-container {
   display: flex;
+  position: fixed;
+  margin-left: 23px;
+  bottom: 30px;
+  width: 88%;
+  height: 49px;
+  border-radius: 3px;
   background: #42b0d5;
   color: white;
-  width: 100%;
-  height: 50px;
+  font-size: 20px;
 }
 </style>

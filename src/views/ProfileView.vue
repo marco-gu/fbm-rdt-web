@@ -60,6 +60,7 @@ import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import formateDate from "../utils/formatDate";
 const ProfileView = defineComponent({
   methods: {
     home() {
@@ -87,6 +88,9 @@ const ProfileView = defineComponent({
           getProfileList();
           popupSuccessMsg($q, i18n.t("profile.sync_complete"));
           isFirstSync = false;
+          bridge.call("setProfileLastSyncDate", {
+            formatDate: formateDate(new Date()),
+          });
           done();
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);

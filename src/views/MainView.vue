@@ -5,7 +5,7 @@
     </div>
     <div class="card" @click="goOnline()">
       <div class="image">
-        <q-img no-spinner :src="onlineLogo" width="120px" />
+        <q-img no-spinner :src="onlineLogo" width="100px" />
       </div>
       <div class="content">
         <div class="title">{{ $t("home.pre_validation") }}</div>
@@ -135,6 +135,7 @@ export default {
       font-weight: bold;
       color: #000000;
       font-size: 20px;
+      white-space: nowrap;
     }
     .sub-title {
       text-align: left;
