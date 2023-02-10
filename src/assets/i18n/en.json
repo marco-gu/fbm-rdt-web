@@ -102,5 +102,23 @@
     "job_list": "My Job List",
     "instruction":"Please select one job and continue",
     "no_record": "No jobs found."
+  },
+  "setting": {
+    "ring_voice": "Ring Voice",
+    "language": "Language",
+    "scanning_device": "Scanning Device",
+    "reset_password": "Reset Password",
+    "last_profile_sync_time": "Profile Sync Time",
+    "software_update": "Software update",
+    "current_language": "English",
+    "chinese": "Chinese",
+    "english": "English",
+    "on": "ON",
+    "off": "OFF",
+    "camera": "Camera",
+    "bluetooth": "Bluetooth",
+    "downloadLabel": "Download",
+    "already_latest_version_label": "It is the latest version",
+    "latest_version_label": "The latest version"
   }
 }

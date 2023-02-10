@@ -1,6 +1,6 @@
 {
     "setting": "Setting",
-    "ringVoice": "Ring voice",
+    "ring_voice": "Ring voice",
     "language": "Language",
     "scanningDevice": "Scanning device",
     "resetPassword": "Reset password",
