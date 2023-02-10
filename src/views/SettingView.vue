@@ -173,6 +173,7 @@ export default {
     const goSoftwareUpdate = () => {
       router.push({
         path: "/software-update",
+        query: { softwareUpdate: softwareUpdate.value },
       });
     };
     return {
