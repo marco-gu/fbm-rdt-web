@@ -1,23 +1,25 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px; text-align: left">{{ pageTitle }}</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("setting.software_update") }}
+        </div>
+        <div class="common-toolbar-right">
+          <img :src="homeIcon" @click="home" />
+        </div>
+      </div>
     </div>
     <q-separator color="grey-5" />
     <div v-if="currentVersion == latestVersion">
       <q-item>
         <q-item-section style="text-align: left">
-          <q-item-label>{{ alreadyLatestVersionLabel }}</q-item-label>
+          <q-item-label>{{
+            $t("setting.already_latest_version_label")
+          }}</q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-btn flat dense no-caps>v {{ currentVersion }}</q-btn>
@@ -28,7 +30,9 @@
       <q-list>
         <q-item>
           <q-item-section style="text-align: left">
-            <q-item-label>{{ latestVersionLabel }}</q-item-label>
+            <q-item-label>{{
+              $t("setting.latest_version_label")
+            }}</q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-btn flat dense no-caps>v {{ latestVersion }}</q-btn>
@@ -47,7 +51,7 @@
         flat
         push
         style="width: 100%"
-        :label="downloadLabel"
+        :label="$t('common.download')"
         @click="handleDownload"
       />
     </div>
@@ -57,7 +61,6 @@
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { onMounted, ref } from "vue";
-import { useI18n } from "@/plugin/i18nPlugins";
 import { useRoute, useRouter } from "vue-router";
 import selected from "../assets/icon/selected.svg";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
@@ -65,8 +68,11 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { VersionInfo } from "@/models/profile";
+import { useI18n } from "vue-i18n";
 export default {
   name: "SoftwareUpdateView",
   components: {},
@@ -75,40 +81,30 @@ export default {
     const i18n = useI18n();
     const route = useRoute();
     const router = useRouter();
-    const selectedIcon = selected;
-    const pageTitle = ref("Software update");
     const currentVersion = ref(route.query.softwareUpdate);
-    const alreadyLatestVersionLabel = ref("");
-    const downloadLabel = ref("");
-    const latestVersionLabel = ref("");
     const latestVersion = ref("");
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     // const latestVersionDetail = ref(
     //   "New functions:\n* use face ID to login\nRepair:\n* repair some bugs"
     // );
     const latestVersionDetail = ref("");
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.category.value = "SettingView";
-      i18n.locale.value = res;
-      pageTitle.value = i18n.$t("softwareUpdate");
-      downloadLabel.value = i18n.$t("downloadLabel");
-      latestVersionLabel.value = i18n.$t("latestVersionLabel");
-      alreadyLatestVersionLabel.value = i18n.$t("alreadyLatestVersionLabel");
-    });
+
     onMounted(() => {
-      showLoading($q);
-      bridge.call("getLatestVersion", null, (res: string) => {
-        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
-          latestVersion.value = versionInfo.version;
-          latestVersionDetail.value = versionInfo.detail;
-        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          i18n.category.value = "MessageCode";
-          const message = i18n.$t(androidResponse.messageCode);
-          popupErrorMsg($q, message);
-        }
-        closeLoading($q);
-      });
+      // showLoading($q);
+      // bridge.call("getLatestVersion", null, (res: string) => {
+      //   const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+      //   if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+      //     const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
+      //     latestVersion.value = versionInfo.version;
+      //     latestVersionDetail.value = versionInfo.detail;
+      //   } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+      //     i18n.category.value = "MessageCode";
+      //     const message = i18n.$t(androidResponse.messageCode);
+      //     popupErrorMsg($q, message);
+      //   }
+      //   closeLoading($q);
+      // });
     });
     const back = () => {
       router.push("/setting");
@@ -121,25 +117,21 @@ export default {
       bridge.call("downloadLatestVersion", null, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          i18n.category.value = "MessageCode";
-          const message = i18n.$t(androidResponse.messageCode);
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
         closeLoading($q);
       });
     };
     return {
-      alreadyLatestVersionLabel,
       back,
       currentVersion,
-      downloadLabel,
-      pageTitle,
       handleDownload,
       home,
       latestVersion,
       latestVersionDetail,
-      latestVersionLabel,
-      selectedIcon,
+      homeIcon,
+      arrowIcon,
     };
   },
 };

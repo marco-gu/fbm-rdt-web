@@ -47,7 +47,9 @@
         "receiving": "收货",
         "stuffing": "出货",
         "search": "搜索",
-        "delete": "删除"
+        "delete": "删除",
+        "download": "下载",
+        "ok": "确认"
     },
     "login": {
         "login": "登录",
@@ -79,7 +81,8 @@
         "cargo_image": "货物图像",
         "setting": "设置",
         "user_manual": "用户手册",
-        "logout": "登出"
+        "logout": "登出",
+        "logout_promot": "确认登出吗?"
     },
     "profile": {
         "profile": "用户Profile",
@@ -113,11 +116,25 @@
         "data_management_header": "货物管理"
     },
     "setting": {
-        "setting_header": "设置",
-        "setting_ringVoice": "播放声音",
-        "setting_language": "语言",
-        "setting_scanningDevice": "扫描设备"
-    },
+      "setting_header": "设置",
+      "setting_language": "语言",
+      "ring_voice": "提示音",
+      "language": "语言",
+      "scanning_device": "扫描设备",
+      "reset_password": "重置密码",
+      "last_profile_sync_time": "Profile更新时间",
+      "software_update": "软件更新",
+      "current_language": "简体中文",
+      "chinese": "中文",
+      "english": "英文",
+      "on": "开",
+      "off": "关",
+      "camera": "摄像头",
+      "bluetooth": "蓝牙外接扫描",
+      "download": "下载",
+      "already_latest_version_label": "已经是最新的版本",
+      "latest_version_label": "最新版本"
+  },
     "carton": {
         "mix_carton_header": "混箱",
         "carton_detail_header": "箱子详情"

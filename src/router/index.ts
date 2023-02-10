@@ -9,9 +9,9 @@ import ResetPwdView from "../views/ResetPwdView.vue";
 import MixCartonView from "../views/MixCartonView.vue";
 import bridge from "dsbridge";
 import SettingView from "../views/SettingView.vue";
-import LanguageView from "../views/LanguageView.vue";
-import RingVoiceView from "../views/RingVoiceView.vue";
-import ScanDeviceView from "../views/ScanDeviceView.vue";
+import SettingLanguageView from "../views/SettingLanguageView.vue";
+import SettingRingVoiceView from "../views/SettingRingVoiceView.vue";
+import SettingScanDeviceView from "../views/SettingScanDeviceView.vue";
 import CartonDetailView from "../views/CartonDetailView.vue";
 import ProfileManagementView from "../views/ProfileManagementView.vue";
 import LPListView from "../views/LPListView.vue";
@@ -62,15 +62,6 @@ const routes: Array<RouteRecordRaw> = [
     ],
     component: LpSearchView,
   },
-  // {
-  //   path: "/scan/:id",
-  //   name: "scan",
-  //   children: [
-  //     { path: "online", name: "scanOnline", component: ScanView },
-  //     { path: "offline", name: "scanOffline", component: ScanView },
-  //   ],
-  //   component: ScanView,
-  // },
   {
     path: "/scan",
     name: "scan",
@@ -92,19 +83,19 @@ const routes: Array<RouteRecordRaw> = [
     component: SettingView,
   },
   {
-    path: "/settingLanguage",
+    path: "/setting-language",
     name: "settingLanguage",
-    component: LanguageView,
+    component: SettingLanguageView,
   },
   {
-    path: "/ringVoice",
+    path: "/setting-ring-voice",
     name: "ringVoice",
-    component: RingVoiceView,
+    component: SettingRingVoiceView,
   },
   {
-    path: "/settingScanDevice",
+    path: "/setting-scan-device",
     name: "scanDevice",
-    component: ScanDeviceView,
+    component: SettingScanDeviceView,
   },
   {
     path: "/profileManagement",
@@ -162,7 +153,7 @@ const routes: Array<RouteRecordRaw> = [
     component: CargoImageView,
   },
   {
-    path: "/softwareUpdate",
+    path: "/software-update",
     name: "SoftwareUpdateView",
     component: SoftwareUpdateView,
   },

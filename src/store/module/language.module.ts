@@ -22,7 +22,6 @@ const languageModule: Module<LanguageState, RootState> = {
   mutations: {
     setCurrentLang(state: LanguageState, payload: string) {
       state.currentLang = payload;
-      localStorage.setItem("currentLang", payload);
     },
   },
   namespaced: true,

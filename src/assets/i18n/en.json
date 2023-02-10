@@ -47,7 +47,9 @@
         "receiving": "Receiving",
         "stuffing": "Stuffing",
         "search": "Search",
-        "delete": "Delete"
+        "delete": "Delete",
+        "download": "Download",
+        "ok": "OK"
     },
     "login": {
         "login": "Log in",
@@ -79,7 +81,8 @@
         "cargo_image": "Cargo Image",
         "setting": "Settings",
         "user_manual": "User Manual",
-        "logout": "Logout"
+        "logout": "Logout",
+        "logout_promot": "Are you sure?"
     },
     "profile": {
         "profile": "My Client Profile",
@@ -115,7 +118,6 @@
     "setting": {
         "setting_header": "Settings",
         "setting_language": "Language",
-        "setting_scanningDevice": "Scanning device",
         "ring_voice": "Ring Voice",
         "language": "Language",
         "scanning_device": "Scanning Device",
@@ -129,7 +131,7 @@
         "off": "OFF",
         "camera": "Camera",
         "bluetooth": "Bluetooth",
-        "downloadLabel": "Download",
+        "download": "Download",
         "already_latest_version_label": "It is the latest version",
         "latest_version_label": "The latest version"
     },
