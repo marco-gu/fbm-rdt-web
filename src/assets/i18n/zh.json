@@ -114,11 +114,14 @@
     },
     "dataManagement": {
         "data_management_header": "货物管理",
-        "edit_group_title": "数据管理/组",
-        "edit_detail_title": "数据管理/详情",
+        "group_title": "数据管理/组",
+        "detail_title": "数据管理/详情",
         "mix_title": "数据管理/Mix",
         "no_record": "无数据.",
-        "upload": "上传"
+        "upload": "上传",
+        "group_view": "组视图",
+        "detail_view": "详情视图",
+        "mix": "Mix"
     },
     "setting": {
       "setting_header": "设置",

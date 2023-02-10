@@ -1,20 +1,20 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">{{ pageTitle }}</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <div class="task-id">
-        <span>{{ taskId }}</span>
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("dataManagement.mix_title") }}
+        </div>
+        <div class="common-toolbar-right">
+          <img :src="homeIcon" @click="home" />
+        </div>
       </div>
+    </div>
+    <div class="task-id">
+      <span>{{ taskId }}</span>
     </div>
     <q-form @submit="handleSave">
       <div class="mix-carton-container">
@@ -57,7 +57,7 @@
           style="width: 48%"
           flat
           push
-          :label="saveLabel"
+          :label="$t('common.save')"
           type="submit"
         />
         <q-separator vertical inset color="white" />
@@ -66,7 +66,7 @@
           style="width: 48%"
           flat
           push
-          :label="deleteLabel"
+          :label="$t('common.delete')"
           @click="handleDelete"
         />
         <q-separator vertical inset color="white" />
@@ -76,7 +76,7 @@
           flat
           type="submit"
           push
-          :label="cancelLabel"
+          :label="$t('common.cancel')"
           @click="back"
         />
       </div>
@@ -101,6 +101,8 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
@@ -129,14 +131,9 @@ const DataManagementMixCartonView = defineComponent({
     const cancelLabel = ref("");
     const deleteLabel = ref("");
     const saveLabel = ref("");
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.category.value = "DataManagementView";
-      pageTitle.value = i18n.$t("pageTitle");
-      cancelLabel.value = i18n.$t("cancelLabel");
-      deleteLabel.value = i18n.$t("deleteLabel");
-      saveLabel.value = i18n.$t("saveLabel");
-    });
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
+
     onMounted(() => {
       if (route.query.taskId) {
         scanType.value =
@@ -300,6 +297,8 @@ const DataManagementMixCartonView = defineComponent({
       saveLabel,
       scan,
       taskId,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
@@ -307,36 +306,51 @@ export default DataManagementMixCartonView;
 </script>
 <style lang="scss" scoped>
 .wrapper {
-  height: 100vh;
+  height: 100%;
   position: relative;
-  .header {
-    display: sticky;
-    top: 0;
-    width: 100%;
-    background-color: #ffffff;
-    z-index: 1;
-  }
+  padding-bottom: 20px;
+  min-height: 100vh;
+}
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  background-image: url("../assets/images/lns_bg.png");
+  background-size: cover;
+  padding-bottom: 10px;
   .q-item {
-    background-color: #ffffff;
     height: 60px;
     width: 100%;
   }
-  .task-id {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    background: #00243d;
-    color: #fff;
+  .title-text {
+    font-size: 20px;
   }
-  .bottom {
-    position: fixed;
-    bottom: 0px;
-    display: flex;
-    background: #42b0d5;
-    color: white;
-    width: 100%;
-    height: 50px;
+  .search {
+    margin: 0 20px;
+    background-color: #ffffff;
   }
+}
+.q-item {
+  background-color: #ffffff;
+  height: 60px;
+  width: 100%;
+}
+.task-id {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  background: #00243d;
+  color: #fff;
+}
+.bottom {
+  position: fixed;
+  bottom: 0px;
+  display: flex;
+  background: #42b0d5;
+  color: white;
+  width: 100%;
+  height: 50px;
 }
 </style>

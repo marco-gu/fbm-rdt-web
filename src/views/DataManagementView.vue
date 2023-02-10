@@ -251,7 +251,7 @@ const DataManagementView = defineComponent({
     const searchPlaceHolder = ref("");
     const statusLabel = ref("");
     const uploadLabel = ref("");
-    const uploadedLabel = ref("");
+
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
 

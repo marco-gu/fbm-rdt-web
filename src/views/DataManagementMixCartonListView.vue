@@ -1,24 +1,24 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">{{ pageTitle }}</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <div class="task-id">
-        <span>{{ taskId }}</span>
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("dataManagement.mix_title") }}
+        </div>
+        <div class="common-toolbar-right">
+          <img :src="homeIcon" @click="home" />
+        </div>
       </div>
-      <div class="mix-carton-header row">
-        <div class="col-4">UPC</div>
-        <div class="col-4">QTY</div>
-      </div>
+    </div>
+    <div class="task-id">
+      <span>{{ taskId }}</span>
+    </div>
+    <div class="mix-carton-header row">
+      <div class="col-4">UPC</div>
+      <div class="col-4">QTY</div>
     </div>
     <div class="mix-carton-list-container">
       <q-list v-for="(item, index) in mixCartonListDisplay" :key="index">
@@ -43,6 +43,8 @@ import { useI18n } from "@/plugin/i18nPlugins";
 import { useRoute, useRouter } from "vue-router";
 import { MixCartonProduct } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const DataManagementMixCartonListView = defineComponent({
   methods: {
     home() {
@@ -57,11 +59,9 @@ const DataManagementMixCartonListView = defineComponent({
     const cartonId = ref(route.query.cartonId);
     const mixCartonListDisplay: Ref<MixCartonProduct[]> = ref([]);
     const pageTitle = ref("");
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.category.value = "DataManagementView";
-      pageTitle.value = i18n.$t("pageTitle");
-    });
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
+
     onMounted(() => {
       getMixCartonList();
     });
@@ -101,6 +101,8 @@ const DataManagementMixCartonListView = defineComponent({
       pageTitle,
       router,
       taskId,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
@@ -108,33 +110,34 @@ export default DataManagementMixCartonListView;
 </script>
 <style lang="scss" scoped>
 .wrapper {
-  height: 100vh;
+  height: 100%;
   position: relative;
-  .header {
-    display: sticky;
-    top: 0;
-    width: 100%;
-    background-color: #ffffff;
-    z-index: 1;
-    .task-id {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 40px;
-      background: #00243d;
-      color: #fff;
-    }
-    .mix-carton-header {
-      align-items: center;
-      height: 40px;
-      background: #00243d;
-      color: #fff;
-    }
-  }
+  padding-bottom: 20px;
+  min-height: 100vh;
+}
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  background-image: url("../assets/images/lns_bg.png");
+  background-size: cover;
+  padding-bottom: 10px;
   .q-item {
-    background-color: #ffffff;
     height: 60px;
     width: 100%;
   }
+  .title-text {
+    font-size: 20px;
+  }
+  .search {
+    margin: 0 20px;
+    background-color: #ffffff;
+  }
+}
+.q-item {
+  background-color: #ffffff;
+  height: 60px;
+  width: 100%;
 }
 </style>

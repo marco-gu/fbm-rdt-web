@@ -1,18 +1,21 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">{{ pageTitle }}</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <q-separator color="grey-5" />
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{
+            pageType == "Group"
+              ? $t("dataManagement.group_title")
+              : $t("dataManagement.detail_title")
+          }}
+        </div>
+        <div class="common-toolbar-right">
+          <img :src="homeIcon" @click="home" />
+        </div>
+      </div>
     </div>
 
     <q-separator color="grey-5" />
@@ -74,7 +77,7 @@
         :class="pageType == 'Group' ? 'btnSelected' : ''"
         flat
         push
-        :label="groupViewLabel"
+        :label="$t('dataManagement.group_view')"
         @click="changPageType('Group')"
       />
       <q-separator vertical inset color="white" />
@@ -85,7 +88,7 @@
         flat
         type="submit"
         push
-        :label="detailViewLabel"
+        :label="$t('dataManagement.detail_view')"
         @click="changPageType('Detail')"
       />
     </div>
@@ -97,7 +100,8 @@ import { computed, defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { LP, Carton } from "../models/profile";
 import { useI18n } from "@/plugin/i18nPlugins";
-
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const DataMgmtView = defineComponent({
   methods: {
     home() {
@@ -114,13 +118,18 @@ const DataMgmtView = defineComponent({
     const detailViewLabel = ref("");
     const groupViewLabel = ref("");
 
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.category.value = "DataManagementView";
-      pageTitle.value = i18n.$t("pageTitle");
-      detailViewLabel.value = i18n.$t("detailViewLabel");
-      groupViewLabel.value = i18n.$t("groupViewLabel");
-    });
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
+
+    // pageTitle.value = $t("dataManagement.group_title");
+
+    // bridge.call("getSettingLanguage", null, (res: string) => {
+    //   i18n.locale.value = res;
+    //   i18n.category.value = "DataManagementView";
+    //   pageTitle.value = i18n.$t("pageTitle");
+    //   detailViewLabel.value = i18n.$t("detailViewLabel");
+    //   groupViewLabel.value = i18n.$t("groupViewLabel");
+    // });
 
     const taskDisplay: Ref<LP> = ref({} as LP);
     const cartonListDisplay: Ref<Carton[]> = ref([]);
@@ -202,6 +211,8 @@ const DataMgmtView = defineComponent({
       detailViewLabel,
       groupViewLabel,
       cartonfilterList,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
@@ -209,67 +220,66 @@ export default DataMgmtView;
 </script>
 <style lang="scss" scoped>
 .wrapper {
-  background-color: #e5e5e5;
-  height: 100vh;
-  .header {
-    display: flex;
-    background: #fff;
-    justify-content: space-around;
+  height: 100%;
+  position: relative;
+  padding-bottom: 20px;
+  min-height: 100vh;
+}
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  background-image: url("../assets/images/lns_bg.png");
+  background-size: cover;
+  padding-bottom: 10px;
+  .q-item {
     height: 60px;
-    align-items: center;
+    width: 100%;
+  }
+  .title-text {
+    font-size: 20px;
   }
   .search {
-    background: #fff;
-    height: 60px;
-    width: 100%;
-  }
-  .q-item {
-    background-color: #fff;
-    text-align: left;
-    width: 100%;
-  }
-  .taskIdHeader {
-    background: #040000;
-    color: #ffffff;
-    height: 47px;
-    text-align: center;
-    font-size: 13.3px;
-  }
-  .tab {
-    background: #040000;
-    color: #ffffff;
-    height: 48.3px;
-    text-align: center;
-    font-size: 16px;
-  }
-  .groupList {
-    background: rgba($color: #e9b2b7, $alpha: 0.2);
-    color: gray;
-    height: 50.6px;
-    text-align: center;
-    font-size: 16px;
-  }
-  .detailList {
-    background: #ffffff;
-    color: gray;
-    height: 50.6px;
-    text-align: center;
-    font-size: 16px;
-  }
-  .btnGeneral {
-    background: #42b0d5;
-    color: #ffffff;
-  }
-  .btnSelected {
-    background: #fff;
-    color: #42b0d5;
-  }
-  .show {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    margin: 0 20px;
+    background-color: #ffffff;
   }
 }
+.tab {
+  background: #040000;
+  color: #ffffff;
+  height: 48.3px;
+  text-align: center;
+  font-size: 16px;
+}
+.groupList {
+  background: rgba($color: #e9b2b7, $alpha: 0.2);
+  color: gray;
+  height: 50.6px;
+  text-align: center;
+  font-size: 16px;
+}
+.detailList {
+  background: #ffffff;
+  color: gray;
+  height: 50.6px;
+  text-align: center;
+  font-size: 16px;
+}
+.btnGeneral {
+  background: #42b0d5;
+  color: #ffffff;
+}
+.btnSelected {
+  background: #fff;
+  color: #42b0d5;
+}
+.show {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .bottom {
   position: fixed;
   bottom: 0px;

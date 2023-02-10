@@ -1,18 +1,21 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">{{ pageTitle }}</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <q-separator color="grey-5" />
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{
+            pageType == "Group"
+              ? $t("dataManagement.group_title")
+              : $t("dataManagement.detail_title")
+          }}
+        </div>
+        <div class="common-toolbar-right">
+          <img :src="homeIcon" @click="home" />
+        </div>
+      </div>
     </div>
 
     <q-separator color="grey-5" />
@@ -82,34 +85,34 @@
 
       <div class="bottom row">
         <q-btn
-          class="col"
-          no-caps
-          style="background: #42b0d5; color: white"
-          flat
-          push
-          type="submit"
-          :label="saveLabel"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          class="col"
-          no-caps
-          style="background: #42b0d5; color: white"
-          flat
-          push
-          :label="deleteLabel"
-          @click="handleDelete"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
           v-show="pageType == 'Detail'"
           class="col"
           no-caps
           style="background: #42b0d5; color: white"
           flat
           push
-          :label="mixLabel"
+          :label="$t('dataManagement.mix')"
           @click="goToMix"
+        />
+        <q-separator vertical inset color="white" />
+        <q-btn
+          class="col"
+          no-caps
+          style="background: #42b0d5; color: white"
+          flat
+          push
+          type="submit"
+          :label="$t('common.save')"
+        />
+        <q-separator vertical inset color="white" />
+        <q-btn
+          class="col"
+          no-caps
+          style="background: #42b0d5; color: white"
+          flat
+          push
+          :label="$t('common.delete')"
+          @click="handleDelete"
         />
       </div>
     </q-form>
@@ -133,7 +136,8 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const DataManagementDetailView = defineComponent({
   methods: {
     home() {
@@ -160,14 +164,8 @@ const DataManagementDetailView = defineComponent({
     const deleteLabel = ref("");
     const saveLabel = ref("");
     const mixLabel = ref("");
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.category.value = "DataManagementView";
-      pageTitle.value = i18n.$t("pageTitle");
-      deleteLabel.value = i18n.$t("deleteLabel");
-      saveLabel.value = i18n.$t("saveLabel");
-      mixLabel.value = i18n.$t("mixLabel");
-    });
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
 
     onMounted(() => {
       scanType.value =
@@ -478,6 +476,8 @@ const DataManagementDetailView = defineComponent({
       deleteLabel,
       saveLabel,
       mixLabel,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
@@ -485,45 +485,29 @@ export default DataManagementDetailView;
 </script>
 <style lang="scss" scoped>
 .wrapper {
-  background-color: #e5e5e5;
-  height: 100vh;
-  .header {
-    display: flex;
-    background: #fff;
-    justify-content: space-around;
+  height: 100%;
+  position: relative;
+  padding-bottom: 20px;
+  min-height: 100vh;
+}
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  background-image: url("../assets/images/lns_bg.png");
+  background-size: cover;
+  padding-bottom: 10px;
+  .q-item {
     height: 60px;
-    align-items: center;
+    width: 100%;
+  }
+  .title-text {
+    font-size: 20px;
   }
   .search {
-    background: #fff;
-    height: 60px;
-    width: 100%;
-  }
-  .q-item {
-    background-color: #fff;
-    text-align: left;
-    width: 100%;
-  }
-  .taskIdHeader {
-    background: #040000;
-    color: #ffffff;
-    height: 47px;
-    text-align: center;
-    font-size: 13.3px;
-  }
-  .tab {
-    background: #040000;
-    color: #ffffff;
-    height: 48.3px;
-    text-align: center;
-    font-size: 16px;
-  }
-  .list {
-    background: #ffffff;
-    color: gray;
-    height: 50.6px;
-    text-align: center;
-    font-size: 16px;
+    margin: 0 20px;
+    background-color: #ffffff;
   }
 }
 .bottom {
