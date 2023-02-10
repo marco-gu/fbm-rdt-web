@@ -68,12 +68,9 @@ const App = defineComponent({
       // store i18n in store for changing
       const store = useStore();
       watch(
-        () => store.getters["languageModule/currentLang"],
+        () => store.state.languageModule.currentLang,
         (newVal) => {
-          const currentLang = i18n.locale.value;
-          if (currentLang !== newVal) {
-            i18n.locale.value = newVal;
-          }
+          i18n.locale.value = newVal;
         },
         {
           immediate: true,

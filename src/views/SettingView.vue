@@ -13,93 +13,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">{{ settingTitle }}</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-    </div> -->
-    <!-- <q-separator color="grey-5" />
-    <div class="setting-list-container">
-      <q-list>
-        <q-item clickable @click="goRingVoice">
-          <q-item-section style="text-align: left">
-            <q-item-label>{{ ringVoiceLabel }}</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-btn flat dense icon-right="chevron_right">
-              {{ ringVoiceDisplay }}
-            </q-btn>
-          </q-item-section>
-        </q-item>
-        <q-separator color="grey-5" />
-        <q-item clickable @click="goLanguage">
-          <q-item-section style="text-align: left">
-            <q-item-label>{{ languageLabel }}</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-btn flat dense icon-right="chevron_right">
-              {{ language }}
-            </q-btn>
-          </q-item-section>
-        </q-item>
-        <q-separator color="grey-5" />
-        <q-item clickable @click="goScanningDevice">
-          <q-item-section style="text-align: left">
-            <q-item-label>{{ scanningDeviceLabel }}</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-btn flat dense icon-right="chevron_right">
-              {{ scanningDevice }}
-            </q-btn>
-          </q-item-section>
-        </q-item>
-        <q-separator color="grey-5" />
-        <q-item clickable @click="goResetPwd">
-          <q-item-section style="text-align: left">
-            <q-item-label>{{ resetPasswordLabel }}</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-btn flat dense icon-right="chevron_right" />
-          </q-item-section>
-        </q-item>
-        <q-separator color="grey-5" />
-        <q-item>
-          <q-item-section style="text-align: left">
-            <q-item-label>{{ lastProfileSyncTimeLabel }}</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-item-label>{{ lastProfileSyncTime }}</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-separator color="grey-5" />
-        <q-item clickable @click="goSoftwareUpdate">
-          <q-item-section style="text-align: left">
-            <q-item-label>{{ softwareUpdateLabel }}</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-btn flat dense icon-right="chevron_right"
-              >V {{ softwareUpdate }}</q-btn
-            >
-          </q-item-section>
-        </q-item>
-        <q-separator color="grey-5" />
-      </q-list>
-      <q-toolbar class="common-toolbar">
-        <q-btn flat round dense icon="arrow_back" @click="back" />
-        <q-toolbar-title :shrink="false">
-          {{ $t("home.setting") }}
-        </q-toolbar-title>
-        <q-btn flat round dense icon="home" @click="home" />
-      </q-toolbar>
-    </div> -->
     <div class="list-container">
       <div class="list-item" @click="goRingVoice">
         <div class="label">{{ $t("setting.ring_voice") }}</div>
@@ -245,15 +158,15 @@ export default {
     };
 
     const goScanningDevice = () => {
-      router.push("/settingScanDevice");
+      router.push("/setting-scan-device");
     };
 
     const goLanguage = () => {
-      router.push("/settingLanguage");
+      router.push("/setting-language");
     };
     const goRingVoice = () => {
       router.push({
-        path: "/ringVoice",
+        path: "/setting-ring-voice",
         query: { ringVoice: ringVoice.value },
       });
     };
@@ -281,26 +194,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-// .wrapper {
-//   display: flex;
-//   flex-direction: column;
-//   height: 100vh;
-//   background: rgb(233, 229, 229);
-//   .header {
-//     display: flex;
-//     background: #fff;
-//     justify-content: space-around;
-//     height: 60px;
-//     align-items: center;
-//   }
-//   .q-item {
-//     background-color: #ffffff;
-//     height: 50px;
-//     width: 100%;
-//   }
-// }
-// .q-item {
-//   height: 50px;
 .list-container {
   padding: 0 20px;
 

@@ -47,7 +47,8 @@
         "receiving": "Receiving",
         "stuffing": "Stuffing",
         "search": "Search",
-        "delete": "Delete"
+        "delete": "Delete",
+        "download": "Download"
     },
     "login": {
         "login": "Log in",
@@ -115,7 +116,6 @@
     "setting": {
         "setting_header": "Settings",
         "setting_language": "Language",
-        "setting_scanningDevice": "Scanning device",
         "ring_voice": "Ring Voice",
         "language": "Language",
         "scanning_device": "Scanning Device",
@@ -129,7 +129,7 @@
         "off": "OFF",
         "camera": "Camera",
         "bluetooth": "Bluetooth",
-        "downloadLabel": "Download",
+        "download": "Download",
         "already_latest_version_label": "It is the latest version",
         "latest_version_label": "The latest version"
     },

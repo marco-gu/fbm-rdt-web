@@ -13,18 +13,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="common-header">
-      <q-item clickable>
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span class="common-header--title">
-            {{ $t("login.change_password") }}
-          </span>
-        </q-item-section>
-      </q-item>
-    </div> -->
     <div class="content-card">
       <q-form @submit="onSubmit">
         <div class="input-title">{{ $t("login.current_password") }}</div>
@@ -83,12 +71,14 @@
         </q-input>
         <div class="button-bottom">
           <q-btn
+            no-caps
             outline
             text-color="grey"
             :label="$t('common.cancel')"
             @click="cancel"
           />
           <q-btn
+            no-caps
             unelevated
             color="secondary"
             type="submit"
@@ -265,18 +255,11 @@ const ResetPwdView = defineComponent({
 export default ResetPwdView;
 </script>
 <style lang="scss" scoped>
-// .container {
-//   background-color: rgba(0, 0, 0, 0);
-//   color: #000000;
-//   position: relative;
-//   height: 100vh;
-// }
 .content-card {
   padding: 0 20px;
   text-align: left;
   .input-title {
     margin: 5px 0;
-    font-size: 14px;
   }
   .q-input {
     margin-bottom: 0;
