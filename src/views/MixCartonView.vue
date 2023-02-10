@@ -3,7 +3,7 @@
     <div class="header">
       <div class="common-toolbar">
         <div class="common-toolbar-left">
-          <q-img :src="arrowIcon" @click="back" />
+          <img :src="arrowIcon" @click="back" />
         </div>
         <div class="common-toolbar-middle">
           {{ $t("carton.mix_carton_header") }}

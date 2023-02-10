@@ -3,13 +3,13 @@
     <div class="header">
       <div class="common-toolbar">
         <div class="common-toolbar-left">
-          <q-img :src="arrowIcon" @click="back" />
+          <img :src="arrowIcon" @click="back" />
         </div>
         <div class="common-toolbar-middle">
           {{ $t("lp.lp_detail_list") }}
         </div>
         <div class="common-toolbar-right">
-          <q-img :src="homeIcon" @click="home" />
+          <img :src="homeIcon" @click="home" />
         </div>
       </div>
     </div>
