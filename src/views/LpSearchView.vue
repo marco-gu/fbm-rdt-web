@@ -64,7 +64,7 @@
               >
                 <template v-slot:append>
                   <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                    <q-icon name="center_focus_weak" right size="14px" />
+                    <q-icon name="qr_code_scanner" size="22px" />
                   </q-avatar>
                 </template>
               </q-input>
@@ -382,10 +382,9 @@ export default LpSearchView;
 <style lang="scss" scoped>
 .content {
   padding: 0 20px;
-  margin-top: 10px;
+  margin-top: 26px;
 }
 .common-input {
-  background: #ffffff;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   border-radius: 5px;
   font-size: 18px;
@@ -408,12 +407,12 @@ export default LpSearchView;
 .item-container {
   text-align: left;
   height: 50px;
-  background-color: #ffffff;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   border-radius: 5px;
   padding: 0 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  white-space: nowrap;
 }
 </style>

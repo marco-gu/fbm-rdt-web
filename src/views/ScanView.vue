@@ -160,13 +160,11 @@ export default ScanView;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #ffffff;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   border-radius: 5px;
   padding: 10px 15px;
   font-size: 18px;
   margin-bottom: 15px;
-  color: #757575;
 }
 
 .scan-card {
