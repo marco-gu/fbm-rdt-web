@@ -18,56 +18,62 @@
       </div>
     </div>
 
-    <q-separator color="grey-5" />
-
-    <div>
-      <q-item class="taskIdHeader">
-        <q-item-section>
-          {{ taskId }}
-        </q-item-section>
-      </q-item>
+    <div class="taskIdHeader">
+      {{ taskId }}
     </div>
 
     <div v-show="pageType == 'Group'">
-      <div class="tab row items-center">
-        <div class="col-4">SO</div>
-        <div class="col-4">PO</div>
-        <div class="col">Count</div>
-        <div class="col"></div>
-      </div>
-
       <div
         v-show="taskDisplay.scannedCartonNumber > 0"
-        class="groupList row items-center"
+        class="data-list-container row items-center body"
         @click="onClickLP(taskDisplay)"
       >
-        <div class="col-4">{{ taskDisplay.so }}</div>
-        <div class="col-4">{{ taskDisplay.po }}</div>
-        <div class="col">{{ taskDisplay.scannedCartonNumber }}</div>
-        <div class="col">
+        <div class="column" style="width: 65%">
+          <div v-show="taskDisplay.containerNumber != ''">
+            <div>Container: {{ taskDisplay.containerNumber }}</div>
+            <div style="height: 8px"></div>
+          </div>
+          <div>PO: {{ taskDisplay.po }}</div>
+          <div v-show="taskDisplay.sku != ''">
+            <div style="height: 8px"></div>
+            <div>SKU: {{ taskDisplay.sku }}</div>
+          </div>
+        </div>
+        <div style="width: 25%">
+          Count: {{ taskDisplay.scannedCartonNumber }}
+        </div>
+        <div style="width: 10%">
           <q-icon size="md" name="chevron_right" color="black" />
         </div>
       </div>
     </div>
 
     <div v-show="pageType == 'Detail'">
-      <div class="tab row items-center">
-        <div class="col-4">SO</div>
-        <div class="col-4">PO</div>
-        <div class="col-3">CID</div>
-        <div></div>
-      </div>
-
-      <q-list v-for="(item, index) in cartonfilterList" :key="index">
-        <div class="detailList row items-center" @click="onClickCarton(item)">
-          <div class="col-4">{{ item.so }}</div>
-          <div class="col-4">{{ item.po }}</div>
-          <div class="col-3 show">{{ item.cartonId }}</div>
-          <div>
-            <q-icon size="md" name="chevron_right" color="black" />
+      <div
+        class="data-list-container row items-center body"
+        v-for="(item, index) in cartonfilterList"
+        :key="index"
+        @click="onClickCarton(item)"
+      >
+        <div class="column" style="width: 90%">
+          <div v-show="item.containerNumber != ''">
+            <div>Container: {{ item.containerNumber }}</div>
+            <div style="height: 8px"></div>
+          </div>
+          <div>PO: {{ item.po }}</div>
+          <div v-show="item.sku != ''">
+            <div style="height: 8px"></div>
+            <div>SKU: {{ item.sku }}</div>
+          </div>
+          <div v-show="item.cartonId != ''">
+            <div style="height: 8px"></div>
+            <div>CID: {{ item.cartonId }}</div>
           </div>
         </div>
-      </q-list>
+        <div style="width: 10%">
+          <q-icon size="md" name="chevron_right" color="grey" />
+        </div>
+      </div>
     </div>
 
     <div class="bottom row">
@@ -120,16 +126,6 @@ const DataMgmtView = defineComponent({
 
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
-
-    // pageTitle.value = $t("dataManagement.group_title");
-
-    // bridge.call("getSettingLanguage", null, (res: string) => {
-    //   i18n.locale.value = res;
-    //   i18n.category.value = "DataManagementView";
-    //   pageTitle.value = i18n.$t("pageTitle");
-    //   detailViewLabel.value = i18n.$t("detailViewLabel");
-    //   groupViewLabel.value = i18n.$t("groupViewLabel");
-    // });
 
     const taskDisplay: Ref<LP> = ref({} as LP);
     const cartonListDisplay: Ref<Carton[]> = ref([]);
@@ -245,6 +241,46 @@ export default DataMgmtView;
     background-color: #ffffff;
   }
 }
+
+.data-list-container {
+  margin-top: 20px;
+  margin-left: 23px;
+  margin-right: 23px;
+  margin-bottom: 20px;
+  padding-left: 15px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  text-align: left;
+  min-height: 64px;
+}
+
+.taskIdHeader {
+  margin-top: 28px;
+  margin-left: 23px;
+  margin-right: 23px;
+  margin-bottom: 23px;
+  background-color: #00243d;
+  padding: 6px 15px;
+  font-size: 18px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 22px;
+  border-radius: 5px 5px 5px 5px;
+  word-break: break-all;
+}
+
+.body {
+  font-size: 15px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #000000;
+  line-height: 18px;
+}
+
 .tab {
   background: #040000;
   color: #ffffff;
@@ -252,13 +288,7 @@ export default DataMgmtView;
   text-align: center;
   font-size: 16px;
 }
-.groupList {
-  background: rgba($color: #e9b2b7, $alpha: 0.2);
-  color: gray;
-  height: 50.6px;
-  text-align: center;
-  font-size: 16px;
-}
+
 .detailList {
   background: #ffffff;
   color: gray;
