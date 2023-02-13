@@ -138,8 +138,10 @@ export class ProfileMixCartonLevel {
 export type LP = {
   taskId: string;
   profileName: string;
+  containerNumber: string;
   so: string;
   po: string;
+  sku: string;
   scannedCartonNumber: number;
   expectedCartonNumber: number;
   scanType: number;
