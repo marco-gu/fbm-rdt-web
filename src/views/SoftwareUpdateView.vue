@@ -46,6 +46,7 @@
         push
         style="width: 100%"
         :label="$t('common.download')"
+        :disable="downloadPending"
         @click="handleDownload"
       />
     </div>
@@ -54,34 +55,35 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
+import { VersionInfo } from "@/models/profile";
+import { popupErrorMsg } from "@/plugin/popupPlugins";
+import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
 import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
-import { VersionInfo } from "@/models/profile";
-import { useI18n } from "vue-i18n";
 export default {
   name: "SoftwareUpdateView",
-  components: {},
   setup() {
     const $q = useQuasar();
     const i18n = useI18n();
     const route = useRoute();
     const router = useRouter();
-    const currentVersion = ref(route.query.softwareUpdate);
-    const latestVersion = ref("");
-    const homeIcon = homeImg;
     const arrowIcon = arrowImg;
+    const homeIcon = homeImg;
+    const currentVersion = ref(route.query.softwareUpdate);
+    const downloadPending = ref(false);
+    const latestVersion = ref("");
     const latestVersionDetail = ref("");
     onMounted(() => {
       showLoading($q);
       bridge.call("getLatestVersion", null, (res: string) => {
+        closeLoading($q);
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
@@ -91,7 +93,6 @@ export default {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
-        closeLoading($q);
       });
     });
     const back = () => {
@@ -102,24 +103,27 @@ export default {
     };
     const handleDownload = () => {
       showLoading($q);
+      downloadPending.value = true;
       bridge.call("downloadLatestVersion", null, (res: string) => {
+        closeLoading($q);
+        downloadPending.value = false;
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
-        closeLoading($q);
       });
     };
     return {
+      arrowIcon,
       back,
       currentVersion,
+      downloadPending,
       handleDownload,
       home,
+      homeIcon,
       latestVersion,
       latestVersionDetail,
-      homeIcon,
-      arrowIcon,
     };
   },
 };
