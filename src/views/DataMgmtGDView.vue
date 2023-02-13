@@ -215,33 +215,6 @@ const DataMgmtView = defineComponent({
 export default DataMgmtView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100%;
-  position: relative;
-  padding-bottom: 20px;
-  min-height: 100vh;
-}
-.header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-  background-image: url("../assets/images/lns_bg.png");
-  background-size: cover;
-  padding-bottom: 10px;
-  .q-item {
-    height: 60px;
-    width: 100%;
-  }
-  .title-text {
-    font-size: 20px;
-  }
-  .search {
-    margin: 0 20px;
-    background-color: #ffffff;
-  }
-}
-
 .data-list-container {
   margin-top: 20px;
   margin-left: 23px;
