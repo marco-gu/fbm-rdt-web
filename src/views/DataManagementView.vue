@@ -60,7 +60,7 @@
                     width="26px"
                     height="26px"
                     no-spinner
-                    :src="item.finshStatus == 1 ? finishedDisabled : finished"
+                    :src="item.finishStatus == 0 ? finishedDisabled : finished"
                   />
                   <div style="height: 8px"></div>
                   <div class="center" style="font-size: 9px">FINISHED</div>
@@ -71,7 +71,7 @@
                     width="26px"
                     height="26px"
                     no-spinner
-                    :src="item.uploadStatus == 1 ? uploadedDisabled : uploaded"
+                    :src="item.uploadStatus == 0 ? uploadedDisabled : uploaded"
                   />
                   <div style="height: 8px"></div>
                   <div class="center" style="font-size: 9px">UPLOADED</div>
@@ -175,27 +175,23 @@
     </template>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <span class="q-ml-sm">{{ dialogMessage }}</span>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            label="Confirm"
-            color="primary"
-            v-close-popup
-            @click="onConfirm"
-          />
-          <q-btn
-            flat
-            :label="cancelLabel"
-            color="primary"
-            v-close-popup
-            @click="onClose"
-          />
-        </q-card-actions>
-      </q-card>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("common.confirm") }}
+          <q-icon name="close" v-close-popup />
+        </div>
+        <div class="dialog-container__content">
+          {{ dialogMessage }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button cancel" v-close-popup>
+            {{ $t("common.cancel") }}
+          </button>
+          <button class="dialog-button confirm" @click="onConfirm">
+            {{ $t("common.save") }}
+          </button>
+        </div>
+      </div>
     </q-dialog>
   </div>
 </template>
@@ -560,5 +556,52 @@ export default DataManagementView;
   font-size: 15px;
   font-family: Maersk Text-Bold, Maersk Text;
   font-weight: bold;
+}
+
+.dialog-container {
+  width: 86%;
+  border-radius: 5px;
+  border: 0px solid #757575;
+  font-size: 17px;
+  background-color: #ffffff;
+  &__title {
+    padding: 15px 15px 0 15px;
+    font-weight: bold;
+    .q-icon {
+      float: right;
+      right: 0;
+      top: 0;
+    }
+  }
+  &__content {
+    padding: 0 15px;
+    margin: 23px 0;
+    word-wrap: break-word;
+  }
+  &__button {
+    padding: 15px;
+    text-align: right;
+    background: #f7f7f7;
+    border-radius: 0px 0px 5px 5px;
+    border: 0px solid #878787;
+    .dialog-button {
+      min-width: 99px;
+      padding: 8px;
+      border-radius: 5px;
+      font-size: 18px;
+
+      &.confirm {
+        background: #00243d;
+        color: #ffffff;
+      }
+
+      &.cancel {
+        border: 1px solid #42b0d5;
+        color: #42b0d5;
+        margin-right: 15px;
+        background: #ffffff;
+      }
+    }
+  }
 }
 </style>

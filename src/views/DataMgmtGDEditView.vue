@@ -22,7 +22,7 @@
       <div class="taskIdHeader">
         {{ taskId }}
       </div>
-      <q-form @submit="onSubmit">
+      <q-form @submit="showUpdateDialog = true">
         <div v-for="(item, i) in pageViews" :key="i">
           <div v-show="item.editable === true" class="item-container mb-15">
             <div class="input-title">
@@ -94,11 +94,50 @@
             flat
             push
             :label="$t('common.delete')"
-            @click="handleDelete"
+            @click="showDeleteDialog = true"
           />
         </div>
       </q-form>
     </div>
+    <q-dialog v-model="showDeleteDialog" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("common.confirm") }}
+          <q-icon name="close" v-close-popup />
+        </div>
+        <div class="dialog-container__content">
+          {{ $t("dataManagement.delete_dialog_message") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button cancel" v-close-popup>
+            {{ $t("common.cancel") }}
+          </button>
+          <button class="dialog-button confirm" @click="handleDelete">
+            {{ $t("common.delete") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
+
+    <q-dialog v-model="showUpdateDialog" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("common.confirm") }}
+          <q-icon name="close" v-close-popup />
+        </div>
+        <div class="dialog-container__content">
+          {{ $t("dataManagement.update_dialog_message") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button cancel" v-close-popup>
+            {{ $t("common.cancel") }}
+          </button>
+          <button class="dialog-button confirm" @click="onSubmit">
+            {{ $t("common.save") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -149,7 +188,8 @@ const DataManagementDetailView = defineComponent({
     const mixLabel = ref("");
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
-
+    const showDeleteDialog = ref(false);
+    const showUpdateDialog = ref(false);
     onMounted(() => {
       scanType.value =
         taskId.value?.indexOf("Receiving") !== -1 ? "Receiving" : "Stuffing";
@@ -461,6 +501,8 @@ const DataManagementDetailView = defineComponent({
       mixLabel,
       homeIcon,
       arrowIcon,
+      showDeleteDialog,
+      showUpdateDialog,
     };
   },
 });
@@ -540,5 +582,50 @@ export default DataManagementDetailView;
   justify-content: space-between;
   align-items: center;
   white-space: nowrap;
+}
+.dialog-container {
+  width: 86%;
+  border-radius: 5px;
+  border: 0px solid #757575;
+  font-size: 17px;
+  background-color: #ffffff;
+  &__title {
+    padding: 15px 15px 0 15px;
+    font-weight: bold;
+    .q-icon {
+      float: right;
+      right: 0;
+      top: 0;
+    }
+  }
+  &__content {
+    padding: 0 15px;
+    margin: 23px 0;
+  }
+  &__button {
+    padding: 15px;
+    text-align: right;
+    background: #f7f7f7;
+    border-radius: 0px 0px 5px 5px;
+    border: 0px solid #878787;
+    .dialog-button {
+      min-width: 99px;
+      padding: 8px;
+      border-radius: 5px;
+      font-size: 18px;
+
+      &.confirm {
+        background: #00243d;
+        color: #ffffff;
+      }
+
+      &.cancel {
+        border: 1px solid #42b0d5;
+        color: #42b0d5;
+        margin-right: 15px;
+        background: #ffffff;
+      }
+    }
+  }
 }
 </style>

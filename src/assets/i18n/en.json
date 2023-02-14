@@ -121,7 +121,9 @@
         "upload": "Upload",
         "group_view": "Group View",
         "detail_view": "Detail View",
-        "mix": "Mix"
+        "mix": "Mix",
+        "delete_dialog_message":"Are you sure you want to delete it?",
+        "update_dialog_message":"Are you sure you want to update it?"
     },
     "setting": {
         "setting_header": "Settings",
