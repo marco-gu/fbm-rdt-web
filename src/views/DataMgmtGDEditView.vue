@@ -17,31 +17,21 @@
         </div>
       </div>
     </div>
+    <div>
+      <q-item class="taskIdHeader">
+        <q-item-section>
+          {{ taskId }}
+        </q-item-section>
+      </q-item>
+    </div>
 
-    <q-separator color="grey-5" />
-    <q-form @submit="onSubmit" style="background: #fff">
-      <div>
-        <q-item class="taskIdHeader">
-          <q-item-section>
-            {{ taskId }}
-          </q-item-section>
-        </q-item>
-      </div>
-
-      <div>
+    <q-form @submit="onSubmit">
+      <div class="content">
         <div v-for="(item, i) in pageViews" :key="i">
-          <div
-            v-show="item.editable === true"
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              background: #fff;
-            "
-          >
-            <span style="padding-left: 1rem; color: black">
+          <div v-show="item.editable === true" class="item-container mb-15">
+            <div class="input-title">
               {{ item.displayFieldName }}
-            </span>
+            </div>
 
             <q-input
               ref="inputRef"
@@ -53,67 +43,62 @@
               lazy-rules
               :rules="[item.valid]"
               borderless
-              style="padding: 0px 16px"
+              dense
+              class="common-input no-shadow"
             >
               <template v-slot:append>
                 <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                  <q-icon name="qr_code_scanner" />
+                  <q-icon name="qr_code_scanner" size="22px" />
                 </q-avatar>
               </template>
             </q-input>
           </div>
+
           <div
             v-show="item.editable === false && pageType === 'Detail'"
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              background: #fff;
-              height: 48.3px;
-            "
+            class="item-container mb-15"
           >
-            <span style="padding-left: 1rem; color: #757575">
+            <div class="input-title">
               {{ item.displayFieldName }}
-            </span>
-            <div style="padding: 0px 16px; color: #757575">
+            </div>
+            <div class="disable-input no-shadow">
               {{ item.model }}
             </div>
           </div>
-          <q-separator color="grey-5" />
         </div>
-      </div>
 
-      <div class="bottom row">
-        <q-btn
-          v-show="pageType == 'Detail'"
-          class="col"
-          no-caps
-          style="background: #42b0d5; color: white"
-          flat
-          push
-          :label="$t('dataManagement.mix')"
-          @click="goToMix"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          class="col"
-          no-caps
-          style="background: #42b0d5; color: white"
-          flat
-          push
-          type="submit"
-          :label="$t('common.save')"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          class="col"
-          no-caps
-          style="background: #42b0d5; color: white"
-          flat
-          push
-          :label="$t('common.delete')"
-          @click="handleDelete"
-        />
+        <div class="button-bottom row">
+          <q-btn
+            v-show="pageType == 'Detail'"
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            :label="$t('dataManagement.mix')"
+            @click="goToMix"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            type="submit"
+            :label="$t('common.save')"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            :label="$t('common.delete')"
+            @click="handleDelete"
+          />
+        </div>
       </div>
     </q-form>
   </div>
@@ -484,37 +469,73 @@ const DataManagementDetailView = defineComponent({
 export default DataManagementDetailView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100%;
-  position: relative;
-  padding-bottom: 20px;
-  min-height: 100vh;
+.content {
+  padding: 0 20px;
+  margin-top: 26px;
 }
-.header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-  background-image: url("../assets/images/lns_bg.png");
-  background-size: cover;
-  padding-bottom: 10px;
-  .q-item {
-    height: 60px;
-    width: 100%;
-  }
-  .title-text {
-    font-size: 20px;
-  }
-  .search {
-    margin: 0 20px;
-    background-color: #ffffff;
-  }
+.taskIdHeader {
+  margin-top: 28px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 23px;
+  background-color: #00243d;
+  padding: 6px 15px;
+  font-size: 18px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 22px;
+  border-radius: 5px 5px 5px 5px;
+  word-break: break-all;
 }
-.bottom {
+
+.button-bottom {
   position: fixed;
-  bottom: 0px;
-  display: flex;
-  width: 100%;
+  bottom: 20px;
+  width: calc(100% - 40px);
+}
+.input-title {
+  font-size: 18px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #757575;
+  line-height: 22px;
+}
+.common-input {
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  font-size: 18px;
   height: 50px;
+  padding-top: 5px;
+  padding-left: 15px;
+  &.no-shadow {
+    box-shadow: none;
+  }
+}
+.disable-input {
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  font-size: 18px;
+  color: #757575;
+  height: 50px;
+  padding-top: 11px;
+  padding-left: 15px;
+  &.no-shadow {
+    box-shadow: none;
+  }
+}
+.mb-15 {
+  margin-bottom: 20px;
+}
+.item-container {
+  text-align: left;
+  height: 50px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
 }
 </style>

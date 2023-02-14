@@ -13,22 +13,16 @@
         </div>
       </div>
     </div>
-    <div class="task-id">
-      <span>{{ taskId }}</span>
+    <div class="taskIdHeader">
+      {{ taskId }}
     </div>
     <q-form @submit="handleSave">
-      <div class="mix-carton-container">
+      <div class="content">
         <div v-for="(item, i) in dynamicViews" :key="i">
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-            "
-          >
-            <span style="padding-left: 1rem; color: black">
+          <div class="item-container mb-15">
+            <div class="input-title">
               {{ item.displayFieldName }}
-            </span>
+            </div>
             <q-input
               ref="inputRef"
               v-model="item.model"
@@ -39,7 +33,8 @@
               lazy-rules
               :rules="[item.valid]"
               borderless
-              style="padding: 0px 16px"
+              dense
+              class="common-input no-shadow"
             >
               <template v-slot:append>
                 <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
@@ -48,37 +43,40 @@
               </template>
             </q-input>
           </div>
-          <q-separator color="grey-5" />
         </div>
-      </div>
-      <div class="bottom">
-        <q-btn
-          no-caps
-          style="width: 48%"
-          flat
-          push
-          :label="$t('common.save')"
-          type="submit"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          no-caps
-          style="width: 48%"
-          flat
-          push
-          :label="$t('common.delete')"
-          @click="handleDelete"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          no-caps
-          style="width: 48%"
-          flat
-          type="submit"
-          push
-          :label="$t('common.cancel')"
-          @click="back"
-        />
+
+        <div class="button-bottom row">
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            :label="$t('common.save')"
+            type="submit"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            :label="$t('common.delete')"
+            @click="handleDelete"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            type="submit"
+            push
+            :label="$t('common.cancel')"
+            @click="back"
+          />
+        </div>
       </div>
     </q-form>
   </div>
@@ -305,52 +303,57 @@ const DataManagementMixCartonView = defineComponent({
 export default DataManagementMixCartonView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100%;
-  position: relative;
-  padding-bottom: 20px;
-  min-height: 100vh;
+.content {
+  padding: 0 20px;
+  margin-top: 26px;
 }
-.header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-  background-image: url("../assets/images/lns_bg.png");
-  background-size: cover;
-  padding-bottom: 10px;
-  .q-item {
-    height: 60px;
-    width: 100%;
-  }
-  .title-text {
-    font-size: 20px;
-  }
-  .search {
-    margin: 0 20px;
-    background-color: #ffffff;
-  }
+.taskIdHeader {
+  margin-top: 28px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 23px;
+  background-color: #00243d;
+  padding: 6px 15px;
+  font-size: 18px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 22px;
+  border-radius: 5px 5px 5px 5px;
+  word-break: break-all;
 }
-.q-item {
-  background-color: #ffffff;
-  height: 60px;
-  width: 100%;
-}
-.task-id {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  background: #00243d;
-  color: #fff;
-}
-.bottom {
-  position: fixed;
-  bottom: 0px;
-  display: flex;
-  background: #42b0d5;
-  color: white;
-  width: 100%;
+
+.common-input {
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  font-size: 18px;
   height: 50px;
+  padding-top: 5px;
+  padding-left: 15px;
+  &.no-shadow {
+    box-shadow: none;
+  }
+}
+
+.mb-15 {
+  margin-bottom: 20px;
+}
+
+.item-container {
+  text-align: left;
+  height: 50px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.button-bottom {
+  position: fixed;
+  bottom: 20px;
+  width: calc(100% - 40px);
 }
 </style>
