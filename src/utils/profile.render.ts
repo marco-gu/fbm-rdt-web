@@ -22,10 +22,18 @@ export enum ProfileElementLevel {
   CARTON_INDIVIDUAL = "cartonindividual",
 }
 
-const scanOrTypeInList = ["PO", "SO", "SKU", "ContainerNumber", "UPC"];
+const scanOrTypeInList = [
+  "PO",
+  "SO",
+  "SKU",
+  "ContainerNumber",
+  "UPC",
+  "CartonID",
+];
 
 export function composeViewElement(attr: ProfileDisplayAttribute) {
   const element = {} as ViewDisplayAttribute;
+
   element.displayFieldName = attr.displayDataFieldName;
   element.fieldName = attr.dataFieldName;
   element.level = attr.level;
