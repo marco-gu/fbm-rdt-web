@@ -66,39 +66,39 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="bottom row">
-        <q-btn
-          v-show="pageType == 'Detail'"
-          class="col"
-          no-caps
-          style="background: #42b0d5; color: white"
-          flat
-          push
-          :label="$t('dataManagement.mix')"
-          @click="goToMix"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          class="col"
-          no-caps
-          style="background: #42b0d5; color: white"
-          flat
-          push
-          type="submit"
-          :label="$t('common.save')"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          class="col"
-          no-caps
-          style="background: #42b0d5; color: white"
-          flat
-          push
-          :label="$t('common.delete')"
-          @click="handleDelete"
-        />
+        <div class="button-bottom row">
+          <q-btn
+            v-show="pageType == 'Detail'"
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            :label="$t('dataManagement.mix')"
+            @click="goToMix"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            type="submit"
+            :label="$t('common.save')"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            :label="$t('common.delete')"
+            @click="handleDelete"
+          />
+        </div>
       </div>
     </q-form>
   </div>
@@ -488,12 +488,11 @@ export default DataManagementDetailView;
   border-radius: 5px 5px 5px 5px;
   word-break: break-all;
 }
-.bottom {
+
+.button-bottom {
   position: fixed;
-  bottom: 0px;
-  display: flex;
-  width: 100%;
-  height: 50px;
+  bottom: 20px;
+  width: calc(100% - 40px);
 }
 .input-title {
   font-size: 18px;

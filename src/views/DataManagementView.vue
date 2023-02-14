@@ -28,68 +28,20 @@
     </div>
 
     <template v-if="scanDataListDisplay.length > 0">
-      <div v-if="isEditMode == false">
-        <div
-          class="data-list-container"
-          v-for="(item, index) in scanDataListDisplay"
-          :key="index"
-        >
+      <div class="content">
+        <div v-if="isEditMode == false">
           <div
-            class="row"
-            v-touch-hold:1800="handleHold"
-            clickable
-            @click="onClickScanTask(item)"
+            class="data-list-container mb-15"
+            v-for="(item, index) in scanDataListDisplay"
+            :key="index"
           >
-            <div style="width: 38%">
-              <div class="cardTask" v-html="formatTaskId(item.taskId)"></div>
-              <div style="height: 8px"></div>
-              <div class="cardTime">
-                {{ formatDate(item.updateDatetime) }}
-              </div>
-            </div>
-            <div class="center process">
-              <div>
-                {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
-                <!-- 9999/9999 -->
-              </div>
-            </div>
-            <div class="center" style="text-align: center; width: 28%">
-              <div class="column center">
-                <q-img
-                  width="26px"
-                  height="26px"
-                  no-spinner
-                  :src="item.finshStatus == 1 ? finishedDisabled : finished"
-                />
-                <div style="height: 8px"></div>
-                <div class="center" style="font-size: 9px">FINISHED</div>
-              </div>
-              <div style="width: 8px"></div>
-              <div class="column center">
-                <q-img
-                  width="26px"
-                  height="26px"
-                  no-spinner
-                  :src="item.uploadStatus == 1 ? uploadedDisabled : uploaded"
-                />
-                <div style="height: 8px"></div>
-                <div class="center" style="font-size: 9px">UPLOADED</div>
-              </div>
-            </div>
-            <div class="center" style="width: 8%">
-              <q-img width="8px" height="18px" no-spinner :src="arrowRight" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-else>
-        <div v-for="(item, index) in scanDataListDisplay" :key="index">
-          <div class="row">
-            <div class="center" style="width: 6%; margin-left: 15px">
-              <q-checkbox v-model="item.isSelected" />
-            </div>
-            <div class="row edit-data-list-container" style="width: 81%">
-              <div style="width: 42%">
+            <div
+              class="row"
+              v-touch-hold:1800="handleHold"
+              clickable
+              @click="onClickScanTask(item)"
+            >
+              <div style="width: 38%">
                 <div class="cardTask" v-html="formatTaskId(item.taskId)"></div>
                 <div style="height: 8px"></div>
                 <div class="cardTime">
@@ -102,7 +54,7 @@
                   <!-- 9999/9999 -->
                 </div>
               </div>
-              <div class="center" style="text-align: center; width: 32%">
+              <div class="center" style="text-align: center; width: 28%">
                 <div class="column center">
                   <q-img
                     width="26px"
@@ -125,8 +77,96 @@
                   <div class="center" style="font-size: 9px">UPLOADED</div>
                 </div>
               </div>
+              <div class="center" style="width: 8%">
+                <q-img width="8px" height="18px" no-spinner :src="arrowRight" />
+              </div>
             </div>
           </div>
+        </div>
+        <div v-else>
+          <div style="height: 26px"></div>
+          <div v-for="(item, index) in scanDataListDisplay" :key="index">
+            <div class="row">
+              <div class="center" style="width: 6%">
+                <q-checkbox v-model="item.isSelected" />
+              </div>
+              <div
+                class="row edit-data-list-container mb-15"
+                style="width: 89%"
+              >
+                <div style="width: 42%">
+                  <div
+                    class="cardTask"
+                    v-html="formatTaskId(item.taskId)"
+                  ></div>
+                  <div style="height: 8px"></div>
+                  <div class="cardTime">
+                    {{ formatDate(item.updateDatetime) }}
+                  </div>
+                </div>
+                <div class="center process">
+                  <div>
+                    {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
+                    <!-- 9999/9999 -->
+                  </div>
+                </div>
+                <div class="center" style="text-align: center; width: 32%">
+                  <div class="column center">
+                    <q-img
+                      width="26px"
+                      height="26px"
+                      no-spinner
+                      :src="item.finshStatus == 1 ? finishedDisabled : finished"
+                    />
+                    <div style="height: 8px"></div>
+                    <div class="center" style="font-size: 9px">FINISHED</div>
+                  </div>
+                  <div style="width: 8px"></div>
+                  <div class="column center">
+                    <q-img
+                      width="26px"
+                      height="26px"
+                      no-spinner
+                      :src="
+                        item.uploadStatus == 1 ? uploadedDisabled : uploaded
+                      "
+                    />
+                    <div style="height: 8px"></div>
+                    <div class="center" style="font-size: 9px">UPLOADED</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="button-bottom row" v-show="isEditMode">
+          <q-btn
+            no-caps
+            class="bottomButton col"
+            flat
+            push
+            :label="$t('dataManagement.upload')"
+            @click="handleUpload"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            no-caps
+            class="bottomButton col"
+            flat
+            push
+            :label="$t('common.delete')"
+            @click="handleDelete"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            no-caps
+            class="bottomButton col"
+            flat
+            type="submit"
+            push
+            :label="$t('common.cancel')"
+            @click="cancelEditMode"
+          />
         </div>
       </div>
     </template>
@@ -134,38 +174,6 @@
       <div class="no-record">{{ $t("continue.no_record") }}</div>
     </template>
 
-    <div class="bottom" v-show="isEditMode">
-      <q-btn
-        no-caps
-        class="bottomButton"
-        style="width: 48%"
-        flat
-        push
-        :label="$t('dataManagement.upload')"
-        @click="handleUpload"
-      />
-      <q-separator vertical inset color="white" />
-      <q-btn
-        no-caps
-        class="bottomButton"
-        style="width: 48%"
-        flat
-        push
-        :label="$t('common.delete')"
-        @click="handleDelete"
-      />
-      <q-separator vertical inset color="white" />
-      <q-btn
-        no-caps
-        class="bottomButton"
-        style="width: 52%"
-        flat
-        type="submit"
-        push
-        :label="$t('common.cancel')"
-        @click="cancelEditMode"
-      />
-    </div>
     <q-dialog v-model="dialogVisible" persistent>
       <q-card>
         <q-card-section class="row items-center">
@@ -462,8 +470,10 @@ const DataManagementView = defineComponent({
 export default DataManagementView;
 </script>
 <style lang="scss" scoped>
+.content {
+  padding: 0 20px;
+}
 .data-list-container {
-  margin: 20px;
   padding-left: 15px;
   padding-top: 8px;
   padding-bottom: 8px;
@@ -476,10 +486,11 @@ export default DataManagementView;
     margin-top: 5px;
   }
 }
-
+.mb-15 {
+  margin-bottom: 20px;
+}
 .edit-data-list-container {
   margin-left: 15px;
-  margin-top: 20px;
   padding-left: 15px;
   padding-right: 15px;
   padding-top: 8px;
@@ -505,28 +516,30 @@ export default DataManagementView;
   width: 100%;
   color: #757575;
 }
-
-.bottom {
+.button-bottom {
   position: fixed;
-  bottom: 0px;
-  display: flex;
-  background: #42b0d5;
-  color: white;
-  width: 100%;
-  height: 50px;
+  bottom: 20px;
+  width: calc(100% - 40px);
 }
+
 .center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.bottomButton {
+.button-bottom {
+  position: fixed;
+  bottom: 20px;
+  width: calc(100% - 40px);
+  background: #42b0d5;
+  color: white;
   font-size: 20px;
   font-family: Maersk Text-Regular, Maersk Text;
   font-weight: 400;
   color: #ffffff;
   line-height: 23px;
 }
+
 .cardTask {
   font-size: 15px;
   line-height: 18px;

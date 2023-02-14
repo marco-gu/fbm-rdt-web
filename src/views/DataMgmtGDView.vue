@@ -17,65 +17,65 @@
         </div>
       </div>
     </div>
+    <div class="content">
+      <div class="taskIdHeader">
+        {{ taskId }}
+      </div>
 
-    <div class="taskIdHeader">
-      {{ taskId }}
-    </div>
-
-    <div v-show="pageType == 'Group'">
-      <div
-        v-show="taskDisplay.scannedCartonNumber > 0"
-        class="data-list-container row items-center body"
-        @click="onClickLP(taskDisplay)"
-      >
-        <div class="column" style="width: 65%">
-          <div v-show="taskDisplay.containerNumber != ''">
-            <div>Container: {{ taskDisplay.containerNumber }}</div>
-            <div style="height: 8px"></div>
+      <div v-show="pageType == 'Group'">
+        <div
+          v-show="taskDisplay.scannedCartonNumber > 0"
+          class="data-list-container row items-center body mb-15"
+          @click="onClickLP(taskDisplay)"
+        >
+          <div class="column" style="width: 65%">
+            <div v-show="taskDisplay.containerNumber != ''">
+              <div>Container: {{ taskDisplay.containerNumber }}</div>
+              <div style="height: 8px"></div>
+            </div>
+            <div>PO: {{ taskDisplay.po }}</div>
+            <div v-show="taskDisplay.sku != ''">
+              <div style="height: 8px"></div>
+              <div>SKU: {{ taskDisplay.sku }}</div>
+            </div>
           </div>
-          <div>PO: {{ taskDisplay.po }}</div>
-          <div v-show="taskDisplay.sku != ''">
-            <div style="height: 8px"></div>
-            <div>SKU: {{ taskDisplay.sku }}</div>
+          <div style="width: 25%">
+            Count: {{ taskDisplay.scannedCartonNumber }}
+          </div>
+          <div style="width: 10%">
+            <q-icon size="md" name="chevron_right" color="black" />
           </div>
         </div>
-        <div style="width: 25%">
-          Count: {{ taskDisplay.scannedCartonNumber }}
-        </div>
-        <div style="width: 10%">
-          <q-icon size="md" name="chevron_right" color="black" />
+      </div>
+
+      <div v-show="pageType == 'Detail'">
+        <div
+          class="data-list-container row items-center body mb-15"
+          v-for="(item, index) in cartonfilterList"
+          :key="index"
+          @click="onClickCarton(item)"
+        >
+          <div class="column" style="width: 90%">
+            <div v-show="item.containerNumber != ''">
+              <div>Container: {{ item.containerNumber }}</div>
+              <div style="height: 8px"></div>
+            </div>
+            <div>PO: {{ item.po }}</div>
+            <div v-show="item.sku != ''">
+              <div style="height: 8px"></div>
+              <div>SKU: {{ item.sku }}</div>
+            </div>
+            <div v-show="item.cartonId != ''">
+              <div style="height: 8px"></div>
+              <div>CID: {{ item.cartonId }}</div>
+            </div>
+          </div>
+          <div style="width: 10%">
+            <q-icon size="md" name="chevron_right" color="grey" />
+          </div>
         </div>
       </div>
     </div>
-
-    <div v-show="pageType == 'Detail'">
-      <div
-        class="data-list-container row items-center body"
-        v-for="(item, index) in cartonfilterList"
-        :key="index"
-        @click="onClickCarton(item)"
-      >
-        <div class="column" style="width: 90%">
-          <div v-show="item.containerNumber != ''">
-            <div>Container: {{ item.containerNumber }}</div>
-            <div style="height: 8px"></div>
-          </div>
-          <div>PO: {{ item.po }}</div>
-          <div v-show="item.sku != ''">
-            <div style="height: 8px"></div>
-            <div>SKU: {{ item.sku }}</div>
-          </div>
-          <div v-show="item.cartonId != ''">
-            <div style="height: 8px"></div>
-            <div>CID: {{ item.cartonId }}</div>
-          </div>
-        </div>
-        <div style="width: 10%">
-          <q-icon size="md" name="chevron_right" color="grey" />
-        </div>
-      </div>
-    </div>
-
     <div class="bottom row">
       <q-btn
         class="col btnGeneral"
@@ -86,7 +86,7 @@
         :label="$t('dataManagement.group_view')"
         @click="changPageType('Group')"
       />
-      <q-separator vertical inset color="white" />
+
       <q-btn
         class="col btnGeneral"
         no-caps
@@ -215,11 +215,11 @@ const DataMgmtView = defineComponent({
 export default DataMgmtView;
 </script>
 <style lang="scss" scoped>
+.content {
+  padding: 0 20px;
+  margin-top: 26px;
+}
 .data-list-container {
-  margin-top: 20px;
-  margin-left: 23px;
-  margin-right: 23px;
-  margin-bottom: 20px;
   padding-left: 15px;
   padding-top: 8px;
   padding-bottom: 8px;
@@ -230,10 +230,12 @@ export default DataMgmtView;
   min-height: 64px;
 }
 
+.mb-15 {
+  margin-bottom: 20px;
+}
+
 .taskIdHeader {
   margin-top: 28px;
-  margin-left: 23px;
-  margin-right: 23px;
   margin-bottom: 23px;
   background-color: #00243d;
   padding: 6px 15px;
