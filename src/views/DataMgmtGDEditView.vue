@@ -17,16 +17,12 @@
         </div>
       </div>
     </div>
-    <div>
-      <q-item class="taskIdHeader">
-        <q-item-section>
-          {{ taskId }}
-        </q-item-section>
-      </q-item>
-    </div>
 
-    <q-form @submit="onSubmit">
-      <div class="content">
+    <div class="content">
+      <div class="taskIdHeader">
+        {{ taskId }}
+      </div>
+      <q-form @submit="onSubmit">
         <div v-for="(item, i) in pageViews" :key="i">
           <div v-show="item.editable === true" class="item-container mb-15">
             <div class="input-title">
@@ -72,17 +68,20 @@
             v-show="pageType == 'Detail'"
             class="col"
             no-caps
-            style="background: #42b0d5; color: white"
             flat
             push
             :label="$t('dataManagement.mix')"
             @click="goToMix"
           />
-          <q-separator vertical inset color="white" />
+          <q-separator
+            v-show="pageType == 'Detail'"
+            vertical
+            inset
+            color="white"
+          />
           <q-btn
             class="col"
             no-caps
-            style="background: #42b0d5; color: white"
             flat
             push
             type="submit"
@@ -92,15 +91,14 @@
           <q-btn
             class="col"
             no-caps
-            style="background: #42b0d5; color: white"
             flat
             push
             :label="$t('common.delete')"
             @click="handleDelete"
           />
         </div>
-      </div>
-    </q-form>
+      </q-form>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -474,9 +472,6 @@ export default DataManagementDetailView;
   margin-top: 26px;
 }
 .taskIdHeader {
-  margin-top: 28px;
-  margin-left: 20px;
-  margin-right: 20px;
   margin-bottom: 23px;
   background-color: #00243d;
   padding: 6px 15px;
@@ -493,6 +488,14 @@ export default DataManagementDetailView;
   position: fixed;
   bottom: 20px;
   width: calc(100% - 40px);
+  background: #42b0d5;
+  color: white;
+  font-size: 20px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 23px;
+  border-radius: 3px;
 }
 .input-title {
   font-size: 18px;

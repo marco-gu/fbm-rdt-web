@@ -13,11 +13,11 @@
         </div>
       </div>
     </div>
-    <div class="taskIdHeader">
-      {{ taskId }}
-    </div>
-    <q-form @submit="handleSave">
-      <div class="content">
+    <div class="content">
+      <div class="taskIdHeader">
+        {{ taskId }}
+      </div>
+      <q-form @submit="handleSave">
         <div v-for="(item, i) in dynamicViews" :key="i">
           <div class="item-container mb-15">
             <div class="input-title">
@@ -49,7 +49,6 @@
           <q-btn
             class="col"
             no-caps
-            style="background: #42b0d5; color: white"
             flat
             push
             :label="$t('common.save')"
@@ -59,7 +58,6 @@
           <q-btn
             class="col"
             no-caps
-            style="background: #42b0d5; color: white"
             flat
             push
             :label="$t('common.delete')"
@@ -69,7 +67,6 @@
           <q-btn
             class="col"
             no-caps
-            style="background: #42b0d5; color: white"
             flat
             type="submit"
             push
@@ -77,8 +74,8 @@
             @click="back"
           />
         </div>
-      </div>
-    </q-form>
+      </q-form>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -308,9 +305,6 @@ export default DataManagementMixCartonView;
   margin-top: 26px;
 }
 .taskIdHeader {
-  margin-top: 28px;
-  margin-left: 20px;
-  margin-right: 20px;
   margin-bottom: 23px;
   background-color: #00243d;
   padding: 6px 15px;
@@ -355,5 +349,11 @@ export default DataManagementMixCartonView;
   position: fixed;
   bottom: 20px;
   width: calc(100% - 40px);
+  background: #42b0d5;
+  color: white;
+  font-size: 20px;
+  color: #ffffff;
+  line-height: 23px;
+  border-radius: 3px;
 }
 </style>

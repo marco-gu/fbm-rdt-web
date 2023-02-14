@@ -235,7 +235,6 @@ export default DataMgmtView;
 }
 
 .taskIdHeader {
-  margin-top: 28px;
   margin-bottom: 23px;
   background-color: #00243d;
   padding: 6px 15px;

@@ -538,6 +538,7 @@ export default DataManagementView;
   font-weight: 400;
   color: #ffffff;
   line-height: 23px;
+  border-radius: 3px;
 }
 
 .cardTask {
