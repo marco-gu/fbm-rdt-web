@@ -173,7 +173,7 @@ export default ProfileView;
 </script>
 <style lang="scss" scoped>
 .profile-list-container {
-  margin-bottom: 10px;
+  padding-bottom: 15px;
 }
 .list-item {
   margin: 0 23px 23px 23px;

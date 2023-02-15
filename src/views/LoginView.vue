@@ -87,6 +87,7 @@ import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
 import config from "../assets/config.json";
 import { useI18n } from "vue-i18n";
+import { setDevToolsHook } from "@intlify/core-base";
 const LoginView = defineComponent({
   components: {
     UserManual,
@@ -134,8 +135,8 @@ const LoginView = defineComponent({
         username: username.value.toUpperCase(),
         password: md5(password.value),
       };
+
       bridge.call("login", args, (res: string) => {
-        closeLoading($q);
         const androidResponse = JSON.parse(
           res
         ) as AndroidResponse<LoginResponse>;
@@ -151,6 +152,7 @@ const LoginView = defineComponent({
             });
           } else {
             router.push("/home");
+            closeLoading($q);
           }
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);

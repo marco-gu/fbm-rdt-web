@@ -392,7 +392,9 @@ export default LpSearchView;
 .content {
   padding: 0 20px;
   margin-top: 23px;
-  min-height: 700px;
+  height: calc(100vh - 125px);
+  overflow: auto;
+  // min-height: 500px;
 }
 .common-input {
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
@@ -408,9 +410,9 @@ export default LpSearchView;
 }
 .button-bottom {
   position: absolute;
-  margin: 0 20px;
   bottom: 20px;
   width: calc(100% - 40px);
+  left: 20px;
 }
 .mb-15 {
   margin-bottom: 20px;

@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="home-container">
     <div class="logo-container">
       <q-img :src="maerskLogo" no-spinner class="logo-image" />
     </div>
@@ -81,10 +81,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: calc(100vh - 50px);
-  position: relative;
-}
 .logo-container {
   height: 140px;
   .logo-image {
