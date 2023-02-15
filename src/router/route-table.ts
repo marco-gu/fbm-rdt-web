@@ -41,6 +41,7 @@ const routeTableLoggedIn = [
         path: "/profileManagement",
         children: [],
       },
+      // TODO data management query info need to be updated
       {
         path: "/dataManagement",
         children: [
