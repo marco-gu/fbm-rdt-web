@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="content">
-      <q-form @submit="onSubmit">
+      <q-form @submit="onSubmit" ref="myForm">
         <q-input
           class="common-input mb-15 mt-15"
           v-model="profileName"
@@ -45,7 +45,7 @@
         </div>
         <div v-for="(item, i) in pageViews" :key="i">
           <div v-if="item.display == 1">
-            <div class="item-container mb-15">
+            <div class="item-container mb-15 pr-0">
               <div>
                 {{ item.displayFieldName }}
               </div>
@@ -64,25 +64,25 @@
               >
                 <template v-slot:append>
                   <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                    <q-icon name="qr_code_scanner" size="22px" />
+                    <q-icon name="qr_code_scanner" size="18px" />
                   </q-avatar>
                 </template>
               </q-input>
             </div>
           </div>
         </div>
-        <div class="button-bottom">
-          <q-btn
-            no-caps
-            unelevated
-            type="submit"
-            class="full-width"
-            color="secondary"
-          >
-            {{ bottomButtonLable }}
-          </q-btn>
-        </div>
       </q-form>
+    </div>
+    <div class="button-bottom">
+      <q-btn
+        no-caps
+        unelevated
+        class="full-width"
+        color="secondary"
+        @click="onSubmit"
+      >
+        {{ bottomButtonLable }}
+      </q-btn>
     </div>
   </div>
 </template>
@@ -138,6 +138,7 @@ const LpSearchView = defineComponent({
     const clientCode = ref("");
     const scanType = ref("");
     const clientName = ref("");
+    const myForm = ref();
     // Define Page Elements
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const receivingViews = ref([] as ViewDisplayAttribute[]);
@@ -246,64 +247,71 @@ const LpSearchView = defineComponent({
       }
     };
     const onSubmit = () => {
-      showLoading($q);
-      // the same for online & offline
-      const routeParams = {
-        scanned: 0,
-        total: 0,
-        taskID: "",
-        profileCode: profileName.value,
-        type: "",
-      };
-      // the same for online & offline
-      const apiParams = {
-        profileName: profileName.value,
-        clientCode: clientCode.value,
-        clientName: clientName.value,
-        scanType: scanType.value,
-        validationType: "",
-      };
-      composeApiParam(apiParams, pageViews.value, mode);
-      composeRouteParam(routeParams, pageViews.value);
-      if (mode == "online") {
-        bridge.call("fetchLp", apiParams, (res: string) => {
-          closeLoading($q);
-          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            routeParams.scanned = androidResponse.data.scanned;
-            routeParams.total = androidResponse.data.total;
-            routeParams.taskID = androidResponse.data.taskID;
-            routeParams.type = scanType.value;
-            const message = i18n.t("messageCode.E93-05-0005");
-            popupSuccessMsg($q, message);
-            setTimeout(() => {
-              router.push({
-                name: "scan",
-                params: routeParams,
-              });
-            }, 2000);
-          } else if (androidResponse.status == AndroidResponseStatus.INFO) {
-            const message = i18n.t(
-              "messageCode." + androidResponse.messageCode
-            );
-            popupInfoMsg($q, message);
-          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.t(
-              "messageCode." + androidResponse.messageCode
-            );
-            popupErrorMsg($q, message);
+      myForm.value.validate().then((success: any) => {
+        if (success) {
+          showLoading($q);
+          // the same for online & offline
+          const routeParams = {
+            scanned: 0,
+            total: 0,
+            taskID: "",
+            profileCode: profileName.value,
+            type: "",
+          };
+          // the same for online & offline
+          const apiParams = {
+            profileName: profileName.value,
+            clientCode: clientCode.value,
+            clientName: clientName.value,
+            scanType: scanType.value,
+            validationType: "",
+          };
+          composeApiParam(apiParams, pageViews.value, mode);
+          composeRouteParam(routeParams, pageViews.value);
+          if (mode == "online") {
+            bridge.call("fetchLp", apiParams, (res: string) => {
+              closeLoading($q);
+              const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+              if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+                routeParams.scanned = androidResponse.data.scanned;
+                routeParams.total = androidResponse.data.total;
+                routeParams.taskID = androidResponse.data.taskID;
+                routeParams.type = scanType.value;
+                const message = i18n.t("messageCode.E93-05-0005");
+                popupSuccessMsg($q, message);
+                setTimeout(() => {
+                  router.push({
+                    name: "scan",
+                    params: routeParams,
+                  });
+                }, 2000);
+              } else if (androidResponse.status == AndroidResponseStatus.INFO) {
+                const message = i18n.t(
+                  "messageCode." + androidResponse.messageCode
+                );
+                popupInfoMsg($q, message);
+              } else if (
+                androidResponse.status == AndroidResponseStatus.ERROR
+              ) {
+                const message = i18n.t(
+                  "messageCode." + androidResponse.messageCode
+                );
+                popupErrorMsg($q, message);
+              }
+            });
+          } else {
+            bridge.call("createTask", apiParams);
+            closeLoading($q);
+            pageViews.value.forEach((t) => {
+              t.model = "";
+            });
+            nextTick(() => {
+              reset(inputRef.value);
+            });
           }
-        });
-      } else {
-        bridge.call("createTask", apiParams);
-        closeLoading($q);
-        pageViews.value.forEach((t) => {
-          t.model = "";
-        });
-        nextTick(() => {
-          reset(inputRef.value);
-        });
-      }
+          // yay, models are correct
+        }
+      });
     };
     // 4- Convert the input data value into upper case if it is not
     const multiWatchSources = [receivingViews.value, stuffingViews.value];
@@ -374,6 +382,7 @@ const LpSearchView = defineComponent({
       bottomButtonLable,
       homeIcon,
       arrowIcon,
+      myForm,
     };
   },
 });
@@ -382,7 +391,8 @@ export default LpSearchView;
 <style lang="scss" scoped>
 .content {
   padding: 0 20px;
-  margin-top: 26px;
+  margin-top: 23px;
+  min-height: 700px;
 }
 .common-input {
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
@@ -397,7 +407,8 @@ export default LpSearchView;
   }
 }
 .button-bottom {
-  position: fixed;
+  position: absolute;
+  margin: 0 20px;
   bottom: 20px;
   width: calc(100% - 40px);
 }
@@ -414,5 +425,8 @@ export default LpSearchView;
   justify-content: space-between;
   align-items: center;
   white-space: nowrap;
+}
+.pr-0 {
+  padding-right: 0px;
 }
 </style>

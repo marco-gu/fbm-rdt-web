@@ -26,42 +26,28 @@
         </q-input>
       </div>
     </div>
-    <div>
-      <div
-        class="q-pa-sm"
-        style="width: 95%; margin: 0 auto"
-        v-for="(item, index) in images"
-        :key="index"
-      >
-        <q-card
-          class="my-card"
-          @click="onClick(item)"
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            font-size: 11px;
-            margin-bottom: 10px;
-          "
-        >
-          <div style="text-align: left">
-            <q-card-section style="padding: 6px">
-              <span>SO:</span>
+    <div class="content">
+      <div v-for="(item, index) in images" :key="index">
+        <q-card class="my-card" @click="onClick(item)">
+          <div class="card-left">
+            <div>
+              <span>Reason: &nbsp;</span>
+              <span>{{ item.reason }}</span>
+            </div>
+            <div class="mt-8">
+              <span>SO: &nbsp;</span>
               <span>{{ item.so }}</span>
-            </q-card-section>
-            <q-card-section style="padding: 6px">
-              <span>CID:</span> <span>{{ item.cid }}</span>
-            </q-card-section>
+            </div>
           </div>
           <div>
-            <q-card-section style="padding: 6px">
-              <span>PO:</span> <span>{{ item.po }}</span>
-            </q-card-section>
-
-            <q-card-section style="padding: 6px">
-              <span>Reason:</span> <span>{{ item.reason }}</span>
-            </q-card-section>
+            <div>
+              <span>CID: &nbsp;</span>
+              <span>{{ item.cid }}</span>
+            </div>
+            <div class="mt-8">
+              <span>PO: &nbsp;</span>
+              <span>{{ item.po }}</span>
+            </div>
           </div>
           <div>
             <q-item-section side>
@@ -71,13 +57,13 @@
         </q-card>
       </div>
     </div>
-    <div style="position: fixed; bottom: 0px; width: 100%">
+    <div class="button-bottom">
       <q-btn
         no-caps
         @click="onAdd"
         class="full-width"
-        label="Add"
-        style="background: #42b0d5; color: #fff; height: 40px"
+        :label="$t('image.access_image_button')"
+        color="secondary"
       />
     </div>
   </div>
@@ -152,56 +138,47 @@ const ImageAccessView = defineComponent({
 export default ImageAccessView;
 </script>
 <style lang="scss" scoped>
-// .wrapper {
-//   height: 100vh;
-//   position: relative;
-//   .header {
-//     display: sticky;
-//     top: 0;
-//     width: 100%;
-//     background-color: #ffffff;
-//     z-index: 1;
-//   }
-//   .table-header {
-//     background: #00243d;
-//     color: #ffffff;
-//     height: 48.3px;
-//     text-align: center;
-//     font-size: 16px;
-//   }
-//   .images-content {
-//     background: #ffffff;
-//     color: gray;
-//     height: 50.6px;
-//     text-align: center;
-//     font-size: 16px;
-//   }
-//   .show {
-//     overflow: hidden;
-//     white-space: nowrap;
-//     text-overflow: ellipsis;
-//   }
+.content {
+  padding: 0 20px;
+  margin-top: 13px;
+}
+.my-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 15px;
+  margin-bottom: 10px;
+  text-align: left;
+  .card-left {
+    padding: 8px 0px 8px 15px;
+  }
+  .mt-8 {
+    margin-top: 8px;
+  }
+}
+
+// .table-header {
+//   background: #00243d;
+//   color: #ffffff;
+//   height: 48.3px;
+//   text-align: center;
+//   font-size: 16px;
 // }
-.table-header {
-  background: #00243d;
-  color: #ffffff;
-  height: 48.3px;
-  text-align: center;
-  font-size: 16px;
-}
-.images-content {
-  background: #ffffff;
-  color: gray;
-  height: 50.6px;
-  text-align: center;
-  font-size: 16px;
-}
+// .images-content {
+//   background: #ffffff;
+//   color: gray;
+//   height: 50.6px;
+//   text-align: center;
+//   font-size: 16px;
+// }
 .show {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 .button-bottom {
+  margin-left: 20px;
   position: fixed;
   bottom: 20px;
   width: calc(100% - 40px);
