@@ -10,62 +10,67 @@
         </div>
       </div>
     </div>
-    <!-- <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back()">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">Carton Detail</span>
-        </q-item-section>
-      </q-item>
-    </div> -->
-    <!-- <q-separator color="grey-5" /> -->
-    <div class="carton-info">
-      <span>{{ cartonID }}</span>
-    </div>
-    <q-form @submit="onSubmit">
-      <div v-for="(item, i) in pageViews" :key="i">
-        <div v-if="item.display == 1">
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-            "
-          >
-            <span style="padding-left: 1rem; color: black">
-              {{ item.displayFieldName }}
-            </span>
-
-            <q-input
-              ref="inputRef"
-              v-model="item.model"
-              @paste="validPaste($event, i)"
-              clearable
-              input-class="text-right"
-              lazy-rules
-              :rules="[item.valid]"
-              :maxlength="item.length"
-              borderless
-              style="padding: 0px 16px"
-            >
-              <template v-slot:append>
-                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                  <q-icon name="qr_code_scanner" />
-                </q-avatar>
-              </template>
-            </q-input>
+    <div class="content">
+      <div class="carton-info">
+        <span>{{ cartonID }}</span>
+      </div>
+      <q-form @submit="onSubmit" ref="myForm">
+        <div>
+          <div v-for="(item, i) in pageViews" :key="i">
+            <div v-if="item.display == 1">
+              <div class="item-container mb-15">
+                <div>
+                  {{ item.displayFieldName }}
+                </div>
+                <q-input
+                  ref="inputRef"
+                  v-model="item.model"
+                  @paste="validPaste($event, i)"
+                  clearable
+                  :maxlength="item.length"
+                  input-class="text-right"
+                  lazy-rules
+                  :rules="[item.valid]"
+                  borderless
+                  dense
+                  class="common-input no-shadow"
+                >
+                  <template v-slot:append>
+                    <q-avatar @click="scan(item.fieldName)">
+                      <q-icon name="qr_code_scanner" size="18px" />
+                    </q-avatar>
+                  </template>
+                </q-input>
+              </div>
+            </div>
           </div>
-          <q-separator color="grey-5" />
         </div>
+      </q-form>
+    </div>
+    <div class="button-bottom">
+      <div>
+        <q-btn
+          no-caps
+          unelevated
+          @click="onSubmit"
+          class="full-width"
+          color="secondary"
+          :label="$t('carton.carton_detail_save')"
+        />
       </div>
-      <div class="bottom">
-        <q-btn no-caps style="width: 48%" flat push type="submit">Save</q-btn>
-        <q-separator vertical inset color="white" />
-        <q-btn no-caps style="width: 52%" flat push @click="back">Cancel</q-btn>
+      <div class=".mt-23">
+        <q-btn
+          no-caps
+          unelevated
+          @click="back"
+          class="full-width"
+          text-color="#757575"
+          color="white"
+          outline
+          :label="$t('carton.carton_detail_cancel')"
+        />
       </div>
-    </q-form>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -96,6 +101,7 @@ const CartonDetailView = defineComponent({
     const inputRef = ref(null);
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
+    const myForm = ref();
     bridge.register("closeCartonDetail", () => {
       back();
     });
@@ -161,14 +167,18 @@ const CartonDetailView = defineComponent({
       validPasteInput(inputRef, event, index);
     };
     const onSubmit = () => {
-      const apiParams = {
-        cartonID: cartonID.value,
-      };
-      composeApiParam(apiParams, pageViews.value);
-      bridge.call("addCartonDetail", apiParams, () => {
-        nextTick(() => {
-          reset(inputRef.value);
-        });
+      myForm.value.validate().then((success: any) => {
+        if (success) {
+          const apiParams = {
+            cartonID: cartonID.value,
+          };
+          composeApiParam(apiParams, pageViews.value);
+          bridge.call("addCartonDetail", apiParams, () => {
+            nextTick(() => {
+              reset(inputRef.value);
+            });
+          });
+        }
       });
     };
     const multiWatchSources = [pageViews.value];
@@ -206,25 +216,18 @@ const CartonDetailView = defineComponent({
       scan,
       homeIcon,
       arrowIcon,
+      myForm,
     };
   },
 });
 export default CartonDetailView;
 </script>
 <style lang="scss" scoped>
-// .wrapper {
-//   height: 100vh;
-//   display: flex;
-//   flex-flow: column;
-//   background: rgb(233, 229, 229);
-// }
-// .header {
-//   display: flex;
-//   background: #fff;
-//   justify-content: space-around;
-//   height: 60px;
-//   align-items: center;
-// }
+.content {
+  padding: 0 20px;
+  margin-top: 26px;
+  min-height: 600px;
+}
 .carton-info {
   width: 100%;
   display: flex;
@@ -234,15 +237,43 @@ export default CartonDetailView;
   background: #00243d;
   color: #fff;
   flex-flow: column;
+  margin-bottom: 23px;
+  border-radius: 5px;
+  height: 45px;
 }
-
-.bottom {
-  position: fixed;
-  bottom: 0px;
-  display: flex;
-  background: #42b0d5;
-  color: white;
-  width: 100%;
+.common-input {
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  font-size: 18px;
   height: 50px;
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  &.no-shadow {
+    box-shadow: none;
+  }
+}
+.button-bottom {
+  position: absolute;
+  margin: 0 20px;
+  bottom: 20px;
+  width: calc(100% - 40px);
+}
+.mb-15 {
+  margin-bottom: 20px;
+}
+.item-container {
+  text-align: left;
+  height: 50px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+}
+.mt-23 {
+  margin-top: 20px;
 }
 </style>

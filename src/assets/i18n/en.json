@@ -110,7 +110,11 @@
     },
     "image": {
         "access_image_header": "Cargo Images",
-        "access_image_button": "Add"
+        "access_image_button": "Add",
+        "add_image": "Add Image",
+        "add_image_reason": "Reason",
+        "add_image_save": "Save",
+        "add_image_cancel": "Cancel"
     },
     "dataManagement": {
         "data_management_header": "Data Management"
@@ -137,6 +141,10 @@
     },
     "carton": {
         "mix_carton_header": "Mix Carton",
-        "carton_detail_header": "Carton Detail"
+        "carton_detail_header": "Carton Detail",
+        "carton_detail_save": "Save",
+        "carton_detail_cancel": "Cancel",
+        "mix_carton_add": "Add",
+        "mix_carton_complete": "Complete"
     }
 }

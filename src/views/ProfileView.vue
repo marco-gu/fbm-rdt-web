@@ -172,6 +172,9 @@ const ProfileView = defineComponent({
 export default ProfileView;
 </script>
 <style lang="scss" scoped>
+.profile-list-container {
+  margin-bottom: 10px;
+}
 .list-item {
   margin: 0 23px 23px 23px;
   padding: 8px 15px;

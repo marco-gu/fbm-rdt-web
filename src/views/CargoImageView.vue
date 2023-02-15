@@ -1,86 +1,72 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">{{ pageTitle }}</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("image.add_image") }}
+        </div>
+        <div class="common-toolbar-right">
+          <img :src="homeIcon" @click="home" />
+        </div>
+      </div>
     </div>
-    <q-separator color="grey-5" />
-    <q-form @submit="onSubmit" style="background: #fff">
-      <div
-        style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        "
-      >
-        <span style="padding-left: 1rem; color: black"> Reason </span>
+    <div class="content">
+      <div class="item-container mb-15">
+        {{ $t("image.add_image_reason") }}
         <q-select
           borderless
-          style="width: 150px; margin-right: 20px; padding-left: 50px"
-          bg-color="white"
           v-model="reason"
           :options="options"
           behavior="menu"
         />
       </div>
-      <q-separator color="grey-5" />
       <div v-for="(item, i) in pageViews" :key="i">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          "
-        >
-          <span style="padding-left: 1rem; color: black">
+        <div class="item-container mb-15">
+          <div>
             {{ item.displayFieldName }}
-          </span>
+          </div>
           <q-input
             v-model="item.value"
             clearable
             input-class="text-right"
-            lazy-rules
             borderless
-            style="padding: 0px 16px"
+            dense
+            class="common-input no-shadow"
           >
             <template v-slot:append>
               <q-avatar @click="scan(item.displayFieldName)">
-                <q-icon name="qr_code_scanner" />
+                <q-icon name="qr_code_scanner" size="18px" />
               </q-avatar>
             </template>
           </q-input>
         </div>
-        <q-separator color="grey-5" />
       </div>
-      <div class="bottom">
+    </div>
+    <div class="button-bottom">
+      <q-btn
+        no-caps
+        unelevated
+        @click="save"
+        class="full-width"
+        color="secondary"
+        :label="$t('image.add_image_save')"
+      />
+      <div style="margin-top: 23px">
         <q-btn
           no-caps
-          style="width: 48%"
-          flat
-          push
-          label="Save"
-          @click="save"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          no-caps
-          style="width: 48%"
-          flat
-          push
-          label="Cancel"
+          unelevated
           @click="back"
+          class="full-width"
+          text-color="#757575"
+          color="white"
+          outline
+          :label="$t('image.add_image_cancel')"
         />
       </div>
-    </q-form>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -93,14 +79,17 @@ import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const cartonImageView = defineComponent({
   setup() {
-    const pageTitle = "Add Cargo";
     const router = useRouter();
     const reason = ref("Damage");
     const $q = useQuasar();
     const pageViews = ref([] as any);
     const options = ["Damage", "Other"];
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
     onMounted(() => {
       pageViews.value = [
         {
@@ -145,7 +134,7 @@ const cartonImageView = defineComponent({
       bridge.call("checkSoAndPoExist", param, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          popupErrorMsg($q, "Not exist");
+          popupErrorMsg($q, "PO or SO not exist");
         } else {
           const param2 = {
             cartonID: cartonID,
@@ -159,45 +148,55 @@ const cartonImageView = defineComponent({
       });
     };
     return {
-      pageTitle,
       back,
       home,
       pageViews,
       reason,
       save,
       options,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default cartonImageView;
 </script>
-<style lang="scss">
-.wrapper {
-  height: 100vh;
-  position: relative;
+<style lang="scss" scoped>
+.content {
+  padding: 0 20px;
+  margin-top: 26px;
+  min-height: 600px;
 }
-.header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background-color: #ffffff;
-  z-index: 1;
-  .q-item {
-    background-color: #ffffff;
-    height: 60px;
-    width: 100%;
-  }
-  .title-text {
-    font-size: 21px;
-  }
-}
-.bottom {
-  position: fixed;
-  bottom: 0px;
-  display: flex;
-  background: #42b0d5;
-  color: white;
-  width: 100%;
+.common-input {
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  font-size: 18px;
   height: 50px;
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  &.no-shadow {
+    box-shadow: none;
+  }
+}
+.mb-15 {
+  margin-bottom: 20px;
+}
+.item-container {
+  text-align: left;
+  height: 50px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 0 5px 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+}
+.button-bottom {
+  position: fixed;
+  margin: 0 20px;
+  bottom: 20px;
+  width: calc(100% - 40px);
 }
 </style>

@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <div class="container">
+    <div class="content">
       <div class="scan-card">
         <div class="scan-card__section">
           <div class="scan-card__number">
@@ -148,7 +148,7 @@ const ScanView = defineComponent({
 export default ScanView;
 </script>
 <style lang="scss" scoped>
-.container {
+.content {
   padding: 0 20px;
 }
 .button-bottom {
