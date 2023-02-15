@@ -26,52 +26,35 @@
         </q-input>
       </div>
     </div>
-    <!-- <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">LP List</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <q-separator color="grey-5" />
-    </div>
-    <q-separator color="grey-5" />
 
-    <div class="search q-pa-sm">
-      <q-input v-model="search" outlined dense placeholder="Search" clearable>
-        <template v-slot:append>
-          <q-icon name="search" />
+    <q-pull-to-refresh @refresh="refresh">
+      <div class="content">
+        <template v-if="taskListDisplay.length > 0">
+          <div
+            class="data-list-container row items-center body mb-15"
+            v-for="(item, index) in taskListDisplay"
+            :key="index"
+            @click="onClickItem(item)"
+          >
+            <div class="column" style="width: 90%">
+              <div style="word-wrap: break-word">
+                {{ item.taskId }}
+              </div>
+              <div style="height: 4px"></div>
+              <div>Total: {{ item.expectedCartonNumber }}</div>
+              <div style="height: 4px"></div>
+              <div style="color: #757575">{{ item.finalDatetime }}</div>
+            </div>
+            <div style="width: 10%">
+              <q-icon size="md" name="chevron_right" color="grey" />
+            </div>
+          </div>
         </template>
-      </q-input>
-    </div> -->
-
-    <div>
-      <q-pull-to-refresh @refresh="refresh">
-        <q-list v-for="(item, index) in taskListDisplay" :key="index">
-          <q-item clickable @click="onClickItem(item)">
-            <q-item-section>
-              <q-item-label lines="2" style="word-wrap: break-word">{{
-                item.taskId
-              }}</q-item-label>
-              <q-item-label caption
-                >Total: {{ item.expectedCartonNumber }}</q-item-label
-              >
-              <q-item-label caption>{{ item.finalDatetime }}</q-item-label>
-            </q-item-section>
-
-            <q-item-section side>
-              <q-icon name="chevron_right" color="black" />
-            </q-item-section>
-          </q-item>
-          <q-separator spaced inset />
-        </q-list>
-      </q-pull-to-refresh>
-    </div>
+        <template v-else>
+          <div class="no-record">{{ $t("continue.no_record") }}</div>
+        </template>
+      </div>
+    </q-pull-to-refresh>
   </div>
 </template>
 <script lang="ts">
@@ -165,27 +148,37 @@ const LPListView = defineComponent({
 export default LPListView;
 </script>
 <style lang="scss" scoped>
-// .wrapper {
-//   // background-color: #e5e5e5;
-//   height: 100vh;
-//   .header {
-//     display: flex;
-//     background: #fff;
-//     justify-content: space-around;
-//     height: 60px;
-//     align-items: center;
-//   }
-//   .search {
-//     background: #fff;
-//     height: 60px;
-//     width: 100%;
-//   }
-//   .q-item {
-//     background-color: #fff;
-//     text-align: left;
-//     width: 100%;
-//   }
-// }
+.content {
+  padding: 0 20px;
+}
+
+.data-list-container {
+  padding-left: 15px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  text-align: left;
+  min-height: 64px;
+}
+
+.body {
+  font-size: 15px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #000000;
+  line-height: 18px;
+}
+
+.mb-15 {
+  margin-bottom: 20px;
+}
+.no-record {
+  text-align: center;
+  width: 100%;
+  color: #757575;
+}
 .q-item {
   text-align: left;
   width: 100%;

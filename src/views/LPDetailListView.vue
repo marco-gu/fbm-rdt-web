@@ -13,33 +13,20 @@
         </div>
       </div>
     </div>
-    <!-- <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">LP Detail List</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <q-separator color="grey-5" />
-    </div> -->
-    <q-separator color="grey-5" />
-    <q-item-section class="taskIdHeader">
-      {{ taskId }}
-    </q-item-section>
-    <div>
-      <q-list v-for="(item, index) in filterList" :key="index">
-        <q-item clickable @click="onClickItem(item)">
-          <q-item-section>
-            <q-item-label>CID: {{ item.cartonId }}</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-separator spaced inset />
-      </q-list>
+    <div class="content">
+      <div class="taskIdHeader">
+        {{ taskId }}
+      </div>
+      <div>
+        <div
+          class="data-list-container row items-center body mb-15"
+          v-for="(item, index) in filterList"
+          :key="index"
+          @click="onClickItem(item)"
+        >
+          <div>CID: {{ item.cartonId }}</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -111,37 +98,34 @@ const LPDetailListView = defineComponent({
 export default LPDetailListView;
 </script>
 <style lang="scss" scoped>
-// .wrapper {
-//   .header {
-//     display: flex;
-//     background: #fff;
-//     justify-content: space-around;
-//     height: 60px;
-//     align-items: center;
-//   }
-//   .search {
-//     background: #fff;
-//     height: 60px;
-//     width: 100%;
-//   }
-//   .q-item {
-//     background-color: #ffffff;
-//     text-align: left;
-//     width: 100%;
-//   }
-//   .taskIdHeader {
-//     background: #040000;
-//     color: #ffffff;
-//     height: 44px;
-//   }
-// }
-.q-item {
+.content {
+  padding: 0 20px;
+  margin-top: 26px;
+}
+.data-list-container {
+  padding-left: 15px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   text-align: left;
-  width: 100%;
+  min-height: 64px;
+}
+
+.mb-15 {
+  margin-bottom: 20px;
 }
 .taskIdHeader {
-  background: #040000;
+  margin-bottom: 23px;
+  background-color: #00243d;
+  padding: 6px 15px;
+  font-size: 18px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
   color: #ffffff;
-  height: 44px;
+  line-height: 22px;
+  border-radius: 5px 5px 5px 5px;
+  word-break: break-all;
 }
 </style>
