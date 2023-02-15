@@ -105,7 +105,7 @@ import bridge from "dsbridge";
 import { computed, defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { LP, Carton } from "../models/profile";
-import { useI18n } from "@/plugin/i18nPlugins";
+// import { useI18n } from "@/plugin/i18nPlugins";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
 const DataMgmtView = defineComponent({
@@ -117,7 +117,7 @@ const DataMgmtView = defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const i18n = useI18n();
+    // const i18n = useI18n();
     const taskId = ref(route.query.taskId);
     const pageType = ref("Group");
     const pageTitle = ref("");

@@ -86,14 +86,11 @@
         <div v-else>
           <div style="height: 26px"></div>
           <div v-for="(item, index) in scanDataListDisplay" :key="index">
-            <div class="row">
+            <div class="row mb-15">
               <div class="center" style="width: 6%">
                 <q-checkbox v-model="item.isSelected" />
               </div>
-              <div
-                class="row edit-data-list-container mb-15"
-                style="width: 89%"
-              >
+              <div class="row edit-data-list-container" style="width: 89%">
                 <div style="width: 42%">
                   <div
                     class="cardTask"
@@ -199,7 +196,7 @@
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
-import { useI18n } from "@/plugin/i18nPlugins";
+import { useI18n } from "vue-i18n";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { ScanDataManagement } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
@@ -343,7 +340,6 @@ const DataManagementView = defineComponent({
         dialogMessage.value += "\nConfirm to upload?";
         dialogVisible.value = true;
       } else {
-        i18n.category.value = "MessageCode";
         popupErrorMsg($q, "No record selected");
       }
     };
@@ -365,8 +361,7 @@ const DataManagementView = defineComponent({
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           popupSuccessMsg($q, "Successfully uploaded");
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          i18n.category.value = "MessageCode";
-          const message = i18n.$t(androidResponse.messageCode);
+          const message = i18n.t(androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
         isEditMode.value = false;
@@ -386,12 +381,11 @@ const DataManagementView = defineComponent({
             isEditMode.value = false;
             getScanDataList();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(androidResponse.messageCode);
             popupErrorMsg($q, message);
           }
         });
       } else {
-        i18n.category.value = "MessageCode";
         popupErrorMsg($q, "No record selected");
       }
     };

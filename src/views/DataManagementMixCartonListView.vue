@@ -38,12 +38,13 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { useI18n } from "@/plugin/i18nPlugins";
+// import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import { MixCartonProduct } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+
 const DataManagementMixCartonListView = defineComponent({
   methods: {
     home() {
@@ -51,7 +52,7 @@ const DataManagementMixCartonListView = defineComponent({
     },
   },
   setup() {
-    const i18n = useI18n();
+    // const i18n = useI18n();
     const route = useRoute();
     const router = useRouter();
     const taskId = ref(route.query.taskId);

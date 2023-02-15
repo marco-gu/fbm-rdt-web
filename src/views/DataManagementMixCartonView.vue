@@ -120,7 +120,7 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { useI18n } from "@/plugin/i18nPlugins";
+import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import { defineComponent, onMounted, Ref, ref } from "vue";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
@@ -128,7 +128,6 @@ import {
   ViewDisplayAttribute,
   composeViewElement,
   ProfileElementLevel,
-  composeReg,
 } from "@/utils/profile.render";
 import { ProfileDisplayAttribute, MixCartonProduct } from "@/models/profile";
 import {
@@ -253,13 +252,14 @@ const DataManagementMixCartonView = defineComponent({
     };
 
     const handleSave = () => {
+      showUpdateDialog.value = false;
       const args = composeSaveApiArgs();
       bridge.call("updateCartonProduct", args, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           popupSuccessMsg($q, "Successfully saved");
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.$t(androidResponse.messageCode);
+          const message = i18n.t(androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
       });
@@ -298,6 +298,7 @@ const DataManagementMixCartonView = defineComponent({
       return args;
     };
     const handleDelete = () => {
+      showDeleteDialog.value = false;
       const args = {
         id: mixCartonProduct.value.id,
       };
@@ -313,7 +314,7 @@ const DataManagementMixCartonView = defineComponent({
             },
           });
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.$t(androidResponse.messageCode);
+          const message = i18n.t(androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
       });

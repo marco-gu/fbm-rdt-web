@@ -146,7 +146,7 @@ import { useQuasar } from "quasar";
 import { defineComponent, onMounted, Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Carton, ProfileDisplayAttribute, LP } from "../models/profile";
-import { useI18n } from "@/plugin/i18nPlugins";
+import { useI18n } from "vue-i18n";
 import {
   ViewDisplayAttribute,
   composeViewElement,
@@ -381,6 +381,7 @@ const DataManagementDetailView = defineComponent({
     };
 
     const onSubmit = () => {
+      showUpdateDialog.value = false;
       if (pageType.value === "Group") {
         const apiParams = {
           taskId: taskId.value,
@@ -402,6 +403,7 @@ const DataManagementDetailView = defineComponent({
           }
         });
       } else if (pageType.value === "Detail") {
+        showUpdateDialog.value = false;
         const apiParams = {
           LPID: cartonDetail.lpId,
           CartonID: "",
@@ -419,7 +421,9 @@ const DataManagementDetailView = defineComponent({
               back();
               popupSuccessMsg($q, "Updated Successfully");
             } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-              const message = i18n.$t(androidResponse.messageCode);
+              const message = i18n.t(
+                "messageCode." + androidResponse.messageCode
+              );
               popupErrorMsg($q, message);
             }
           }
@@ -428,6 +432,7 @@ const DataManagementDetailView = defineComponent({
     };
 
     const handleDelete = () => {
+      showDeleteDialog.value = false;
       if (pageType.value === "Group") {
         const args = {
           taskIdList: [taskId.value],
@@ -441,7 +446,9 @@ const DataManagementDetailView = defineComponent({
               path: "/dataManagement",
             });
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupErrorMsg($q, message);
           }
         });
@@ -455,7 +462,9 @@ const DataManagementDetailView = defineComponent({
             popupSuccessMsg($q, "Deleted Successfully");
             back();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.$t(androidResponse.messageCode);
+            const message = i18n.t(
+              "messageCode." + androidResponse.messageCode
+            );
             popupErrorMsg($q, message);
           }
         });
