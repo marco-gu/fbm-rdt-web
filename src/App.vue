@@ -4,15 +4,18 @@
 <script lang="ts">
 import { defineComponent, onMounted, watch } from "vue";
 import bridge from "dsbridge";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { provideI18n } from "./plugin/i18nPlugins";
 import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
+import { routeTableLoggedIn, searchRoute } from "@/router/route-table";
 const App = defineComponent({
   setup() {
     const i18n = useI18n();
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
+    let isLoggedIn = false;
 
     provideI18n({
       locale: "en",
@@ -57,6 +60,7 @@ const App = defineComponent({
     });
 
     bridge.register("reLogin", () => {
+      isLoggedIn = false;
       router.push({ name: "login", params: { message: "TOKEN EXPIRED" } });
     });
     bridge.register("onKeyCodeClick", (keycode: string) => {
@@ -67,6 +71,24 @@ const App = defineComponent({
       bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.locale.value = res;
         store.dispatch("languageModule/setCurrentLang", res);
+      });
+      bridge.call("fetchUserToken", null, (res: string) => {
+        isLoggedIn = !!res;
+      });
+      // override back pressed event
+      bridge.register("onBackPressed", () => {
+        const currentRoute = route.path;
+        if (isLoggedIn) {
+          const matchedItem = searchRoute(routeTableLoggedIn[0], currentRoute);
+          if (matchedItem.parent) {
+            router.push({
+              path: matchedItem.parent.path,
+              query: matchedItem.matched.query,
+            });
+          }
+        } else {
+          router.push("/");
+        }
       });
     });
     // store i18n in store for changing
