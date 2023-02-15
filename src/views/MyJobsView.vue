@@ -26,49 +26,26 @@
         </q-input>
       </div>
     </div>
-    <!-- <div class="header">
-      <q-toolbar class="common-toolbar">
-        <q-btn flat round dense icon="arrow_back" @click="home" />
-        <q-toolbar-title :shrink="false">
-          {{ $t("continue.job_list") }}
-        </q-toolbar-title>
-        <q-space />
-        <q-btn flat round dense icon="home" @click="home" />
-      </q-toolbar>
-      <div class="search">
-        <q-input
-          v-model="search"
-          outlined
-          dense
-          :placeholder="$t('common.search')"
-          clearable
+
+    <div class="content">
+      <template v-if="scanDataListDisplay.length > 0">
+        <div
+          class="data-list-container row items-center body mb-15"
+          v-for="(item, index) in scanDataListDisplay"
+          :key="index"
+          @click="onClickScanTask(item)"
         >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </div>
-    </div> -->
+          <div style="width: 70%">
+            <div style="word-break: break-all">{{ item.taskId }}</div>
+            <div style="height: 8px"></div>
+            <div style="color: #757575">{{ item.updateDatetime }}</div>
+          </div>
 
-    <template v-if="scanDataListDisplay.length > 0">
-      <div
-        class="data-list-container"
-        v-for="(item, index) in scanDataListDisplay"
-        :key="index"
-      >
-        <q-item clickable @click="onClickScanTask(item)">
-          <q-item-section>
-            <q-item-label lines="2" style="word-wrap: break-word">{{
-              item.taskId
-            }}</q-item-label>
-            <q-item-label caption>{{ item.updateDatetime }}</q-item-label>
-          </q-item-section>
-
-          <q-item-section side>
+          <div style="width: 20%; text-align: center">
             <q-circular-progress
               rounded
               show-value
-              size="40px"
+              size="48px"
               :thickness="0.25"
               color="secondary"
               track-color="blue-2"
@@ -78,17 +55,16 @@
                 {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
               </div>
             </q-circular-progress>
-          </q-item-section>
-          <q-item-section side>
-            <q-icon name="chevron_right" color="black" />
-          </q-item-section>
-        </q-item>
-      </div>
-    </template>
-    <template v-else>
-      <div class="no-record">{{ $t("continue.no_record") }}</div>
-    </template>
-
+          </div>
+          <div>
+            <q-icon size="md" name="chevron_right" color="black" />
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <div class="no-record">{{ $t("continue.no_record") }}</div>
+      </template>
+    </div>
     <div class="footer">{{ $t("continue.instruction") }}</div>
   </div>
 </template>
@@ -174,42 +150,22 @@ const MyJobsView = defineComponent({
 export default MyJobsView;
 </script>
 <style lang="scss" scoped>
-// .wrapper {
-//   height: 100%;
-//   position: relative;
-//   padding-bottom: 20px;
-//   min-height: 100vh;
-// }
-// .header {
-//   position: sticky;
-//   top: 0;
-//   width: 100%;
-//   z-index: 1;
-//   background-image: url("../assets/images/lns_bg.png");
-//   background-size: cover;
-//   padding-bottom: 10px;
-//   .q-item {
-//     height: 60px;
-//     width: 100%;
-//   }
-//   .title-text {
-//     font-size: 20px;
-//   }
-//   .search {
-//     margin: 0 20px;
-//     background-color: #ffffff;
-//   }
-// }
+.content {
+  padding: 0 20px;
+}
 .data-list-container {
-  margin: 20px;
+  padding-left: 15px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   background: #ffffff;
   border-radius: 5px;
   box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
   text-align: left;
+  min-height: 85px;
+}
 
-  &:first-of-type {
-    margin-top: 5px;
-  }
+.mb-15 {
+  margin-bottom: 20px;
 }
 .no-record {
   text-align: center;
