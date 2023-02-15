@@ -13,8 +13,7 @@
         </div>
       </div>
     </div>
-    <q-separator color="grey-5" />
-    <div v-if="currentVersion == latestVersion">
+    <div class="item-container" v-if="currentVersion == latestVersion">
       <q-item>
         <q-item-section style="text-align: left">
           <q-item-label>{{
@@ -22,36 +21,32 @@
           }}</q-item-label>
         </q-item-section>
         <q-item-section side>
-          <q-btn flat dense no-caps>v {{ currentVersion }}</q-btn>
+          <q-btn flat dense no-caps>{{ currentVersion }}</q-btn>
         </q-item-section>
       </q-item>
     </div>
-    <div v-else>
-      <q-list>
-        <q-item>
-          <q-item-section style="text-align: left">
-            <q-item-label>{{
-              $t("setting.latest_version_label")
-            }}</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-btn flat dense no-caps>v {{ latestVersion }}</q-btn>
-          </q-item-section>
-        </q-item>
-        <q-separator color="grey-5" />
-        <q-item style="text-align: left; white-space: pre-wrap">
-          {{ latestVersionDetail }}
-        </q-item>
-        <q-separator color="grey-5" />
-      </q-list>
+    <div class="item-container" v-else>
+      <q-item>
+        <q-item-section style="text-align: left">
+          <q-item-label>{{ $t("setting.latest_version_label") }}</q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-btn flat dense no-caps>{{ latestVersion }}</q-btn>
+        </q-item-section>
+      </q-item>
+      <q-separator inset color="#878787" />
+      <q-item style="text-align: left; white-space: pre-wrap">
+        {{ latestVersionDetail }}
+      </q-item>
     </div>
-    <div class="bottom" v-show="currentVersion != latestVersion">
+    <div class="button-container" v-show="currentVersion != latestVersion">
       <q-btn
         no-caps
         flat
         push
         style="width: 100%"
         :label="$t('common.download')"
+        :disable="downloadPending"
         @click="handleDownload"
       />
     </div>
@@ -60,51 +55,45 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import selected from "../assets/icon/selected.svg";
-import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
+import { VersionInfo } from "@/models/profile";
+import { popupErrorMsg } from "@/plugin/popupPlugins";
+import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
 import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
-import { VersionInfo } from "@/models/profile";
-import { useI18n } from "vue-i18n";
 export default {
   name: "SoftwareUpdateView",
-  components: {},
   setup() {
     const $q = useQuasar();
     const i18n = useI18n();
     const route = useRoute();
     const router = useRouter();
-    const currentVersion = ref(route.query.softwareUpdate);
-    const latestVersion = ref("");
-    const homeIcon = homeImg;
     const arrowIcon = arrowImg;
-    // const latestVersionDetail = ref(
-    //   "New functions:\n* use face ID to login\nRepair:\n* repair some bugs"
-    // );
+    const homeIcon = homeImg;
+    const currentVersion = ref(route.query.softwareUpdate);
+    const downloadPending = ref(false);
+    const latestVersion = ref("");
     const latestVersionDetail = ref("");
-
     onMounted(() => {
-      // showLoading($q);
-      // bridge.call("getLatestVersion", null, (res: string) => {
-      //   const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-      //   if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-      //     const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
-      //     latestVersion.value = versionInfo.version;
-      //     latestVersionDetail.value = versionInfo.detail;
-      //   } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-      //     i18n.category.value = "MessageCode";
-      //     const message = i18n.$t(androidResponse.messageCode);
-      //     popupErrorMsg($q, message);
-      //   }
-      //   closeLoading($q);
-      // });
+      showLoading($q);
+      bridge.call("getLatestVersion", null, (res: string) => {
+        closeLoading($q);
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
+          latestVersion.value = versionInfo.version;
+          latestVersionDetail.value = versionInfo.detail;
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
+          popupErrorMsg($q, message);
+        }
+      });
     });
     const back = () => {
       router.push("/setting");
@@ -114,53 +103,52 @@ export default {
     };
     const handleDownload = () => {
       showLoading($q);
+      downloadPending.value = true;
       bridge.call("downloadLatestVersion", null, (res: string) => {
+        closeLoading($q);
+        downloadPending.value = false;
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
-        closeLoading($q);
       });
     };
     return {
+      arrowIcon,
       back,
       currentVersion,
+      downloadPending,
       handleDownload,
       home,
+      homeIcon,
       latestVersion,
       latestVersionDetail,
-      homeIcon,
-      arrowIcon,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
-.wrapper {
+.item-container {
+  margin: 23px;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px 1px rgba(11, 69, 95, 0.08);
+  background-color: #ffffff;
+  font-size: 18px;
+  text-align: left;
+  color: #757575;
+}
+.button-container {
   display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: rgb(233, 229, 229);
-  .header {
-    display: flex;
-    background: #ffffff;
-    justify-content: space-around;
-    height: 60px;
-    align-items: center;
-  }
-  .q-item {
-    background-color: #ffffff;
-    width: 100%;
-  }
-  .bottom {
-    position: fixed;
-    bottom: 0px;
-    display: flex;
-    background: #42b0d5;
-    color: white;
-    width: 100%;
-    height: 50px;
-  }
+  position: fixed;
+  margin-left: 23px;
+  bottom: 30px;
+  width: 88%;
+  height: 49px;
+  border-radius: 3px;
+  background: #42b0d5;
+  color: white;
+  font-size: 20px;
 }
 </style>

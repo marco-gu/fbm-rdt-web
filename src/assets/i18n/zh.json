@@ -7,8 +7,8 @@
         "E91-01-0005": "请输入密码",
         "E91-02-0001": "邮箱不存在!",
         "E92-01-0001": "重复的Carton ID",
-        "E92-02-0001": "下载失败!",
-        "E92-02-0002": "更新失败!",
+        "E92-02-0001": "获取最新版本信息失败!",
+        "E92-02-0002": "下载失败!",
         "E92-99-0001": "网络不通!",
         "E92-99-0002": "请联系管理员!",
         "E92-99-0003": "身份验证信息已过期",
@@ -117,7 +117,15 @@
         "add_image_cancel": "取消"
     },
     "dataManagement": {
-        "data_management_header": "货物管理"
+        "data_management_header": "货物管理",
+        "group_title": "数据管理/组",
+        "detail_title": "数据管理/详情",
+        "mix_title": "数据管理/Mix",
+        "no_record": "无数据.",
+        "upload": "上传",
+        "group_view": "组视图",
+        "detail_view": "详情视图",
+        "mix": "Mix"
     },
     "setting": {
         "setting_header": "设置",

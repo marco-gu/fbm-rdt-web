@@ -1,39 +1,38 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">{{ pageTitle }}</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <div class="task-id">
-        <span>{{ taskId }}</span>
-      </div>
-      <div class="mix-carton-header row">
-        <div class="col-4">UPC</div>
-        <div class="col-4">QTY</div>
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("dataManagement.mix_title") }}
+        </div>
+        <div class="common-toolbar-right">
+          <img :src="homeIcon" @click="home" />
+        </div>
       </div>
     </div>
-    <div class="mix-carton-list-container">
-      <q-list v-for="(item, index) in mixCartonListDisplay" :key="index">
-        <q-item clickable @click="onClickMixCarton(item)">
-          <q-item-section class="col-4">
-            <q-item-label>{{ item.upc }}</q-item-label>
-          </q-item-section>
-          <q-item-section class="col-4">
-            <q-item-label>{{ item.quantity }}</q-item-label>
-          </q-item-section>
-          <q-item-section side class="col-3">
-            <q-icon name="chevron_right" color="black" />
-          </q-item-section>
-        </q-item>
-      </q-list>
+
+    <div class="content">
+      <div class="taskIdHeader">
+        {{ taskId }}
+      </div>
+      <div
+        class="data-list-container row items-center body mb-15"
+        v-for="(item, index) in mixCartonListDisplay"
+        :key="index"
+        @click="onClickMixCarton(item)"
+      >
+        <div class="column" style="width: 90%">
+          <div>UPC: {{ item.upc }}</div>
+          <div style="height: 8px"></div>
+          <div>QTY: {{ item.quantity }}</div>
+        </div>
+        <div style="width: 10%">
+          <q-icon size="md" name="chevron_right" color="grey" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -43,6 +42,8 @@ import { useI18n } from "@/plugin/i18nPlugins";
 import { useRoute, useRouter } from "vue-router";
 import { MixCartonProduct } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const DataManagementMixCartonListView = defineComponent({
   methods: {
     home() {
@@ -57,11 +58,9 @@ const DataManagementMixCartonListView = defineComponent({
     const cartonId = ref(route.query.cartonId);
     const mixCartonListDisplay: Ref<MixCartonProduct[]> = ref([]);
     const pageTitle = ref("");
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.category.value = "DataManagementView";
-      pageTitle.value = i18n.$t("pageTitle");
-    });
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
+
     onMounted(() => {
       getMixCartonList();
     });
@@ -101,40 +100,46 @@ const DataManagementMixCartonListView = defineComponent({
       pageTitle,
       router,
       taskId,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default DataManagementMixCartonListView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100vh;
-  position: relative;
-  .header {
-    display: sticky;
-    top: 0;
-    width: 100%;
-    background-color: #ffffff;
-    z-index: 1;
-    .task-id {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 40px;
-      background: #00243d;
-      color: #fff;
-    }
-    .mix-carton-header {
-      align-items: center;
-      height: 40px;
-      background: #00243d;
-      color: #fff;
-    }
-  }
-  .q-item {
-    background-color: #ffffff;
-    height: 60px;
-    width: 100%;
-  }
+.content {
+  padding: 0 20px;
+  margin-top: 26px;
+}
+.data-list-container {
+  padding-left: 15px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  text-align: left;
+  min-height: 64px;
+}
+.mb-15 {
+  margin-bottom: 20px;
+}
+.taskIdHeader {
+  margin-bottom: 23px;
+  background-color: #00243d;
+  padding: 6px 15px;
+  font-size: 18px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 22px;
+  border-radius: 5px 5px 5px 5px;
+  word-break: break-all;
+}
+.q-item {
+  background-color: #ffffff;
+  height: 60px;
+  width: 100%;
 }
 </style>

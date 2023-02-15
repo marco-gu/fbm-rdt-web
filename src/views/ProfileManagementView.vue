@@ -12,7 +12,7 @@
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
-      <div class="search">
+      <div class="search" v-show="!isEditMode">
         <q-input
           v-model="search"
           outlined
@@ -26,44 +26,6 @@
         </q-input>
       </div>
     </div>
-    <!-- <div class="header">
-      <q-item clickable>
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span class="title-text">{{ pageTitle }}</span></q-item-section
-        >
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <q-separator color="grey-5" />
-      <div class="search q-pa-sm" v-show="!isEditMode">
-=======
-      <q-toolbar class="common-toolbar">
-        <q-btn flat round dense icon="arrow_back" @click="home" />
-        <q-toolbar-title :shrink="false">
-          {{ $t("profile.profile") }}
-        </q-toolbar-title>
-        <q-space />
-        <q-btn flat round dense icon="home" @click="home" />
-      </q-toolbar>
-      <div class="search" v-show="!isEditMode">
->>>>>>> 8179849ab2723795a32c9223611c5b17a276271a
-        <q-input
-          v-model="search"
-          outlined
-          dense
-          :placeholder="$t('common.search')"
-          clearable
-        >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </div>
-    </div> -->
     <div class="profile-list-container" v-if="isEditMode">
       <q-list v-for="(item, index) in profileListDisplay" :key="index">
         <div class="edit-item-container row">

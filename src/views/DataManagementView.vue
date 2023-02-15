@@ -12,7 +12,7 @@
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
-      <div class="search">
+      <div class="search" v-show="!isEditMode">
         <q-input
           v-model="search"
           outlined
@@ -26,125 +26,154 @@
         </q-input>
       </div>
     </div>
-    <div class="data-list-container" v-if="isEditMode">
-      <q-list v-for="(item, index) in scanDataListDisplay" :key="index">
-        <div>
-          <q-item>
-            <q-item-section side>
-              <q-checkbox v-model="item.isSelected" />
-            </q-item-section>
-            <q-item-section style="text-align: left">
-              <q-item-label lines="2" style="word-wrap: break-word">{{
-                item.taskId
-              }}</q-item-label>
-              <q-item-label caption
-                >{{ item.updateDatetime
-                }}<q-img
-                  v-show="item.uploadStatus == 1"
-                  no-spinner
-                  style="width: 17.3px; height: 11px; margin-left: 5px"
-                  :src="uploaded" />
-                <q-img
-                  v-show="item.finishStatus == 1"
-                  no-spinner
-                  style="width: 17.3px; height: 11px; margin-left: 5px"
-                  :src="finished"
-              /></q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-circular-progress
-                rounded
-                show-value
-                size="60px"
-                thickness="0.25"
-                color="blue-4"
-                track-color="blue-2"
-                :value="(item.scannedCartonNumber / item.allCartonNumber) * 100"
-              >
-                <div style="color: #00243d">
-                  {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
+
+    <template v-if="scanDataListDisplay.length > 0">
+      <div class="content">
+        <div v-if="isEditMode == false">
+          <div
+            class="data-list-container mb-15"
+            v-for="(item, index) in scanDataListDisplay"
+            :key="index"
+          >
+            <div
+              class="row"
+              v-touch-hold:1800="handleHold"
+              clickable
+              @click="onClickScanTask(item)"
+            >
+              <div style="width: 38%">
+                <div class="cardTask" v-html="formatTaskId(item.taskId)"></div>
+                <div style="height: 8px"></div>
+                <div class="cardTime">
+                  {{ formatDate(item.updateDatetime) }}
                 </div>
-              </q-circular-progress>
-            </q-item-section>
-          </q-item>
-          <q-separator spaced inset />
-        </div>
-      </q-list>
-    </div>
-    <div class="data-list-container" v-else v-touch-hold:1800="handleHold">
-      <q-list v-for="(item, index) in scanDataListDisplay" :key="index">
-        <div>
-          <q-item clickable @click="onClickScanTask(item)">
-            <q-item-section style="text-align: left">
-              <q-item-label lines="2" style="word-wrap: break-word">{{
-                item.taskId
-              }}</q-item-label>
-              <q-item-label caption
-                >{{ item.updateDatetime
-                }}<q-img
-                  v-show="item.uploadStatus == 1"
-                  no-spinner
-                  style="width: 17.3px; height: 11px; margin-left: 5px"
-                  :src="uploaded" />
-                <q-img
-                  v-show="item.finishStatus == 1"
-                  no-spinner
-                  style="width: 17.3px; height: 11px; margin-left: 5px"
-                  :src="finished"
-              /></q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-circular-progress
-                rounded
-                show-value
-                size="60px"
-                thickness="0.25"
-                color="blue-4"
-                track-color="blue-2"
-                :value="(item.scannedCartonNumber / item.allCartonNumber) * 100"
-              >
-                <div style="color: #00243d">
+              </div>
+              <div class="center process">
+                <div>
                   {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
+                  <!-- 9999/9999 -->
                 </div>
-              </q-circular-progress>
-            </q-item-section>
-            <q-item-section side>
-              <q-icon name="chevron_right" color="black" />
-            </q-item-section>
-          </q-item>
-          <q-separator spaced inset />
+              </div>
+              <div class="center" style="text-align: center; width: 28%">
+                <div class="column center">
+                  <q-img
+                    width="26px"
+                    height="26px"
+                    no-spinner
+                    :src="item.finshStatus == 1 ? finishedDisabled : finished"
+                  />
+                  <div style="height: 8px"></div>
+                  <div class="center" style="font-size: 9px">FINISHED</div>
+                </div>
+                <div style="width: 8px"></div>
+                <div class="column center">
+                  <q-img
+                    width="26px"
+                    height="26px"
+                    no-spinner
+                    :src="item.uploadStatus == 1 ? uploadedDisabled : uploaded"
+                  />
+                  <div style="height: 8px"></div>
+                  <div class="center" style="font-size: 9px">UPLOADED</div>
+                </div>
+              </div>
+              <div class="center" style="width: 8%">
+                <q-img width="8px" height="18px" no-spinner :src="arrowRight" />
+              </div>
+            </div>
+          </div>
         </div>
-      </q-list>
-    </div>
-    <div class="bottom" v-show="isEditMode">
-      <q-btn
-        no-caps
-        style="width: 48%"
-        flat
-        push
-        :label="uploadLabel"
-        @click="handleUpload"
-      />
-      <q-separator vertical inset color="white" />
-      <q-btn
-        no-caps
-        style="width: 48%"
-        flat
-        push
-        :label="deleteLabel"
-        @click="handleDelete"
-      />
-      <q-separator vertical inset color="white" />
-      <q-btn
-        no-caps
-        style="width: 52%"
-        flat
-        type="submit"
-        push
-        :label="cancelLabel"
-        @click="cancelEditMode"
-      />
-    </div>
+        <div v-else>
+          <div style="height: 26px"></div>
+          <div v-for="(item, index) in scanDataListDisplay" :key="index">
+            <div class="row">
+              <div class="center" style="width: 6%">
+                <q-checkbox v-model="item.isSelected" />
+              </div>
+              <div
+                class="row edit-data-list-container mb-15"
+                style="width: 89%"
+              >
+                <div style="width: 42%">
+                  <div
+                    class="cardTask"
+                    v-html="formatTaskId(item.taskId)"
+                  ></div>
+                  <div style="height: 8px"></div>
+                  <div class="cardTime">
+                    {{ formatDate(item.updateDatetime) }}
+                  </div>
+                </div>
+                <div class="center process">
+                  <div>
+                    {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
+                    <!-- 9999/9999 -->
+                  </div>
+                </div>
+                <div class="center" style="text-align: center; width: 32%">
+                  <div class="column center">
+                    <q-img
+                      width="26px"
+                      height="26px"
+                      no-spinner
+                      :src="item.finshStatus == 1 ? finishedDisabled : finished"
+                    />
+                    <div style="height: 8px"></div>
+                    <div class="center" style="font-size: 9px">FINISHED</div>
+                  </div>
+                  <div style="width: 8px"></div>
+                  <div class="column center">
+                    <q-img
+                      width="26px"
+                      height="26px"
+                      no-spinner
+                      :src="
+                        item.uploadStatus == 1 ? uploadedDisabled : uploaded
+                      "
+                    />
+                    <div style="height: 8px"></div>
+                    <div class="center" style="font-size: 9px">UPLOADED</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="button-bottom row" v-show="isEditMode">
+          <q-btn
+            no-caps
+            class="bottomButton col"
+            flat
+            push
+            :label="$t('dataManagement.upload')"
+            @click="handleUpload"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            no-caps
+            class="bottomButton col"
+            flat
+            push
+            :label="$t('common.delete')"
+            @click="handleDelete"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            no-caps
+            class="bottomButton col"
+            flat
+            type="submit"
+            push
+            :label="$t('common.cancel')"
+            @click="cancelEditMode"
+          />
+        </div>
+      </div>
+    </template>
+    <template v-else>
+      <div class="no-record">{{ $t("continue.no_record") }}</div>
+    </template>
+
     <q-dialog v-model="dialogVisible" persistent>
       <q-card>
         <q-card-section class="row items-center">
@@ -178,8 +207,13 @@ import { useI18n } from "@/plugin/i18nPlugins";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { ScanDataManagement } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
-import uploadedUrl from "../assets/images/uploaded.png";
-import finishedUrl from "../assets/images/finished.png";
+import finishedUrl from "../assets/icon/finished.svg";
+import finishedDisableUrl from "../assets/icon/finished_disable.svg";
+import uploadedUrl from "../assets/icon/uploaded.svg";
+import uploadedDisableUrl from "../assets/icon/uploaded_disable.svg";
+import arrowRightUrl from "../assets/icon/arrow_right.svg";
+import checkedUrl from "../assets/icon/checked.svg";
+import uncheckedUrl from "../assets/icon/un_checked.svg";
 import {
   AndroidResponse,
   AndroidResponseStatus,
@@ -200,8 +234,17 @@ const DataManagementView = defineComponent({
   setup() {
     const router = useRouter();
     const i18n = useI18n();
-    const uploaded = uploadedUrl;
+
+    const finishedDisabled = finishedDisableUrl;
     const finished = finishedUrl;
+
+    const uploadedDisabled = uploadedDisableUrl;
+    const uploaded = uploadedUrl;
+
+    const arrowRight = arrowRightUrl;
+    const checkedIcon = checkedUrl;
+    const uncheckedIcon = uncheckedUrl;
+
     const $q = useQuasar();
     const search = ref("");
     const isEditMode = ref(false);
@@ -216,22 +259,10 @@ const DataManagementView = defineComponent({
     const searchPlaceHolder = ref("");
     const statusLabel = ref("");
     const uploadLabel = ref("");
-    const uploadedLabel = ref("");
+
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.category.value = "DataManagementView";
-      pageTitle.value = i18n.$t("pageTitle");
-      cancelLabel.value = i18n.$t("cancelLabel");
-      deleteLabel.value = i18n.$t("deleteLabel");
-      finishedLabel.value = i18n.$t("finishedLabel");
-      pendingLabel.value = i18n.$t("pendingLabel");
-      searchPlaceHolder.value = i18n.$t("searchPlaceHolder");
-      statusLabel.value = i18n.$t("statusLabel");
-      uploadLabel.value = i18n.$t("uploadLabel");
-      uploadedLabel.value = i18n.$t("uploadedLabel");
-    });
+
     const dialogVisible = ref(false);
     const dialogMessage = ref("");
     onMounted(() => {
@@ -372,6 +403,32 @@ const DataManagementView = defineComponent({
     const cancelEditMode = () => {
       isEditMode.value = false;
     };
+
+    const formatTaskId = (taskId: string) => {
+      const a = taskId.split("_").join("<br/>");
+      return a;
+    };
+
+    // ✅ Format using reusable function
+    function padTo2Digits(num: number) {
+      return num.toString().padStart(2, "0");
+    }
+
+    // 👇️ format as "YYYY-MM-DD hh:mm"
+    function formatDate(dateStr: string) {
+      const date = new Date(dateStr);
+      return (
+        [
+          date.getFullYear(),
+          padTo2Digits(date.getMonth() + 1),
+          padTo2Digits(date.getDate()),
+        ].join("-") +
+        " " +
+        [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes())].join(
+          ":"
+        )
+      );
+    }
     return {
       back,
       cancelEditMode,
@@ -395,44 +452,112 @@ const DataManagementView = defineComponent({
       searchPlaceHolder,
       status,
       statusLabel,
-      uploadedLabel,
       uploadLabel,
       uploaded,
+      uploadedDisabled,
       finished,
       homeIcon,
       arrowIcon,
+      finishedDisabled,
+      arrowRight,
+      checkedIcon,
+      uncheckedIcon,
+      formatTaskId,
+      formatDate,
     };
   },
 });
 export default DataManagementView;
 </script>
 <style lang="scss" scoped>
-// .wrapper {
-//   height: 100vh;
-//   position: relative;
-// }
-// .header {
-//   position: sticky;
-//   top: 0;
-//   width: 100%;
-//   background-color: #ffffff;
-//   z-index: 1;
-//   .q-item {
-//     background-color: #ffffff;
-//     height: 60px;
-//     width: 100%;
-//   }
-//   .title-text {
-//     font-size: 21px;
-//   }
-// }
-.bottom {
+.content {
+  padding: 0 20px;
+}
+.data-list-container {
+  padding-left: 15px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  text-align: left;
+  min-height: 99px;
+  &:first-of-type {
+    margin-top: 5px;
+  }
+}
+.mb-15 {
+  margin-bottom: 20px;
+}
+.edit-data-list-container {
+  margin-left: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  text-align: left;
+  min-height: 99px;
+  &:first-of-type {
+    margin-top: 5px;
+  }
+}
+.no-record {
+  text-align: center;
+  width: 100%;
+  color: #757575;
+}
+.footer {
+  position: absolute;
+  bottom: 10px;
+  text-align: center;
+  width: 100%;
+  color: #757575;
+}
+.button-bottom {
   position: fixed;
-  bottom: 0px;
+  bottom: 20px;
+  width: calc(100% - 40px);
+}
+
+.center {
   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.button-bottom {
+  position: fixed;
+  bottom: 20px;
+  width: calc(100% - 40px);
   background: #42b0d5;
   color: white;
-  width: 100%;
-  height: 50px;
+  font-size: 20px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 23px;
+}
+
+.cardTask {
+  font-size: 15px;
+  line-height: 18px;
+  font-family: Maersk Text-Light, Maersk Text;
+  color: #000000;
+  font-weight: 400;
+}
+
+.cardTime {
+  font-size: 15px;
+  font-family: Maersk Text-Light, Maersk Text;
+  color: #757575;
+}
+
+.process {
+  width: 26%;
+  font-size: 15px;
+  font-family: Maersk Text-Bold, Maersk Text;
+  font-weight: bold;
 }
 </style>

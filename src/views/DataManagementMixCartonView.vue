@@ -1,34 +1,28 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <q-item clickable style="width: 100%">
-        <q-item-section avatar @click="back">
-          <q-icon name="arrow_back" />
-        </q-item-section>
-        <q-item-section>
-          <span style="font-size: 21px">{{ pageTitle }}</span>
-        </q-item-section>
-        <q-item-section avatar @click="home">
-          <q-icon name="home" />
-        </q-item-section>
-      </q-item>
-      <div class="task-id">
-        <span>{{ taskId }}</span>
+      <div class="common-toolbar">
+        <div class="common-toolbar-left">
+          <img :src="arrowIcon" @click="back" />
+        </div>
+        <div class="common-toolbar-middle">
+          {{ $t("dataManagement.mix_title") }}
+        </div>
+        <div class="common-toolbar-right">
+          <img :src="homeIcon" @click="home" />
+        </div>
       </div>
     </div>
+    <div class="taskIdHeader">
+      {{ taskId }}
+    </div>
     <q-form @submit="handleSave">
-      <div class="mix-carton-container">
+      <div class="content">
         <div v-for="(item, i) in dynamicViews" :key="i">
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-            "
-          >
-            <span style="padding-left: 1rem; color: black">
+          <div class="item-container mb-15">
+            <div class="input-title">
               {{ item.displayFieldName }}
-            </span>
+            </div>
             <q-input
               ref="inputRef"
               v-model="item.model"
@@ -39,7 +33,8 @@
               lazy-rules
               :rules="[item.valid]"
               borderless
-              style="padding: 0px 16px"
+              dense
+              class="common-input no-shadow"
             >
               <template v-slot:append>
                 <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
@@ -48,37 +43,40 @@
               </template>
             </q-input>
           </div>
-          <q-separator color="grey-5" />
         </div>
-      </div>
-      <div class="bottom">
-        <q-btn
-          no-caps
-          style="width: 48%"
-          flat
-          push
-          :label="saveLabel"
-          type="submit"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          no-caps
-          style="width: 48%"
-          flat
-          push
-          :label="deleteLabel"
-          @click="handleDelete"
-        />
-        <q-separator vertical inset color="white" />
-        <q-btn
-          no-caps
-          style="width: 48%"
-          flat
-          type="submit"
-          push
-          :label="cancelLabel"
-          @click="back"
-        />
+
+        <div class="button-bottom row">
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            :label="$t('common.save')"
+            type="submit"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            push
+            :label="$t('common.delete')"
+            @click="handleDelete"
+          />
+          <q-separator vertical inset color="white" />
+          <q-btn
+            class="col"
+            no-caps
+            style="background: #42b0d5; color: white"
+            flat
+            type="submit"
+            push
+            :label="$t('common.cancel')"
+            @click="back"
+          />
+        </div>
       </div>
     </q-form>
   </div>
@@ -101,6 +99,8 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
+import homeImg from "../assets/images/home.svg";
+import arrowImg from "../assets/images/arrow.svg";
 const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
@@ -129,14 +129,9 @@ const DataManagementMixCartonView = defineComponent({
     const cancelLabel = ref("");
     const deleteLabel = ref("");
     const saveLabel = ref("");
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-      i18n.category.value = "DataManagementView";
-      pageTitle.value = i18n.$t("pageTitle");
-      cancelLabel.value = i18n.$t("cancelLabel");
-      deleteLabel.value = i18n.$t("deleteLabel");
-      saveLabel.value = i18n.$t("saveLabel");
-    });
+    const homeIcon = homeImg;
+    const arrowIcon = arrowImg;
+
     onMounted(() => {
       if (route.query.taskId) {
         scanType.value =
@@ -300,43 +295,65 @@ const DataManagementMixCartonView = defineComponent({
       saveLabel,
       scan,
       taskId,
+      homeIcon,
+      arrowIcon,
     };
   },
 });
 export default DataManagementMixCartonView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100vh;
-  position: relative;
-  .header {
-    display: sticky;
-    top: 0;
-    width: 100%;
-    background-color: #ffffff;
-    z-index: 1;
+.content {
+  padding: 0 20px;
+  margin-top: 26px;
+}
+.taskIdHeader {
+  margin-top: 28px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 23px;
+  background-color: #00243d;
+  padding: 6px 15px;
+  font-size: 18px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 22px;
+  border-radius: 5px 5px 5px 5px;
+  word-break: break-all;
+}
+
+.common-input {
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  font-size: 18px;
+  height: 50px;
+  padding-top: 5px;
+  padding-left: 15px;
+  &.no-shadow {
+    box-shadow: none;
   }
-  .q-item {
-    background-color: #ffffff;
-    height: 60px;
-    width: 100%;
-  }
-  .task-id {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    background: #00243d;
-    color: #fff;
-  }
-  .bottom {
-    position: fixed;
-    bottom: 0px;
-    display: flex;
-    background: #42b0d5;
-    color: white;
-    width: 100%;
-    height: 50px;
-  }
+}
+
+.mb-15 {
+  margin-bottom: 20px;
+}
+
+.item-container {
+  text-align: left;
+  height: 50px;
+  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+  border-radius: 5px;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.button-bottom {
+  position: fixed;
+  bottom: 20px;
+  width: calc(100% - 40px);
 }
 </style>
