@@ -188,7 +188,7 @@
             {{ $t("common.cancel") }}
           </button>
           <button class="dialog-button confirm" @click="onConfirm">
-            {{ $t("common.save") }}
+            {{ $t("common.confirm") }}
           </button>
         </div>
       </div>
@@ -386,7 +386,6 @@ const DataManagementView = defineComponent({
             isEditMode.value = false;
             getScanDataList();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            i18n.category.value = "MessageCode";
             const message = i18n.$t(androidResponse.messageCode);
             popupErrorMsg($q, message);
           }

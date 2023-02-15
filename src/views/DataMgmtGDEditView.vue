@@ -419,7 +419,6 @@ const DataManagementDetailView = defineComponent({
               back();
               popupSuccessMsg($q, "Updated Successfully");
             } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-              i18n.category.value = "MessageCode";
               const message = i18n.$t(androidResponse.messageCode);
               popupErrorMsg($q, message);
             }
@@ -442,7 +441,6 @@ const DataManagementDetailView = defineComponent({
               path: "/dataManagement",
             });
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            i18n.category.value = "MessageCode";
             const message = i18n.$t(androidResponse.messageCode);
             popupErrorMsg($q, message);
           }
@@ -457,7 +455,6 @@ const DataManagementDetailView = defineComponent({
             popupSuccessMsg($q, "Deleted Successfully");
             back();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            i18n.category.value = "MessageCode";
             const message = i18n.$t(androidResponse.messageCode);
             popupErrorMsg($q, message);
           }

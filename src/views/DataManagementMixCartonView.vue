@@ -259,7 +259,6 @@ const DataManagementMixCartonView = defineComponent({
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           popupSuccessMsg($q, "Successfully saved");
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          i18n.category.value = "MessageCode";
           const message = i18n.$t(androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
@@ -314,7 +313,6 @@ const DataManagementMixCartonView = defineComponent({
             },
           });
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          i18n.category.value = "MessageCode";
           const message = i18n.$t(androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
