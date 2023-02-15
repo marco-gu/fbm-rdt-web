@@ -394,7 +394,7 @@ const DataManagementView = defineComponent({
     };
 
     const formatTaskId = (taskId: string) => {
-      const a = taskId.split("_").join("<br/>");
+      const a = taskId.split("+").join("<br/>");
       return a;
     };
 
