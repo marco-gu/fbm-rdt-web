@@ -83,7 +83,7 @@ const App = defineComponent({
           if (matchedItem.parent) {
             router.push({
               path: matchedItem.parent.path,
-              query: matchedItem.matched.query,
+              query: matchedItem.matched.query || route.query || null,
             });
           }
         } else {
