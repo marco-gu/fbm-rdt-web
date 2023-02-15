@@ -167,6 +167,15 @@ export default MyJobsView;
 .mb-15 {
   margin-bottom: 20px;
 }
+
+.body {
+  font-size: 15px;
+  font-family: Maersk Text-Regular, Maersk Text;
+  font-weight: 400;
+  color: #000000;
+  line-height: 18px;
+}
+
 .no-record {
   text-align: center;
   width: 100%;
