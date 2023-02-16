@@ -142,6 +142,7 @@ export type LP = {
   so: string;
   po: string;
   sku: string;
+  isMix: number;
   scannedCartonNumber: number;
   expectedCartonNumber: number;
   scanType: number;

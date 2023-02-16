@@ -20,7 +20,8 @@
 
     <div class="content">
       <div class="taskIdHeader">
-        {{ taskId }}
+        <div v-if="isMix == 1">{{ taskId }} mix carton</div>
+        <div v-else>{{ taskId }}</div>
       </div>
       <q-form @submit="showUpdateDialog = true">
         <div v-for="(item, i) in pageViews" :key="i">
@@ -66,7 +67,7 @@
         <div class="button-bottom row">
           <q-btn
             v-show="pageType == 'Detail'"
-            class="col"
+            :class="[isMix ? 'button-enable' : 'button-disable', 'col']"
             no-caps
             flat
             push
@@ -80,7 +81,7 @@
             color="white"
           />
           <q-btn
-            class="col"
+            class="col button-enable"
             no-caps
             flat
             push
@@ -89,7 +90,7 @@
           />
           <q-separator vertical inset color="white" />
           <q-btn
-            class="col"
+            class="col button-enable"
             no-caps
             flat
             push
@@ -182,10 +183,7 @@ const DataManagementDetailView = defineComponent({
       localStorage.getItem("dataMgmtCarton") as never
     ) as Carton; //前一个页面存的carton, 给Detail用
 
-    const pageTitle = ref("");
-    const deleteLabel = ref("");
-    const saveLabel = ref("");
-    const mixLabel = ref("");
+    const isMix = ref(false);
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
     const showDeleteDialog = ref(false);
@@ -203,13 +201,15 @@ const DataManagementDetailView = defineComponent({
     const search = ref("");
 
     const goToMix = () => {
-      router.push({
-        path: "/dataManagementMixCartonList",
-        query: {
-          taskId: taskId.value,
-          cartonId: cartonDetail.cartonId,
-        },
-      });
+      if (isMix.value) {
+        router.push({
+          path: "/dataManagementMixCartonList",
+          query: {
+            taskId: taskId.value,
+            cartonId: cartonDetail.cartonId,
+          },
+        });
+      }
     };
 
     const back = () => {
@@ -228,6 +228,9 @@ const DataManagementDetailView = defineComponent({
       };
       bridge.call("fetchTaskByTaskId", args, (res: string) => {
         lpModel = JSON.parse(res) as LP;
+        if (lpModel.isMix == 1) {
+          isMix.value = true;
+        }
       });
     };
 
@@ -501,14 +504,11 @@ const DataManagementDetailView = defineComponent({
       onSubmit,
       validPaste,
       scan,
-      pageTitle,
-      deleteLabel,
-      saveLabel,
-      mixLabel,
       homeIcon,
       arrowIcon,
       showDeleteDialog,
       showUpdateDialog,
+      isMix,
     };
   },
 });
@@ -537,14 +537,23 @@ export default DataManagementDetailView;
   bottom: 20px;
   width: calc(100% - 40px);
   background: #42b0d5;
-  color: white;
+
   font-size: 20px;
   font-family: Maersk Text-Regular, Maersk Text;
   font-weight: 400;
-  color: #ffffff;
+
   line-height: 23px;
   border-radius: 3px;
 }
+
+.button-enable {
+  color: #ffffff;
+}
+
+.button-disable {
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .input-title {
   font-size: 18px;
   font-family: Maersk Text-Regular, Maersk Text;

@@ -14,9 +14,7 @@
       </div>
     </div>
     <div class="content">
-      <div class="taskIdHeader">
-        {{ taskId }}
-      </div>
+      <div class="taskIdHeader">{{ taskId }} mix carton</div>
       <q-form @submit="showUpdateDialog = true">
         <div v-for="(item, i) in dynamicViews" :key="i">
           <div class="item-container mb-15">

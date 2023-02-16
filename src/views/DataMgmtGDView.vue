@@ -19,7 +19,8 @@
     </div>
     <div class="content">
       <div class="taskIdHeader">
-        {{ taskId }}
+        <div v-if="taskDisplay.isMix == 1">{{ taskId }} mix carton</div>
+        <div v-else>{{ taskId }}</div>
       </div>
 
       <div v-show="pageType == 'Group'">
