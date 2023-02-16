@@ -35,28 +35,22 @@
           :key="index"
           @click="onClickScanTask(item)"
         >
-          <div style="width: 70%">
+          <div style="width: 57%">
             <div style="word-break: break-all">{{ item.taskId }}</div>
             <div style="height: 8px"></div>
             <div style="color: #757575">{{ item.updateDatetime }}</div>
           </div>
-
-          <div style="width: 20%; text-align: center">
-            <q-circular-progress
-              rounded
-              show-value
-              size="48px"
-              :thickness="0.25"
-              color="secondary"
-              track-color="blue-2"
+          <div style="width: 8%"></div>
+          <div style="width: 25%">
+            <CircularProgressComponent
               :value="(item.scannedCartonNumber / item.allCartonNumber) * 100"
             >
-              <div>
+              <div class="text-bold">
                 {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
               </div>
-            </q-circular-progress>
+            </CircularProgressComponent>
           </div>
-          <div>
+          <div style="width: 10%">
             <q-icon size="md" name="chevron_right" color="black" />
           </div>
         </div>
@@ -71,12 +65,15 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { useRouter } from "vue-router";
-
+import CircularProgressComponent from "@/components/CircularProgressComponent.vue";
 import { ScanDataManagement } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
 const MyJobsView = defineComponent({
+  components: {
+    CircularProgressComponent,
+  },
   methods: {
     home() {
       this.router.push("/home");
@@ -90,6 +87,7 @@ const MyJobsView = defineComponent({
     const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
+
     onMounted(() => {
       getScanDataList();
     });
@@ -174,6 +172,14 @@ export default MyJobsView;
   font-weight: 400;
   color: #000000;
   line-height: 18px;
+}
+
+.text-bold {
+  font-size: 14px;
+  font-family: Maersk Text-Bold, Maersk Text;
+  font-weight: bold;
+  color: #00243d;
+  line-height: 16px;
 }
 
 .no-record {
