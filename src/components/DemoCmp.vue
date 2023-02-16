@@ -16,7 +16,6 @@ const DemoCmp = defineComponent({
   setup(props, context) {
     onMounted(() => {
       const circles: HTMLCollection = document.getElementsByTagName("circle");
-      console.log(111, circles[0]);
       for (let i = 0; i < circles.length; i++) {
         circles[i].setAttribute("stroke-linecap", "round");
       }
