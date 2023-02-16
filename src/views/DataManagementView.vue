@@ -88,7 +88,11 @@
           <div v-for="(item, index) in scanDataListDisplay" :key="index">
             <div class="row mb-15">
               <div class="center" style="width: 6%">
-                <q-checkbox v-model="item.isSelected" />
+                <q-checkbox
+                  v-model="item.isSelected"
+                  checked-icon="app:checkboxOn"
+                  unchecked-icon="app:checkboxOff"
+                />
               </div>
               <div class="row edit-data-list-container" style="width: 89%">
                 <div style="width: 42%">
