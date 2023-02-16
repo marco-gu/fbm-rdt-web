@@ -26,15 +26,15 @@
         </q-input>
       </div>
     </div>
-    <div class="profile-list-container" v-if="isEditMode">
+    <div class="edit-list-container" v-if="isEditMode">
       <q-list v-for="(item, index) in profileListDisplay" :key="index">
-        <div class="edit-item-container row">
+        <div class="item-container row">
           <q-checkbox
-            class="item-checkbox"
-            color="black"
             v-model="item.isSelected"
+            checked-icon="app:checkboxOn"
+            unchecked-icon="app:checkboxOff"
           />
-          <q-item class="list-item-edit">
+          <q-item class="item">
             <q-item-section class="item-labels">
               <q-item-label>{{ item.profileCode }}</q-item-label>
               <q-item-label class="sub-text">{{
@@ -45,10 +45,10 @@
         </div>
       </q-list>
     </div>
-    <div class="profile-list-container" v-else v-touch-hold:1800="handleHold">
+    <div class="list-container" v-else v-touch-hold:1800="handleHold">
       <q-pull-to-refresh @refresh="refresh">
         <q-list v-for="(item, index) in profileListDisplay" :key="index">
-          <q-item class="list-item">
+          <q-item class="item">
             <q-item-section class="item-labels">
               <q-item-label>{{ item.profileCode }}</q-item-label>
               <q-item-label class="sub-text">{{
@@ -59,7 +59,7 @@
         </q-list>
       </q-pull-to-refresh>
     </div>
-    <div class="button-container" v-show="isEditMode">
+    <div class="button-bottom" v-show="isEditMode">
       <q-btn
         no-caps
         style="width: 50%"
@@ -82,6 +82,7 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
+import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { ProfileMaster } from "../models/profile";
@@ -90,7 +91,6 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { useI18n } from "vue-i18n";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
@@ -243,33 +243,9 @@ const ProfileManagementView = defineComponent({
 export default ProfileManagementView;
 </script>
 <style lang="scss" scoped>
-.list-item {
-  margin: 0 23px 23px 23px;
-  padding: 8px 15px;
-  background: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  font-size: 15px;
-  .item-labels {
-    text-align: left;
-    color: black;
-    .sub-text {
-      margin-top: 8px;
-      color: #757575;
-    }
-  }
-  &:first-of-type {
-    margin-top: 5px;
-  }
-}
-.edit-item-container {
-  margin: 0 23px 23px 15px;
-  .item-checkbox {
-    margin-right: 8px;
-    border-radius: 3px;
-  }
-  .list-item-edit {
-    width: 87%;
+.list-container {
+  .item {
+    margin: 0 23px 23px 23px;
     padding: 8px 15px;
     background: #ffffff;
     border-radius: 5px;
@@ -284,11 +260,33 @@ export default ProfileManagementView;
       }
     }
   }
-  &:first-of-type {
-    margin-top: 5px;
+}
+.edit-list-container {
+  .item-container {
+    margin: 0 23px 23px 13px;
+    justify-content: space-between;
+    .item {
+      width: 87%;
+      padding: 8px 15px;
+      background: #ffffff;
+      border-radius: 5px;
+      box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+      font-size: 15px;
+      .item-labels {
+        text-align: left;
+        color: black;
+        .sub-text {
+          margin-top: 8px;
+          color: #757575;
+        }
+      }
+    }
+    &:first-of-type {
+      margin-top: 9px;
+    }
   }
 }
-.button-container {
+.button-bottom {
   display: flex;
   position: fixed;
   margin-left: 23px;

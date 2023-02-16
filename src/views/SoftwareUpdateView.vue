@@ -83,7 +83,6 @@ export default {
     onMounted(() => {
       showLoading($q);
       bridge.call("getLatestVersion", null, (res: string) => {
-        closeLoading($q);
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
@@ -93,6 +92,7 @@ export default {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
+        closeLoading($q);
       });
     });
     const back = () => {
@@ -105,13 +105,13 @@ export default {
       showLoading($q);
       downloadPending.value = true;
       bridge.call("downloadLatestVersion", null, (res: string) => {
-        closeLoading($q);
-        downloadPending.value = false;
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
+        closeLoading($q);
+        downloadPending.value = false;
       });
     };
     return {

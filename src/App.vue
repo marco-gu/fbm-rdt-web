@@ -9,6 +9,7 @@ import { provideI18n } from "./plugin/i18nPlugins";
 import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
 import { routeTableLoggedIn, searchRoute } from "@/router/route-table";
+import { useQuasar } from "quasar";
 const App = defineComponent({
   setup() {
     const i18n = useI18n();
@@ -101,6 +102,18 @@ const App = defineComponent({
         immediate: true,
       }
     );
+
+    const $q = useQuasar();
+    const myIcons: any = {
+      "app:checkboxOn": "img:checkbox_on.svg",
+      "app:checkboxOff": "img:checkbox_off.svg",
+    };
+    $q.iconMapFn = (iconName) => {
+      const icon = myIcons[iconName];
+      if (icon != void 0) {
+        return { icon: icon };
+      }
+    };
   },
 });
 export default App;
