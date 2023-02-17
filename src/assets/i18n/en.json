@@ -37,7 +37,7 @@
         "E93-05-0006": "No Record is found!",
         "E93-05-0007": "Offline input completed",
         "E93-06-0001": "Logout Success!",
-        "SYS-01-001": "System Error"
+        "SYS-01-0001": "System Error"
     },
     "common": {
         "confirm": "Confirm",
