@@ -145,6 +145,7 @@
         "off": "OFF",
         "camera": "Camera",
         "bluetooth": "Bluetooth",
+        "scanner": "Scanner",
         "download": "Download",
         "already_latest_version_label": "It is the latest version",
         "latest_version_label": "The latest version"

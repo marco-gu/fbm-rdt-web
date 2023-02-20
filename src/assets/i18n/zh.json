@@ -143,6 +143,7 @@
         "off": "关",
         "camera": "摄像头",
         "bluetooth": "蓝牙外接扫描",
+        "scanner": "扫描器",
         "download": "下载",
         "already_latest_version_label": "已经是最新的版本",
         "latest_version_label": "最新版本"
