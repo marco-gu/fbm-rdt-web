@@ -286,10 +286,12 @@ export default DataMgmtView;
 }
 
 .bottom {
+  padding: 0px 20px;
   position: fixed;
-  bottom: 0px;
+  bottom: 20px;
   display: flex;
   width: 100%;
   height: 50px;
+  border-radius: 3px;
 }
 </style>
