@@ -117,7 +117,7 @@
                       width="26px"
                       height="26px"
                       no-spinner
-                      :src="item.finshStatus == 1 ? finishedDisabled : finished"
+                      :src="item.finshStatus == 0 ? finishedDisabled : finished"
                     />
                     <div style="height: 8px"></div>
                     <div class="center" style="font-size: 9px">FINISHED</div>
@@ -129,7 +129,7 @@
                       height="26px"
                       no-spinner
                       :src="
-                        item.uploadStatus == 1 ? uploadedDisabled : uploaded
+                        item.uploadStatus == 0 ? uploadedDisabled : uploaded
                       "
                     />
                     <div style="height: 8px"></div>
