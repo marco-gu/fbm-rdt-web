@@ -410,6 +410,9 @@ const DataManagementDetailView = defineComponent({
         const apiParams = {
           LPID: cartonDetail.lpId,
           CartonID: "",
+          Style: "",
+          Quantity: "",
+          HUB: "",
         };
 
         composeSaveDetailParam(apiParams, pageViews.value);
