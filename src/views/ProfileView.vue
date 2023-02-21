@@ -138,7 +138,9 @@ const ProfileView = defineComponent({
           }
         } else {
           sortProfileList(profileListDisplay.value);
-          popupSuccessMsg($q, i18n.t("profile.sync_complete"));
+          if (!isFirstSync.value) {
+            popupSuccessMsg($q, i18n.t("profile.sync_complete"));
+          }
         }
       });
     };
