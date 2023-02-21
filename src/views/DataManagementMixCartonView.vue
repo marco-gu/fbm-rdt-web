@@ -17,29 +17,31 @@
       <div class="taskIdHeader">{{ taskId }} mix carton</div>
       <q-form @submit="showUpdateDialog = true">
         <div v-for="(item, i) in dynamicViews" :key="i">
-          <div class="item-container mb-15">
-            <div class="input-title">
-              {{ item.displayFieldName }}
+          <div v-if="item.display == 1">
+            <div class="item-container mb-15">
+              <div class="input-title">
+                {{ item.displayFieldName }}
+              </div>
+              <q-input
+                ref="inputRef"
+                v-model="item.model"
+                @paste="validPaste($event, i)"
+                clearable
+                :maxlength="item.length"
+                input-class="text-right"
+                lazy-rules
+                :rules="[item.valid]"
+                borderless
+                dense
+                class="common-input no-shadow"
+              >
+                <template v-slot:append>
+                  <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
+                    <q-icon name="qr_code_scanner" size="22px" />
+                  </q-avatar>
+                </template>
+              </q-input>
             </div>
-            <q-input
-              ref="inputRef"
-              v-model="item.model"
-              @paste="validPaste($event, i)"
-              clearable
-              :maxlength="item.length"
-              input-class="text-right"
-              lazy-rules
-              :rules="[item.valid]"
-              borderless
-              dense
-              class="common-input no-shadow"
-            >
-              <template v-slot:append>
-                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                  <q-icon name="qr_code_scanner" size="22px" />
-                </q-avatar>
-              </template>
-            </q-input>
           </div>
         </div>
 

@@ -25,45 +25,46 @@
       </div>
       <q-form @submit="showUpdateDialog = true">
         <div v-for="(item, i) in pageViews" :key="i">
-          <div v-show="item.editable === true" class="item-container mb-15">
-            <div class="input-title">
-              {{ item.displayFieldName }}
+          <div v-if="item.display == 1">
+            <div v-show="item.editable === true" class="item-container mb-15">
+              <div class="input-title">
+                {{ item.displayFieldName }}
+              </div>
+
+              <q-input
+                ref="inputRef"
+                v-model="item.model"
+                @paste="validPaste($event, i)"
+                clearable
+                :maxlength="item.length"
+                input-class="text-right"
+                lazy-rules
+                :rules="[item.valid]"
+                borderless
+                dense
+                class="common-input no-shadow"
+              >
+                <template v-slot:append>
+                  <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
+                    <q-icon name="qr_code_scanner" size="22px" />
+                  </q-avatar>
+                </template>
+              </q-input>
             </div>
 
-            <q-input
-              ref="inputRef"
-              v-model="item.model"
-              @paste="validPaste($event, i)"
-              clearable
-              :maxlength="item.length"
-              input-class="text-right"
-              lazy-rules
-              :rules="[item.valid]"
-              borderless
-              dense
-              class="common-input no-shadow"
+            <div
+              v-show="item.editable === false && pageType === 'Detail'"
+              class="item-container mb-15"
             >
-              <template v-slot:append>
-                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                  <q-icon name="qr_code_scanner" size="22px" />
-                </q-avatar>
-              </template>
-            </q-input>
-          </div>
-
-          <div
-            v-show="item.editable === false && pageType === 'Detail'"
-            class="item-container mb-15"
-          >
-            <div class="input-title">
-              {{ item.displayFieldName }}
-            </div>
-            <div class="disable-input no-shadow">
-              {{ item.model }}
+              <div class="input-title">
+                {{ item.displayFieldName }}
+              </div>
+              <div class="disable-input no-shadow">
+                {{ item.model }}
+              </div>
             </div>
           </div>
         </div>
-
         <div class="button-bottom row">
           <q-btn
             v-show="pageType == 'Detail'"
@@ -301,8 +302,7 @@ const DataManagementDetailView = defineComponent({
                 ) {
                   const element = composeViewElement(item);
                   element.editable = false;
-                  //除了 CartonID, 其它不要校验
-                  if (item.dataFieldName === "CartonID") {
+                  if (item.level === ProfileElementLevel.CARTON_INDIVIDUAL) {
                     element.editable = true;
                   } else {
                     element.valid = () => {
