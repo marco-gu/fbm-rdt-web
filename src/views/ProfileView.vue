@@ -28,19 +28,27 @@
     </div>
     <div class="profile-list-container">
       <q-pull-to-refresh @refresh="refresh">
-        <q-list v-for="(item, index) in profileListDisplay" :key="index">
-          <q-item class="list-item" clickable @click="onClickProfile(item)">
-            <q-item-section class="item-labels">
-              <q-item-label>{{ item.profileCode }}</q-item-label>
-              <q-item-label class="sub-text">{{
-                item.updateDatetime
-              }}</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-icon name="chevron_right" color="black" />
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <div
+          v-if="profileListDisplay.length === 0 && !isFirstSync"
+          class="no-data"
+        >
+          {{ $t("profile.no_profile") }}
+        </div>
+        <template v-else>
+          <q-list v-for="(item, index) in profileListDisplay" :key="index">
+            <q-item class="list-item" clickable @click="onClickProfile(item)">
+              <q-item-section class="item-labels">
+                <q-item-label>{{ item.profileCode }}</q-item-label>
+                <q-item-label class="sub-text">{{
+                  item.updateDatetime
+                }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-icon name="chevron_right" color="black" />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </template>
       </q-pull-to-refresh>
     </div>
   </div>
@@ -72,7 +80,7 @@ const ProfileView = defineComponent({
     const router = useRouter();
     const route = useRoute();
     const i18n = useI18n();
-    let isFirstSync = true;
+    let isFirstSync = ref(true);
     const store = useStore();
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
@@ -86,8 +94,7 @@ const ProfileView = defineComponent({
         >;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           getProfileList();
-          popupSuccessMsg($q, i18n.t("profile.sync_complete"));
-          isFirstSync = false;
+          isFirstSync.value = false;
           bridge.call("setProfileLastSyncDate", {
             formatDate: formateDate(new Date()),
           });
@@ -120,7 +127,7 @@ const ProfileView = defineComponent({
         result = JSON.parse(res) as ProfileMaster[];
         profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
         if (result.length === 0) {
-          if (isFirstSync) {
+          if (isFirstSync.value) {
             $q.dialog({
               title: i18n.t("profile.sync_profile"),
               message: i18n.t("profile.sync_latest"),
@@ -128,16 +135,10 @@ const ProfileView = defineComponent({
             }).onOk(() => {
               refresh(() => void 0);
             });
-          } else {
-            $q.dialog({
-              title: i18n.t("profile.sync_profile"),
-              message: i18n.t("profile.no_profile"),
-            }).onCancel(() => {
-              void 0;
-            });
           }
         } else {
           sortProfileList(profileListDisplay.value);
+          popupSuccessMsg($q, i18n.t("profile.sync_complete"));
         }
       });
     };
@@ -166,6 +167,7 @@ const ProfileView = defineComponent({
       search,
       homeIcon,
       arrowIcon,
+      isFirstSync,
     };
   },
 });
@@ -174,6 +176,10 @@ export default ProfileView;
 <style lang="scss" scoped>
 .profile-list-container {
   padding-bottom: 15px;
+}
+.no-data {
+  text-align: center;
+  width: 100%;
 }
 .list-item {
   margin: 0 23px 23px 23px;
