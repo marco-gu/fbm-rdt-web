@@ -258,6 +258,13 @@ const DataManagementMixCartonView = defineComponent({
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           popupSuccessMsg($q, "Successfully saved");
+          router.push({
+            path: "/dataManagementMixCartonList",
+            query: {
+              taskId: taskId.value,
+              cartonId: cartonId.value,
+            },
+          });
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t(androidResponse.messageCode);
           popupErrorMsg($q, message);
@@ -277,19 +284,19 @@ const DataManagementMixCartonView = defineComponent({
       dynamicViews.value.forEach((viewElement: ViewDisplayAttribute) => {
         switch (viewElement.fieldName) {
           case "UPC":
-            args.upc = viewElement.model;
+            args.upc = viewElement.model == null ? "" : viewElement.model;
             break;
           case "Color":
-            args.color = viewElement.model;
+            args.color = viewElement.model == null ? "" : viewElement.model;
             break;
           case "Size":
-            args.size = viewElement.model;
+            args.size = viewElement.model == null ? "" : viewElement.model;
             break;
           case "Quantity":
-            args.qty = viewElement.model;
+            args.qty = viewElement.model == null ? "" : viewElement.model;
             break;
           case "Style":
-            args.style = viewElement.model;
+            args.style = viewElement.model == null ? "" : viewElement.model;
             break;
           default:
             break;

@@ -370,7 +370,7 @@ const DataManagementDetailView = defineComponent({
     const composeSaveGroupParam = (params: any, source: any) => {
       source.forEach((view: ViewDisplayAttribute) => {
         if (view.editable == true) {
-          params[view.fieldName] = view.model;
+          params[view.fieldName] = view.model == null ? "" : view.model;
         }
       });
     };
@@ -378,7 +378,7 @@ const DataManagementDetailView = defineComponent({
     const composeSaveDetailParam = (params: any, source: any) => {
       source.forEach((view: ViewDisplayAttribute) => {
         if (view.editable == true) {
-          params[view.fieldName] = view.model;
+          params[view.fieldName] = view.model == null ? "" : view.model;
         }
       });
     };
