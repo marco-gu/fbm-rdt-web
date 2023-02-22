@@ -12,7 +12,7 @@
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
-      <div class="card-sub-title">{{ taskId }} Mix carton</div>
+      <div class="card-sub-title">{{ taskId }}+Mix</div>
     </div>
     <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
@@ -298,19 +298,19 @@ const DataManagementMixCartonView = defineComponent({
       dynamicViews.value.forEach((viewElement: ViewDisplayAttribute) => {
         switch (viewElement.fieldName) {
           case "UPC":
-            args.upc = viewElement.model;
+            args.upc = viewElement.model == null ? "" : viewElement.model;
             break;
           case "Color":
-            args.color = viewElement.model;
+            args.color = viewElement.model == null ? "" : viewElement.model;
             break;
           case "Size":
-            args.size = viewElement.model;
+            args.size = viewElement.model == null ? "" : viewElement.model;
             break;
           case "Quantity":
-            args.qty = viewElement.model;
+            args.qty = viewElement.model == null ? "" : viewElement.model;
             break;
           case "Style":
-            args.style = viewElement.model;
+            args.style = viewElement.model == null ? "" : viewElement.model;
             break;
           default:
             break;

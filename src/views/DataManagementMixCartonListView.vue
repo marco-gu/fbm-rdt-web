@@ -12,7 +12,7 @@
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
-      <div class="card-sub-title">{{ taskId }} Mix Carton</div>
+      <div class="card-sub-title">{{ taskId }}+Mix</div>
     </div>
     <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">

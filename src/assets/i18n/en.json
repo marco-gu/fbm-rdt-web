@@ -7,6 +7,8 @@
         "E91-01-0005": "Please enter your password",
         "E91-02-0001": "Email does not exist!",
         "E92-01-0001": "Duplicate Carton ID",
+        "E92-01-0002": "Failed to delete selected data!",
+        "E92-01-0003": "Failed to save data!",
         "E92-02-0001": "Failed to get the latest version!",
         "E92-02-0002": "Failed to download the latest version!",
         "E92-99-0001": "Network is not available!",
@@ -36,8 +38,7 @@
         "E93-05-0005": "LP has been successfully downloaded!",
         "E93-05-0006": "No Record is found!",
         "E93-05-0007": "Offline input completed",
-        "E93-06-0001": "Logout Success!",
-        "SYS-01-0001": "System Error"
+        "E93-06-0001": "Logout Success!"
     },
     "common": {
         "confirm": "Confirm",
@@ -145,6 +146,7 @@
         "off": "OFF",
         "camera": "Camera",
         "bluetooth": "Bluetooth",
+        "scanner": "Scanner",
         "download": "Download",
         "already_latest_version_label": "It is the latest version",
         "latest_version_label": "The latest version"

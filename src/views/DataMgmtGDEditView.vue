@@ -296,9 +296,6 @@ const DataManagementDetailView = defineComponent({
                     case "ContainerNumber":
                       element.model = ref(lpCarton.containerNumber);
                       break;
-                    case "CartonID":
-                      element.model = ref(lpCarton.cartonId);
-                      break;
                     case "TotalCBM":
                       element.model = ref(lpModel.totalCBM);
                       break;
@@ -319,8 +316,7 @@ const DataManagementDetailView = defineComponent({
                 ) {
                   const element = composeViewElement(item);
                   element.editable = false;
-                  //除了 CartonID, 其它不要校验
-                  if (item.dataFieldName === "CartonID") {
+                  if (item.level === ProfileElementLevel.CARTON_INDIVIDUAL) {
                     element.editable = true;
                   } else {
                     element.valid = () => {
@@ -344,6 +340,7 @@ const DataManagementDetailView = defineComponent({
                       break;
                     case "CartonID":
                       element.model = ref(cartonDetail.cartonId);
+                      element.display = 1;
                       break;
                     case "Style":
                       element.model = ref(cartonDetail.style);
@@ -388,7 +385,7 @@ const DataManagementDetailView = defineComponent({
     const composeSaveGroupParam = (params: any, source: any) => {
       source.forEach((view: ViewDisplayAttribute) => {
         if (view.editable == true) {
-          params[view.fieldName] = view.model;
+          params[view.fieldName] = view.model == null ? "" : view.model;
         }
       });
     };
@@ -396,7 +393,7 @@ const DataManagementDetailView = defineComponent({
     const composeSaveDetailParam = (params: any, source: any) => {
       source.forEach((view: ViewDisplayAttribute) => {
         if (view.editable == true) {
-          params[view.fieldName] = view.model;
+          params[view.fieldName] = view.model == null ? "" : view.model;
         }
       });
     };
@@ -434,6 +431,9 @@ const DataManagementDetailView = defineComponent({
             const apiParams = {
               LPID: cartonDetail.lpId,
               CartonID: "",
+              Style: "",
+              Quantity: "",
+              HUB: "",
             };
 
             composeSaveDetailParam(apiParams, pageViews.value);

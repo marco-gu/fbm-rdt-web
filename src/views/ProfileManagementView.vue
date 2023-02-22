@@ -50,20 +50,26 @@
           </div>
         </template>
         <template v-else>
-          <!-- <div v-touch-hold:1800="handleHold"> -->
           <q-pull-to-refresh @refresh="refresh">
-            <q-list v-for="(item, index) in profileListDisplay" :key="index">
-              <q-item class="card-item" v-touch-hold:1800="handleHold">
-                <q-item-section class="card-item-labels">
-                  <q-item-label>{{ item.profileCode }}</q-item-label>
-                  <q-item-label class="card-item-date-text">{{
-                    item.updateDatetime
-                  }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
+            <template
+              v-if="profileListDisplay.length === 0 && !isFirstSync"
+              class="no-data"
+            >
+              {{ $t("profile.no_profile") }}
+            </template>
+            <template v-else>
+              <q-list v-for="(item, index) in profileListDisplay" :key="index">
+                <q-item class="card-item" v-touch-hold:1800="handleHold">
+                  <q-item-section class="card-item-labels">
+                    <q-item-label>{{ item.profileCode }}</q-item-label>
+                    <q-item-label class="card-item-date-text">{{
+                      item.updateDatetime
+                    }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </template>
           </q-pull-to-refresh>
-          <!-- </div> -->
         </template>
       </q-scroll-area>
     </div>
@@ -102,6 +108,7 @@ import {
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import formateDate from "../utils/formatDate";
 const ProfileManagementView = defineComponent({
   setup() {
     const $q = useQuasar();
@@ -139,16 +146,12 @@ const ProfileManagementView = defineComponent({
             }).onOk(() => {
               refresh(() => void 0);
             });
-          } else {
-            $q.dialog({
-              title: i18n.t("profile.sync_profile"),
-              message: i18n.t("profile.no_profile"),
-            }).onCancel(() => {
-              void 0;
-            });
           }
         } else {
           sortProfileList(profileListDisplay.value);
+          if (!isFirstSync) {
+            popupSuccessMsg($q, i18n.t("profile.sync_complete"));
+          }
         }
       });
     };
@@ -171,8 +174,10 @@ const ProfileManagementView = defineComponent({
           >;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             getProfileList();
-            popupSuccessMsg($q, i18n.t("profile.sync_complete"));
             isFirstSync = false;
+            bridge.call("setProfileLastSyncDate", {
+              formatDate: formateDate(new Date()),
+            });
             done();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
             const message = i18n.t(

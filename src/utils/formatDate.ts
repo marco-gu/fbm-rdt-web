@@ -10,10 +10,6 @@ export default function formatDate(date: Date) {
       padTo2Digits(date.getDate()),
     ].join("-") +
     " " +
-    [
-      padTo2Digits(date.getHours()),
-      padTo2Digits(date.getMinutes()),
-      padTo2Digits(date.getSeconds()),
-    ].join(":")
+    [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes())].join(":")
   );
 }

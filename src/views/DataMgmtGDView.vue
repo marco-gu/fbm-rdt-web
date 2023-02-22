@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="card-sub-title">
-        <div v-if="taskDisplay.isMix == 1">{{ taskId }} Mix Carton</div>
+        <div v-if="taskDisplay.isMix == 1">{{ taskId }}+Mix</div>
         <div v-else>{{ taskId }}</div>
       </div>
     </div>
@@ -277,6 +277,7 @@ export default DataMgmtView;
   text-overflow: ellipsis;
 }
 .bottom {
+  padding: 0px 20px;
   position: fixed;
   bottom: 20px;
   display: flex;
