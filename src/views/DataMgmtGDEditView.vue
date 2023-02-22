@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="card-sub-title">
-        <div v-if="isMix == 1">{{ taskId }} Mix Carton</div>
+        <div v-if="isMix == 1">{{ taskId }}+Mix</div>
         <div v-else>{{ taskId }}</div>
       </div>
     </div>
@@ -25,47 +25,52 @@
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="showUpdateDialog = true" ref="myForm">
           <div v-for="(item, i) in pageViews" :key="i">
-            <div v-show="item.editable === true" class="card-item-input">
-              <div>
-                {{ item.displayFieldName }}
+            <div v-if="item.display == 1">
+              <div v-show="item.editable === true" class="card-item-input">
+                <div>
+                  {{ item.displayFieldName }}
+                </div>
+                <q-input
+                  class="card-item-input-field no-shadow"
+                  :input-style="{ fontSize: '15px' }"
+                  input-class="text-right"
+                  ref="inputRef"
+                  v-model="item.model"
+                  clearable
+                  @paste="validPaste($event, i)"
+                  :maxlength="item.length"
+                  lazy-rules
+                  :rules="[item.valid]"
+                  borderless
+                  dense
+                >
+                  <template v-slot:append>
+                    <q-avatar
+                      v-if="item.scan == 1"
+                      @click="scan(item.fieldName)"
+                    >
+                      <q-icon name="qr_code_scanner" size="16px" />
+                    </q-avatar>
+                  </template>
+                </q-input>
               </div>
-              <q-input
-                class="card-item-input-field no-shadow"
-                :input-style="{ fontSize: '15px' }"
-                input-class="text-right"
-                ref="inputRef"
-                v-model="item.model"
-                clearable
-                @paste="validPaste($event, i)"
-                :maxlength="item.length"
-                lazy-rules
-                :rules="[item.valid]"
-                borderless
-                dense
+              <div
+                v-show="item.editable === false && pageType === 'Detail'"
+                class="card-item-input"
               >
-                <template v-slot:append>
-                  <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                    <q-icon name="qr_code_scanner" size="16px" />
-                  </q-avatar>
-                </template>
-              </q-input>
-            </div>
-            <div
-              v-show="item.editable === false && pageType === 'Detail'"
-              class="card-item-input"
-            >
-              <div>
-                {{ item.displayFieldName }}
+                <div>
+                  {{ item.displayFieldName }}
+                </div>
+                <q-input
+                  class="card-item-input-field no-shadow"
+                  :input-style="{ fontSize: '15px' }"
+                  input-class="text-right"
+                  v-model="item.model"
+                  borderless
+                  dense
+                >
+                </q-input>
               </div>
-              <q-input
-                class="card-item-input-field no-shadow"
-                :input-style="{ fontSize: '15px' }"
-                input-class="text-right"
-                v-model="item.model"
-                borderless
-                dense
-              >
-              </q-input>
             </div>
           </div>
         </q-form>

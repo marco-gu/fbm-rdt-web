@@ -18,30 +18,35 @@
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="showUpdateDialog = true" ref="myForm">
           <div v-for="(item, i) in dynamicViews" :key="i">
-            <div class="card-item-input">
-              <div>
-                {{ item.displayFieldName }}
+            <div v-if="item.display == 1">
+              <div class="card-item-input">
+                <div>
+                  {{ item.displayFieldName }}
+                </div>
+                <q-input
+                  class="card-item-input-field no-shadow"
+                  :input-style="{ fontSize: '15px' }"
+                  input-class="text-right"
+                  ref="inputRef"
+                  v-model="item.model"
+                  @paste="validPaste($event, i)"
+                  clearable
+                  :maxlength="item.length"
+                  lazy-rules
+                  :rules="[item.valid]"
+                  borderless
+                  dense
+                >
+                  <template v-slot:append>
+                    <q-avatar
+                      v-if="item.scan == 1"
+                      @click="scan(item.fieldName)"
+                    >
+                      <q-icon name="qr_code_scanner" size="16px" />
+                    </q-avatar>
+                  </template>
+                </q-input>
               </div>
-              <q-input
-                class="card-item-input-field no-shadow"
-                :input-style="{ fontSize: '15px' }"
-                input-class="text-right"
-                ref="inputRef"
-                v-model="item.model"
-                @paste="validPaste($event, i)"
-                clearable
-                :maxlength="item.length"
-                lazy-rules
-                :rules="[item.valid]"
-                borderless
-                dense
-              >
-                <template v-slot:append>
-                  <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                    <q-icon name="qr_code_scanner" size="16px" />
-                  </q-avatar>
-                </template>
-              </q-input>
             </div>
           </div>
         </q-form>
@@ -277,6 +282,13 @@ const DataManagementMixCartonView = defineComponent({
             const androidResponse = JSON.parse(res) as AndroidResponse<any>;
             if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
               popupSuccessMsg($q, "Successfully saved");
+              router.push({
+                path: "/dataManagementMixCartonList",
+                query: {
+                  taskId: taskId.value,
+                  cartonId: cartonId.value,
+                },
+              });
             } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
               const message = i18n.t(androidResponse.messageCode);
               popupErrorMsg($q, message);

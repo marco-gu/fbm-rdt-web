@@ -131,7 +131,7 @@
                         height="20px"
                         no-spinner
                         :src="
-                          item.finshStatus == 1 ? finishedDisabled : finished
+                          item.finshStatus == 0 ? finishedDisabled : finished
                         "
                       />
                       <div style="height: 8px"></div>
@@ -144,7 +144,7 @@
                         height="20px"
                         no-spinner
                         :src="
-                          item.uploadStatus == 1 ? uploadedDisabled : uploaded
+                          item.uploadStatus == 0 ? uploadedDisabled : uploaded
                         "
                       />
                       <div class="center" style="font-size: 8px； height: 8px">
