@@ -16,68 +16,81 @@
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
-    </div>
-    <div class="content">
-      <div class="taskIdHeader">
-        <div v-if="taskDisplay.isMix == 1">{{ taskId }} mix carton</div>
+      <div class="card-sub-title">
+        <div v-if="taskDisplay.isMix == 1">{{ taskId }} Mix Carton</div>
         <div v-else>{{ taskId }}</div>
       </div>
-
-      <div v-show="pageType == 'Group'">
-        <div
-          v-show="taskDisplay.scannedCartonNumber > 0"
-          class="data-list-container row items-center body mb-15"
-          @click="onClickLP(taskDisplay)"
-        >
-          <div class="column" style="width: 65%">
-            <div v-show="taskDisplay.containerNumber != ''">
-              <div>Container: {{ taskDisplay.containerNumber }}</div>
-              <div style="height: 8px"></div>
-            </div>
-            <div>PO: {{ taskDisplay.po }}</div>
-            <div v-show="taskDisplay.sku != ''">
-              <div style="height: 8px"></div>
-              <div>SKU: {{ taskDisplay.sku }}</div>
-            </div>
-          </div>
-          <div style="width: 25%">
-            Count: {{ taskDisplay.scannedCartonNumber }}
-          </div>
-          <div style="width: 10%">
-            <q-icon size="md" name="chevron_right" color="black" />
-          </div>
-        </div>
-      </div>
-
-      <div v-show="pageType == 'Detail'">
-        <div
-          class="data-list-container row items-center body mb-15"
-          v-for="(item, index) in cartonfilterList"
-          :key="index"
-          @click="onClickCarton(item)"
-        >
-          <div class="column" style="width: 90%">
-            <div v-show="item.containerNumber != ''">
-              <div>Container: {{ item.containerNumber }}</div>
-              <div style="height: 8px"></div>
-            </div>
-            <div>PO: {{ item.po }}</div>
-            <div v-show="item.sku != ''">
-              <div style="height: 8px"></div>
-              <div>SKU: {{ item.sku }}</div>
-            </div>
-            <div v-show="item.cartonId != ''">
-              <div style="height: 8px"></div>
-              <div>CID: {{ item.cartonId }}</div>
-            </div>
-          </div>
-          <div style="width: 10%">
-            <q-icon size="md" name="chevron_right" color="grey" />
-          </div>
-        </div>
-      </div>
     </div>
-    <div class="bottom row">
+    <div class="content">
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <template v-if="pageType == 'Group'">
+          <div
+            v-show="taskDisplay.scannedCartonNumber > 0"
+            @click="onClickLP(taskDisplay)"
+          >
+            <q-item class="card-item">
+              <div class="card-item-content">
+                <div class="card-item-left">
+                  <q-item-section>
+                    <div v-show="taskDisplay.containerNumber != ''">
+                      <q-item-label
+                        >Container:
+                        {{ taskDisplay.containerNumber }}</q-item-label
+                      >
+                    </div>
+                    <div v-show="taskDisplay.po != ''">
+                      <q-item-label>PO: {{ taskDisplay.po }}</q-item-label>
+                    </div>
+                    <div v-show="taskDisplay.sku != ''">
+                      <q-item-label>SKU: {{ taskDisplay.sku }}</q-item-label>
+                    </div>
+                  </q-item-section>
+                </div>
+                <div class="card-item-right">
+                  <q-item-section>
+                    <q-item-label>
+                      Count: {{ taskDisplay.scannedCartonNumber }}</q-item-label
+                    >
+                  </q-item-section>
+                </div>
+              </div>
+              <q-item-section side>
+                <q-icon name="chevron_right" color="black" />
+              </q-item-section>
+            </q-item>
+          </div>
+        </template>
+        <template v-else>
+          <div
+            v-for="(item, index) in cartonfilterList"
+            :key="index"
+            @click="onClickCarton(item)"
+          >
+            <q-item class="card-item">
+              <div class="card-detail-left">
+                <q-item-section>
+                  <div v-show="item.containerNumber != ''">
+                    <q-item-label
+                      >Container: {{ item.containerNumber }}</q-item-label
+                    >
+                  </div>
+                  <div v-show="item.po != ''">
+                    <q-item-label>PO: {{ item.po }}</q-item-label>
+                  </div>
+                  <div v-show="item.sku != ''">
+                    <q-item-label>SKU: {{ item.sku }}</q-item-label>
+                  </div>
+                </q-item-section>
+              </div>
+              <q-item-section side>
+                <q-icon name="chevron_right" color="black" />
+              </q-item-section>
+            </q-item>
+          </div>
+        </template>
+      </q-scroll-area>
+    </div>
+    <div class="bottom row" id="bottom-button">
       <q-btn
         class="col btnGeneral"
         no-caps
@@ -103,10 +116,9 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { computed, defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { LP, Carton } from "../models/profile";
-// import { useI18n } from "@/plugin/i18nPlugins";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
 const DataMgmtView = defineComponent({
@@ -118,7 +130,6 @@ const DataMgmtView = defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
-    // const i18n = useI18n();
     const taskId = ref(route.query.taskId);
     const pageType = ref("Group");
     const pageTitle = ref("");
@@ -185,6 +196,10 @@ const DataMgmtView = defineComponent({
     );
 
     onMounted(() => {
+      // calculate scroll area
+      const scrollArea = document.getElementById("scroll-area") as any;
+      const bottom = document.getElementById("bottom-button") as any;
+      scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
       if (typeof taskId.value === "string") {
         fetchTaskByTaskId(taskId.value);
         getLPDetailList(taskId.value);
@@ -217,57 +232,34 @@ export default DataMgmtView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
-  margin-top: 26px;
+  margin-top: $--page-content-margin-top-with-subtitle;
 }
-.data-list-container {
-  padding-left: 15px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  background: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  text-align: left;
-  min-height: 64px;
+.card-item {
+  padding: 10px 0 10px 15px;
+  .card-item-content {
+    width: 100%;
+    display: flex;
+    text-align: left;
+    word-break: break-all;
+    justify-content: space-between;
+    .card-item-left {
+      flex: 3;
+      align-self: center;
+    }
+    .card-item-right {
+      flex: 1;
+      align-self: center;
+    }
+  }
+  .card-detail-left {
+    width: 100%;
+    align-self: center;
+    text-align: left;
+  }
 }
-
-.mb-15 {
-  margin-bottom: 20px;
-}
-
-.taskIdHeader {
-  margin-bottom: 23px;
-  background-color: #00243d;
-  padding: 6px 15px;
-  font-size: 18px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 22px;
-  border-radius: 5px 5px 5px 5px;
-  word-break: break-all;
-}
-
-.body {
-  font-size: 15px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #000000;
-  line-height: 18px;
-}
-
 .tab {
   background: #040000;
   color: #ffffff;
-  height: 48.3px;
-  text-align: center;
-  font-size: 16px;
-}
-
-.detailList {
-  background: #ffffff;
-  color: gray;
-  height: 50.6px;
   text-align: center;
   font-size: 16px;
 }
@@ -284,12 +276,11 @@ export default DataMgmtView;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
 .bottom {
   position: fixed;
-  bottom: 0px;
+  bottom: 20px;
   display: flex;
   width: 100%;
-  height: 50px;
+  border-radius: 5px;
 }
 </style>

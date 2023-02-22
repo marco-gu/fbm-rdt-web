@@ -1,0 +1,26 @@
+.setting-content {
+    @extend .content;
+    margin-top: $--page-content-margin-top-no-search;
+}
+
+.setting-card-item {
+    text-align: left;
+    font-size: $--card-font-size;
+    border-radius: $--card-radius;
+    box-shadow: $--card-box-shadow;
+    margin-bottom: $--card-space-between;
+    padding: $--card-padding;
+    .label {
+        float: left;
+    }
+    .q-icon {
+        color: #757575;
+    }
+    .item-value,
+    .right-icon {
+        float: right;
+    }
+    .spacer {
+        clear: both;
+    }
+}

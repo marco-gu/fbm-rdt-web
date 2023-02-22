@@ -39,12 +39,12 @@
         {{ latestVersionDetail }}
       </q-item>
     </div>
-    <div class="button-container" v-show="currentVersion != latestVersion">
+    <div class="bottom" v-show="currentVersion != latestVersion">
       <q-btn
         no-caps
-        flat
-        push
-        style="width: 100%"
+        unelevated
+        class="full-width"
+        color="secondary"
         :label="$t('common.download')"
         :disable="downloadPending"
         @click="handleDownload"
@@ -81,19 +81,19 @@ export default {
     const latestVersion = ref("");
     const latestVersionDetail = ref("");
     onMounted(() => {
-      showLoading($q);
-      bridge.call("getLatestVersion", null, (res: string) => {
-        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
-          latestVersion.value = versionInfo.version;
-          latestVersionDetail.value = versionInfo.detail;
-        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
-        }
-        closeLoading($q);
-      });
+      // showLoading($q);
+      // bridge.call("getLatestVersion", null, (res: string) => {
+      //   const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+      //   if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+      //     const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
+      //     latestVersion.value = versionInfo.version;
+      //     latestVersionDetail.value = versionInfo.detail;
+      //   } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+      //     const message = i18n.t("messageCode." + androidResponse.messageCode);
+      //     popupErrorMsg($q, message);
+      //   }
+      //   closeLoading($q);
+      // });
     });
     const back = () => {
       router.push("/setting");
@@ -135,20 +135,14 @@ export default {
   border-radius: 5px;
   box-shadow: 0px 2px 5px 1px rgba(11, 69, 95, 0.08);
   background-color: #ffffff;
-  font-size: 18px;
+  font-size: 14px;
   text-align: left;
   color: #757575;
 }
-.button-container {
-  display: flex;
+.bottom {
   position: fixed;
-  margin-left: 23px;
-  bottom: 30px;
-  width: 88%;
-  height: 49px;
-  border-radius: 3px;
-  background: #42b0d5;
-  color: white;
-  font-size: 20px;
+  bottom: 20px;
+  width: calc(100% - 46px);
+  left: 23px;
 }
 </style>

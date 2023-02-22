@@ -12,67 +12,69 @@
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
+      <div class="card-sub-title">{{ taskId }} Mix carton</div>
     </div>
     <div class="content">
-      <div class="taskIdHeader">{{ taskId }} mix carton</div>
-      <q-form @submit="showUpdateDialog = true">
-        <div v-for="(item, i) in dynamicViews" :key="i">
-          <div class="item-container mb-15">
-            <div class="input-title">
-              {{ item.displayFieldName }}
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <q-form @submit="showUpdateDialog = true" ref="myForm">
+          <div v-for="(item, i) in dynamicViews" :key="i">
+            <div class="card-item-input">
+              <div>
+                {{ item.displayFieldName }}
+              </div>
+              <q-input
+                class="card-item-input-field no-shadow"
+                :input-style="{ fontSize: '15px' }"
+                input-class="text-right"
+                ref="inputRef"
+                v-model="item.model"
+                @paste="validPaste($event, i)"
+                clearable
+                :maxlength="item.length"
+                lazy-rules
+                :rules="[item.valid]"
+                borderless
+                dense
+              >
+                <template v-slot:append>
+                  <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
+                    <q-icon name="qr_code_scanner" size="16px" />
+                  </q-avatar>
+                </template>
+              </q-input>
             </div>
-            <q-input
-              ref="inputRef"
-              v-model="item.model"
-              @paste="validPaste($event, i)"
-              clearable
-              :maxlength="item.length"
-              input-class="text-right"
-              lazy-rules
-              :rules="[item.valid]"
-              borderless
-              dense
-              class="common-input no-shadow"
-            >
-              <template v-slot:append>
-                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                  <q-icon name="qr_code_scanner" size="22px" />
-                </q-avatar>
-              </template>
-            </q-input>
           </div>
-        </div>
-
-        <div class="button-bottom row">
-          <q-btn
-            class="col"
-            no-caps
-            flat
-            push
-            :label="$t('common.save')"
-            type="submit"
-          />
-          <q-separator vertical inset color="white" />
-          <q-btn
-            class="col"
-            no-caps
-            flat
-            push
-            :label="$t('common.delete')"
-            @click="showDeleteDialog = true"
-          />
-          <q-separator vertical inset color="white" />
-          <q-btn
-            class="col"
-            no-caps
-            flat
-            type="submit"
-            push
-            :label="$t('common.cancel')"
-            @click="back"
-          />
-        </div>
-      </q-form>
+        </q-form>
+      </q-scroll-area>
+    </div>
+    <div class="button-bottom row" id="bottom-button">
+      <q-btn
+        class="col"
+        no-caps
+        flat
+        push
+        :label="$t('common.save')"
+        @click="showUpdateDialog = true"
+      />
+      <q-separator vertical inset color="white" />
+      <q-btn
+        class="col"
+        no-caps
+        flat
+        push
+        :label="$t('common.delete')"
+        @click="showDeleteDialog = true"
+      />
+      <q-separator vertical inset color="white" />
+      <q-btn
+        class="col"
+        no-caps
+        flat
+        type="submit"
+        push
+        :label="$t('common.cancel')"
+        @click="back"
+      />
     </div>
   </div>
   <q-dialog v-model="showDeleteDialog" persistent>
@@ -94,7 +96,6 @@
       </div>
     </div>
   </q-dialog>
-
   <q-dialog v-model="showUpdateDialog" persistent>
     <div class="dialog-container">
       <div class="dialog-container__title">
@@ -166,8 +167,26 @@ const DataManagementMixCartonView = defineComponent({
     const arrowIcon = arrowImg;
     const showDeleteDialog = ref(false);
     const showUpdateDialog = ref(false);
-
+    const myForm = ref();
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const bottom = document.getElementById("bottom-button") as any;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
+      // hide bottom button if soft key up
+      window.onresize = () => {
+        // get resize height and recalculate scroll area
+        const resizeHeight = window.innerHeight;
+        const scrollArea = document.getElementById("scroll-area") as any;
+        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
+        const bottom = document.getElementById("bottom-button") as any;
+        if (deviceHeight - resizeHeight > 0) {
+          bottom.style.visibility = "hidden";
+        } else {
+          bottom.style.visibility = "visible";
+        }
+      };
       if (route.query.taskId) {
         scanType.value =
           route.query.taskId.indexOf(ScanType.RECEIVING) !== -1
@@ -250,15 +269,19 @@ const DataManagementMixCartonView = defineComponent({
     };
 
     const handleSave = () => {
-      showUpdateDialog.value = false;
-      const args = composeSaveApiArgs();
-      bridge.call("updateCartonProduct", args, (res: string) => {
-        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          popupSuccessMsg($q, "Successfully saved");
-        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.t(androidResponse.messageCode);
-          popupErrorMsg($q, message);
+      myForm.value.validate().then((success: any) => {
+        if (success) {
+          showUpdateDialog.value = false;
+          const args = composeSaveApiArgs();
+          bridge.call("updateCartonProduct", args, (res: string) => {
+            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+              popupSuccessMsg($q, "Successfully saved");
+            } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+              const message = i18n.t(androidResponse.messageCode);
+              popupErrorMsg($q, message);
+            }
+          });
         }
       });
     };
@@ -334,6 +357,7 @@ const DataManagementMixCartonView = defineComponent({
       arrowIcon,
       showDeleteDialog,
       showUpdateDialog,
+      myForm,
     };
   },
 });
@@ -341,105 +365,16 @@ export default DataManagementMixCartonView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
-  margin-top: 26px;
+  margin-top: $--page-content-margin-top-with-subtitle;
 }
-.taskIdHeader {
-  margin-bottom: 23px;
-  background-color: #00243d;
-  padding: 6px 15px;
-  font-size: 18px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 22px;
-  border-radius: 5px 5px 5px 5px;
-  word-break: break-all;
-}
-
-.common-input {
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  font-size: 18px;
-  height: 50px;
-  padding-top: 5px;
-  padding-left: 15px;
-  &.no-shadow {
-    box-shadow: none;
-  }
-}
-
-.mb-15 {
-  margin-bottom: 20px;
-}
-
-.item-container {
-  text-align: left;
-  height: 50px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  padding: 0 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  white-space: nowrap;
-}
-
 .button-bottom {
   position: fixed;
   bottom: 20px;
-  width: calc(100% - 40px);
+  width: calc(100% - 46px);
+  margin-left: 23px;
   background: #42b0d5;
   color: white;
-  font-size: 20px;
   color: #ffffff;
-  line-height: 23px;
   border-radius: 3px;
-}
-
-.dialog-container {
-  width: 86%;
-  border-radius: 5px;
-  border: 0px solid #757575;
-  font-size: 17px;
-  background-color: #ffffff;
-  &__title {
-    padding: 15px 15px 0 15px;
-    font-weight: bold;
-    .q-icon {
-      float: right;
-      right: 0;
-      top: 0;
-    }
-  }
-  &__content {
-    padding: 0 15px;
-    margin: 23px 0;
-  }
-  &__button {
-    padding: 15px;
-    text-align: right;
-    background: #f7f7f7;
-    border-radius: 0px 0px 5px 5px;
-    border: 0px solid #878787;
-    .dialog-button {
-      min-width: 99px;
-      padding: 8px;
-      border-radius: 5px;
-      font-size: 18px;
-
-      &.confirm {
-        background: #00243d;
-        color: #ffffff;
-      }
-
-      &.cancel {
-        border: 1px solid #42b0d5;
-        color: #42b0d5;
-        margin-right: 15px;
-        background: #ffffff;
-      }
-    }
-  }
 }
 </style>

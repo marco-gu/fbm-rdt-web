@@ -26,22 +26,24 @@
         </q-input>
       </div>
     </div>
-    <div class="profile-list-container">
-      <q-pull-to-refresh @refresh="refresh">
-        <q-list v-for="(item, index) in profileListDisplay" :key="index">
-          <q-item class="list-item" clickable @click="onClickProfile(item)">
-            <q-item-section class="item-labels">
-              <q-item-label>{{ item.profileCode }}</q-item-label>
-              <q-item-label class="sub-text">{{
-                item.updateDatetime
-              }}</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-icon name="chevron_right" color="black" />
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-pull-to-refresh>
+    <div class="content">
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <q-pull-to-refresh @refresh="refresh">
+          <q-list v-for="(item, index) in profileListDisplay" :key="index">
+            <q-item class="card-item" clickable @click="onClickProfile(item)">
+              <q-item-section class="card-item-labels">
+                <q-item-label>{{ item.profileCode }}</q-item-label>
+                <q-item-label class="card-item-date-text">{{
+                  item.updateDatetime
+                }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-icon name="chevron_right" color="black" />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-pull-to-refresh>
+      </q-scroll-area>
     </div>
   </div>
 </template>
@@ -79,6 +81,7 @@ const ProfileView = defineComponent({
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const search = ref("");
+    // alert(window.screen.height);
     const refresh = (done: any) => {
       bridge.call("refreshProfile", null, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<
@@ -142,6 +145,12 @@ const ProfileView = defineComponent({
       });
     };
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = store.state.screenModule.screenHeight
+        ? store.state.screenModule.screenHeight
+        : window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       // Initialize
       getProfileList();
     });
@@ -172,26 +181,14 @@ const ProfileView = defineComponent({
 export default ProfileView;
 </script>
 <style lang="scss" scoped>
-.profile-list-container {
-  padding-bottom: 15px;
+.content {
+  margin-top: $--page-content-margin-top-with-search;
 }
-.list-item {
-  margin: 0 23px 23px 23px;
-  padding: 8px 15px;
-  background: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  font-size: 15px;
-  .item-labels {
-    text-align: left;
-    color: black;
-    .sub-text {
-      margin-top: 8px;
-      color: #757575;
-    }
-  }
-  &:first-of-type {
-    margin-top: 5px;
+.card-item-labels {
+  text-align: left;
+  .card-item-date-text {
+    margin-top: $--card-item-text-space-between;
+    color: $--card-item-date-text-color;
   }
 }
 </style>

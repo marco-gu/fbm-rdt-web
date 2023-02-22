@@ -9,108 +9,63 @@
           {{ $t("carton.mix_carton_header") }}
         </div>
       </div>
+      <div class="card-sub-title">
+        <div>{{ cartonID }}</div>
+        <div>Item count: {{ itemCount }}</div>
+      </div>
     </div>
     <div class="content">
-      <div class="carton-info">
-        <span>{{ cartonID }}</span>
-
-        <span>Item count: {{ itemCount }}</span>
-      </div>
       <q-form @submit="onSubmit" ref="myForm">
         <div v-for="(item, i) in pageViews" :key="i">
           <div v-if="item.display == 1">
-            <div class="item-container mb-15">
+            <div class="card-item-input">
               <div>
                 {{ item.displayFieldName }}
               </div>
               <q-input
+                class="card-item-input-field no-shadow"
+                :input-style="{ fontSize: '15px' }"
+                input-class="text-right"
                 ref="inputRef"
                 v-model="item.model"
                 @paste="validPaste($event, i)"
                 clearable
                 :maxlength="item.length"
-                input-class="text-right"
                 lazy-rules
                 :rules="[item.valid]"
                 borderless
                 dense
-                class="common-input no-shadow"
               >
                 <template v-slot:append>
                   <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                    <q-icon name="qr_code_scanner" size="18px" />
+                    <q-icon name="qr_code_scanner" size="16px" />
                   </q-avatar>
                 </template>
               </q-input>
             </div>
           </div>
         </div>
-        <!-- <div v-for="(item, i) in pageViews" :key="i">
-          <div v-if="item.display == 1">
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-            >
-              <span style="padding-left: 1rem; color: black">
-                {{ item.displayFieldName }}
-              </span>
-              <q-input
-                ref="inputRef"
-                v-model="item.model"
-                @paste="validPaste($event, i)"
-                clearable
-                input-class="text-right"
-                lazy-rules
-                :rules="[item.valid]"
-                :maxlength="item.length"
-                borderless
-                style="padding: 0px 16px"
-              >
-                <template v-slot:append>
-                  <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                    <q-icon name="qr_code_scanner" />
-                  </q-avatar>
-                </template>
-              </q-input>
-            </div>
-            <q-separator color="grey-5" />
-          </div>
-        </div> -->
-        <!-- <div class="bottom">
-        <q-btn no-caps style="width: 48%" flat push type="submit">Add</q-btn>
-        <q-separator vertical inset color="white" />
-        <q-btn no-caps style="width: 52%" flat push @click="complete"
-          >Complete</q-btn
-        >
-      </div> -->
       </q-form>
     </div>
-    <div class="button-bottom">
-      <div>
-        <q-btn
-          no-caps
-          unelevated
-          @click="onSubmit"
-          class="full-width"
-          color="secondary"
-          :label="$t('carton.mix_carton_add')"
-        />
-      </div>
-      <div class="mt-23">
-        <q-btn
-          no-caps
-          unelevated
-          @click="complete"
-          class="full-width"
-          text-color="#757575"
-          color="white"
-          outline
-          :label="$t('carton.mix_carton_complete')"
-        />
-      </div>
+    <div class="bottom" id="bottom-button">
+      <q-btn
+        no-caps
+        unelevated
+        @click="onSubmit"
+        class="full-width"
+        color="secondary"
+        :label="$t('carton.mix_carton_add')"
+      />
+      <q-btn
+        no-caps
+        unelevated
+        @click="complete"
+        class="full-width"
+        text-color="#757575"
+        color="white"
+        outline
+        :label="$t('carton.mix_carton_complete')"
+      />
     </div>
     <DialogComponent
       :dialogVisible="dialogVisible"
@@ -141,6 +96,15 @@ const MixCartonView = defineComponent({
     DialogComponent,
   },
   setup() {
+    window.onresize = () => {
+      const bottom = document.getElementById("bottom-button") as any;
+      if (originalHeight - window.innerHeight > 0) {
+        bottom.style.visibility = "hidden";
+      } else {
+        bottom.style.visibility = "visible";
+      }
+    };
+    const originalHeight = window.innerHeight;
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const cartonID = ref("");
     const itemCount = ref(0);
@@ -341,79 +305,14 @@ const MixCartonView = defineComponent({
 export default MixCartonView;
 </script>
 <style lang="scss" scoped>
-// .button-bottom {
-//   // margin-left: 20px;
-//   // position: fixed;
-//   // bottom: 20px;
-//   position: absolute;
-//   margin: 0 20px;
-//   bottom: 20px;
-//   width: calc(100% - 40px);
-// }
-// .wrapper {
-//   height: 100vh;
-//   display: flex;
-//   flex-flow: column;
-//   background: rgb(233, 229, 229);
-// }
-// .header {
-//   display: flex;
-//   background: #fff;
-//   justify-content: space-around;
-//   height: 60px;
-//   align-items: center;
-// }
-
 .content {
-  padding: 0 20px;
-  margin-top: 26px;
-  min-height: 600px;
+  margin-top: $--page-content-margin-top-no-search;
 }
-.carton-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 65px;
-  width: 100%;
-  background: #00243d;
-  color: #fff;
-  flex-flow: column;
-  margin-bottom: 23px;
-  border-radius: 5px;
-}
-.mb-15 {
-  margin-bottom: 20px;
-}
-.item-container {
-  text-align: left;
-  height: 50px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  padding: 0 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  white-space: nowrap;
-}
-.common-input {
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  font-size: 18px;
-  height: 50px;
-  padding-top: 5px;
-  padding-left: 15px;
-  padding-right: 15px;
-  &.no-shadow {
-    box-shadow: none;
-  }
-}
-.button-bottom {
-  position: absolute;
-  margin: 0 20px;
+.bottom {
+  position: fixed;
   bottom: 20px;
-  width: calc(100% - 40px);
-}
-.mt-23 {
-  margin-top: 20px;
+  .q-btn:nth-child(2) {
+    margin-top: 10px;
+  }
 }
 </style>

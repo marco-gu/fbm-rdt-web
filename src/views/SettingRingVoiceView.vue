@@ -13,15 +13,15 @@
         </div>
       </div>
     </div>
-    <div class="list-container">
-      <div class="list-item" @click="onChangeRingVoice('on')">
+    <div class="setting-content">
+      <div class="setting-card-item" @click="onChangeRingVoice('on')">
         <div class="label">{{ $t("setting.on") }}</div>
         <div v-if="ringVoice == 'on'" class="right-icon">
           <q-icon name="check" />
         </div>
         <div class="spacer"></div>
       </div>
-      <div class="list-item" @click="onChangeRingVoice('off')">
+      <div class="setting-card-item" @click="onChangeRingVoice('off')">
         <div class="label">{{ $t("setting.off") }}</div>
         <div v-if="ringVoice == 'off'" class="right-icon">
           <q-icon name="check" />
@@ -80,30 +80,3 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
-.list-container {
-  padding: 0 20px;
-
-  .list-item {
-    font-size: 18px;
-    background-color: #ffffff;
-    box-shadow: 0px 2px 5px 1px rgba(11, 69, 95, 0.08);
-    border-radius: 5px;
-    width: 100%;
-    text-align: left;
-    padding: 15px;
-    color: #00243d;
-    margin-top: 23px;
-    .label {
-      float: left;
-    }
-    .item-value,
-    .right-icon {
-      float: right;
-    }
-    .spacer {
-      clear: both;
-    }
-  }
-}
-</style>

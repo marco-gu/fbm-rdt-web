@@ -12,36 +12,43 @@
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
+      <div class="card-sub-title">{{ taskId }} Mix Carton</div>
     </div>
-
     <div class="content">
-      <div class="taskIdHeader">{{ taskId }} mix carton</div>
-      <div
-        class="data-list-container row items-center body mb-15"
-        v-for="(item, index) in mixCartonListDisplay"
-        :key="index"
-        @click="onClickMixCarton(item)"
-      >
-        <div class="column" style="width: 90%">
-          <div>UPC: {{ item.upc }}</div>
-          <div style="height: 8px"></div>
-          <div>QTY: {{ item.quantity }}</div>
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <div
+          v-for="(item, index) in mixCartonListDisplay"
+          :key="index"
+          @click="onClickMixCarton(item)"
+        >
+          <q-item class="card-item">
+            <div class="card-detail-left">
+              <q-item-section>
+                <div v-show="item.upc != ''">
+                  <q-item-label>UPC: {{ item.upc }}</q-item-label>
+                </div>
+                <div v-show="item.quantity != ''">
+                  <q-item-label>QTY: {{ item.quantity }}</q-item-label>
+                </div>
+              </q-item-section>
+            </div>
+            <q-item-section side>
+              <q-icon name="chevron_right" color="black" />
+            </q-item-section>
+          </q-item>
         </div>
-        <div style="width: 10%">
-          <q-icon size="md" name="chevron_right" color="grey" />
-        </div>
-      </div>
+      </q-scroll-area>
     </div>
   </div>
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-// import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import { MixCartonProduct } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import { useStore } from "@/store";
 
 const DataManagementMixCartonListView = defineComponent({
   methods: {
@@ -52,6 +59,7 @@ const DataManagementMixCartonListView = defineComponent({
   setup() {
     // const i18n = useI18n();
     const route = useRoute();
+    const store = useStore();
     const router = useRouter();
     const taskId = ref(route.query.taskId);
     const cartonId = ref(route.query.cartonId);
@@ -61,6 +69,12 @@ const DataManagementMixCartonListView = defineComponent({
     const arrowIcon = arrowImg;
 
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = store.state.screenModule.screenHeight
+        ? store.state.screenModule.screenHeight
+        : window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       getMixCartonList();
     });
     const getMixCartonList = () => {
@@ -108,37 +122,14 @@ export default DataManagementMixCartonListView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
-  margin-top: 26px;
+  margin-top: $--page-content-margin-top-with-subtitle;
 }
-.data-list-container {
-  padding-left: 15px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  background: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  text-align: left;
-  min-height: 64px;
-}
-.mb-15 {
-  margin-bottom: 20px;
-}
-.taskIdHeader {
-  margin-bottom: 23px;
-  background-color: #00243d;
-  padding: 6px 15px;
-  font-size: 18px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 22px;
-  border-radius: 5px 5px 5px 5px;
-  word-break: break-all;
-}
-.q-item {
-  background-color: #ffffff;
-  height: 60px;
-  width: 100%;
+.card-item {
+  padding: 10px 0 10px 15px;
+  .card-detail-left {
+    width: 100%;
+    align-self: center;
+    text-align: left;
+  }
 }
 </style>

@@ -5,7 +5,6 @@
     size="50px"
     :thickness="0.25"
     color="secondary"
-    class="q-ma-md"
     track-color="light-blue"
     ><slot></slot
   ></q-circular-progress>

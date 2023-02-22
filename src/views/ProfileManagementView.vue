@@ -26,43 +26,51 @@
         </q-input>
       </div>
     </div>
-    <div class="edit-list-container" v-if="isEditMode">
-      <q-list v-for="(item, index) in profileListDisplay" :key="index">
-        <div class="item-container row">
-          <q-checkbox
-            v-model="item.isSelected"
-            checked-icon="app:checkboxOn"
-            unchecked-icon="app:checkboxOff"
-          />
-          <q-item class="item">
-            <q-item-section class="item-labels">
-              <q-item-label>{{ item.profileCode }}</q-item-label>
-              <q-item-label class="sub-text">{{
-                item.updateDatetime
-              }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </div>
-      </q-list>
+    <div class="content">
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <template v-if="isEditMode">
+          <div class="edit-container">
+            <q-list v-for="(item, index) in profileListDisplay" :key="index">
+              <div class="card-edit-container">
+                <q-checkbox
+                  v-model="item.isSelected"
+                  checked-icon="app:checkboxOn"
+                  unchecked-icon="app:checkboxOff"
+                />
+                <q-item class="card-edit-item">
+                  <q-item-section class="card-item-labels">
+                    <q-item-label>{{ item.profileCode }}</q-item-label>
+                    <q-item-label class="card-item-date-text">{{
+                      item.updateDatetime
+                    }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </div>
+            </q-list>
+          </div>
+        </template>
+        <template v-else>
+          <!-- <div v-touch-hold:1800="handleHold"> -->
+          <q-pull-to-refresh @refresh="refresh">
+            <q-list v-for="(item, index) in profileListDisplay" :key="index">
+              <q-item class="card-item" v-touch-hold:1800="handleHold">
+                <q-item-section class="card-item-labels">
+                  <q-item-label>{{ item.profileCode }}</q-item-label>
+                  <q-item-label class="card-item-date-text">{{
+                    item.updateDatetime
+                  }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-pull-to-refresh>
+          <!-- </div> -->
+        </template>
+      </q-scroll-area>
     </div>
-    <div class="list-container" v-else v-touch-hold:1800="handleHold">
-      <q-pull-to-refresh @refresh="refresh">
-        <q-list v-for="(item, index) in profileListDisplay" :key="index">
-          <q-item class="item">
-            <q-item-section class="item-labels">
-              <q-item-label>{{ item.profileCode }}</q-item-label>
-              <q-item-label class="sub-text">{{
-                item.updateDatetime
-              }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-pull-to-refresh>
-    </div>
-    <div class="button-bottom" v-show="isEditMode">
+    <div class="bottom-coherent-button" v-show="isEditMode">
       <q-btn
         no-caps
-        style="width: 50%"
+        class="full-width"
         flat
         push
         :label="$t('common.cancel')"
@@ -71,7 +79,7 @@
       <q-separator vertical inset color="white" />
       <q-btn
         no-caps
-        style="width: 50%"
+        class="full-width"
         flat
         push
         :label="$t('common.delete')"
@@ -86,7 +94,7 @@ import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { ProfileMaster } from "../models/profile";
-import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { defineComponent, nextTick, onMounted, Ref, ref, watch } from "vue";
 import {
   AndroidResponse,
   AndroidResponseStatus,
@@ -107,6 +115,10 @@ const ProfileManagementView = defineComponent({
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       getProfileList();
     });
     const sortProfileList = (profileListDisplay: any[]) => {
@@ -243,59 +255,38 @@ const ProfileManagementView = defineComponent({
 export default ProfileManagementView;
 </script>
 <style lang="scss" scoped>
-.list-container {
-  .item {
-    margin: 0 23px 23px 23px;
-    padding: 8px 15px;
-    background: #ffffff;
-    border-radius: 5px;
-    box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-    font-size: 15px;
-    .item-labels {
-      text-align: left;
-      color: black;
-      .sub-text {
-        margin-top: 8px;
-        color: #757575;
-      }
-    }
+.content {
+  margin-top: $--page-content-margin-top-with-search;
+}
+.card-item-labels {
+  text-align: left;
+  .card-item-date-text {
+    margin-top: $--card-item-text-space-between;
+    color: $--card-item-date-text-color;
   }
 }
-.edit-list-container {
-  .item-container {
-    margin: 0 23px 23px 13px;
+
+.edit-container {
+  margin-top: $--page-content-margin-top-no-search;
+  .card-edit-container {
+    padding: 0px 15px 0px 0px;
+    display: flex;
+    align-items: flex-start;
     justify-content: space-between;
-    .item {
-      width: 87%;
-      padding: 8px 15px;
-      background: #ffffff;
-      border-radius: 5px;
-      box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-      font-size: 15px;
-      .item-labels {
-        text-align: left;
-        color: black;
-        .sub-text {
-          margin-top: 8px;
-          color: #757575;
-        }
-      }
-    }
-    &:first-of-type {
-      margin-top: 9px;
+    .card-edit-item {
+      @extend .card-item;
+      flex: 5;
     }
   }
 }
-.button-bottom {
-  display: flex;
+.bottom-coherent-button {
   position: fixed;
+  display: flex;
+  bottom: $--page-bottom-margin-bottom;
+  width: calc(100% - 46px);
   margin-left: 23px;
-  bottom: 30px;
-  width: 88%;
-  height: 49px;
-  border-radius: 3px;
   background: #42b0d5;
-  color: white;
-  font-size: 20px;
+  color: #ffffff;
+  border-radius: 5px;
 }
 </style>

@@ -1,7 +1,7 @@
 import { QVueGlobals } from "quasar/dist/types/globals";
 export function showLoading($q: QVueGlobals) {
   $q.loading.show({
-    delay: 100,
+    delay: 200,
     // message: '<span class="text-italic">Please wait...</span>',
     html: true,
   });

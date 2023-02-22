@@ -14,9 +14,10 @@
       </div>
     </div>
     <div class="content">
-      <div class="item-container mb-15">
+      <div class="card-item-select">
         {{ $t("image.add_image_reason") }}
         <q-select
+          hide-bottom-space
           borderless
           v-model="reason"
           :options="options"
@@ -24,28 +25,29 @@
         />
       </div>
       <div v-for="(item, i) in pageViews" :key="i">
-        <div class="item-container mb-15">
+        <div class="card-item-input">
           <div>
             {{ item.displayFieldName }}
           </div>
           <q-input
+            class="card-item-input-field no-shadow"
+            :input-style="{ fontSize: '15px' }"
+            input-class="text-right"
             v-model="item.value"
             clearable
-            input-class="text-right"
             borderless
             dense
-            class="common-input no-shadow"
           >
             <template v-slot:append>
               <q-avatar @click="scan(item.displayFieldName)">
-                <q-icon name="qr_code_scanner" size="18px" />
+                <q-icon name="qr_code_scanner" size="16px" />
               </q-avatar>
             </template>
           </q-input>
         </div>
       </div>
     </div>
-    <div class="button-bottom">
+    <div class="bottom">
       <q-btn
         no-caps
         unelevated
@@ -54,18 +56,16 @@
         color="secondary"
         :label="$t('image.add_image_save')"
       />
-      <div style="margin-top: 23px">
-        <q-btn
-          no-caps
-          unelevated
-          @click="back"
-          class="full-width"
-          text-color="#757575"
-          color="white"
-          outline
-          :label="$t('image.add_image_cancel')"
-        />
-      </div>
+      <q-btn
+        no-caps
+        unelevated
+        @click="back"
+        class="full-width"
+        text-color="#757575"
+        color="white"
+        outline
+        :label="$t('image.add_image_cancel')"
+      />
     </div>
   </div>
 </template>
@@ -163,40 +163,14 @@ export default cartonImageView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
-  margin-top: 26px;
-  min-height: 600px;
+  margin-top: $--page-content-margin-top-no-search;
 }
-.common-input {
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  font-size: 18px;
-  height: 50px;
-  padding-top: 5px;
-  padding-left: 15px;
-  padding-right: 15px;
-  &.no-shadow {
-    box-shadow: none;
-  }
-}
-.mb-15 {
-  margin-bottom: 20px;
-}
-.item-container {
-  text-align: left;
-  height: 50px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  padding: 0 5px 0 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  white-space: nowrap;
-}
-.button-bottom {
+
+.bottom {
   position: fixed;
-  margin: 0 20px;
   bottom: 20px;
-  width: calc(100% - 40px);
+  .q-btn:nth-child(2) {
+    margin-top: 10px;
+  }
 }
 </style>

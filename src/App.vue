@@ -17,7 +17,10 @@ const App = defineComponent({
     const router = useRouter();
     const route = useRoute();
     let isLoggedIn = false;
-
+    const deviceHeight = window.innerHeight;
+    store.dispatch("screenModule/saveScreenHeight", {
+      screenHeight: deviceHeight,
+    });
     provideI18n({
       locale: "en",
       messages: {

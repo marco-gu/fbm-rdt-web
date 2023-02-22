@@ -26,35 +26,41 @@
         </q-input>
       </div>
     </div>
-
-    <q-pull-to-refresh @refresh="refresh">
-      <div class="content">
-        <template v-if="taskListDisplay.length > 0">
-          <div
-            class="data-list-container row items-center body mb-15"
-            v-for="(item, index) in taskListDisplay"
-            :key="index"
-            @click="onClickItem(item)"
-          >
-            <div class="column" style="width: 90%">
-              <div style="word-wrap: break-word">
-                {{ item.taskId }}
-              </div>
-              <div style="height: 4px"></div>
-              <div>Total: {{ item.expectedCartonNumber }}</div>
-              <div style="height: 4px"></div>
-              <div style="color: #757575">{{ item.finalDatetime }}</div>
+    <div class="content">
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <q-pull-to-refresh @refresh="refresh">
+          <template v-if="taskListDisplay.length > 0">
+            <div
+              v-for="(item, index) in taskListDisplay"
+              :key="index"
+              @click="onClickItem(item)"
+            >
+              <q-item class="card-item">
+                <div>
+                  <q-item-section class="card-item-labels">
+                    <div class="card-item-label-content">
+                      <q-item-label>{{ item.taskId }}</q-item-label>
+                      <q-item-label
+                        >Total: {{ item.expectedCartonNumber }}</q-item-label
+                      >
+                      <q-item-label class="card-item-date-text">{{
+                        item.finalDatetime
+                      }}</q-item-label>
+                    </div>
+                  </q-item-section>
+                </div>
+                <q-item-section side>
+                  <q-icon name="chevron_right" color="black" />
+                </q-item-section>
+              </q-item>
             </div>
-            <div style="width: 10%">
-              <q-icon size="md" name="chevron_right" color="grey" />
-            </div>
-          </div>
-        </template>
-        <template v-else>
-          <div class="no-record">{{ $t("continue.no_record") }}</div>
-        </template>
-      </div>
-    </q-pull-to-refresh>
+          </template>
+          <template v-else>
+            <div class="no-record">{{ $t("continue.no_record") }}</div>
+          </template>
+        </q-pull-to-refresh>
+      </q-scroll-area>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -118,6 +124,10 @@ const LPListView = defineComponent({
     };
 
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       getTaskList();
     });
 
@@ -149,38 +159,20 @@ export default LPListView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
+  margin-top: $--page-content-margin-top-with-search;
 }
-
-.data-list-container {
-  padding-left: 15px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  background: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+.card-item {
+  padding: 10px 0 10px 15px;
+}
+.card-item {
   text-align: left;
-  min-height: 64px;
-}
-
-.body {
-  font-size: 15px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #000000;
-  line-height: 18px;
-}
-
-.mb-15 {
-  margin-bottom: 20px;
-}
-.no-record {
-  text-align: center;
-  width: 100%;
-  color: #757575;
-}
-.q-item {
-  text-align: left;
-  width: 100%;
+  word-break: break-all;
+  .card-item-label-content {
+    width: 75%;
+  }
+  .card-item-date-text {
+    color: $--card-item-date-text-color;
+    color: #757575;
+  }
 }
 </style>

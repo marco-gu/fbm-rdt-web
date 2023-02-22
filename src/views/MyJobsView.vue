@@ -26,40 +26,54 @@
         </q-input>
       </div>
     </div>
-
     <div class="content">
-      <template v-if="scanDataListDisplay.length > 0">
-        <div
-          class="data-list-container row items-center body mb-15"
-          v-for="(item, index) in scanDataListDisplay"
-          :key="index"
-          @click="onClickScanTask(item)"
-        >
-          <div style="width: 57%">
-            <div style="word-break: break-all">{{ item.taskId }}</div>
-            <div style="height: 8px"></div>
-            <div style="color: #757575">{{ item.updateDatetime }}</div>
-          </div>
-          <div style="width: 8%"></div>
-          <div style="width: 25%">
-            <CircularProgressComponent
-              :value="(item.scannedCartonNumber / item.allCartonNumber) * 100"
-            >
-              <div class="text-bold">
-                {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <template v-if="scanDataListDisplay.length > 0">
+          <div
+            v-for="(item, index) in scanDataListDisplay"
+            :key="index"
+            @click="onClickScanTask(item)"
+          >
+            <q-item class="card-item">
+              <div class="card-item-content">
+                <div class="card-item-left">
+                  <q-item-section>
+                    <div style="width: 80%">
+                      <q-item-label>{{ item.taskId }}</q-item-label>
+                      <q-item-label class="card-item-date-text">{{
+                        item.updateDatetime
+                      }}</q-item-label>
+                    </div>
+                  </q-item-section>
+                </div>
+                <div class="card-item-right">
+                  <q-item-section>
+                    <CircularProgressComponent
+                      :value="
+                        (item.scannedCartonNumber / item.allCartonNumber) * 100
+                      "
+                    >
+                      <div class="card-item-sub-text">
+                        {{ item.scannedCartonNumber }}/{{
+                          item.allCartonNumber
+                        }}
+                      </div>
+                    </CircularProgressComponent>
+                  </q-item-section>
+                </div>
               </div>
-            </CircularProgressComponent>
+              <q-item-section side>
+                <q-icon name="chevron_right" color="black" />
+              </q-item-section>
+            </q-item>
           </div>
-          <div style="width: 10%">
-            <q-icon size="md" name="chevron_right" color="black" />
-          </div>
-        </div>
-      </template>
-      <template v-else>
-        <div class="no-record">{{ $t("continue.no_record") }}</div>
-      </template>
+          <div class="footer-message">{{ $t("continue.instruction") }}</div>
+        </template>
+        <template v-else>
+          <div class="no-record">{{ $t("continue.no_record") }}</div>
+        </template>
+      </q-scroll-area>
     </div>
-    <div class="footer">{{ $t("continue.instruction") }}</div>
   </div>
 </template>
 <script lang="ts">
@@ -89,6 +103,10 @@ const MyJobsView = defineComponent({
     const arrowIcon = arrowImg;
 
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       getScanDataList();
     });
     const getScanDataList = () => {
@@ -149,47 +167,41 @@ export default MyJobsView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
+  margin-top: $--page-content-margin-top-with-search;
 }
-.data-list-container {
-  padding-left: 15px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  background: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+.card-item {
+  padding: 10px 0 10px 15px;
+}
+.card-item-content {
+  width: 100%;
+  display: flex;
   text-align: left;
-  min-height: 85px;
+  word-break: break-word;
+  justify-content: space-between;
+  .card-item-left {
+    flex: 4;
+    .card-item-date-text {
+      color: #757575;
+      color: var($--card-item-date-text-color);
+      margin-top: 8px;
+    }
+  }
+  .card-item-right {
+    flex: 1;
+    align-self: center;
+    .card-item-sub-text {
+      font-weight: bold;
+      color: #00243d;
+    }
+  }
 }
-
-.mb-15 {
-  margin-bottom: 20px;
-}
-
-.body {
-  font-size: 15px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #000000;
-  line-height: 18px;
-}
-
-.text-bold {
-  font-size: 14px;
-  font-family: Maersk Text-Bold, Maersk Text;
-  font-weight: bold;
-  color: #00243d;
-  line-height: 16px;
-}
-
 .no-record {
   text-align: center;
   width: 100%;
   color: #757575;
 }
-.footer {
-  position: absolute;
-  bottom: 10px;
+.footer-message {
+  margin-top: 5px;
   text-align: center;
   width: 100%;
   color: #757575;

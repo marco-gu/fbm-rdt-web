@@ -14,66 +14,73 @@
       </div>
     </div>
     <div class="content">
-      <q-form @submit="onSubmit" ref="myForm">
-        <q-input
-          class="common-input mb-15 mt-15"
-          v-model="profileName"
-          :prefix="$t('profile.profile_text')"
-          input-class="text-right"
-          readonly
-          borderless
-          dense
-        />
-        <div class="item-container mb-15">
-          <div class="label">{{ $t("lp.scan_type") }}</div>
-          <div class="input">
-            <q-radio
-              v-if="receivingFlag"
-              v-model="scanType"
-              val="Receiving"
-              :label="$t('common.receiving')"
-              @click="changeScanType('Receiving')"
-            />
-            <q-radio
-              v-if="stuffingFlag"
-              v-model="scanType"
-              val="Stuffing"
-              :label="$t('common.stuffing')"
-              @click="changeScanType('Stuffing')"
-            />
-          </div>
-        </div>
-        <div v-for="(item, i) in pageViews" :key="i">
-          <div v-if="item.display == 1">
-            <div class="item-container mb-15 pr-0">
-              <div>
-                {{ item.displayFieldName }}
-              </div>
-              <q-input
-                ref="inputRef"
-                v-model="item.model"
-                @paste="validPaste($event, i)"
-                clearable
-                :maxlength="item.length"
-                input-class="text-right"
-                lazy-rules
-                :rules="[item.valid]"
-                borderless
-                dense
-                class="common-input no-shadow"
-              >
-                <template v-slot:append>
-                  <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                    <q-icon name="qr_code_scanner" size="18px" />
-                  </q-avatar>
-                </template>
-              </q-input>
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <q-form @submit="onSubmit" ref="myForm">
+          <q-input
+            class="card-item-input"
+            v-model="profileName"
+            input-class="text-right"
+            :input-style="{ fontSize: '15px' }"
+            :prefix="$t('profile.profile_text')"
+            readonly
+            borderless
+            dense
+          />
+          <div class="card-item-input">
+            <div>{{ $t("lp.scan_type") }}</div>
+            <div>
+              <q-radio
+                v-if="receivingFlag"
+                v-model="scanType"
+                val="Receiving"
+                :label="$t('common.receiving')"
+                @click="changeScanType('Receiving')"
+              />
+              <q-radio
+                v-if="stuffingFlag"
+                v-model="scanType"
+                val="Stuffing"
+                :label="$t('common.stuffing')"
+                @click="changeScanType('Stuffing')"
+              />
             </div>
           </div>
-        </div>
-      </q-form>
+          <div v-for="(item, i) in pageViews" :key="i">
+            <div v-if="item.display == 1">
+              <div class="card-item-input">
+                <div>
+                  {{ item.displayFieldName }}
+                </div>
+                <q-input
+                  class="card-item-input-field no-shadow"
+                  :input-style="{ fontSize: '15px' }"
+                  input-class="text-right"
+                  ref="inputRef"
+                  v-model="item.model"
+                  @paste="validPaste($event, i)"
+                  clearable
+                  :maxlength="item.length"
+                  lazy-rules
+                  :rules="[item.valid]"
+                  borderless
+                  dense
+                >
+                  <template v-slot:append>
+                    <q-avatar
+                      v-if="item.scan == 1"
+                      @click="scan(item.fieldName)"
+                    >
+                      <q-icon name="qr_code_scanner" size="16px" />
+                    </q-avatar>
+                  </template>
+                </q-input>
+              </div>
+            </div>
+          </div>
+        </q-form>
+      </q-scroll-area>
     </div>
-    <div class="button-bottom">
+    <div class="bottom" id="bottom-button">
       <q-btn
         no-caps
         unelevated
@@ -117,6 +124,7 @@ import {
 import { useI18n } from "vue-i18n";
 import homeImg from "../assets/images/home.svg";
 import arrow from "../assets/images/arrow.svg";
+import { useStore } from "@/store";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -131,6 +139,7 @@ const LpSearchView = defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const store = useStore();
     const $q = useQuasar();
     const inputRef = ref(null);
     const i18n = useI18n();
@@ -155,6 +164,23 @@ const LpSearchView = defineComponent({
       i18n.locale.value = res;
     });
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = store.state.screenModule.screenHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      // hide bottom button if soft key up
+      window.onresize = () => {
+        // get resize height and recalculate scroll area
+        const resizeHeight = window.innerHeight;
+        const scrollArea = document.getElementById("scroll-area") as any;
+        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
+        const bottom = document.getElementById("bottom-button") as any;
+        if (deviceHeight - resizeHeight > 0) {
+          bottom.style.visibility = "hidden";
+        } else {
+          bottom.style.visibility = "visible";
+        }
+      };
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
       ) as ProfileDetail;
@@ -390,45 +416,10 @@ export default LpSearchView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
-  margin-top: 23px;
-  height: calc(100vh - 125px);
-  overflow: auto;
-  // min-height: 500px;
+  margin-top: $--page-content-margin-top-no-search;
 }
-.common-input {
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  font-size: 18px;
-  height: 50px;
-  padding-top: 5px;
-  padding-left: 15px;
-  padding-right: 15px;
-  &.no-shadow {
-    box-shadow: none;
-  }
-}
-.button-bottom {
-  position: absolute;
-  bottom: 20px;
-  width: calc(100% - 40px);
-  left: 20px;
-}
-.mb-15 {
-  margin-bottom: 20px;
-}
-.item-container {
-  text-align: left;
-  height: 50px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  padding: 0 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  white-space: nowrap;
-}
-.pr-0 {
-  padding-right: 0px;
+.bottom {
+  position: fixed;
+  bottom: $--page-bottom-margin-bottom;
 }
 </style>

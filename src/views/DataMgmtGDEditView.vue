@@ -16,89 +16,89 @@
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
-    </div>
-
-    <div class="content">
-      <div class="taskIdHeader">
-        <div v-if="isMix == 1">{{ taskId }} mix carton</div>
+      <div class="card-sub-title">
+        <div v-if="isMix == 1">{{ taskId }} Mix Carton</div>
         <div v-else>{{ taskId }}</div>
       </div>
-      <q-form @submit="showUpdateDialog = true">
-        <div v-for="(item, i) in pageViews" :key="i">
-          <div v-show="item.editable === true" class="item-container mb-15">
-            <div class="input-title">
-              {{ item.displayFieldName }}
+    </div>
+    <div class="content">
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <q-form @submit="showUpdateDialog = true" ref="myForm">
+          <div v-for="(item, i) in pageViews" :key="i">
+            <div v-show="item.editable === true" class="card-item-input">
+              <div>
+                {{ item.displayFieldName }}
+              </div>
+              <q-input
+                class="card-item-input-field no-shadow"
+                :input-style="{ fontSize: '15px' }"
+                input-class="text-right"
+                ref="inputRef"
+                v-model="item.model"
+                clearable
+                @paste="validPaste($event, i)"
+                :maxlength="item.length"
+                lazy-rules
+                :rules="[item.valid]"
+                borderless
+                dense
+              >
+                <template v-slot:append>
+                  <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
+                    <q-icon name="qr_code_scanner" size="16px" />
+                  </q-avatar>
+                </template>
+              </q-input>
             </div>
-
-            <q-input
-              ref="inputRef"
-              v-model="item.model"
-              @paste="validPaste($event, i)"
-              clearable
-              :maxlength="item.length"
-              input-class="text-right"
-              lazy-rules
-              :rules="[item.valid]"
-              borderless
-              dense
-              class="common-input no-shadow"
+            <div
+              v-show="item.editable === false && pageType === 'Detail'"
+              class="card-item-input"
             >
-              <template v-slot:append>
-                <q-avatar v-if="item.scan == 1" @click="scan(item.fieldName)">
-                  <q-icon name="qr_code_scanner" size="22px" />
-                </q-avatar>
-              </template>
-            </q-input>
-          </div>
-
-          <div
-            v-show="item.editable === false && pageType === 'Detail'"
-            class="item-container mb-15"
-          >
-            <div class="input-title">
-              {{ item.displayFieldName }}
-            </div>
-            <div class="disable-input no-shadow">
-              {{ item.model }}
+              <div>
+                {{ item.displayFieldName }}
+              </div>
+              <q-input
+                class="card-item-input-field no-shadow"
+                :input-style="{ fontSize: '15px' }"
+                input-class="text-right"
+                v-model="item.model"
+                borderless
+                dense
+              >
+              </q-input>
             </div>
           </div>
-        </div>
-
-        <div class="button-bottom row">
-          <q-btn
-            v-show="pageType == 'Detail'"
-            :class="[isMix ? 'button-enable' : 'button-disable', 'col']"
-            no-caps
-            flat
-            push
-            :label="$t('dataManagement.mix')"
-            @click="goToMix"
-          />
-          <q-separator
-            v-show="pageType == 'Detail'"
-            vertical
-            inset
-            color="white"
-          />
-          <q-btn
-            class="col button-enable"
-            no-caps
-            flat
-            push
-            type="submit"
-            :label="$t('common.save')"
-          />
-          <q-separator vertical inset color="white" />
-          <q-btn
-            class="col button-enable"
-            no-caps
-            flat
-            push
-            :label="$t('common.delete')"
-            @click="showDeleteDialog = true"
-          />
-        </div>
-      </q-form>
+        </q-form>
+      </q-scroll-area>
+    </div>
+    <div class="button-bottom row" id="bottom-button">
+      <q-btn
+        v-show="pageType == 'Detail'"
+        :class="[isMix ? 'button-enable' : 'button-disable', 'col']"
+        no-caps
+        flat
+        push
+        :label="$t('dataManagement.mix')"
+        @click="goToMix"
+      />
+      <q-separator v-show="pageType == 'Detail'" vertical inset color="white" />
+      <q-btn
+        class="col button-enable"
+        no-caps
+        flat
+        push
+        @click="onSubmit"
+        :label="$t('common.save')"
+      />
+      <q-separator vertical inset color="white" />
+      <q-btn
+        class="col button-enable"
+        no-caps
+        flat
+        push
+        :label="$t('common.delete')"
+        @click="showDeleteDialog = true"
+      />
     </div>
     <q-dialog v-model="showDeleteDialog" persistent>
       <div class="dialog-container">
@@ -119,7 +119,6 @@
         </div>
       </div>
     </q-dialog>
-
     <q-dialog v-model="showUpdateDialog" persistent>
       <div class="dialog-container">
         <div class="dialog-container__title">
@@ -188,7 +187,26 @@ const DataManagementDetailView = defineComponent({
     const arrowIcon = arrowImg;
     const showDeleteDialog = ref(false);
     const showUpdateDialog = ref(false);
+    const myForm = ref();
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const bottom = document.getElementById("bottom-button") as any;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
+      // hide bottom button if soft key up
+      window.onresize = () => {
+        // get resize height and recalculate scroll area
+        const resizeHeight = window.innerHeight;
+        const scrollArea = document.getElementById("scroll-area") as any;
+        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
+        const bottom = document.getElementById("bottom-button") as any;
+        if (deviceHeight - resizeHeight > 0) {
+          bottom.style.visibility = "hidden";
+        } else {
+          bottom.style.visibility = "visible";
+        }
+      };
       scanType.value =
         taskId.value?.indexOf("Receiving") !== -1 ? "Receiving" : "Stuffing";
       if (typeof taskId.value === "string") {
@@ -384,54 +402,64 @@ const DataManagementDetailView = defineComponent({
     };
 
     const onSubmit = () => {
-      showUpdateDialog.value = false;
-      if (pageType.value === "Group") {
-        const apiParams = {
-          taskId: taskId.value,
-          SO: "",
-          PO: "",
-          SKU: "",
-          ContainerNumber: "",
-          TotalCBM: "",
-          TotalWeight: "",
-        };
-        composeSaveGroupParam(apiParams, pageViews.value);
+      myForm.value.validate().then((success: any) => {
+        if (success) {
+          showUpdateDialog.value = false;
+          if (pageType.value === "Group") {
+            const apiParams = {
+              taskId: taskId.value,
+              SO: "",
+              PO: "",
+              SKU: "",
+              ContainerNumber: "",
+              TotalCBM: "",
+              TotalWeight: "",
+            };
+            composeSaveGroupParam(apiParams, pageViews.value);
 
-        bridge.call("updateTaskForDataManagement", apiParams, (res: string) => {
-          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            taskId.value = androidResponse.data;
-            back();
-            popupSuccessMsg($q, "Updated Successfully");
+            bridge.call(
+              "updateTaskForDataManagement",
+              apiParams,
+              (res: string) => {
+                const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+                if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+                  taskId.value = androidResponse.data;
+                  back();
+                  popupSuccessMsg($q, "Updated Successfully");
+                }
+              }
+            );
+          } else if (pageType.value === "Detail") {
+            showUpdateDialog.value = false;
+            const apiParams = {
+              LPID: cartonDetail.lpId,
+              CartonID: "",
+            };
+
+            composeSaveDetailParam(apiParams, pageViews.value);
+            bridge.call(
+              "updateCartonForDataManagement",
+              apiParams,
+              (res: string) => {
+                const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+
+                if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+                  taskId.value = androidResponse.data;
+                  back();
+                  popupSuccessMsg($q, "Updated Successfully");
+                } else if (
+                  androidResponse.status == AndroidResponseStatus.ERROR
+                ) {
+                  const message = i18n.t(
+                    "messageCode." + androidResponse.messageCode
+                  );
+                  popupErrorMsg($q, message);
+                }
+              }
+            );
           }
-        });
-      } else if (pageType.value === "Detail") {
-        showUpdateDialog.value = false;
-        const apiParams = {
-          LPID: cartonDetail.lpId,
-          CartonID: "",
-        };
-
-        composeSaveDetailParam(apiParams, pageViews.value);
-        bridge.call(
-          "updateCartonForDataManagement",
-          apiParams,
-          (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              taskId.value = androidResponse.data;
-              back();
-              popupSuccessMsg($q, "Updated Successfully");
-            } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-              const message = i18n.t(
-                "messageCode." + androidResponse.messageCode
-              );
-              popupErrorMsg($q, message);
-            }
-          }
-        );
-      }
+        }
+      });
     };
 
     const handleDelete = () => {
@@ -509,6 +537,7 @@ const DataManagementDetailView = defineComponent({
       showDeleteDialog,
       showUpdateDialog,
       isMix,
+      myForm,
     };
   },
 });
@@ -516,33 +545,15 @@ export default DataManagementDetailView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
-  margin-top: 26px;
-}
-.taskIdHeader {
-  margin-bottom: 23px;
-  background-color: #00243d;
-  padding: 6px 15px;
-  font-size: 18px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 22px;
-  border-radius: 5px 5px 5px 5px;
-  word-break: break-all;
+  margin-top: $--page-content-margin-top-with-subtitle;
 }
 
 .button-bottom {
   position: fixed;
   bottom: 20px;
-  width: calc(100% - 40px);
+  width: calc(100% - 46px);
   background: #42b0d5;
-
-  font-size: 20px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-
-  line-height: 23px;
+  margin-left: 23px;
   border-radius: 3px;
 }
 
@@ -552,95 +563,5 @@ export default DataManagementDetailView;
 
 .button-disable {
   color: rgba(255, 255, 255, 0.6);
-}
-
-.input-title {
-  font-size: 18px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #757575;
-  line-height: 22px;
-}
-.common-input {
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  font-size: 18px;
-  height: 50px;
-  padding-top: 5px;
-  padding-left: 15px;
-  &.no-shadow {
-    box-shadow: none;
-  }
-}
-.disable-input {
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  font-size: 18px;
-  color: #757575;
-  height: 50px;
-  padding-top: 11px;
-  padding-left: 15px;
-  &.no-shadow {
-    box-shadow: none;
-  }
-}
-.mb-15 {
-  margin-bottom: 20px;
-}
-.item-container {
-  text-align: left;
-  height: 50px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  border-radius: 5px;
-  padding: 0 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  white-space: nowrap;
-}
-.dialog-container {
-  width: 86%;
-  border-radius: 5px;
-  border: 0px solid #757575;
-  font-size: 17px;
-  background-color: #ffffff;
-  &__title {
-    padding: 15px 15px 0 15px;
-    font-weight: bold;
-    .q-icon {
-      float: right;
-      right: 0;
-      top: 0;
-    }
-  }
-  &__content {
-    padding: 0 15px;
-    margin: 23px 0;
-  }
-  &__button {
-    padding: 15px;
-    text-align: right;
-    background: #f7f7f7;
-    border-radius: 0px 0px 5px 5px;
-    border: 0px solid #878787;
-    .dialog-button {
-      min-width: 99px;
-      padding: 8px;
-      border-radius: 5px;
-      font-size: 18px;
-
-      &.confirm {
-        background: #00243d;
-        color: #ffffff;
-      }
-
-      &.cancel {
-        border: 1px solid #42b0d5;
-        color: #42b0d5;
-        margin-right: 15px;
-        background: #ffffff;
-      }
-    }
-  }
 }
 </style>

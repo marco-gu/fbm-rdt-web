@@ -12,31 +12,29 @@
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
-    </div>
-    <div class="content">
-      <div class="taskIdHeader">
+      <div class="card-sub-title">
         {{ taskId }}
       </div>
-      <div>
+    </div>
+    <div class="content">
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <div
-          class="data-list-container row items-center body mb-15"
+          class="card-item"
           v-for="(item, index) in filterList"
           :key="index"
           @click="onClickItem(item)"
         >
           <div>CID: {{ item.cartonId }}</div>
         </div>
-      </div>
+      </q-scroll-area>
     </div>
   </div>
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-
 import { computed, defineComponent, onMounted, Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Carton } from "../models/profile";
-
 import { useI18n } from "@/plugin/i18nPlugins";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
@@ -79,6 +77,10 @@ const LPDetailListView = defineComponent({
     );
 
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       if (typeof taskId.value === "string") {
         getLPListByTaskId(taskId.value);
       }
@@ -99,33 +101,9 @@ export default LPDetailListView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
-  margin-top: 26px;
+  margin-top: $--page-content-margin-top-with-subtitle;
 }
-.data-list-container {
-  padding-left: 15px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  background: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
+.card-item {
   text-align: left;
-  min-height: 64px;
-}
-
-.mb-15 {
-  margin-bottom: 20px;
-}
-.taskIdHeader {
-  margin-bottom: 23px;
-  background-color: #00243d;
-  padding: 6px 15px;
-  font-size: 18px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 22px;
-  border-radius: 5px 5px 5px 5px;
-  word-break: break-all;
 }
 </style>

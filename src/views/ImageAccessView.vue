@@ -27,37 +27,23 @@
       </div>
     </div>
     <div class="content">
-      <div v-for="(item, index) in images" :key="index">
-        <q-card class="my-card" @click="onClick(item)">
-          <div class="card-left">
-            <div>
-              <span>Reason: &nbsp;</span>
-              <span>{{ item.reason }}</span>
+      <q-scroll-area class="scroll-area" :thumb-style="{ width: '0px' }">
+        <div v-for="(item, index) in images" :key="index">
+          <q-item class="card-item">
+            <div class="card-item-labels" @click="onClick(item)">
+              <q-item-label>Reason: {{ item.reason }}</q-item-label>
+              <q-item-label>SO: {{ item.so }}</q-item-label>
+              <q-item-label>PO: {{ item.po }}</q-item-label>
+              <q-item-label>CID: {{ item.cid }}</q-item-label>
             </div>
-            <div class="mt-8">
-              <span>SO: &nbsp;</span>
-              <span>{{ item.so }}</span>
-            </div>
-          </div>
-          <div>
-            <div>
-              <span>CID: &nbsp;</span>
-              <span>{{ item.cid }}</span>
-            </div>
-            <div class="mt-8">
-              <span>PO: &nbsp;</span>
-              <span>{{ item.po }}</span>
-            </div>
-          </div>
-          <div>
             <q-item-section side>
               <q-icon name="chevron_right" color="black" />
             </q-item-section>
-          </div>
-        </q-card>
-      </div>
+          </q-item>
+        </div>
+      </q-scroll-area>
     </div>
-    <div class="button-bottom">
+    <div class="bottom">
       <q-btn
         no-caps
         @click="onAdd"
@@ -90,7 +76,7 @@ const ImageAccessView = defineComponent({
     });
     onMounted(() => {
       // retrieve
-      bridge.call("retrieveCargoImages", null, (data: string) => {
+      bridge.call("retrieveCargoImages", null, (data: any) => {
         images.value = JSON.parse(data) as ImageModel[];
       });
     });
@@ -139,48 +125,23 @@ export default ImageAccessView;
 </script>
 <style lang="scss" scoped>
 .content {
-  padding: 0 20px;
-  margin-top: 13px;
+  margin-top: $--page-content-margin-top-with-search;
 }
-.my-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  font-size: 15px;
-  margin-bottom: 10px;
-  text-align: left;
-  .card-left {
-    padding: 8px 0px 8px 15px;
-  }
-  .mt-8 {
-    margin-top: 8px;
+.card-item {
+  padding: 10px 0 10px 15px;
+  .card-item-labels {
+    width: 100%;
+    text-align: left;
+    align-items: center;
   }
 }
-
-// .table-header {
-//   background: #00243d;
-//   color: #ffffff;
-//   height: 48.3px;
-//   text-align: center;
-//   font-size: 16px;
-// }
-// .images-content {
-//   background: #ffffff;
-//   color: gray;
-//   height: 50.6px;
-//   text-align: center;
-//   font-size: 16px;
-// }
 .show {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.button-bottom {
-  margin-left: 20px;
+.bottom {
   position: fixed;
   bottom: 20px;
-  width: calc(100% - 40px);
 }
 </style>

@@ -6,15 +6,15 @@
           <img :src="arrowIcon" @click="back" />
         </div>
         <div class="common-toolbar-middle">
-          {{ $t("setting.ring_voice") }}
+          {{ $t("setting.setting_header") }}
         </div>
         <div class="common-toolbar-right">
           <img :src="homeIcon" @click="home" />
         </div>
       </div>
     </div>
-    <div class="list-container">
-      <div class="list-item" @click="goRingVoice">
+    <div class="setting-content">
+      <div class="setting-card-item" @click="goRingVoice">
         <div class="label">{{ $t("setting.ring_voice") }}</div>
         <div class="right-icon">
           <q-icon name="chevron_right" />
@@ -25,7 +25,7 @@
         <div class="spacer"></div>
       </div>
 
-      <div class="list-item" @click="goLanguage">
+      <div class="setting-card-item" @click="goLanguage">
         <div class="label">{{ $t("setting.language") }}</div>
         <div class="right-icon">
           <q-icon name="chevron_right" />
@@ -36,7 +36,7 @@
         <div class="spacer"></div>
       </div>
 
-      <div class="list-item" @click="goScanningDevice">
+      <div class="setting-card-item" @click="goScanningDevice">
         <div class="label">{{ $t("setting.scanning_device") }}</div>
         <div class="right-icon">
           <q-icon name="chevron_right" />
@@ -47,7 +47,7 @@
         <div class="spacer"></div>
       </div>
 
-      <div class="list-item" @click="goResetPwd">
+      <div class="setting-card-item" @click="goResetPwd">
         <div class="label">{{ $t("setting.reset_password") }}</div>
         <div class="right-icon">
           <q-icon name="chevron_right" />
@@ -55,7 +55,7 @@
         <div class="spacer"></div>
       </div>
 
-      <div class="list-item">
+      <div class="setting-card-item">
         <div class="label">{{ $t("setting.last_profile_sync_time") }}</div>
         <div class="item-value">
           {{ lastProfileSyncTime }}
@@ -63,7 +63,7 @@
         <div class="spacer"></div>
       </div>
 
-      <div class="list-item" @click="goSoftwareUpdate">
+      <div class="setting-card-item" @click="goSoftwareUpdate">
         <div class="label">{{ $t("setting.software_update") }}</div>
         <div class="right-icon">
           <q-icon name="chevron_right" />
@@ -79,7 +79,7 @@ import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
 import { useI18n } from "vue-i18n";
@@ -195,34 +195,3 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
-.list-container {
-  padding: 0 20px;
-
-  .list-item {
-    font-size: 18px;
-    background-color: #ffffff;
-    box-shadow: 0px 2px 5px 1px rgba(11, 69, 95, 0.08);
-    border-radius: 5px;
-    width: 100%;
-    text-align: left;
-    padding: 15px;
-    color: #000000;
-    margin-top: 23px;
-    .label {
-      float: left;
-      color: #757575;
-    }
-    .q-icon {
-      color: #757575;
-    }
-    .item-value,
-    .right-icon {
-      float: right;
-    }
-    .spacer {
-      clear: both;
-    }
-  }
-}
-</style>

@@ -1,0 +1,46 @@
+// card general
+.card-item {
+    border-radius: $--card-radius;
+    box-shadow: $--card-box-shadow;
+    padding: $--card-padding;
+    margin-bottom: $--card-space-between;
+    font-size: $--card-font-size;
+}
+
+// card with input field
+.card-item-input {
+    @extend .card-item;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    text-align: left;
+    padding: $--card-input-padding;
+    .card-item-input-field {
+        height: $--card-input-field-height;
+        padding: $--card-input-field-padding;
+        &.no-shadow {
+            box-shadow: none;
+        }
+    }
+}
+
+// card with selection
+.card-item-select {
+    @extend .card-item-input;
+    padding: $--card-selection-padding;
+    height: $--card-selection-height;
+}
+
+// card for sub title
+.card-sub-title {
+    // display: flex;
+    margin: $--card-sub-title-margin;
+    padding: $--card-sub-title-padding;
+    align-items: center;
+    justify-content: center;
+    background: #00243d;
+    color: #fff;
+    border-radius: $--card-radius;
+    word-break: break-word;
+}

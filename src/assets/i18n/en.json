@@ -61,7 +61,7 @@
         "forgot_password": "Forgot Password",
         "forgot_password_hint": "Please enter your email",
         "change_password": "Change Password",
-        "current_password": "Current Password",
+        "current_password": "Password",
         "current_password_hint": "Please enter your current password",
         "new_password": "New Password",
         "new_password_hint": "Please enter your new password",
@@ -118,16 +118,16 @@
     },
     "dataManagement": {
         "data_management_header": "Data Management",
-        "group_title": "Data Management/Group",
-        "detail_title": "Data Management/Detail",
+        "group_title": "Data Management",
+        "detail_title": "Data Management",
         "mix_title": "Data Management/Mix",
         "no_record": "No data found.",
         "upload": "Upload",
         "group_view": "Group View",
         "detail_view": "Detail View",
         "mix": "Mix",
-        "delete_dialog_message":"Are you sure you want to delete it?",
-        "update_dialog_message":"Are you sure you want to update it?"
+        "delete_dialog_message": "Are you sure you want to delete it?",
+        "update_dialog_message": "Are you sure you want to update it?"
     },
     "setting": {
         "setting_header": "Settings",
