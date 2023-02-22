@@ -15,7 +15,7 @@
     </div>
 
     <div class="content">
-      <div class="taskIdHeader">{{ taskId }} mix carton</div>
+      <div class="taskIdHeader">{{ taskId }}+Mix</div>
       <div
         class="data-list-container row items-center body mb-15"
         v-for="(item, index) in mixCartonListDisplay"

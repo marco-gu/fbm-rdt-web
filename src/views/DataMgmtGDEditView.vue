@@ -20,7 +20,7 @@
 
     <div class="content">
       <div class="taskIdHeader">
-        <div v-if="isMix == 1">{{ taskId }} mix carton</div>
+        <div v-if="isMix == 1">{{ taskId }}+Mix</div>
         <div v-else>{{ taskId }}</div>
       </div>
       <q-form @submit="showUpdateDialog = true">
@@ -279,9 +279,6 @@ const DataManagementDetailView = defineComponent({
                     case "ContainerNumber":
                       element.model = ref(lpCarton.containerNumber);
                       break;
-                    case "CartonID":
-                      element.model = ref(lpCarton.cartonId);
-                      break;
                     case "TotalCBM":
                       element.model = ref(lpModel.totalCBM);
                       break;
@@ -326,6 +323,7 @@ const DataManagementDetailView = defineComponent({
                       break;
                     case "CartonID":
                       element.model = ref(cartonDetail.cartonId);
+                      element.display = 1;
                       break;
                     case "Style":
                       element.model = ref(cartonDetail.style);

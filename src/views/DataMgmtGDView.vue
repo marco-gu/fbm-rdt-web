@@ -19,7 +19,7 @@
     </div>
     <div class="content">
       <div class="taskIdHeader">
-        <div v-if="taskDisplay.isMix == 1">{{ taskId }} mix carton</div>
+        <div v-if="taskDisplay.isMix == 1">{{ taskId }}+Mix</div>
         <div v-else>{{ taskId }}</div>
       </div>
 
