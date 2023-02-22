@@ -57,8 +57,8 @@
 
       <div class="list-item">
         <div class="label">{{ $t("setting.last_profile_sync_time") }}</div>
-        <div class="item-value">
-          {{ lastProfileSyncTime }}
+        <div class="item-value" style="font-size: 16px; padding-top: 2px">
+          {{ formatDate(new Date(lastProfileSyncTime)) }}
         </div>
         <div class="spacer"></div>
       </div>
@@ -84,6 +84,7 @@ import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
 import { useI18n } from "vue-i18n";
 import config from "../assets/config.json";
+import formatDate from "../utils/formatDate";
 export default {
   name: "SettingView",
   components: {},
@@ -177,20 +178,21 @@ export default {
       });
     };
     return {
+      arrowIcon,
       back,
+      formatDate,
       goLanguage,
       goResetPwd,
       goRingVoice,
       goScanningDevice,
       goSoftwareUpdate,
       home,
-      ringVoice,
+      homeIcon,
       lastProfileSyncTime,
+      ringVoice,
       router,
       scanningDevice,
       softwareUpdate,
-      homeIcon,
-      arrowIcon,
     };
   },
 };
