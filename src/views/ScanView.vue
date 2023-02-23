@@ -137,7 +137,7 @@ const ScanView = defineComponent({
       }
     });
     const back = () => {
-      router.push("/lpSearch/" + route.params.id);
+      router.push("/lpSearch/online");
     };
     const home = () => {
       router.push("/home");
