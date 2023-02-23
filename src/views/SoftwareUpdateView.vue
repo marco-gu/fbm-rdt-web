@@ -86,24 +86,20 @@ export default {
     const downloadPending = ref(false);
     const latestVersion = ref("Ver 1.0");
     const latestVersionDetail = ref("");
-    // const latestVersion = ref("Ver 1.1");
-    // const latestVersionDetail = ref(
-    //   "New functions:\n* use face ID to login\nRepair:\n* repair some bugs"
-    // );
     onMounted(() => {
-      // showLoading($q);
-      // bridge.call("getLatestVersion", null, (res: string) => {
-      //   const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-      //   if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-      //     const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
-      //     latestVersion.value = versionInfo.version;
-      //     latestVersionDetail.value = versionInfo.detail;
-      //   } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-      //     const message = i18n.t("messageCode." + androidResponse.messageCode);
-      //     popupErrorMsg($q, message);
-      //   }
-      //   closeLoading($q);
-      // });
+      showLoading($q);
+      bridge.call("getLatestVersion", null, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
+          latestVersion.value = versionInfo.version;
+          latestVersionDetail.value = versionInfo.detail;
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
+          popupErrorMsg($q, message);
+        }
+        closeLoading($q);
+      });
     });
     const back = () => {
       router.push("/setting");
@@ -112,17 +108,17 @@ export default {
       router.push("/home");
     };
     const handleDownload = () => {
-      // showLoading($q);
-      // downloadPending.value = true;
-      // bridge.call("downloadLatestVersion", null, (res: string) => {
-      //   const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-      //   if (androidResponse.status == AndroidResponseStatus.ERROR) {
-      //     const message = i18n.t("messageCode." + androidResponse.messageCode);
-      //     popupErrorMsg($q, message);
-      //   }
-      //   closeLoading($q);
-      //   downloadPending.value = false;
-      // });
+      showLoading($q);
+      downloadPending.value = true;
+      bridge.call("downloadLatestVersion", null, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
+          popupErrorMsg($q, message);
+        }
+        closeLoading($q);
+        downloadPending.value = false;
+      });
     };
     return {
       arrowIcon,
