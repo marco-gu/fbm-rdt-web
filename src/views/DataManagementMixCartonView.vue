@@ -276,8 +276,17 @@ const DataManagementMixCartonView = defineComponent({
     const handleSave = () => {
       myForm.value.validate().then((success: any) => {
         if (success) {
+          const args = {
+            id: mixCartonProduct.value.id,
+            lpId: lpId.value,
+            UPC: "",
+            Color: "",
+            Size: "",
+            Quantity: "",
+            Style: "",
+          };
           showUpdateDialog.value = false;
-          const args = composeSaveApiArgs();
+          composeSaveApiArgs(args, dynamicViews.value);
           bridge.call("updateCartonProduct", args, (res: string) => {
             const androidResponse = JSON.parse(res) as AndroidResponse<any>;
             if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
@@ -297,39 +306,13 @@ const DataManagementMixCartonView = defineComponent({
         }
       });
     };
-    const composeSaveApiArgs = () => {
-      let args = {
-        id: mixCartonProduct.value.id,
-        lpId: lpId.value,
-        upc: mixCartonProduct.value.upc,
-        color: mixCartonProduct.value.color,
-        size: mixCartonProduct.value.size,
-        qty: mixCartonProduct.value.qty,
-        style: mixCartonProduct.value.style,
-      };
-      dynamicViews.value.forEach((viewElement: ViewDisplayAttribute) => {
-        switch (viewElement.fieldName) {
-          case "UPC":
-            args.upc = viewElement.model == null ? "" : viewElement.model;
-            break;
-          case "Color":
-            args.color = viewElement.model == null ? "" : viewElement.model;
-            break;
-          case "Size":
-            args.size = viewElement.model == null ? "" : viewElement.model;
-            break;
-          case "Quantity":
-            args.qty = viewElement.model == null ? "" : viewElement.model;
-            break;
-          case "Style":
-            args.style = viewElement.model == null ? "" : viewElement.model;
-            break;
-          default:
-            break;
-        }
+
+    const composeSaveApiArgs = (params: any, source: any) => {
+      source.forEach((view: ViewDisplayAttribute) => {
+        params[view.fieldName] = view.model == null ? "" : view.model;
       });
-      return args;
     };
+
     const handleDelete = () => {
       showDeleteDialog.value = false;
       const args = {
