@@ -31,7 +31,7 @@
                   {{ item.displayFieldName }}
                 </div>
                 <q-input
-                  class="card-item-input-field no-shadow"
+                  class="card-item-input-field-datamgmt no-shadow"
                   :input-style="{ fontSize: '15px' }"
                   input-class="text-right"
                   ref="inputRef"
@@ -568,5 +568,10 @@ export default DataManagementDetailView;
 
 .button-disable {
   color: rgba(255, 255, 255, 0.6);
+}
+
+.card-item-input-field-datamgmt {
+  @extend .card-item-input-field;
+  width: 100%;
 }
 </style>
