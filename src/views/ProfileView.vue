@@ -39,9 +39,9 @@
               <q-item class="card-item" clickable @click="onClickProfile(item)">
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>
-                  <q-item-label class="card-item-date-text">{{
-                    item.updateDatetime
-                  }}</q-item-label>
+                  <q-item-label class="card-item-date-text">
+                    {{ formatDate(new Date(item.updateDatetime)) }}
+                  </q-item-label>
                 </q-item-section>
                 <q-item-section side>
                   <q-icon name="chevron_right" color="black" />
@@ -69,7 +69,7 @@ import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
-import formateDate from "../utils/formatDate";
+import formatDate from "../utils/formatDate";
 const ProfileView = defineComponent({
   methods: {
     home() {
@@ -98,7 +98,7 @@ const ProfileView = defineComponent({
           getProfileList();
           isFirstSync.value = false;
           bridge.call("setProfileLastSyncDate", {
-            formatDate: formateDate(new Date()),
+            formatDate: formatDate(new Date()),
           });
           done();
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
@@ -170,14 +170,15 @@ const ProfileView = defineComponent({
     });
 
     return {
-      router,
-      refresh,
+      arrowIcon,
+      formatDate,
+      homeIcon,
+      isFirstSync,
       onClickProfile,
       profileListDisplay,
+      refresh,
+      router,
       search,
-      homeIcon,
-      arrowIcon,
-      isFirstSync,
     };
   },
 });

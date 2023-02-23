@@ -40,9 +40,9 @@
                 <q-item class="card-edit-item">
                   <q-item-section class="card-item-labels">
                     <q-item-label>{{ item.profileCode }}</q-item-label>
-                    <q-item-label class="card-item-date-text">{{
-                      item.updateDatetime
-                    }}</q-item-label>
+                    <q-item-label class="card-item-date-text">
+                      {{ formatDate(new Date(item.updateDatetime)) }}
+                    </q-item-label>
                   </q-item-section>
                 </q-item>
               </div>
@@ -61,9 +61,9 @@
                 <q-item class="card-item" v-touch-hold:1800="handleHold">
                   <q-item-section class="card-item-labels">
                     <q-item-label>{{ item.profileCode }}</q-item-label>
-                    <q-item-label class="card-item-date-text">{{
-                      item.updateDatetime
-                    }}</q-item-label>
+                    <q-item-label class="card-item-date-text">
+                      {{ formatDate(new Date(item.updateDatetime)) }}
+                    </q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -107,7 +107,7 @@ import {
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
-import formateDate from "../utils/formatDate";
+import formatDate from "../utils/formatDate";
 const ProfileManagementView = defineComponent({
   setup() {
     const $q = useQuasar();
@@ -175,7 +175,7 @@ const ProfileManagementView = defineComponent({
             getProfileList();
             isFirstSync = false;
             bridge.call("setProfileLastSyncDate", {
-              formatDate: formateDate(new Date()),
+              formatDate: formatDate(new Date()),
             });
             done();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
@@ -244,6 +244,7 @@ const ProfileManagementView = defineComponent({
       cancelEditMode,
       back,
       deleteProfile,
+      formatDate,
       handleHold,
       home,
       isEditMode,

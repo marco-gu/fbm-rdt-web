@@ -44,7 +44,7 @@
                         v-html="formatTaskId(item.taskId)"
                       ></div>
                       <div style="text-align: left; white-space: nowrap">
-                        {{ formatDate(item.updateDatetime) }}
+                        {{ formatDate(new Date(item.updateDatetime)) }}
                       </div>
                     </q-item-section>
                     <q-item-section>
@@ -115,7 +115,7 @@
                     ></div>
                     <div style="height: 8px"></div>
                     <div class="cardTime">
-                      {{ formatDate(item.updateDatetime) }}
+                      {{ formatDate(new Date(item.updateDatetime)) }}
                     </div>
                   </div>
                   <div class="center process">
@@ -235,6 +235,7 @@ import {
 } from "@/models/android.response";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import formatDate from "../utils/formatDate";
 const enum UploadAlertMsg {
   MATCHED = "CIDs all matched",
   PARTIALLY = "CIDs partially matched",
@@ -427,27 +428,6 @@ const DataManagementView = defineComponent({
       const a = taskId.split("+").join("<br/>");
       return a;
     };
-
-    // ✅ Format using reusable function
-    function padTo2Digits(num: number) {
-      return num.toString().padStart(2, "0");
-    }
-
-    // 👇️ format as "YYYY-MM-DD hh:mm"
-    function formatDate(dateStr: string) {
-      const date = new Date(dateStr);
-      return (
-        [
-          date.getFullYear(),
-          padTo2Digits(date.getMonth() + 1),
-          padTo2Digits(date.getDate()),
-        ].join("-") +
-        " " +
-        [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes())].join(
-          ":"
-        )
-      );
-    }
     return {
       back,
       cancelEditMode,
