@@ -35,7 +35,6 @@ import bridge from "dsbridge";
 import { computed, defineComponent, onMounted, Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Carton } from "../models/profile";
-import { useI18n } from "@/plugin/i18nPlugins";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
 const LPDetailListView = defineComponent({
@@ -47,22 +46,15 @@ const LPDetailListView = defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const i18n = useI18n();
     const taskId = ref(route.query.taskId);
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-    });
-
     const lpListDisplay: Ref<Carton[]> = ref([]);
-
     const back = () => {
       router.push({
         path: "/lpList",
       });
     };
-
     const getLPListByTaskId = (taskId: string) => {
       const args = {
         taskId: taskId,
@@ -71,11 +63,9 @@ const LPDetailListView = defineComponent({
         lpListDisplay.value = JSON.parse(res) as Carton[];
       });
     };
-
     const filterList = computed(() =>
       lpListDisplay.value.filter((item) => item.expected == true)
     );
-
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -85,7 +75,6 @@ const LPDetailListView = defineComponent({
         getLPListByTaskId(taskId.value);
       }
     });
-
     return {
       router,
       lpListDisplay,

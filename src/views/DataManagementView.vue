@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="content">
-      <q-scroll-area class="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <template v-if="scanDataListDisplay.length > 0">
           <div v-if="isEditMode == false">
             <div v-for="(item, index) in scanDataListDisplay" :key="index">
@@ -147,7 +147,10 @@
                           item.uploadStatus == 0 ? uploadedDisabled : uploaded
                         "
                       />
-                      <div class="center" style="font-size: 8px； height: 8px">
+                      <div
+                        class="center"
+                        style="font-size: 8px; margin-top: 8px"
+                      >
                         UPLOADED
                       </div>
                     </div>
@@ -279,9 +282,9 @@ const DataManagementView = defineComponent({
     const dialogMessage = ref("");
     onMounted(() => {
       // calculate scroll area height
-      // const deviceHeight = window.innerHeight;
-      // const scrollArea = document.getElementById("scroll-area") as any;
-      // scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 30 + "px";
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       getScanDataList();
     });
     const getScanDataList = () => {
@@ -332,6 +335,10 @@ const DataManagementView = defineComponent({
     const handleHold = () => {
       updateScanDataListDisplay();
       isEditMode.value = true;
+      // recalculate scroll area
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height =
+        window.innerHeight - scrollArea.offsetTop + "px";
     };
     const getSelectedTaskIdList = () => {
       let taskIdList: any = [];
@@ -535,11 +542,6 @@ export default DataManagementView;
   width: 100%;
   color: #757575;
 }
-.button-bottom {
-  position: fixed;
-  bottom: 20px;
-  width: calc(100% - 40px);
-}
 
 .center {
   display: flex;
@@ -549,7 +551,7 @@ export default DataManagementView;
 .button-bottom {
   position: fixed;
   bottom: 20px;
-  width: calc(100% - 40px);
+  width: calc(100% - 46px);
   background: #42b0d5;
   color: white;
   font-size: 20px;

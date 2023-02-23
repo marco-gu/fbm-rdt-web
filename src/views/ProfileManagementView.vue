@@ -51,11 +51,10 @@
         </template>
         <template v-else>
           <q-pull-to-refresh @refresh="refresh">
-            <template
-              v-if="profileListDisplay.length === 0 && !isFirstSync"
-              class="no-data"
-            >
-              {{ $t("profile.no_profile") }}
+            <template v-if="profileListDisplay.length === 0 && !isFirstSync">
+              <div class="no-data">
+                {{ $t("profile.no_profile") }}
+              </div>
             </template>
             <template v-else>
               <q-list v-for="(item, index) in profileListDisplay" :key="index">

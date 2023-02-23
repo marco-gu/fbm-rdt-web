@@ -68,10 +68,8 @@ import bridge from "dsbridge";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { LP } from "../models/profile";
-import { useI18n } from "@/plugin/i18nPlugins";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
-
 const LPListView = defineComponent({
   methods: {
     home() {
@@ -80,11 +78,6 @@ const LPListView = defineComponent({
   },
   setup() {
     const router = useRouter();
-    const i18n = useI18n();
-    bridge.call("getSettingLanguage", null, (res: string) => {
-      i18n.locale.value = res;
-    });
-
     let result: LP[] = [];
     const taskListDisplay: Ref<LP[]> = ref([]);
     const search = ref("");
@@ -94,7 +87,6 @@ const LPListView = defineComponent({
       getTaskList();
       done();
     };
-
     const onClickItem = (item: any) => {
       router.push({
         path: "/lpDetailList",
@@ -103,7 +95,6 @@ const LPListView = defineComponent({
         },
       });
     };
-
     const back = () => {
       router.push({
         path: "/home",
@@ -112,7 +103,6 @@ const LPListView = defineComponent({
         },
       });
     };
-
     const getTaskList = () => {
       bridge.call("fetchLPTasks", null, (res: string) => {
         result = JSON.parse(res) as LP[];
@@ -122,7 +112,6 @@ const LPListView = defineComponent({
         );
       });
     };
-
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -130,7 +119,6 @@ const LPListView = defineComponent({
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       getTaskList();
     });
-
     watch(search, () => {
       if (search.value) {
         const filteredResult = result.filter(
@@ -142,7 +130,6 @@ const LPListView = defineComponent({
         taskListDisplay.value = result;
       }
     });
-
     return {
       router,
       refresh,

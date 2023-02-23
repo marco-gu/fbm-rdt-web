@@ -87,7 +87,6 @@ import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
 import config from "../assets/config.json";
 import { useI18n } from "vue-i18n";
-import { setDevToolsHook } from "@intlify/core-base";
 const LoginView = defineComponent({
   components: {
     UserManual,
