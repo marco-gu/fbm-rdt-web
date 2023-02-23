@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="content">
-      <q-scroll-area class="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <div v-for="(item, index) in images" :key="index">
           <q-item class="card-item">
             <div class="card-item-labels" @click="onClick(item)">
@@ -43,7 +43,7 @@
         </div>
       </q-scroll-area>
     </div>
-    <div class="bottom">
+    <div class="bottom" id="bottom-button">
       <q-btn
         no-caps
         @click="onAdd"
@@ -75,6 +75,10 @@ const ImageAccessView = defineComponent({
       });
     });
     onMounted(() => {
+      // calculate scroll area
+      const scrollArea = document.getElementById("scroll-area") as any;
+      const bottom = document.getElementById("bottom-button") as any;
+      scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
       // retrieve
       bridge.call("retrieveCargoImages", null, (data: any) => {
         images.value = JSON.parse(data) as ImageModel[];
