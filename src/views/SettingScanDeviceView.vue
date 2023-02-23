@@ -28,7 +28,7 @@
         </div>
         <div class="spacer"></div>
       </div>
-      <div class="list-item" @click="onChangeDevice('scanner')">
+      <div class="setting-card-item" @click="onChangeDevice('scanner')">
         <div class="label">{{ $t("setting.scanner") }}</div>
         <div v-if="selectedDevice == 'scanner'" class="right-icon">
           <q-icon name="check" />
