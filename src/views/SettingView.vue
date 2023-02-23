@@ -57,7 +57,7 @@
 
       <div class="setting-card-item">
         <div class="label">{{ $t("setting.last_profile_sync_time") }}</div>
-        <div class="item-value" style="font-size: 16px">
+        <div class="item-value">
           {{ formatDate(new Date(lastProfileSyncTime)) }}
         </div>
         <div class="spacer"></div>
