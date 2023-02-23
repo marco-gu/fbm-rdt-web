@@ -13,33 +13,39 @@
         </div>
       </div>
     </div>
-    <div class="item-container" v-if="currentVersion == latestVersion">
-      <q-item>
-        <q-item-section style="text-align: left">
-          <q-item-label>{{
-            $t("setting.already_latest_version_label")
-          }}</q-item-label>
-        </q-item-section>
-        <q-item-section side>
-          <q-btn flat dense no-caps>{{ currentVersion }}</q-btn>
-        </q-item-section>
-      </q-item>
+    <div class="setting-content" v-if="currentVersion == latestVersion">
+      <div class="setting-card-item">
+        <div class="label">
+          {{ $t("setting.already_latest_version_label") }}
+        </div>
+        <div class="item-value">
+          {{ currentVersion }}
+        </div>
+        <div class="spacer"></div>
+      </div>
     </div>
-    <div class="item-container" v-else>
-      <q-item>
-        <q-item-section style="text-align: left">
-          <q-item-label>{{ $t("setting.latest_version_label") }}</q-item-label>
-        </q-item-section>
-        <q-item-section side>
-          <q-btn flat dense no-caps>{{ latestVersion }}</q-btn>
-        </q-item-section>
-      </q-item>
-      <q-separator inset color="#878787" />
-      <q-item style="text-align: left; white-space: pre-wrap">
-        {{ latestVersionDetail }}
-      </q-item>
+    <div class="setting-content" v-else>
+      <div class="setting-card-item">
+        <div class="label">
+          {{ $t("setting.latest_version_label") }}
+        </div>
+        <div class="item-value">
+          {{ latestVersion }}
+        </div>
+        <div class="spacer"></div>
+      </div>
+      <div class="setting-card-item">
+        <div class="label" style="text-align: left; white-space: pre-wrap">
+          {{ latestVersionDetail }}
+        </div>
+        <div class="spacer"></div>
+      </div>
     </div>
-    <div class="bottom" v-show="currentVersion != latestVersion">
+    <div
+      class="bottom"
+      id="bottom-button"
+      v-show="currentVersion != latestVersion"
+    >
       <q-btn
         no-caps
         unelevated
@@ -78,8 +84,12 @@ export default {
     const homeIcon = homeImg;
     const currentVersion = ref(route.query.softwareUpdate);
     const downloadPending = ref(false);
-    const latestVersion = ref("");
+    const latestVersion = ref("Ver 1.0");
     const latestVersionDetail = ref("");
+    // const latestVersion = ref("Ver 1.1");
+    // const latestVersionDetail = ref(
+    //   "New functions:\n* use face ID to login\nRepair:\n* repair some bugs"
+    // );
     onMounted(() => {
       // showLoading($q);
       // bridge.call("getLatestVersion", null, (res: string) => {
@@ -102,17 +112,17 @@ export default {
       router.push("/home");
     };
     const handleDownload = () => {
-      showLoading($q);
-      downloadPending.value = true;
-      bridge.call("downloadLatestVersion", null, (res: string) => {
-        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-        if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
-        }
-        closeLoading($q);
-        downloadPending.value = false;
-      });
+      // showLoading($q);
+      // downloadPending.value = true;
+      // bridge.call("downloadLatestVersion", null, (res: string) => {
+      //   const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+      //   if (androidResponse.status == AndroidResponseStatus.ERROR) {
+      //     const message = i18n.t("messageCode." + androidResponse.messageCode);
+      //     popupErrorMsg($q, message);
+      //   }
+      //   closeLoading($q);
+      //   downloadPending.value = false;
+      // });
     };
     return {
       arrowIcon,
@@ -129,20 +139,11 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.item-container {
-  margin: 23px;
-  padding: 5px;
-  border-radius: 5px;
-  box-shadow: 0px 2px 5px 1px rgba(11, 69, 95, 0.08);
-  background-color: #ffffff;
-  font-size: 14px;
-  text-align: left;
-  color: #757575;
-}
 .bottom {
   position: fixed;
-  bottom: 20px;
-  width: calc(100% - 46px);
-  left: 23px;
+  bottom: $--page-bottom-margin-bottom;
+  .q-btn:nth-child(2) {
+    margin-top: 10px;
+  }
 }
 </style>
