@@ -351,6 +351,7 @@ const DataManagementView = defineComponent({
       return taskIdList;
     };
     const handleUpload = () => {
+      dialogMessage.value = "";
       let taskIdList = getSelectedTaskIdList();
       if (taskIdList.length > 0) {
         scanDataListDisplay.value.forEach((item: any) => {
