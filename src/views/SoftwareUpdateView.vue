@@ -84,7 +84,7 @@ export default {
     const homeIcon = homeImg;
     const currentVersion = ref(route.query.softwareUpdate);
     const downloadPending = ref(false);
-    const latestVersion = ref("Ver 1.0");
+    const latestVersion = ref("");
     const latestVersionDetail = ref("");
     onMounted(() => {
       showLoading($q);
