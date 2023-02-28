@@ -57,6 +57,7 @@
                   input-class="text-right"
                   ref="inputRef"
                   v-model="item.model"
+                  @keyup.enter="onInputKeyUp($event, i)"
                   @paste="validPaste($event, i)"
                   clearable
                   :maxlength="item.length"
@@ -68,7 +69,7 @@
                   <template v-slot:append>
                     <q-avatar
                       v-if="item.scan == 1"
-                      @click="scan(item.fieldName)"
+                      @click="scan(item.fieldName, $event)"
                     >
                       <q-icon name="qr_code_scanner" size="16px" />
                     </q-avatar>
@@ -208,6 +209,15 @@ const LpSearchView = defineComponent({
         scanType.value == ScanType.RECEIVING
           ? receivingViews.value
           : stuffingViews.value;
+
+      nextTick(() => {
+        if (store.state.commonModule.scanDevice !== "camera") {
+          const param = inputRef.value as any;
+          if (param && param.length > 0) {
+            param[0].focus();
+          }
+        }
+      });
     });
     const composeRouteParam = (routeParams: any, source: any) => {
       source.forEach((view: ViewDisplayAttribute) => {
@@ -351,12 +361,17 @@ const LpSearchView = defineComponent({
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
     };
-    const scan = (fieldName: string) => {
-      const reqParams = {
-        scanType: scanType.value,
-        fieldName: fieldName,
-      };
-      bridge.call("scanForInput", reqParams);
+    const scan = (fieldName: string, event: Event) => {
+      const isCamera = store.state.commonModule.scanDevice === "camera";
+      if (isCamera) {
+        const reqParams = {
+          scanType: scanType.value,
+          fieldName: fieldName,
+        };
+        bridge.call("scanForInput", reqParams);
+      } else {
+        event.stopPropagation();
+      }
     };
     bridge.register("getScanResult", (res: string) => {
       const param = inputRef.value as any;
@@ -392,6 +407,21 @@ const LpSearchView = defineComponent({
     onUnmounted(() => {
       closeLoading($q);
     });
+    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
+      if (event.code === "Enter" || event.which === 13) {
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (i === index) {
+            const inputText = t.$props.modelValue;
+            t.validate(inputText).then(() => {
+              if (param.length > index + 1) {
+                param[index + 1].focus();
+              }
+            });
+          }
+        });
+      }
+    };
     return {
       profileName,
       scanType,
@@ -409,6 +439,7 @@ const LpSearchView = defineComponent({
       homeIcon,
       arrowIcon,
       myForm,
+      onInputKeyUp,
     };
   },
 });
