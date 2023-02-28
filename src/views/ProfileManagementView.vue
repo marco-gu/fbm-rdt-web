@@ -51,7 +51,9 @@
         </template>
         <template v-else>
           <q-pull-to-refresh @refresh="refresh">
-            <template v-if="profileListDisplay.length === 0 && !isFirstSync">
+            <template
+              v-if="profileListDisplay.length === 0 && !isFirstSync.value"
+            >
               <div class="no-data">
                 {{ $t("profile.no_profile") }}
               </div>
@@ -116,7 +118,7 @@ const ProfileManagementView = defineComponent({
     const search = ref("");
     const isEditMode = ref(false);
     let result: ProfileMaster[] = [];
-    let isFirstSync = true;
+    const isFirstSync = ref(true);
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
@@ -125,19 +127,19 @@ const ProfileManagementView = defineComponent({
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
-      getProfileList();
+      getProfileList("onMounted");
     });
     const sortProfileList = (profileListDisplay: any[]) => {
       profileListDisplay.sort((a: any, b: any) => {
         return (a.profileCode + "").localeCompare(b.profileCode + "");
       });
     };
-    const getProfileList = () => {
+    const getProfileList = (mode: string) => {
       bridge.call("fetchProfile", null, (res: string) => {
         result = JSON.parse(res) as ProfileMaster[];
         profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
         if (result.length === 0) {
-          if (isFirstSync) {
+          if (isFirstSync.value) {
             $q.dialog({
               title: i18n.t("profile.sync_profile"),
               message: i18n.t("profile.sync_latest"),
@@ -148,7 +150,7 @@ const ProfileManagementView = defineComponent({
           }
         } else {
           sortProfileList(profileListDisplay.value);
-          if (!isFirstSync) {
+          if (!isFirstSync.value && mode != "delete") {
             popupSuccessMsg($q, i18n.t("profile.sync_complete"));
           }
         }
@@ -172,8 +174,8 @@ const ProfileManagementView = defineComponent({
             ProfileMaster[]
           >;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            getProfileList();
-            isFirstSync = false;
+            getProfileList("refresh");
+            isFirstSync.value = false;
             bridge.call("setProfileLastSyncDate", {
               formatDate: formatDate(new Date()),
             });
@@ -224,7 +226,7 @@ const ProfileManagementView = defineComponent({
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             isEditMode.value = false;
-            getProfileList();
+            getProfileList("delete");
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
             const message = i18n.t(
               "messageCode." + androidResponse.messageCode
@@ -248,6 +250,7 @@ const ProfileManagementView = defineComponent({
       handleHold,
       home,
       isEditMode,
+      isFirstSync,
       profileListDisplay,
       refresh,
       router,
