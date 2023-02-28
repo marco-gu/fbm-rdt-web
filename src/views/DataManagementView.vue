@@ -396,9 +396,8 @@ const DataManagementView = defineComponent({
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           popupSuccessMsg($q, "Successfully uploaded");
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          // const message = i18n.t(androidResponse.messageCode);
-          // popupErrorMsg($q, message);
-          popupErrorMsg($q, androidResponse.messageCode);
+          const message = i18n.t(androidResponse.messageCode);
+          popupErrorMsg($q, message);
         }
         isEditMode.value = false;
         getScanDataList();
