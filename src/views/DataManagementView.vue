@@ -131,7 +131,7 @@
                         height="20px"
                         no-spinner
                         :src="
-                          item.finshStatus == 0 ? finishedDisabled : finished
+                          item.finishStatus == 0 ? finishedDisabled : finished
                         "
                       />
                       <div style="height: 8px"></div>
@@ -236,6 +236,7 @@ import {
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
 import formatDate from "../utils/formatDate";
+import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 const enum UploadAlertMsg {
   MATCHED = "CIDs all matched",
   PARTIALLY = "CIDs partially matched",
@@ -385,10 +386,12 @@ const DataManagementView = defineComponent({
       dialogMessage.value = "";
     };
     const uploadScanData = () => {
+      showLoading($q);
       const args = {
         taskIdList: getSelectedTaskIdList(),
       };
       bridge.call("uploadScanData", args, (res: string) => {
+        closeLoading($q);
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           popupSuccessMsg($q, "Successfully uploaded");
