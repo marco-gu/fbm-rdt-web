@@ -131,7 +131,7 @@
                         height="20px"
                         no-spinner
                         :src="
-                          item.finshStatus == 0 ? finishedDisabled : finished
+                          item.finishStatus == 0 ? finishedDisabled : finished
                         "
                       />
                       <div style="height: 8px"></div>
@@ -393,8 +393,9 @@ const DataManagementView = defineComponent({
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           popupSuccessMsg($q, "Successfully uploaded");
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.t(androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          // const message = i18n.t(androidResponse.messageCode);
+          // popupErrorMsg($q, message);
+          popupErrorMsg($q, androidResponse.messageCode);
         }
         isEditMode.value = false;
         getScanDataList();
