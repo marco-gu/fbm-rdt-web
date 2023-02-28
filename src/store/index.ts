@@ -10,6 +10,7 @@ import languageModule from "./module/language.module";
 
 import RootState, { State } from "./state";
 import screenModule from "./module/screen.module";
+import commonModule from "./module/common.module";
 
 const debug = process.env.NODE_ENV !== "product";
 export default createStore({
@@ -20,6 +21,7 @@ export default createStore({
     profileModule,
     languageModule,
     screenModule,
+    commonModule,
   },
   strict: debug,
   plugins: debug ? [createLogger()] : [],
