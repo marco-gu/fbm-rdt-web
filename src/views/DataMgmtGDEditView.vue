@@ -47,7 +47,7 @@
                   <template v-slot:append>
                     <q-avatar
                       v-if="item.scan == 1"
-                      @click="scan(item.fieldName)"
+                      @click="scan(item.fieldName, $event)"
                     >
                       <q-icon name="qr_code_scanner" size="16px" />
                     </q-avatar>
@@ -165,6 +165,7 @@ import {
 } from "@/models/android.response";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import { useStore } from "@/store";
 const DataManagementDetailView = defineComponent({
   methods: {
     home() {
@@ -193,6 +194,7 @@ const DataManagementDetailView = defineComponent({
     const showDeleteDialog = ref(false);
     const showUpdateDialog = ref(false);
     const myForm = ref();
+    const store = useStore();
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -370,12 +372,17 @@ const DataManagementDetailView = defineComponent({
       });
     };
 
-    const scan = (fieldName: string) => {
-      const reqParams = {
-        scanType: scanType.value,
-        fieldName: fieldName,
-      };
-      bridge.call("scanForInput", reqParams);
+    const scan = (fieldName: string, event: Event) => {
+      const isCamera = store.state.commonModule.scanDevice === "camera";
+      if (isCamera) {
+        const reqParams = {
+          scanType: scanType.value,
+          fieldName: fieldName,
+        };
+        bridge.call("scanForInput", reqParams);
+      } else {
+        event.stopPropagation();
+      }
     };
 
     bridge.register("getScanResult", (res: string) => {

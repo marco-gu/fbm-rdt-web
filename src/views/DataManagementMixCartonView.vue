@@ -140,6 +140,7 @@ import {
 } from "@/models/android.response";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import { useStore } from "@/store";
 const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
@@ -173,6 +174,7 @@ const DataManagementMixCartonView = defineComponent({
     const showDeleteDialog = ref(false);
     const showUpdateDialog = ref(false);
     const myForm = ref();
+    const store = useStore();
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -246,12 +248,17 @@ const DataManagementMixCartonView = defineComponent({
       });
     };
 
-    const scan = (fieldName: string) => {
-      const reqParams = {
-        scanType: scanType.value,
-        fieldName: fieldName,
-      };
-      bridge.call("scanForInput", reqParams);
+    const scan = (fieldName: string, event: Event) => {
+      const isCamera = store.state.commonModule.scanDevice === "camera";
+      if (isCamera) {
+        const reqParams = {
+          scanType: scanType.value,
+          fieldName: fieldName,
+        };
+        bridge.call("scanForInput", reqParams);
+      } else {
+        event.stopPropagation();
+      }
     };
 
     bridge.register("getScanResult", (res: string) => {
