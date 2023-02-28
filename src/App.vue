@@ -54,7 +54,6 @@ const App = defineComponent({
         }
       });
       bridge.call("getScanDevice", (res: string) => {
-        alert("res  " + res);
         store.dispatch("commonModule/setScanDevice", res);
       });
     });
