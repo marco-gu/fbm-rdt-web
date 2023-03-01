@@ -5,7 +5,6 @@
 import { defineComponent, onMounted, watch } from "vue";
 import bridge from "dsbridge";
 import { useRoute, useRouter } from "vue-router";
-import { provideI18n } from "./plugin/i18nPlugins";
 import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
 import { routeTableLoggedIn, searchRoute } from "@/router/route-table";

@@ -11,7 +11,6 @@ const screenModule: Module<ScreenState, RootState> = {
   },
   getters: {
     getScreenHeight(state: any) {
-      alert(state.screenHeight);
       return state.screenHeight;
     },
   },

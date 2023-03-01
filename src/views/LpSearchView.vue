@@ -167,7 +167,7 @@ const LpSearchView = defineComponent({
     });
     onMounted(() => {
       // calculate scroll area height
-      const deviceHeight = store.state.screenModule.screenHeight;
+      const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       // hide bottom button if soft key up
@@ -183,16 +183,12 @@ const LpSearchView = defineComponent({
           bottom.style.visibility = "visible";
         }
       };
-      // const initData = JSON.parse(
-      //   localStorage.getItem("profile") as never
-      // ) as ProfileDetail;
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
       ) as ProfileMaster;
-      // clientName.value = initData.client;
       profileName.value = initData.profileName;
       profileCode.value = initData.profileCode;
-      // Unify Client Code
+
       clientCode.value = initData.clientCode;
       receivingFlag.value = initData.receivingScanFlag == 1 ? true : false;
       stuffingFlag.value = initData.stuffingScanFlag == 1 ? true : false;
