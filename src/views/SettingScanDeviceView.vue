@@ -44,6 +44,7 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import store from "@/store";
 export default {
   name: "SettingScanDeviceView",
   components: {},
@@ -71,6 +72,7 @@ export default {
       };
       bridge.call("setScanDevice", args, () => {
         selectedDevice.value = args.device;
+        store.dispatch("commonModule/setScanDevice", device);
         console.log("setting scan device successfully ", args.device);
       });
     };

@@ -21,47 +21,6 @@ const App = defineComponent({
     store.dispatch("screenModule/saveScreenHeight", {
       screenHeight: deviceHeight,
     });
-    // provideI18n({
-    //   locale: "en",
-    //   messages: {
-    //     MessageCode: {
-    //       zh: require("../src/assets/lang/MessageCode/zh.json"),
-    //       en: require("../src/assets/lang/MessageCode/en.json"),
-    //     },
-    //     LoginView: {
-    //       zh: require("../src/assets/lang/LoginView/zh.json"),
-    //       en: require("../src/assets/lang/LoginView/en.json"),
-    //     },
-    //     ForgotPwdComponent: {
-    //       zh: require("../src/assets/lang/ForgotPwdComponent/zh.json"),
-    //       en: require("../src/assets/lang/ForgotPwdComponent/en.json"),
-    //     },
-    //     LpSearchView: {
-    //       zh: require("../src/assets/lang/LpSearchView/zh.json"),
-    //       en: require("../src/assets/lang/LpSearchView/en.json"),
-    //     },
-    //     SettingView: {
-    //       zh: require("../src/assets/lang/SettingView/zh.json"),
-    //       en: require("../src/assets/lang/SettingView/en.json"),
-    //     },
-    //     ResetPwdView: {
-    //       zh: require("../src/assets/lang/ResetPwdView/zh.json"),
-    //       en: require("../src/assets/lang/ResetPwdView/en.json"),
-    //     },
-    //     ProfileManagementView: {
-    //       zh: require("../src/assets/lang/ProfileManagementView/zh.json"),
-    //       en: require("../src/assets/lang/ProfileManagementView/en.json"),
-    //     },
-    //     DataManagementView: {
-    //       zh: require("../src/assets/lang/DataManagementView/zh.json"),
-    //       en: require("../src/assets/lang/DataManagementView/en.json"),
-    //     },
-    //     ContinueMyJobView: {
-    //       zh: require("../src/assets/lang/ContinueMyJobView/zh.json"),
-    //       en: require("../src/assets/lang/ContinueMyJobView/en.json"),
-    //     },
-    //   },
-    // });
 
     bridge.register("reLogin", () => {
       isLoggedIn = false;
@@ -93,6 +52,9 @@ const App = defineComponent({
         } else {
           router.push("/");
         }
+      });
+      bridge.call("getScanDevice", (res: string) => {
+        store.dispatch("commonModule/setScanDevice", res);
       });
     });
     // store i18n in store for changing

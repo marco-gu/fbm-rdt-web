@@ -36,7 +36,7 @@
                 dense
               >
                 <template v-slot:append>
-                  <q-avatar @click="scan(item.fieldName)">
+                  <q-avatar @click="scan(item.fieldName, $event)">
                     <q-icon name="qr_code_scanner" size="16px" />
                   </q-avatar>
                 </template>
@@ -83,7 +83,7 @@ import {
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, nextTick, ref } from "vue";
+import { defineComponent, nextTick, ref, onMounted } from "vue";
 import arrowImg from "../assets/images/arrow.svg";
 const CartonDetailView = defineComponent({
   setup() {
@@ -104,6 +104,20 @@ const CartonDetailView = defineComponent({
     const inputRef = ref(null);
     const arrowIcon = arrowImg;
     const myForm = ref();
+    let isCamera = true;
+    onMounted(() => {
+      bridge.call("getScanDevice", (res: string) => {
+        isCamera = res === "camera";
+      });
+      nextTick(() => {
+        if (!isCamera) {
+          const param = inputRef.value as any;
+          if (param && param.length > 0) {
+            param[0].focus();
+          }
+        }
+      });
+    });
     bridge.register("closeCartonDetail", () => {
       back();
     });
@@ -185,12 +199,16 @@ const CartonDetailView = defineComponent({
     };
     const multiWatchSources = [pageViews.value];
     toUpperCaseElementInput(multiWatchSources);
-    const scan = (fieldName: string) => {
-      const reqParams = {
-        scanType: "Default",
-        fieldName: fieldName,
-      };
-      bridge.call("scanForInput", reqParams);
+    const scan = (fieldName: string, event: Event) => {
+      if (!isCamera) {
+        const reqParams = {
+          scanType: "Default",
+          fieldName: fieldName,
+        };
+        bridge.call("scanForInput", reqParams);
+      } else {
+        event.stopPropagation();
+      }
     };
     bridge.register("getScanResult", (res: string) => {
       const param = inputRef.value as any;
