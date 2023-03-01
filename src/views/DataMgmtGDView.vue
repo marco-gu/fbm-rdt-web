@@ -80,6 +80,9 @@
                   <div v-show="item.sku != ''">
                     <q-item-label>SKU: {{ item.sku }}</q-item-label>
                   </div>
+                  <div v-show="item.sku != ''">
+                    <q-item-label>CID: {{ item.cartonId }}</q-item-label>
+                  </div>
                 </q-item-section>
               </div>
               <q-item-section side>
