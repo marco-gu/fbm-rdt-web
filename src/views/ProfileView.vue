@@ -88,7 +88,6 @@ const ProfileView = defineComponent({
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const search = ref("");
-    // alert(window.screen.height);
     const refresh = (done: any) => {
       bridge.call("refreshProfile", null, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<
@@ -125,7 +124,7 @@ const ProfileView = defineComponent({
         });
     };
     const getProfileList = () => {
-      bridge.call("fetchProfile", null, (res: string) => {
+      bridge.call("fetchProfile", (res: string) => {
         result = JSON.parse(res) as ProfileMaster[];
         profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
         if (result.length === 0) {

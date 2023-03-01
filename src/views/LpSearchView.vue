@@ -18,7 +18,7 @@
         <q-form @submit="onSubmit" ref="myForm">
           <q-input
             class="card-item-input"
-            v-model="profileName"
+            v-model="profileCode"
             input-class="text-right"
             :input-style="{ fontSize: '15px' }"
             :prefix="$t('profile.profile_text')"
@@ -101,8 +101,8 @@ import {
 import {
   ProfileDisplayAttribute,
   ProfileCartonCommonLevel,
-  ProfileDetail,
   ProfileOrderLevel,
+  ProfileMaster,
 } from "@/models/profile";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import {
@@ -144,9 +144,10 @@ const LpSearchView = defineComponent({
     const inputRef = ref(null);
     const i18n = useI18n();
     const profileName = ref("");
+    const profileCode = ref("");
     const clientCode = ref("");
     const scanType = ref("");
-    const clientName = ref("");
+    // const clientName = ref("");
     const myForm = ref();
     // Define Page Elements
     const pageViews = ref([] as ViewDisplayAttribute[]);
@@ -181,12 +182,17 @@ const LpSearchView = defineComponent({
           bottom.style.visibility = "visible";
         }
       };
+      // const initData = JSON.parse(
+      //   localStorage.getItem("profile") as never
+      // ) as ProfileDetail;
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
-      ) as ProfileDetail;
-      clientName.value = initData.client;
-      profileName.value = initData.profileCode;
-      clientCode.value = initData.profileName;
+      ) as ProfileMaster;
+      // clientName.value = initData.client;
+      profileName.value = initData.profileName;
+      profileCode.value = initData.profileCode;
+      // Unify Client Code
+      clientCode.value = initData.clientCode;
       receivingFlag.value = initData.receivingScanFlag == 1 ? true : false;
       stuffingFlag.value = initData.stuffingScanFlag == 1 ? true : false;
       scanType.value =
@@ -281,14 +287,14 @@ const LpSearchView = defineComponent({
             scanned: 0,
             total: 0,
             taskID: "",
-            profileCode: profileName.value,
+            profileCode: profileCode.value,
+            profileName: profileName.value,
             type: "",
           };
           // the same for online & offline
           const apiParams = {
             profileName: profileName.value,
             clientCode: clientCode.value,
-            clientName: clientName.value,
             scanType: scanType.value,
             validationType: "",
           };
@@ -393,7 +399,7 @@ const LpSearchView = defineComponent({
       closeLoading($q);
     });
     return {
-      profileName,
+      profileCode,
       scanType,
       onSubmit,
       back,

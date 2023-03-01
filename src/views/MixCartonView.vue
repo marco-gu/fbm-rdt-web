@@ -225,7 +225,7 @@ const MixCartonView = defineComponent({
                 break;
             }
           });
-          bridge.call("addMixCarton", args, () => {
+          bridge.call("addMixCarton", args, (arg) => {
             if (completeMixCarton.value) {
               completeMixCarton.value = false;
               bridge.call("completeMixCarton", null, () => {

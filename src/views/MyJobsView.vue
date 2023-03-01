@@ -145,7 +145,7 @@ const MyJobsView = defineComponent({
       const args = {
         taskID: scanTask.taskId,
         type: scanTask.scanType,
-        profileCode: scanTask.profileCode,
+        profileName: scanTask.profileName,
         pageType:
           scanTask.validationType == "PreValidation" ? "online" : "offline",
       };

@@ -210,15 +210,16 @@ const ProfileManagementView = defineComponent({
       isEditMode.value = true;
     };
     const deleteProfile = () => {
-      let profileCodeList: any = [];
+      // profileName is business primary key
+      let profileNameList: any = [];
       profileListDisplay.value.forEach((item: any) => {
         if (item["isSelected"]) {
-          profileCodeList.push(item.profileCode);
+          profileNameList.push(item.profileName);
         }
       });
-      if (profileCodeList.length > 0) {
+      if (profileNameList.length > 0) {
         const args = {
-          profileCodeList: profileCodeList,
+          profileNameList: profileNameList,
         };
         bridge.call("deleteProfile", args, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;

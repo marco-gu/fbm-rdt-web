@@ -1,38 +1,43 @@
 export interface ProfileMaster {
   profileCode: string;
+  profileName: string;
   effectiveDate: string;
   updateDatetime: string;
-}
-
-export interface ProfileDetail {
-  client: string;
-  profileCode: string;
-  profileName: string;
+  clientCode: string;
   receivingScanFlag: number;
   stuffingScanFlag: number;
   attributes: ProfileDisplayAttribute[];
-  // id: number;
-  // profileName: string;
-  // fileName: string;
-  // systemFlag: number;
-  // createUser: string;
-  // createDatetime: string;
-  // updateUser: string;
-  // updateDatetime: string;
-  // profileContent: string;
-  // code: number;
-  // version: any;
-  // client: string;
-  // effectiveDate: string;
-  // translationType: string;
-  // receivingScanFlag: number;
-  // putawayScanFlag: number;
-  // cycleCountFlag: number;
-  // pickingScanFlag: number;
-  // stuffingScanFlag: number;
-  // scanPackFlag: number;
-  // profileCode: string;
 }
+
+// export interface ProfileDetail {
+//   client: string;
+//   profileCode: string;
+//   profileName: string;
+//   receivingScanFlag: number;
+//   stuffingScanFlag: number;
+//   attributes: ProfileDisplayAttribute[];
+//   id: number;
+//   profileName: string;
+//   fileName: string;
+//   systemFlag: number;
+//   createUser: string;
+//   createDatetime: string;
+//   updateUser: string;
+//   updateDatetime: string;
+//   profileContent: string;
+//   code: number;
+//   version: any;
+//   client: string;
+//   effectiveDate: string;
+//   translationType: string;
+//   receivingScanFlag: number;
+//   putawayScanFlag: number;
+//   cycleCountFlag: number;
+//   pickingScanFlag: number;
+//   stuffingScanFlag: number;
+//   scanPackFlag: number;
+//   profileCode: string;
+// }
 
 export interface ProfileDisplayAttribute {
   type: string;
@@ -186,6 +191,7 @@ export interface ScanDataManagement {
   updateDatetime: string;
   scannedCartonNumber: number;
   allCartonNumber: number;
+  profileName: string;
 }
 
 export interface MixCartonProduct {

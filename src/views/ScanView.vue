@@ -81,6 +81,7 @@ const ScanView = defineComponent({
     const profileCode = ref("");
     const taskID = ref("");
     const type = ref("");
+    const profileName = ref("");
     const scanned = ref(0);
     const total = ref(0);
     const views = ref([] as ViewElement[]);
@@ -125,6 +126,9 @@ const ScanView = defineComponent({
             views.value.push(element);
             break;
           }
+          case "profileName":
+            profileName.value = data.value[key];
+            break;
           default: {
             const element: ViewElement = {
               key: key.charAt(0).toUpperCase() + key.slice(1),
@@ -146,7 +150,7 @@ const ScanView = defineComponent({
       const args = {
         taskID: taskID.value,
         type: type.value,
-        profileCode: profileCode.value,
+        profileName: profileName.value,
         pageType: route.params.id,
       };
       bridge.call("scan", args);
