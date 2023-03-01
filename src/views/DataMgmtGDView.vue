@@ -80,7 +80,7 @@
                   <div v-show="item.sku != ''">
                     <q-item-label>SKU: {{ item.sku }}</q-item-label>
                   </div>
-                  <div v-show="item.sku != ''">
+                  <div v-show="item.cartonId != ''">
                     <q-item-label>CID: {{ item.cartonId }}</q-item-label>
                   </div>
                 </q-item-section>
@@ -238,6 +238,7 @@ export default DataMgmtView;
   margin-top: $--page-content-margin-top-with-subtitle;
 }
 .card-item {
+  background-color: #ffffff;
   padding: 10px 0 10px 15px;
   .card-item-content {
     width: 100%;

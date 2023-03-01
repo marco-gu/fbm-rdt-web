@@ -125,6 +125,7 @@ export default DataManagementMixCartonListView;
   margin-top: $--page-content-margin-top-with-subtitle;
 }
 .card-item {
+  background-color: #ffffff;
   padding: 10px 0 10px 15px;
   .card-detail-left {
     width: 100%;

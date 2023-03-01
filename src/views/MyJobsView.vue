@@ -47,19 +47,19 @@
                   </q-item-section>
                 </div>
                 <div class="card-item-right">
-                  <q-item-section>
-                    <CircularProgressComponent
-                      :value="
-                        (item.scannedCartonNumber / item.allCartonNumber) * 100
-                      "
-                    >
-                      <div class="card-item-sub-text">
-                        {{ item.scannedCartonNumber }}/{{
-                          item.allCartonNumber
-                        }}
-                      </div>
-                    </CircularProgressComponent>
-                  </q-item-section>
+                  <!-- <q-item-section> -->
+                  <CircularProgressComponent
+                    :value="
+                      (item.scannedCartonNumber / item.allCartonNumber) * 100
+                    "
+                  >
+                    <div class="card-item-sub-text">
+                      {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
+                      <!-- 9999/9999 -->
+                    </div>
+                  </CircularProgressComponent>
+
+                  <!-- </q-item-section> -->
                 </div>
               </div>
               <q-item-section side>
@@ -170,6 +170,7 @@ export default MyJobsView;
   margin-top: $--page-content-margin-top-with-search;
 }
 .card-item {
+  background-color: #ffffff;
   padding: 10px 0 10px 15px;
 }
 .card-item-content {
@@ -187,11 +188,19 @@ export default MyJobsView;
     }
   }
   .card-item-right {
-    flex: 1;
+    flex: 1.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     align-self: center;
     .card-item-sub-text {
+      min-width: 68px;
+      padding: 2px 2px;
+      text-align: center;
+      background-color: #ffffff;
       font-weight: bold;
       color: #00243d;
+      white-space: nowrap;
     }
   }
 }

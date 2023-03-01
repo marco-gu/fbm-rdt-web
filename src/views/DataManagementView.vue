@@ -474,6 +474,7 @@ export default DataManagementView;
 </script>
 <style lang="scss" scoped>
 .card-item {
+  background-color: #ffffff;
   padding: 10px 0px 10px 15px;
 }
 .card-item-content {
