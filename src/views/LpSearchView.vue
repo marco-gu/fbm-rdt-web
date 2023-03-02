@@ -6,7 +6,7 @@
           <img :src="arrowIcon" @click="back" />
         </div>
         <div class="common-toolbar-middle">
-          {{ $t("lp.lp_search") }}
+          {{ headerLabel }}
         </div>
         <div class="common-toolbar-right">
           <img :src="homeIcon" @click="home" />
@@ -160,6 +160,10 @@ const LpSearchView = defineComponent({
     const mode = route.params.id as string;
     const homeIcon = homeImg;
     const arrowIcon = arrow;
+    const headerLabel =
+      route.params.id == "online"
+        ? i18n.t("lp.lp_search")
+        : i18n.t("lp.offline_scan");
     const bottomButtonLable =
       mode == "online" ? i18n.t("lp.generate") : i18n.t("lp.start_scan");
     bridge.call("getSettingLanguage", null, (res: string) => {
@@ -442,6 +446,7 @@ const LpSearchView = defineComponent({
       arrowIcon,
       myForm,
       onInputKeyUp,
+      headerLabel,
     };
   },
 });
