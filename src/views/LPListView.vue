@@ -41,10 +41,10 @@
                     <div class="card-item-label-content">
                       <q-item-label>{{ item.taskId }}</q-item-label>
                       <q-item-label
-                        >Total: {{ item.expectedCartonNumber }}</q-item-label
+                        >Total: {{ item.allCartonNumber }}</q-item-label
                       >
                       <q-item-label class="card-item-date-text">{{
-                        item.finalDatetime
+                        item.updateDatetime
                       }}</q-item-label>
                     </div>
                   </q-item-section>
@@ -67,9 +67,10 @@
 import bridge from "dsbridge";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { LP } from "../models/profile";
+import { ScanDataManagement } from "../models/profile";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import { ProfileMaster } from "../models/profile";
 const LPListView = defineComponent({
   methods: {
     home() {
@@ -78,8 +79,8 @@ const LPListView = defineComponent({
   },
   setup() {
     const router = useRouter();
-    let result: LP[] = [];
-    const taskListDisplay: Ref<LP[]> = ref([]);
+    let result: ScanDataManagement[] = [];
+    const taskListDisplay: Ref<ScanDataManagement[]> = ref([]);
     const search = ref("");
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
@@ -104,12 +105,25 @@ const LPListView = defineComponent({
       });
     };
     const getTaskList = () => {
-      bridge.call("fetchLPTasks", null, (res: string) => {
-        result = JSON.parse(res) as LP[];
-        taskListDisplay.value = JSON.parse(res) as LP[];
-        taskListDisplay.value.sort((a, b) =>
-          b.finalDatetime.localeCompare(a.finalDatetime)
-        );
+      bridge.call("fetchProfile", (res: string) => {
+        const profiles = JSON.parse(res) as ProfileMaster[];
+        var profileNames = profiles.map((element) => {
+          return element.profileName;
+        });
+
+        bridge.call("fetchTaskForDataManagement", null, (res: string) => {
+          result = JSON.parse(res) as ScanDataManagement[];
+          result = result.filter((item) =>
+            profileNames?.includes(item.profileName)
+          );
+          taskListDisplay.value = result;
+          sortScanDataList(taskListDisplay.value);
+        });
+      });
+    };
+    const sortScanDataList = (scanDataListDisplay: any[]) => {
+      scanDataListDisplay.sort((a: any, b: any) => {
+        return b.updateDatetime.localeCompare(a.updateDatetime);
       });
     };
     onMounted(() => {

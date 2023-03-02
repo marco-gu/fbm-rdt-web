@@ -84,6 +84,7 @@ import { ScanDataManagement } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import { ProfileMaster } from "../models/profile";
 const MyJobsView = defineComponent({
   components: {
     CircularProgressComponent,
@@ -110,10 +111,19 @@ const MyJobsView = defineComponent({
       getScanDataList();
     });
     const getScanDataList = () => {
-      bridge.call("fetchTaskForDataManagement", null, (res: string) => {
-        result = JSON.parse(res) as ScanDataManagement[];
-        scanDataListDisplay.value = JSON.parse(res) as ScanDataManagement[];
-        sortScanDataList(scanDataListDisplay.value);
+      bridge.call("fetchProfile", (res: string) => {
+        const profiles = JSON.parse(res) as ProfileMaster[];
+        var profileNames = profiles.map((element) => {
+          return element.profileName;
+        });
+        bridge.call("fetchTaskForDataManagement", null, (res: string) => {
+          result = JSON.parse(res) as ScanDataManagement[];
+          result = result.filter((item) =>
+            profileNames?.includes(item.profileName)
+          );
+          scanDataListDisplay.value = result;
+          sortScanDataList(scanDataListDisplay.value);
+        });
       });
     };
     const sortScanDataList = (scanDataListDisplay: any[]) => {

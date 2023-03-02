@@ -398,8 +398,8 @@ const LpSearchView = defineComponent({
           }
         });
         param.forEach((t: any, i: number) => {
-          if (receivingViews.value[i].fieldName == scanFieldName) {
-            t.validate(receivingViews.value[i].model);
+          if (stuffingViews.value[i].fieldName == scanFieldName) {
+            t.validate(stuffingViews.value[i].model);
           }
         });
       }

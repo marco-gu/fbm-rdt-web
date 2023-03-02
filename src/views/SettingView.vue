@@ -58,7 +58,11 @@
       <div class="setting-card-item">
         <div class="label">{{ $t("setting.last_profile_sync_time") }}</div>
         <div class="item-value">
-          {{ formatDate(new Date(lastProfileSyncTime)) }}
+          {{
+            lastProfileSyncTime == ""
+              ? "N/A"
+              : formatDate(new Date(lastProfileSyncTime))
+          }}
         </div>
         <div class="spacer"></div>
       </div>
@@ -95,7 +99,7 @@ export default {
     const router = useRouter();
     const ringVoice = ref("");
     const scanningDevice = ref("");
-    const lastProfileSyncTime = ref("N/A");
+    const lastProfileSyncTime = ref("");
     const softwareUpdate = ref("");
     const username = ref("");
     const password = ref("");
