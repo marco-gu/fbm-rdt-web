@@ -78,9 +78,16 @@ const DataManagementMixCartonListView = defineComponent({
       getMixCartonList();
     });
     const getMixCartonList = () => {
+      var scanType = "";
+      if (taskId.value?.indexOf("Receiving") != -1) {
+        scanType = "Receiving";
+      } else {
+        scanType = "Stuffing";
+      }
       const args = {
         taskId: taskId.value,
         cartonId: cartonId.value,
+        scanType: scanType,
       };
       bridge.call("fetchCartonProducts", args, (res: string) => {
         mixCartonListDisplay.value = JSON.parse(res) as MixCartonProduct[];
