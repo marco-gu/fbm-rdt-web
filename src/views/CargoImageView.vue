@@ -77,12 +77,14 @@ import {
 import { popupErrorMsg } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
+import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
-const cartonImageView = defineComponent({
+const cargoImageView = defineComponent({
   setup() {
+    const store = useStore();
     const router = useRouter();
     const reason = ref("Damage");
     const $q = useQuasar();
@@ -90,6 +92,7 @@ const cartonImageView = defineComponent({
     const options = ["Damage", "Other"];
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
+    const scanType = ref("CargoImage");
     onMounted(() => {
       pageViews.value = [
         {
@@ -106,6 +109,17 @@ const cartonImageView = defineComponent({
         },
       ];
     });
+    watch(
+      pageViews,
+      () => {
+        pageViews.value.forEach((t: any) => {
+          if (t.value != null && t.value != "") {
+            t.value = t.value.toUpperCase();
+          }
+        });
+      },
+      { immediate: true, deep: true }
+    );
     const back = () => {
       router.push("/imageAccess");
     };
@@ -147,19 +161,40 @@ const cartonImageView = defineComponent({
         }
       });
     };
+    const scan = (fieldName: string, event: Event) => {
+      const isCamera = store.state.commonModule.scanDevice === "camera";
+      if (isCamera) {
+        const reqParams = {
+          scanType: scanType.value,
+          fieldName: fieldName,
+        };
+        bridge.call("scanForInput", reqParams);
+      } else {
+        event.stopPropagation();
+      }
+    };
+    bridge.register("getScanResult", (res: string) => {
+      pageViews.value.forEach((view: any) => {
+        const key = scanType.value + "_" + view.displayFieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          view.value = res.substring(res.lastIndexOf("_") + 1);
+        }
+      });
+    });
     return {
       back,
       home,
       pageViews,
       reason,
       save,
+      scan,
       options,
       homeIcon,
       arrowIcon,
     };
   },
 });
-export default cartonImageView;
+export default cargoImageView;
 </script>
 <style lang="scss" scoped>
 .content {
