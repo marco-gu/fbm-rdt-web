@@ -236,6 +236,7 @@ import {
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
 import formatDate from "../utils/formatDate";
+import { ProfileMaster } from "../models/profile";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 const enum UploadAlertMsg {
   MATCHED = "CIDs all matched",
@@ -290,10 +291,20 @@ const DataManagementView = defineComponent({
       getScanDataList();
     });
     const getScanDataList = () => {
-      bridge.call("fetchTaskForDataManagement", null, (res: string) => {
-        result = JSON.parse(res) as ScanDataManagement[];
-        scanDataListDisplay.value = JSON.parse(res) as ScanDataManagement[];
-        sortScanDataList(scanDataListDisplay.value);
+      bridge.call("fetchProfile", (res: string) => {
+        const profiles = JSON.parse(res) as ProfileMaster[];
+        var profileNames = profiles.map((element) => {
+          return element.profileName;
+        });
+
+        bridge.call("fetchTaskForDataManagement", null, (res: string) => {
+          result = JSON.parse(res) as ScanDataManagement[];
+          result = result.filter((item) =>
+            profileNames?.includes(item.profileName)
+          );
+          scanDataListDisplay.value = result;
+          sortScanDataList(scanDataListDisplay.value);
+        });
       });
     };
     const sortScanDataList = (scanDataListDisplay: any[]) => {
