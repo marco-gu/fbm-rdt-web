@@ -83,7 +83,7 @@ import {
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, nextTick, ref, onMounted } from "vue";
+import { defineComponent, nextTick, ref, onBeforeMount } from "vue";
 import arrowImg from "../assets/images/arrow.svg";
 const CartonDetailView = defineComponent({
   setup() {
@@ -105,17 +105,9 @@ const CartonDetailView = defineComponent({
     const arrowIcon = arrowImg;
     const myForm = ref();
     let isCamera = true;
-    onMounted(() => {
+    onBeforeMount(() => {
       bridge.call("getScanDevice", (res: string) => {
         isCamera = res === "camera";
-      });
-      nextTick(() => {
-        if (!isCamera) {
-          const param = inputRef.value as any;
-          if (param && param.length > 0) {
-            param[0].focus();
-          }
-        }
       });
     });
     bridge.register("closeCartonDetail", () => {
@@ -200,7 +192,7 @@ const CartonDetailView = defineComponent({
     const multiWatchSources = [pageViews.value];
     toUpperCaseElementInput(multiWatchSources);
     const scan = (fieldName: string, event: Event) => {
-      if (!isCamera) {
+      if (isCamera) {
         const reqParams = {
           scanType: "Default",
           fieldName: fieldName,
