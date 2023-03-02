@@ -114,6 +114,7 @@ const MixCartonView = defineComponent({
     const $q = useQuasar();
     const inputRef = ref(null);
     const dialogVisible = ref(false);
+    const scanType = ref("");
     let firstRender = false;
     const completeMixCarton = ref(false);
     let mixCartonView = {} as CartonDetailAttribute;
@@ -155,8 +156,8 @@ const MixCartonView = defineComponent({
         cartonID.value = mixCartonView.cartonID;
         itemCount.value = 0;
       }
+      scanType.value = mixCartonView.scanType;
     });
-    // }
     const complete = () => {
       const param = inputRef.value as any;
       let invalid = false;
@@ -217,6 +218,7 @@ const MixCartonView = defineComponent({
         if (success) {
           const args: any = {
             cartonID: cartonID.value,
+            scanType: scanType.value,
             UPC: "",
             Style: "",
             SKU: "",

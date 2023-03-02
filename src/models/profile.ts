@@ -86,6 +86,7 @@ export interface ProfileDisplayAttribute {
 
 export interface CartonDetailAttribute {
   cartonID: string;
+  scanType: string;
   profileDetails: ProfileDisplayAttribute[];
 }
 
