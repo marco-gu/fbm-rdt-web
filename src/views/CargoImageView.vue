@@ -14,57 +14,58 @@
       </div>
     </div>
     <div class="content">
-      <div class="card-item-select">
-        {{ $t("image.add_image_reason") }}
-        <q-select
-          hide-bottom-space
-          borderless
-          v-model="reason"
-          :options="options"
-          behavior="menu"
-        />
-      </div>
-      <div v-for="(item, i) in pageViews" :key="i">
-        <div class="card-item-input">
-          <div>
-            {{ item.displayFieldName }}
-          </div>
-          <q-input
-            class="card-item-input-field no-shadow"
-            :input-style="{ fontSize: '15px' }"
-            input-class="text-right"
-            v-model="item.value"
-            clearable
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <div class="card-item-select">
+          {{ $t("image.add_image_reason") }}
+          <q-select
+            hide-bottom-space
             borderless
-            dense
-          >
-            <template v-slot:append>
-              <q-avatar @click="scan(item.displayFieldName)">
-                <q-icon name="qr_code_scanner" size="16px" />
-              </q-avatar>
-            </template>
-          </q-input>
+            v-model="reason"
+            :options="options"
+            behavior="menu"
+          />
         </div>
-      </div>
+        <div v-for="(item, i) in pageViews" :key="i">
+          <div class="card-item-input">
+            <div>
+              {{ item.displayFieldName }}
+            </div>
+            <q-input
+              class="card-item-input-field no-shadow"
+              :input-style="{ fontSize: '15px' }"
+              input-class="text-right"
+              v-model="item.value"
+              clearable
+              borderless
+              dense
+            >
+              <template v-slot:append>
+                <q-avatar @click="scan(item.displayFieldName)">
+                  <q-icon name="qr_code_scanner" size="16px" />
+                </q-avatar>
+              </template>
+            </q-input>
+          </div>
+        </div>
+      </q-scroll-area>
     </div>
-    <div class="bottom">
+    <div class="bottom-coherent-button" id="bottom-button">
       <q-btn
         no-caps
-        unelevated
-        @click="save"
         class="full-width"
-        color="secondary"
-        :label="$t('image.add_image_save')"
-      />
-      <q-btn
-        no-caps
-        unelevated
-        @click="back"
-        class="full-width"
-        text-color="#757575"
-        color="white"
-        outline
+        flat
+        push
         :label="$t('image.add_image_cancel')"
+        @click="back"
+      />
+      <q-separator vertical inset color="white" />
+      <q-btn
+        no-caps
+        class="full-width"
+        flat
+        push
+        :label="$t('image.add_image_save')"
+        @click="save"
       />
     </div>
   </div>
@@ -91,6 +92,23 @@ const cartonImageView = defineComponent({
     const homeIcon = homeImg;
     const arrowIcon = arrowImg;
     onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      // hide bottom button if soft key up
+      window.onresize = () => {
+        // get resize height and recalculate scroll area
+        const resizeHeight = window.innerHeight;
+        const scrollArea = document.getElementById("scroll-area") as any;
+        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
+        const bottom = document.getElementById("bottom-button") as any;
+        if (deviceHeight - resizeHeight > 0) {
+          bottom.style.visibility = "hidden";
+        } else {
+          bottom.style.visibility = "visible";
+        }
+      };
       pageViews.value = [
         {
           displayFieldName: "SO",
@@ -164,13 +182,5 @@ export default cartonImageView;
 <style lang="scss" scoped>
 .content {
   margin-top: $--page-content-margin-top-no-search;
-}
-
-.bottom {
-  position: fixed;
-  bottom: 20px;
-  .q-btn:nth-child(2) {
-    margin-top: 10px;
-  }
 }
 </style>

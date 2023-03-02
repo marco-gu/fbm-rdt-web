@@ -73,24 +73,23 @@
         </q-form>
       </q-scroll-area>
     </div>
-    <div class="bottom" id="bottom-button">
+    <div class="bottom-coherent-button" id="bottom-button">
       <q-btn
         no-caps
-        unelevated
-        @click="onSubmit"
         class="full-width"
-        color="secondary"
-        :label="$t('common.save')"
-      />
-      <q-btn
-        no-caps
-        unelevated
-        @click="cancel"
-        class="full-width"
-        text-color="#757575"
-        color="white"
-        outline
+        flat
+        push
         :label="$t('common.cancel')"
+        @click="cancel"
+      />
+      <q-separator vertical inset color="white" />
+      <q-btn
+        no-caps
+        class="full-width"
+        flat
+        push
+        :label="$t('common.save')"
+        @click="onSubmit"
       />
     </div>
   </div>
@@ -294,11 +293,11 @@ export default ResetPwdView;
   text-align: left;
   font-size: $--card-font-size;
 }
-.bottom {
-  position: fixed;
-  bottom: $--page-bottom-margin-bottom;
-  .q-btn:nth-child(2) {
-    margin-top: 10px;
-  }
-}
+// .bottom {
+//   position: fixed;
+//   bottom: $--page-bottom-margin-bottom;
+//   .q-btn:nth-child(2) {
+//     margin-top: 10px;
+//   }
+// }
 </style>

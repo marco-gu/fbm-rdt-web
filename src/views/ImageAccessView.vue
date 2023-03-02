@@ -43,13 +43,14 @@
         </div>
       </q-scroll-area>
     </div>
-    <div class="bottom" id="bottom-button">
+    <div class="bottom-button" id="bottom-button">
       <q-btn
         no-caps
+        flat
+        unelevated
         @click="onAdd"
         class="full-width"
         :label="$t('image.access_image_button')"
-        color="secondary"
       />
     </div>
   </div>

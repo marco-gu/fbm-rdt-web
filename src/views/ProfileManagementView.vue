@@ -288,14 +288,4 @@ export default ProfileManagementView;
     }
   }
 }
-.bottom-coherent-button {
-  position: fixed;
-  display: flex;
-  bottom: $--page-bottom-margin-bottom;
-  width: calc(100% - 46px);
-  margin-left: 23px;
-  background: #42b0d5;
-  color: #ffffff;
-  border-radius: 5px;
-}
 </style>

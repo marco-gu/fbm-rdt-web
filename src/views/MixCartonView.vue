@@ -50,24 +50,23 @@
         </div>
       </q-form>
     </div>
-    <div class="bottom" id="bottom-button">
+    <div class="bottom-coherent-button" id="bottom-button">
       <q-btn
         no-caps
-        unelevated
-        @click="onSubmit"
         class="full-width"
-        color="secondary"
+        flat
+        push
         :label="$t('carton.mix_carton_add')"
+        @click="onSubmit"
       />
+      <q-separator vertical inset color="white" />
       <q-btn
         no-caps
-        unelevated
-        @click="complete"
         class="full-width"
-        text-color="#757575"
-        color="white"
-        outline
+        flat
+        push
         :label="$t('carton.mix_carton_complete')"
+        @click="complete"
       />
     </div>
     <DialogComponent
@@ -330,12 +329,5 @@ export default MixCartonView;
 <style lang="scss" scoped>
 .content {
   margin-top: $--page-content-margin-top-no-search;
-}
-.bottom {
-  position: fixed;
-  bottom: 20px;
-  .q-btn:nth-child(2) {
-    margin-top: 10px;
-  }
 }
 </style>

@@ -1,0 +1,16 @@
+.bottom-button {
+    position: fixed;
+    border-radius: $--button-radius;
+    padding: $--page-content-padding;
+    bottom: $--page-bottom-margin-bottom;
+    width: calc(100% - 46px);
+    margin-left: 23px;
+    background: #42b0d5;
+    color: #ffffff;
+}
+
+.bottom-coherent-button {
+    @extend .bottom-button;
+    padding: 0px;
+    display: flex;
+}

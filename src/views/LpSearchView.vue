@@ -81,14 +81,8 @@
         </q-form>
       </q-scroll-area>
     </div>
-    <div class="bottom" id="bottom-button">
-      <q-btn
-        no-caps
-        unelevated
-        class="full-width"
-        color="secondary"
-        @click="onSubmit"
-      >
+    <div class="bottom-button" id="bottom-button">
+      <q-btn no-caps unelevated class="full-width" @click="onSubmit">
         {{ bottomButtonLable }}
       </q-btn>
     </div>
@@ -455,9 +449,5 @@ export default LpSearchView;
 <style lang="scss" scoped>
 .content {
   margin-top: $--page-content-margin-top-no-search;
-}
-.bottom {
-  position: fixed;
-  bottom: $--page-bottom-margin-bottom;
 }
 </style>

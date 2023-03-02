@@ -52,10 +52,10 @@
         </q-form>
       </q-scroll-area>
     </div>
-    <div class="button-bottom row" id="bottom-button">
+    <div class="bottom-coherent-button" id="bottom-button">
       <q-btn
-        class="col"
         no-caps
+        class="full-width"
         flat
         push
         :label="$t('common.save')"
@@ -63,8 +63,8 @@
       />
       <q-separator vertical inset color="white" />
       <q-btn
-        class="col"
         no-caps
+        class="full-width"
         flat
         push
         :label="$t('common.delete')"
@@ -72,10 +72,9 @@
       />
       <q-separator vertical inset color="white" />
       <q-btn
-        class="col"
         no-caps
+        class="full-width"
         flat
-        type="submit"
         push
         :label="$t('common.cancel')"
         @click="back"
@@ -368,15 +367,5 @@ export default DataManagementMixCartonView;
 <style lang="scss" scoped>
 .content {
   margin-top: $--page-content-margin-top-with-subtitle;
-}
-.button-bottom {
-  position: fixed;
-  bottom: 20px;
-  width: calc(100% - 46px);
-  margin-left: 23px;
-  background: #42b0d5;
-  color: white;
-  color: #ffffff;
-  border-radius: 3px;
 }
 </style>

@@ -533,20 +533,6 @@ export default DataManagementView;
   align-items: center;
   justify-content: center;
 }
-.button-bottom {
-  position: fixed;
-  bottom: 20px;
-  width: calc(100% - 46px);
-  background: #42b0d5;
-  color: white;
-  font-size: 20px;
-  font-family: Maersk Text-Regular, Maersk Text;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 23px;
-  border-radius: 3px;
-}
-
 .cardTask {
   font-size: 15px;
   line-height: 18px;
@@ -566,18 +552,5 @@ export default DataManagementView;
   font-size: 15px;
   font-family: Maersk Text-Bold, Maersk Text;
   font-weight: bold;
-}
-.bottom-coherent-button {
-  position: fixed;
-  display: flex;
-  bottom: $--page-bottom-margin-bottom;
-  width: calc(100% - 46px);
-  margin-left: 23px;
-  background: #42b0d5;
-  color: #ffffff;
-  border-radius: 5px;
-}
-.scroll-area {
-  height: 75vh;
 }
 </style>

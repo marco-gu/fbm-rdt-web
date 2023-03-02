@@ -14,56 +14,57 @@
       </div>
     </div>
     <div class="content">
-      <q-form @submit="onSubmit" ref="myForm">
-        <div v-for="(item, i) in pageViews" :key="i">
-          <div v-if="item.display == 1">
-            <div class="card-item-input">
-              <div>
-                {{ item.displayFieldName }}
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <q-form @submit="onSubmit" ref="myForm">
+          <div v-for="(item, i) in pageViews" :key="i">
+            <div v-if="item.display == 1">
+              <div class="card-item-input">
+                <div>
+                  {{ item.displayFieldName }}
+                </div>
+                <q-input
+                  class="card-item-input-field no-shadow"
+                  :input-style="{ fontSize: '15px' }"
+                  input-class="text-right"
+                  ref="inputRef"
+                  v-model="item.model"
+                  @paste="validPaste($event, i)"
+                  clearable
+                  :maxlength="item.length"
+                  lazy-rules
+                  :rules="[item.valid]"
+                  borderless
+                  dense
+                >
+                  <template v-slot:append>
+                    <q-avatar @click="scan(item.fieldName, $event)">
+                      <q-icon name="qr_code_scanner" size="16px" />
+                    </q-avatar>
+                  </template>
+                </q-input>
               </div>
-              <q-input
-                class="card-item-input-field no-shadow"
-                :input-style="{ fontSize: '15px' }"
-                input-class="text-right"
-                ref="inputRef"
-                v-model="item.model"
-                @paste="validPaste($event, i)"
-                clearable
-                :maxlength="item.length"
-                lazy-rules
-                :rules="[item.valid]"
-                borderless
-                dense
-              >
-                <template v-slot:append>
-                  <q-avatar @click="scan(item.fieldName, $event)">
-                    <q-icon name="qr_code_scanner" size="16px" />
-                  </q-avatar>
-                </template>
-              </q-input>
             </div>
           </div>
-        </div>
-      </q-form>
+        </q-form>
+      </q-scroll-area>
     </div>
-    <div class="bottom" id="bottom-button">
+    <div class="bottom-coherent-button" id="bottom-button">
       <q-btn
         no-caps
-        unelevated
-        @click="onSubmit"
         class="full-width"
-        color="secondary"
-        :label="$t('carton.carton_detail_save')"
-      />
-      <q-btn
-        no-caps
-        unelevated
-        @click="back"
-        class="full-width"
-        text-color="#757575"
-        color="white"
-        outline
+        flat
+        push
         :label="$t('carton.carton_detail_cancel')"
+        @click="back"
+      />
+      <q-separator vertical inset color="white" />
+      <q-btn
+        no-caps
+        class="full-width"
+        flat
+        push
+        :label="$t('carton.carton_detail_save')"
+        @click="onSubmit"
       />
     </div>
   </div>
@@ -87,15 +88,16 @@ import { defineComponent, nextTick, ref, onMounted } from "vue";
 import arrowImg from "../assets/images/arrow.svg";
 const CartonDetailView = defineComponent({
   setup() {
+    // hide bottom button if soft key up
+    const deviceHeight = window.innerHeight;
     window.onresize = () => {
       const bottom = document.getElementById("bottom-button") as any;
-      if (originalHeight - window.innerHeight > 0) {
+      if (deviceHeight - window.innerHeight > 0) {
         bottom.style.visibility = "hidden";
       } else {
         bottom.style.visibility = "visible";
       }
     };
-    const originalHeight = window.innerHeight;
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const cartonID = ref();
     const $q = useQuasar();
@@ -106,6 +108,9 @@ const CartonDetailView = defineComponent({
     const myForm = ref();
     let isCamera = true;
     onMounted(() => {
+      // calculate scroll area height
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       bridge.call("getScanDevice", (res: string) => {
         isCamera = res === "camera";
       });
@@ -245,11 +250,11 @@ export default CartonDetailView;
 .content {
   margin-top: $--page-content-margin-top-no-search;
 }
-.bottom {
-  position: fixed;
-  bottom: 20px;
-  .q-btn:nth-child(2) {
-    margin-top: 10px;
-  }
-}
+// .bottom {
+//   position: fixed;
+//   bottom: 20px;
+//   .q-btn:nth-child(2) {
+//     margin-top: 10px;
+//   }
+// }
 </style>

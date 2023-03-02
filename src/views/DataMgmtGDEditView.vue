@@ -77,7 +77,7 @@
         </q-form>
       </q-scroll-area>
     </div>
-    <div class="button-bottom row" id="bottom-button">
+    <div class="bottom-coherent-button" id="bottom-button">
       <q-btn
         v-show="pageType == 'Detail'"
         :class="[isMix ? 'button-enable' : 'button-disable', 'col']"
@@ -560,24 +560,12 @@ export default DataManagementDetailView;
 .content {
   margin-top: $--page-content-margin-top-with-subtitle;
 }
-
-.button-bottom {
-  position: fixed;
-  bottom: 20px;
-  width: calc(100% - 46px);
-  background: #42b0d5;
-  margin-left: 23px;
-  border-radius: 3px;
-}
-
 .button-enable {
   color: #ffffff;
 }
-
 .button-disable {
   color: rgba(255, 255, 255, 0.6);
 }
-
 .card-item-input-field-datamgmt {
   @extend .card-item-input-field;
   width: 100%;
