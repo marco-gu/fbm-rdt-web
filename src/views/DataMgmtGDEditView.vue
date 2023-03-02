@@ -27,7 +27,7 @@
           <div v-for="(item, i) in pageViews" :key="i">
             <div v-if="item.display == 1">
               <div v-show="item.editable === true" class="card-item-input">
-                <div>
+                <div style="color: #757575">
                   {{ item.displayFieldName }}
                 </div>
                 <q-input
@@ -58,15 +58,16 @@
                 v-show="item.editable === false && pageType === 'Detail'"
                 class="card-item-input"
               >
-                <div>
+                <div style="color: #757575">
                   {{ item.displayFieldName }}
                 </div>
                 <q-input
                   class="card-item-input-field no-shadow"
-                  :input-style="{ fontSize: '15px' }"
+                  :input-style="{ fontSize: '15px', color: '#757575' }"
                   input-class="text-right"
                   v-model="item.model"
                   borderless
+                  readonly
                   dense
                 >
                 </q-input>
@@ -340,7 +341,7 @@ const DataManagementDetailView = defineComponent({
                       element.model = ref(cartonDetail.so);
                       break;
                     case "SKU":
-                      element.model = ref(cartonDetail.so);
+                      element.model = ref(cartonDetail.sku);
                       break;
                     case "ContainerNumber":
                       element.model = ref(cartonDetail.containerNumber);
