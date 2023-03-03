@@ -1,5 +1,6 @@
 const { configs } = require("@typescript-eslint/eslint-plugin");
 const { defineConfig } = require("@vue/cli-service");
+
 module.exports = defineConfig({
     transpileDependencies: ["quasar"],
     pluginOptions: {
@@ -17,7 +18,7 @@ module.exports = defineConfig({
             },
         },
     },
-    // publicPath: "././"
+    publicPath: process.env.NODE_ENV == "product" ? "././" : ""
 
 
 
