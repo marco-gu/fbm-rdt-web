@@ -1,19 +1,15 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("carton.carton_detail_header") }}
-        </div>
-      </div>
-      <div class="card-sub-title">
+    <header-component
+      :titleParam="titleParam"
+      :backFunctionParam="back"
+      :homeVisibleParam="false"
+    >
+    </header-component>
+    <div class="page-content">
+      <div class="sub-title-card">
         {{ cartonID }}
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
           <div v-for="(item, i) in pageViews" :key="i">
@@ -37,7 +33,10 @@
                   dense
                 >
                   <template v-slot:append>
-                    <q-avatar @click="scan(item.fieldName, $event)">
+                    <q-avatar
+                      v-if="item.scan == 1"
+                      @click="scan(item.fieldName, $event)"
+                    >
                       <q-icon name="qr_code_scanner" size="16px" />
                     </q-avatar>
                   </template>
@@ -70,6 +69,7 @@
   </div>
 </template>
 <script lang="ts">
+import HeaderComponent from "@/components/HeaderComponent.vue";
 import {
   CartonDetailAttribute,
   ProfileCartonIndividualLevel,
@@ -84,33 +84,39 @@ import {
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, nextTick, ref, onBeforeMount, onMounted } from "vue";
-import arrowImg from "../assets/images/arrow.svg";
+import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 const CartonDetailView = defineComponent({
+  components: {
+    HeaderComponent,
+  },
   setup() {
-    // hide bottom button if soft key up
-    const deviceHeight = window.innerHeight;
-    window.onresize = () => {
-      const bottom = document.getElementById("bottom-button") as any;
-      if (deviceHeight - window.innerHeight > 0) {
-        bottom.style.visibility = "hidden";
-      } else {
-        bottom.style.visibility = "visible";
-      }
-    };
+    const i18n = useI18n();
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const cartonID = ref();
     const $q = useQuasar();
     let alreadyRendered = false;
     let cartonView = {} as CartonDetailAttribute;
     const inputRef = ref(null);
-    const arrowIcon = arrowImg;
     const myForm = ref();
     let isCamera = true;
+    const titleParam = i18n.t("carton.carton_detail_header");
     onMounted(() => {
       // calculate scroll area height
+      const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      // hide bottom button if soft key up
+      window.onresize = () => {
+        const resizeHeight = window.innerHeight;
+        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
+        const bottom = document.getElementById("bottom-button") as any;
+        if (deviceHeight - window.innerHeight > 0) {
+          bottom.style.visibility = "hidden";
+        } else {
+          bottom.style.visibility = "visible";
+        }
+      };
     });
     onBeforeMount(() => {
       bridge.call("getScanDevice", (res: string) => {
@@ -149,15 +155,11 @@ const CartonDetailView = defineComponent({
         }
       });
     };
-    const reset = (param: any) => {
+    const reset = () => {
       pageViews.value.forEach((t) => {
         t.model = "";
       });
-      param.forEach((t: any) => {
-        if (t) {
-          t.resetValidation();
-        }
-      });
+      myForm.value.resetValidation();
     };
     const back = () => {
       let allowReturn = true;
@@ -172,9 +174,7 @@ const CartonDetailView = defineComponent({
         popupErrorMsg($q, message);
       } else {
         bridge.call("completeCartonDetail", null, () => {
-          nextTick(() => {
-            reset(inputRef.value);
-          });
+          reset();
         });
       }
     };
@@ -189,9 +189,7 @@ const CartonDetailView = defineComponent({
           };
           composeApiParam(apiParams, pageViews.value);
           bridge.call("addCartonDetail", apiParams, () => {
-            nextTick(() => {
-              reset(inputRef.value);
-            });
+            reset();
           });
         }
       });
@@ -233,22 +231,10 @@ const CartonDetailView = defineComponent({
       inputRef,
       validPaste,
       scan,
-      arrowIcon,
       myForm,
+      titleParam,
     };
   },
 });
 export default CartonDetailView;
 </script>
-<style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-no-search;
-}
-// .bottom {
-//   position: fixed;
-//   bottom: 20px;
-//   .q-btn:nth-child(2) {
-//     margin-top: 10px;
-//   }
-// }
-</style>

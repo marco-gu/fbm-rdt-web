@@ -19,9 +19,8 @@
             top: 0;
             width: 100%;
             z-index: 1;
-            // background-image: url("../assets/images/lns_bg.png");
             background-size: cover;
-            // padding-bottom: 10px;
+            margin-bottom: $--header-mb;
             img {
                 width: 23px;
             }
@@ -32,13 +31,33 @@
             .title-text {
                 font-size: 20px;
             }
-            .search {
-                margin: 22px 23px 10px 23px;
-                background-color: #ffffff;
-            }
+            // .search {
+            //     margin: 22px 23px 10px 23px;
+            //     background-color: #ffffff;
+            // }
         }
         .content {
             padding: $--page-content-padding;
+        }
+        .page-content {
+            padding: $--page-content-padding;
+            .search {
+                margin-bottom: 20px;
+                background-color: #ffffff;
+            }
+            // card for sub title
+            .sub-title-card {
+                display: flex;
+                margin-bottom: 20px;
+                border-radius: $--card-radius;
+                padding: $--card-sub-title-padding;
+                align-items: center;
+                justify-content: center;
+                background: #00243d;
+                color: #fff;
+                word-break: break-word;
+                font-size: 15px;
+            }
         }
     }
     

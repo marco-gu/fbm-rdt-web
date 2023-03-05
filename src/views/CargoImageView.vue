@@ -1,19 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("image.add_image") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-    </div>
-    <div class="content">
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <div class="card-item-select">
           {{ $t("image.add_image_reason") }}
@@ -83,17 +72,23 @@ import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import homeImg from "../assets/images/home.svg";
 import arrowImg from "../assets/images/arrow.svg";
+import HeaderComponent from "@/components/HeaderComponent.vue";
+import { useI18n } from "vue-i18n";
 const cargoImageView = defineComponent({
+  components: {
+    HeaderComponent,
+  },
   setup() {
+    const i18n = useI18n();
     const store = useStore();
     const router = useRouter();
     const reason = ref("Damage");
     const $q = useQuasar();
     const pageViews = ref([] as any);
     const options = ["Damage", "Other"];
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
     const scanType = ref("CargoImage");
+    const titleParam = i18n.t("image.add_image");
+    const backUrlParam = "/imageAccess";
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -138,12 +133,6 @@ const cargoImageView = defineComponent({
       },
       { immediate: true, deep: true }
     );
-    const back = () => {
-      router.push("/imageAccess");
-    };
-    const home = () => {
-      router.push("/home");
-    };
     const save = () => {
       let cartonID = "";
       const param = {
@@ -200,22 +189,15 @@ const cargoImageView = defineComponent({
       });
     });
     return {
-      back,
-      home,
       pageViews,
       reason,
       save,
       scan,
       options,
-      homeIcon,
-      arrowIcon,
+      titleParam,
+      backUrlParam,
     };
   },
 });
 export default cargoImageView;
 </script>
-<style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-no-search;
-}
-</style>

@@ -1,20 +1,9 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("dataManagement.mix_title") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-      <div class="card-sub-title">{{ taskId }}+Mix</div>
-    </div>
-    <div class="content">
+    <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component>
+    <div class="page-content">
+      <div class="sub-title-card">{{ taskId }}+Mix</div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="showUpdateDialog = true" ref="myForm">
           <div v-for="(item, i) in dynamicViews" :key="i">
@@ -137,19 +126,16 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import { useStore } from "@/store";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 const enum ScanType {
   RECEIVING = "Receiving",
   STUFFING = "Stuffing",
 }
 
 const DataManagementMixCartonView = defineComponent({
-  methods: {
-    home() {
-      this.router.push("/home");
-    },
+  components: {
+    HeaderComponent,
   },
   setup() {
     const $q = useQuasar();
@@ -164,16 +150,14 @@ const DataManagementMixCartonView = defineComponent({
     const dynamicViews: Ref<ViewDisplayAttribute[]> = ref([]);
     const mixCartonProduct = ref();
     const profileAttrListDisplay: Ref<ProfileDisplayAttribute[]> = ref([]);
-    const pageTitle = ref("");
     const cancelLabel = ref("");
     const deleteLabel = ref("");
     const saveLabel = ref("");
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
     const showDeleteDialog = ref(false);
     const showUpdateDialog = ref(false);
     const myForm = ref();
     const store = useStore();
+    const titleParam = i18n.t("dataManagement.mix_title");
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -349,16 +333,13 @@ const DataManagementMixCartonView = defineComponent({
       handleSave,
       handleDelete,
       inputRef,
-      pageTitle,
-      router,
       saveLabel,
       scan,
       taskId,
-      homeIcon,
-      arrowIcon,
       showDeleteDialog,
       showUpdateDialog,
       myForm,
+      titleParam,
     };
   },
 });

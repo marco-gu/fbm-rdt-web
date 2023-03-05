@@ -1,27 +1,12 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{
-            pageType == "Group"
-              ? $t("dataManagement.group_title")
-              : $t("dataManagement.detail_title")
-          }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-      <div class="card-sub-title">
+    <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component>
+    <div class="page-content">
+      <div class="sub-title-card">
         <div v-if="isMix == 1">{{ taskId }}+Mix</div>
         <div v-else>{{ taskId }}</div>
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="showUpdateDialog = true" ref="myForm">
           <div v-for="(item, i) in pageViews" :key="i">
@@ -164,14 +149,11 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import { useStore } from "@/store";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 const DataManagementDetailView = defineComponent({
-  methods: {
-    home() {
-      this.router.push("/home");
-    },
+  components: {
+    HeaderComponent,
   },
   setup() {
     const inputRef: Ref<any> = ref(null);
@@ -190,12 +172,14 @@ const DataManagementDetailView = defineComponent({
     ) as Carton; //前一个页面存的carton, 给Detail用
 
     const isMix = ref(false);
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
     const showDeleteDialog = ref(false);
     const showUpdateDialog = ref(false);
     const myForm = ref();
     const store = useStore();
+    const titleParam =
+      pageType.value == "Group"
+        ? i18n.t("dataManagement.group_title")
+        : i18n.t("dataManagement.detail_title");
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -530,7 +514,6 @@ const DataManagementDetailView = defineComponent({
     };
 
     return {
-      router,
       goToMix,
       search,
       back,
@@ -545,21 +528,17 @@ const DataManagementDetailView = defineComponent({
       onSubmit,
       validPaste,
       scan,
-      homeIcon,
-      arrowIcon,
       showDeleteDialog,
       showUpdateDialog,
       isMix,
       myForm,
+      titleParam,
     };
   },
 });
 export default DataManagementDetailView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-subtitle;
-}
 .button-enable {
   color: #ffffff;
 }

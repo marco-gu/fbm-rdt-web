@@ -1,34 +1,23 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("lp.scan") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-      <div class="card-sub-title">
-        <div class="card-sub-title_section">
-          <div class="card-sub-title__number">
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
+      <div class="sub-title-card">
+        <div class="sub-title-card_section">
+          <div class="sub-title-card__number">
             {{ scanned }}
           </div>
-          <div class="card-sub-title__label">{{ $t("lp.scanned") }}</div>
+          <div class="sub-title-card__label">{{ $t("lp.scanned") }}</div>
         </div>
         <q-separator vertical inset color="white" />
-        <div class="card-sub-title_section">
-          <div class="card-sub-title__number">
+        <div class="sub-title-card_section">
+          <div class="sub-title-card__number">
             {{ total }}
           </div>
-          <div class="card-sub-title__label">{{ $t("lp.total_number") }}</div>
+          <div class="sub-title-card__label">{{ $t("lp.total_number") }}</div>
         </div>
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit">
           <div v-for="(item, i) in views" :key="i">
@@ -50,7 +39,7 @@
         </q-form>
       </q-scroll-area>
     </div>
-    <div class="bottom" id="bottom">
+    <div class="bottom-button" id="bottom-button">
       <q-btn
         no-caps
         unelevated
@@ -66,18 +55,20 @@
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import bridge from "dsbridge";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
-import { useStore } from "@/store";
+import HeaderComponent from "@/components/HeaderComponent.vue";
+import { useI18n } from "vue-i18n";
 type ViewElement = {
   key: string;
   value: string;
 };
 const ScanView = defineComponent({
+  components: {
+    HeaderComponent,
+  },
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const store = useStore();
+    const i18n = useI18n();
     const profileCode = ref("");
     const taskID = ref("");
     const type = ref("");
@@ -86,12 +77,11 @@ const ScanView = defineComponent({
     const total = ref(0);
     const views = ref([] as ViewElement[]);
     const data = ref();
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
+    const titleParam = i18n.t("lp.scan");
+    const backUrlParam = "/lpSearch/online";
     onMounted(() => {
       // calculate scroll area height if bottom button exist
-      // const deviceHeight = store.state.screenModule.screenHeight;
-      const bottom = document.getElementById("bottom") as any;
+      const bottom = document.getElementById("bottom-button") as any;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
       data.value = route.params as any;
@@ -140,12 +130,6 @@ const ScanView = defineComponent({
         }
       }
     });
-    const back = () => {
-      router.push("/lpSearch/online");
-    };
-    const home = () => {
-      router.push("/home");
-    };
     const onSubmit = () => {
       const args = {
         taskID: taskID.value,
@@ -162,41 +146,26 @@ const ScanView = defineComponent({
       scanned,
       total,
       onSubmit,
-      back,
-      home,
       views,
-      homeIcon,
-      arrowIcon,
+      titleParam,
+      backUrlParam,
     };
   },
 });
 export default ScanView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-subtitle;
-}
-.card-sub-title {
-  display: flex;
-  color: #ffffff;
-  text-align: center;
-  justify-content: space-between;
-  padding: 10px 0px;
-  .card-sub-title_section {
+.sub-title-card {
+  .sub-title-card_section {
     flex: 1;
-    align-items: center;
+    font-size: 18px;
   }
   &__number {
-    font-size: 20px;
     font-weight: bold;
+    text-align: center;
   }
   &__label {
     text-align: center;
-    font-size: 18px;
   }
-}
-.bottom {
-  position: fixed;
-  bottom: 20px;
 }
 </style>

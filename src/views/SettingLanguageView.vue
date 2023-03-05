@@ -1,19 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("setting.setting_language") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-    </div>
-    <div class="setting-content">
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
       <div class="setting-card-item" @click="onChangeLanguage('en')">
         <div class="label">{{ $t("setting.english") }}</div>
         <div v-if="selectedLanguage == 'en'" class="right-icon">
@@ -33,29 +22,21 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import { useStore } from "@/store";
+import { useI18n } from "vue-i18n";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 export default {
   name: "SettingLanguageView",
-  components: {},
+  components: {
+    HeaderComponent,
+  },
   setup() {
-    const router = useRouter();
     const store = useStore();
-    let selectedLanguage = ref("");
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
-
-    const home = () => {
-      router.push("/home");
-    };
-
-    const back = () => {
-      router.push("/setting");
-    };
-
+    const selectedLanguage = ref("");
+    const i18n = useI18n();
+    const titleParam = i18n.t("setting.setting_language");
+    const backUrlParam = "/setting";
     const onChangeLanguage = (language: string) => {
       const args = {
         language: language,
@@ -66,7 +47,6 @@ export default {
         console.log("setting language successfully ", args.language);
       });
     };
-
     onMounted(() => {
       bridge.call("getSettingLanguage", null, (res: string) => {
         if (res) {
@@ -76,13 +56,10 @@ export default {
     });
 
     return {
-      router,
-      home,
-      back,
       onChangeLanguage,
       selectedLanguage,
-      homeIcon,
-      arrowIcon,
+      titleParam,
+      backUrlParam,
     };
   },
 };

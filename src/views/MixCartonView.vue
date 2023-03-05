@@ -1,54 +1,52 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("carton.mix_carton_header") }}
-        </div>
-      </div>
-      <div class="card-sub-title">
+    <header-component
+      :titleParam="titleParam"
+      :backFunctionParam="back"
+      :homeVisibleParam="false"
+    >
+    </header-component>
+    <div class="page-content">
+      <div class="sub-title-card">
         <div>{{ cartonID }}</div>
         <div>Item count: {{ itemCount }}</div>
       </div>
-    </div>
-    <div class="content">
-      <q-form @submit="onSubmit" ref="myForm">
-        <div v-for="(item, i) in pageViews" :key="i">
-          <div v-if="item.display == 1">
-            <div class="card-item-input">
-              <div>
-                {{ item.displayFieldName }}
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <q-form @submit="onSubmit" ref="myForm">
+          <div v-for="(item, i) in pageViews" :key="i">
+            <div v-if="item.display == 1">
+              <div class="card-item-input">
+                <div>
+                  {{ item.displayFieldName }}
+                </div>
+                <q-input
+                  class="card-item-input-field no-shadow"
+                  :input-style="{ fontSize: '15px' }"
+                  input-class="text-right"
+                  ref="inputRef"
+                  v-model="item.model"
+                  @paste="validPaste($event, i)"
+                  clearable
+                  :maxlength="item.length"
+                  lazy-rules
+                  :rules="[item.valid]"
+                  borderless
+                  dense
+                >
+                  <template v-slot:append>
+                    <q-avatar
+                      v-if="item.scan == 1"
+                      @click="scan(item.fieldName, $event)"
+                    >
+                      <q-icon name="qr_code_scanner" size="16px" />
+                    </q-avatar>
+                  </template>
+                </q-input>
               </div>
-              <q-input
-                class="card-item-input-field no-shadow"
-                :input-style="{ fontSize: '15px' }"
-                input-class="text-right"
-                ref="inputRef"
-                v-model="item.model"
-                @paste="validPaste($event, i)"
-                clearable
-                :maxlength="item.length"
-                lazy-rules
-                :rules="[item.valid]"
-                borderless
-                dense
-              >
-                <template v-slot:append>
-                  <q-avatar
-                    v-if="item.scan == 1"
-                    @click="scan(item.fieldName, $event)"
-                  >
-                    <q-icon name="qr_code_scanner" size="16px" />
-                  </q-avatar>
-                </template>
-              </q-input>
             </div>
           </div>
-        </div>
-      </q-form>
+        </q-form>
+      </q-scroll-area>
     </div>
     <div class="bottom-coherent-button" id="bottom-button">
       <q-btn
@@ -79,6 +77,7 @@
 </template>
 <script lang="ts">
 import DialogComponent from "@/components/DialogComponent.vue";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 import { CartonDetailAttribute } from "@/models/profile";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
 import {
@@ -90,23 +89,15 @@ import {
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, nextTick, ref, onBeforeMount } from "vue";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
+import { defineComponent, nextTick, ref, onBeforeMount, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 const MixCartonView = defineComponent({
   components: {
     DialogComponent,
+    HeaderComponent,
   },
   setup() {
-    window.onresize = () => {
-      const bottom = document.getElementById("bottom-button") as any;
-      if (originalHeight - window.innerHeight > 0) {
-        bottom.style.visibility = "hidden";
-      } else {
-        bottom.style.visibility = "visible";
-      }
-    };
-    const originalHeight = window.innerHeight;
+    const i18n = useI18n();
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const cartonID = ref("");
     const itemCount = ref(0);
@@ -117,10 +108,26 @@ const MixCartonView = defineComponent({
     let firstRender = false;
     const completeMixCarton = ref(false);
     let mixCartonView = {} as CartonDetailAttribute;
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
     const myForm = ref();
+    const titleParam = i18n.t("carton.mix_carton_header");
     let isCamera = true;
+    onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      // hide bottom button if soft key up
+      window.onresize = () => {
+        const resizeHeight = window.innerHeight;
+        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
+        const bottom = document.getElementById("bottom-button") as any;
+        if (deviceHeight - window.innerHeight > 0) {
+          bottom.style.visibility = "hidden";
+        } else {
+          bottom.style.visibility = "visible";
+        }
+      };
+    });
     onBeforeMount(() => {
       bridge.call("getScanDevice", (res: string) => {
         isCamera = res === "camera";
@@ -129,7 +136,6 @@ const MixCartonView = defineComponent({
     bridge.register("closeMixCarton", () => {
       back();
     });
-    // if (!firstRender) {
     bridge.register("getMixCartonProfile", (res: string) => {
       mixCartonView = JSON.parse(res);
       if (!firstRender) {
@@ -255,7 +261,6 @@ const MixCartonView = defineComponent({
         }
       });
     };
-
     const back = () => {
       let allowReturn = true;
       pageViews.value.forEach((view) => {
@@ -270,9 +275,6 @@ const MixCartonView = defineComponent({
       } else {
         bridge.call("completeMixCarton", null, () => {
           reset(inputRef.value);
-          // nextTick(() => {
-          //   reset(inputRef.value);
-          // });
         });
       }
     };
@@ -310,16 +312,15 @@ const MixCartonView = defineComponent({
       validPaste,
       scan,
       dialogVisible,
-      homeIcon,
-      arrowIcon,
       myForm,
+      titleParam,
     };
   },
 });
 export default MixCartonView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-no-search;
+.sub-title-card {
+  flex-direction: column;
 }
 </style>

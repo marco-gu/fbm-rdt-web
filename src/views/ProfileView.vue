@@ -1,17 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="home" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("profile.profile") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
       <div class="search">
         <q-input
           v-model="search"
@@ -25,8 +16,6 @@
           </template>
         </q-input>
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-pull-to-refresh @refresh="refresh">
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
@@ -67,14 +56,11 @@ import {
 } from "@/models/android.response";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import formatDate from "../utils/formatDate";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 const ProfileView = defineComponent({
-  methods: {
-    home() {
-      this.router.push("/home");
-    },
+  components: {
+    HeaderComponent,
   },
   setup() {
     const $q = useQuasar();
@@ -83,8 +69,8 @@ const ProfileView = defineComponent({
     const i18n = useI18n();
     let isFirstSync = ref(true);
     const store = useStore();
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
+    const titleParam = i18n.t("profile.profile");
+    const backUrlParam = "/home";
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const search = ref("");
@@ -169,24 +155,21 @@ const ProfileView = defineComponent({
     });
 
     return {
-      arrowIcon,
       formatDate,
-      homeIcon,
       isFirstSync,
       onClickProfile,
       profileListDisplay,
       refresh,
       router,
       search,
+      titleParam,
+      backUrlParam,
     };
   },
 });
 export default ProfileView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-search;
-}
 .card-item-labels {
   text-align: left;
   .card-item-date-text {

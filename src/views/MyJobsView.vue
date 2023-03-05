@@ -1,17 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="home" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("continue.job_list") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
       <div class="search">
         <q-input
           v-model="search"
@@ -25,8 +16,6 @@
           </template>
         </q-input>
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <template v-if="scanDataListDisplay.length > 0">
           <div
@@ -47,7 +36,6 @@
                   </q-item-section>
                 </div>
                 <div class="card-item-right">
-                  <!-- <q-item-section> -->
                   <CircularProgressComponent
                     :value="
                       (item.scannedCartonNumber / item.allCartonNumber) * 100
@@ -55,11 +43,8 @@
                   >
                     <div class="card-item-sub-text">
                       {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
-                      <!-- 9999/9999 -->
                     </div>
                   </CircularProgressComponent>
-
-                  <!-- </q-item-section> -->
                 </div>
               </div>
               <q-item-section side>
@@ -78,31 +63,24 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { useRouter } from "vue-router";
 import CircularProgressComponent from "@/components/CircularProgressComponent.vue";
 import { ScanDataManagement } from "../models/profile";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import { ProfileMaster } from "../models/profile";
+import HeaderComponent from "@/components/HeaderComponent.vue";
+import { useI18n } from "vue-i18n";
 const MyJobsView = defineComponent({
   components: {
     CircularProgressComponent,
-  },
-  methods: {
-    home() {
-      this.router.push("/home");
-    },
+    HeaderComponent,
   },
   setup() {
-    const router = useRouter();
     const search = ref("");
-
+    const i18n = useI18n();
     let result: ScanDataManagement[] = [];
     const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
-
+    const titleParam = i18n.t("continue.job_list");
+    const backUrlParam = "/home";
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -131,14 +109,6 @@ const MyJobsView = defineComponent({
         return b.updateDatetime.localeCompare(a.updateDatetime);
       });
     };
-    const back = () => {
-      router.push({
-        path: "/home",
-        query: {
-          leftDrawerOpen: "true",
-        },
-      });
-    };
     watch(search, () => {
       if (search.value) {
         const filteredResult = result.filter(
@@ -163,24 +133,18 @@ const MyJobsView = defineComponent({
     };
 
     return {
-      back,
       onClickScanTask,
-      router,
       scanDataListDisplay,
       search,
-      homeIcon,
-      arrowIcon,
+      titleParam,
+      backUrlParam,
     };
   },
 });
 export default MyJobsView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-search;
-}
 .card-item {
-  background-color: #ffffff;
   padding: 10px 0 10px 15px;
 }
 .card-item-content {
@@ -192,7 +156,6 @@ export default MyJobsView;
   .card-item-left {
     flex: 4;
     .card-item-date-text {
-      color: #757575;
       color: var($--card-item-date-text-color);
       margin-top: 8px;
     }

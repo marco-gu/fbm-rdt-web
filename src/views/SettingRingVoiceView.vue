@@ -1,19 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("setting.ring_voice") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-    </div>
-    <div class="setting-content">
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
       <div class="setting-card-item" @click="onChangeRingVoice('on')">
         <div class="label">{{ $t("setting.on") }}</div>
         <div v-if="ringVoice == 'on'" class="right-icon">
@@ -34,26 +23,18 @@
 <script lang="ts">
 import { onMounted, ref } from "vue";
 import bridge from "dsbridge";
-import { useRoute, useRouter } from "vue-router";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
+import { useI18n } from "vue-i18n";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 export default {
   name: "SettingRingVoiceView",
-  components: {},
+  components: {
+    HeaderComponent,
+  },
   setup() {
-    const route = useRoute();
-    const router = useRouter();
-
-    let ringVoice = ref(route.query.ringVoice);
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
-
-    const home = () => {
-      router.push("/home");
-    };
-    const back = () => {
-      router.push("/setting");
-    };
+    const i18n = useI18n();
+    const ringVoice = ref("");
+    const titleParam = i18n.t("setting.ring_voice");
+    const backUrlParam = "/setting";
     const onChangeRingVoice = (selected: string) => {
       ringVoice.value = selected;
       const args = {
@@ -70,12 +51,10 @@ export default {
     });
 
     return {
-      home,
-      back,
       ringVoice,
       onChangeRingVoice,
-      homeIcon,
-      arrowIcon,
+      titleParam,
+      backUrlParam,
     };
   },
 };

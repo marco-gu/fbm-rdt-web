@@ -1,20 +1,9 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("dataManagement.mix_title") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-      <div class="card-sub-title">{{ taskId }}+Mix</div>
-    </div>
-    <div class="content">
+    <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component>
+    <div class="page-content">
+      <div class="sub-title-card">{{ taskId }}+Mix</div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <div
           v-for="(item, index) in mixCartonListDisplay"
@@ -45,29 +34,23 @@
 import bridge from "dsbridge";
 import { useRoute, useRouter } from "vue-router";
 import { MixCartonProduct } from "../models/profile";
-import { defineComponent, onMounted, Ref, ref, watch } from "vue";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
+import { defineComponent, onMounted, Ref, ref } from "vue";
 import { useStore } from "@/store";
-
+import HeaderComponent from "@/components/HeaderComponent.vue";
+import { useI18n } from "vue-i18n";
 const DataManagementMixCartonListView = defineComponent({
-  methods: {
-    home() {
-      this.router.push("/home");
-    },
+  components: {
+    HeaderComponent,
   },
   setup() {
-    // const i18n = useI18n();
+    const i18n = useI18n();
     const route = useRoute();
     const store = useStore();
     const router = useRouter();
     const taskId = ref(route.query.taskId);
     const cartonId = ref(route.query.cartonId);
     const mixCartonListDisplay: Ref<MixCartonProduct[]> = ref([]);
-    const pageTitle = ref("");
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
-
+    const titleParam = i18n.t("dataManagement.mix_title");
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = store.state.screenModule.screenHeight
@@ -117,22 +100,16 @@ const DataManagementMixCartonListView = defineComponent({
       back,
       mixCartonListDisplay,
       onClickMixCarton,
-      pageTitle,
       router,
       taskId,
-      homeIcon,
-      arrowIcon,
+      titleParam,
     };
   },
 });
 export default DataManagementMixCartonListView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-subtitle;
-}
 .card-item {
-  background-color: #ffffff;
   padding: 10px 0 10px 15px;
   .card-detail-left {
     width: 100%;

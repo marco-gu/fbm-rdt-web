@@ -1,17 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("lp.lp_list") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
+    <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component>
+    <div class="page-content">
       <div class="search">
         <q-input
           v-model="search"
@@ -25,8 +16,6 @@
           </template>
         </q-input>
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-pull-to-refresh @refresh="refresh">
           <template v-if="taskListDisplay.length > 0">
@@ -68,22 +57,20 @@ import bridge from "dsbridge";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { ScanDataManagement } from "../models/profile";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import { ProfileMaster } from "../models/profile";
+import HeaderComponent from "@/components/HeaderComponent.vue";
+import { useI18n } from "vue-i18n";
 const LPListView = defineComponent({
-  methods: {
-    home() {
-      this.router.push("/home");
-    },
+  components: {
+    HeaderComponent,
   },
   setup() {
     const router = useRouter();
     let result: ScanDataManagement[] = [];
     const taskListDisplay: Ref<ScanDataManagement[]> = ref([]);
     const search = ref("");
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
+    const i18n = useI18n();
+    const titleParam = i18n.t("lp.lp_list");
     const refresh = (done: any) => {
       getTaskList();
       done();
@@ -145,23 +132,18 @@ const LPListView = defineComponent({
       }
     });
     return {
-      router,
       refresh,
       onClickItem,
       taskListDisplay,
       search,
       back,
-      homeIcon,
-      arrowIcon,
+      titleParam,
     };
   },
 });
 export default LPListView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-search;
-}
 .card-item {
   padding: 10px 0 10px 15px;
 }
@@ -173,7 +155,6 @@ export default LPListView;
   }
   .card-item-date-text {
     color: $--card-item-date-text-color;
-    color: #757575;
   }
 }
 </style>

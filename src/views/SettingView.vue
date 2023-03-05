@@ -1,19 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("setting.setting_header") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-    </div>
-    <div class="setting-content">
+    <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component>
+    <div class="page-content">
       <div class="setting-card-item" @click="goRingVoice">
         <div class="label">{{ $t("setting.ring_voice") }}</div>
         <div class="right-icon">
@@ -80,22 +69,19 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { useQuasar } from "quasar";
-import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import { useI18n } from "vue-i18n";
 import config from "../assets/config.json";
 import formatDate from "../utils/formatDate";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 export default {
   name: "SettingView",
-  components: {},
+  components: {
+    HeaderComponent,
+  },
   setup() {
-    const $q = useQuasar();
     const i18n = useI18n();
-    const store = useStore();
     const router = useRouter();
     const ringVoice = ref("");
     const scanningDevice = ref("");
@@ -103,9 +89,7 @@ export default {
     const softwareUpdate = ref("");
     const username = ref("");
     const password = ref("");
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
-
+    const titleParam = i18n.t("setting.setting_header");
     onMounted(() => {
       bridge.call("checkUserUid", null, (res: string) => {
         if (res) {
@@ -146,11 +130,6 @@ export default {
         },
       });
     };
-
-    const home = () => {
-      router.push("/home");
-    };
-
     const goResetPwd = () => {
       router.push({
         name: "resetPwd",
@@ -182,7 +161,6 @@ export default {
       });
     };
     return {
-      arrowIcon,
       back,
       formatDate,
       goLanguage,
@@ -190,13 +168,11 @@ export default {
       goRingVoice,
       goScanningDevice,
       goSoftwareUpdate,
-      home,
-      homeIcon,
       lastProfileSyncTime,
       ringVoice,
-      router,
       scanningDevice,
       softwareUpdate,
+      titleParam,
     };
   },
 };

@@ -1,17 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("image.access_image_header") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
+    <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component>
+    <div class="page-content">
       <div class="search">
         <q-input
           v-model="search"
@@ -25,8 +16,6 @@
           </template>
         </q-input>
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <div v-for="(item, index) in images" :key="index">
           <q-item class="card-item">
@@ -61,15 +50,18 @@ import bridge from "dsbridge";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { ImageModel } from "../models/image";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
+import { useI18n } from "vue-i18n";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 const ImageAccessView = defineComponent({
+  components: {
+    HeaderComponent,
+  },
   setup() {
     const pageTitle = "Cargo Images";
     const images = ref([] as ImageModel[]);
     const router = useRouter();
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
+    const i18n = useI18n();
+    const titleParam = i18n.t("image.access_image_header");
     bridge.register("refreshCargoImages", () => {
       bridge.call("retrieveCargoImages", null, (data: string) => {
         images.value = JSON.parse(data) as ImageModel[];
@@ -90,9 +82,6 @@ const ImageAccessView = defineComponent({
     };
     const onSearch = () => {
       alert("search");
-    };
-    const home = () => {
-      router.push("/home");
     };
     const back = () => {
       router.push({
@@ -115,23 +104,18 @@ const ImageAccessView = defineComponent({
     return {
       back,
       pageTitle,
-      home,
       onScan,
       onSearch,
       onClick,
       images,
       onAdd,
-      homeIcon,
-      arrowIcon,
+      titleParam,
     };
   },
 });
 export default ImageAccessView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-search;
-}
 .card-item {
   padding: 10px 0 10px 15px;
   .card-item-labels {
@@ -144,9 +128,5 @@ export default ImageAccessView;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-.bottom {
-  position: fixed;
-  bottom: 20px;
 }
 </style>

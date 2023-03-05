@@ -1,19 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ headerLabel }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-    </div>
-    <div class="content">
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
           <q-input
@@ -117,9 +106,8 @@ import {
   validPasteInput,
 } from "@/utils/profile.render";
 import { useI18n } from "vue-i18n";
-import homeImg from "../assets/images/home.svg";
-import arrow from "../assets/images/arrow.svg";
 import { useStore } from "@/store";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -131,6 +119,9 @@ const enum ValidationType {
   OFFLINE = "Offline",
 }
 const LpSearchView = defineComponent({
+  components: {
+    HeaderComponent,
+  },
   setup() {
     const router = useRouter();
     const route = useRoute();
@@ -142,7 +133,6 @@ const LpSearchView = defineComponent({
     const profileCode = ref("");
     const clientCode = ref("");
     const scanType = ref("");
-    // const clientName = ref("");
     const myForm = ref();
     // Define Page Elements
     const pageViews = ref([] as ViewDisplayAttribute[]);
@@ -152,14 +142,13 @@ const LpSearchView = defineComponent({
     const receivingFlag = ref(false);
     const stuffingFlag = ref(false);
     const mode = route.params.id as string;
-    const homeIcon = homeImg;
-    const arrowIcon = arrow;
-    const headerLabel =
+    const bottomButtonLable =
+      mode == "online" ? i18n.t("lp.generate") : i18n.t("lp.start_scan");
+    const titleParam =
       route.params.id == "online"
         ? i18n.t("lp.lp_search")
         : i18n.t("lp.offline_scan");
-    const bottomButtonLable =
-      mode == "online" ? i18n.t("lp.generate") : i18n.t("lp.start_scan");
+    const backUrlParam = "/profile/" + route.params.id;
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
@@ -352,12 +341,6 @@ const LpSearchView = defineComponent({
     // 4- Convert the input data value into upper case if it is not
     const multiWatchSources = [receivingViews.value, stuffingViews.value];
     toUpperCaseElementInput(multiWatchSources);
-    const back = () => {
-      router.push("/profile/" + route.params.id);
-    };
-    const home = () => {
-      router.push("/home");
-    };
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
     };
@@ -426,8 +409,6 @@ const LpSearchView = defineComponent({
       profileCode,
       scanType,
       onSubmit,
-      back,
-      home,
       receivingFlag,
       stuffingFlag,
       pageViews,
@@ -436,18 +417,12 @@ const LpSearchView = defineComponent({
       inputRef,
       validPaste,
       bottomButtonLable,
-      homeIcon,
-      arrowIcon,
       myForm,
       onInputKeyUp,
-      headerLabel,
+      titleParam,
+      backUrlParam,
     };
   },
 });
 export default LpSearchView;
 </script>
-<style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-no-search;
-}
-</style>

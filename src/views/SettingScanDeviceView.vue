@@ -1,19 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("setting.scanning_device") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-    </div>
-    <div class="setting-content">
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
       <div class="setting-card-item" @click="onChangeDevice('camera')">
         <div class="label">{{ $t("setting.camera") }}</div>
         <div v-if="selectedDevice == 'camera'" class="right-icon">
@@ -40,32 +29,23 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { useRouter } from "vue-router";
 import { ref } from "vue";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import store from "@/store";
+import { useI18n } from "vue-i18n";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 export default {
   name: "SettingScanDeviceView",
-  components: {},
+  components: {
+    HeaderComponent,
+  },
   setup() {
-    const router = useRouter();
-    let selectedDevice = ref("");
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
-
+    const selectedDevice = ref("");
+    const i18n = useI18n();
+    const titleParam = i18n.t("setting.scanning_device");
+    const backUrlParam = "/setting";
     bridge.call("getScanDevice", null, (res: string) => {
       selectedDevice.value = res;
     });
-
-    const home = () => {
-      router.push("/home");
-    };
-
-    const back = () => {
-      router.push("/setting");
-    };
-
     const onChangeDevice = (device: string) => {
       const args = {
         device: device,
@@ -73,18 +53,13 @@ export default {
       bridge.call("setScanDevice", args, () => {
         selectedDevice.value = args.device;
         store.dispatch("commonModule/setScanDevice", device);
-        console.log("setting scan device successfully ", args.device);
       });
     };
-
     return {
-      router,
-      home,
-      back,
       onChangeDevice,
       selectedDevice,
-      homeIcon,
-      arrowIcon,
+      titleParam,
+      backUrlParam,
     };
   },
 };

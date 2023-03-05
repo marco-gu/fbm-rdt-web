@@ -87,7 +87,6 @@ export default {
     max-width: 90%;
   }
 }
-
 .version-bottom {
   position: fixed;
   bottom: 10px;

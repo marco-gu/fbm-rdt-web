@@ -1,19 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("login.change_password") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-    </div>
-    <div class="setting-content">
+    <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component>
+    <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
           <div class="input-label">{{ $t("login.current_password") }}</div>
@@ -108,9 +97,11 @@ import md5 from "md5";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { useI18n } from "vue-i18n";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 const ResetPwdView = defineComponent({
+  components: {
+    HeaderComponent,
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -123,9 +114,8 @@ const ResetPwdView = defineComponent({
     const initPwd = ref();
     const from = ref("");
     const isPwd = ref(true);
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
     const myForm = ref();
+    const titleParam = i18n.t("login.change_password");
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -266,6 +256,7 @@ const ResetPwdView = defineComponent({
       }
     };
     return {
+      titleParam,
       isPwd,
       onSubmit,
       cancel,
@@ -276,8 +267,6 @@ const ResetPwdView = defineComponent({
       initPwdRule,
       newPwdRule,
       reNewPwdRule,
-      homeIcon,
-      arrowIcon,
       myForm,
     };
   },
@@ -285,19 +274,9 @@ const ResetPwdView = defineComponent({
 export default ResetPwdView;
 </script>
 <style lang="scss" scoped>
-.setting-content {
-  margin-top: $--page-content-margin-top-no-search;
-}
 .input-label {
   color: black;
   text-align: left;
   font-size: $--card-font-size;
 }
-// .bottom {
-//   position: fixed;
-//   bottom: $--page-bottom-margin-bottom;
-//   .q-btn:nth-child(2) {
-//     margin-top: 10px;
-//   }
-// }
 </style>

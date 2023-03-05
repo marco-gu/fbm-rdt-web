@@ -1,22 +1,11 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("lp.lp_detail_list") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
+      <div class="sub-title-card">
+        <span> {{ taskId }}</span>
       </div>
-      <div class="card-sub-title">
-        {{ taskId }}
-      </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <div
           class="card-item"
@@ -33,28 +22,21 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { computed, defineComponent, onMounted, Ref, ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 import { Carton } from "../models/profile";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
+import { useI18n } from "vue-i18n";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 const LPDetailListView = defineComponent({
-  methods: {
-    home() {
-      this.router.push("/home");
-    },
+  components: {
+    HeaderComponent,
   },
   setup() {
-    const router = useRouter();
     const route = useRoute();
     const taskId = ref(route.query.taskId);
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
+    const i18n = useI18n();
     const lpListDisplay: Ref<Carton[]> = ref([]);
-    const back = () => {
-      router.push({
-        path: "/lpList",
-      });
-    };
+    const titleParam = i18n.t("lp.lp_detail_list");
+    const backUrlParam = "/lpList";
     const getLPListByTaskId = (taskId: string) => {
       const args = {
         taskId: taskId,
@@ -76,23 +58,13 @@ const LPDetailListView = defineComponent({
       }
     });
     return {
-      router,
       lpListDisplay,
       filterList,
-      back,
       taskId,
-      homeIcon,
-      arrowIcon,
+      titleParam,
+      backUrlParam,
     };
   },
 });
 export default LPDetailListView;
 </script>
-<style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-subtitle;
-}
-.card-item {
-  text-align: left;
-}
-</style>

@@ -1,6 +1,7 @@
-// page general variable
+// header general variable
+$--header-mb: 20px;
 $--page-content-padding: 0 23px;
-$--page-content-margin-top-no-search: 23px;
+$--page-content-margin-top-no-search: 15px;
 $--page-content-margin-top-with-search: 15px;
 $--page-content-margin-top-with-subtitle: 15px;
 // card general variable
@@ -20,8 +21,8 @@ $--card-input-field-height: 40px;
 $--card-selection-padding: 0 0 0 15px;
 $--card-selection-height: 45px;
 // card item for subtitle
-$--card-sub-title-padding: 10px 15px;
-$--card-sub-title-margin: 22px 23px 0 23px;
+$--card-sub-title-padding: 15px;
+$--card-sub-title-margin: 23px 23px 0 23px;
 // page bottom
 $--page-bottom-margin-bottom: 20px;
 // button

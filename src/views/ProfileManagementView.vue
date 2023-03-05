@@ -1,17 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("profile.profile") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
+    <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component>
+    <div class="page-content">
       <div class="search" v-show="!isEditMode">
         <q-input
           v-model="search"
@@ -25,8 +16,6 @@
           </template>
         </q-input>
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <template v-if="isEditMode">
           <div class="edit-container">
@@ -101,16 +90,18 @@ import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { ProfileMaster } from "../models/profile";
-import { defineComponent, nextTick, onMounted, Ref, ref, watch } from "vue";
+import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import formatDate from "../utils/formatDate";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 const ProfileManagementView = defineComponent({
+  components: {
+    HeaderComponent,
+  },
   setup() {
     const $q = useQuasar();
     const router = useRouter();
@@ -120,8 +111,7 @@ const ProfileManagementView = defineComponent({
     let result: ProfileMaster[] = [];
     const isFirstSync = ref(true);
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
+    const titleParam = i18n.t("profile.profile");
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -163,9 +153,6 @@ const ProfileManagementView = defineComponent({
           leftDrawerOpen: "true",
         },
       });
-    };
-    const home = () => {
-      router.push("/home");
     };
     const refresh = (done: any) => {
       if (!isEditMode.value) {
@@ -249,24 +236,18 @@ const ProfileManagementView = defineComponent({
       deleteProfile,
       formatDate,
       handleHold,
-      home,
       isEditMode,
       isFirstSync,
       profileListDisplay,
       refresh,
-      router,
       search,
-      homeIcon,
-      arrowIcon,
+      titleParam,
     };
   },
 });
 export default ProfileManagementView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-search;
-}
 .card-item-labels {
   text-align: left;
   .card-item-date-text {
@@ -274,9 +255,8 @@ export default ProfileManagementView;
     color: $--card-item-date-text-color;
   }
 }
-
 .edit-container {
-  margin-top: $--page-content-margin-top-no-search;
+  margin-top: 15px;
   .card-edit-container {
     padding: 0px 15px 0px 0px;
     display: flex;

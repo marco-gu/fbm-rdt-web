@@ -1,17 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{ $t("dataManagement.data_management_header") }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
+    <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component>
+    <div class="page-content">
       <div class="search" v-show="!isEditMode">
         <q-input
           v-model="search"
@@ -25,8 +16,6 @@
           </template>
         </q-input>
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <template v-if="scanDataListDisplay.length > 0">
           <div v-if="isEditMode == false">
@@ -233,26 +222,23 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import formatDate from "../utils/formatDate";
 import { ProfileMaster } from "../models/profile";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 const enum UploadAlertMsg {
   MATCHED = "CIDs all matched",
   PARTIALLY = "CIDs partially matched",
   EXCEED = "Scanned carton number exceed expected carton number",
 }
 const DataManagementView = defineComponent({
-  methods: {
-    home() {
-      this.router.push("/home");
-    },
+  components: {
+    HeaderComponent,
   },
   setup() {
     const router = useRouter();
     const i18n = useI18n();
-
+    const titleParam = i18n.t("dataManagement.data_management_header");
     const finishedDisabled = finishedDisableUrl;
     const finished = finishedUrl;
 
@@ -277,10 +263,6 @@ const DataManagementView = defineComponent({
     const searchPlaceHolder = ref("");
     const statusLabel = ref("");
     const uploadLabel = ref("");
-
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
-
     const dialogVisible = ref(false);
     const dialogMessage = ref("");
     onMounted(() => {
@@ -460,7 +442,6 @@ const DataManagementView = defineComponent({
       onConfirm,
       pageTitle,
       pendingLabel,
-      router,
       scanDataListDisplay,
       search,
       searchPlaceHolder,
@@ -470,14 +451,13 @@ const DataManagementView = defineComponent({
       uploaded,
       uploadedDisabled,
       finished,
-      homeIcon,
-      arrowIcon,
       finishedDisabled,
       arrowRight,
       checkedIcon,
       uncheckedIcon,
       formatTaskId,
       formatDate,
+      titleParam,
     };
   },
 });
@@ -491,9 +471,6 @@ export default DataManagementView;
 .card-item-content {
   display: flex;
   width: 100%;
-}
-.content {
-  margin-top: $--page-content-margin-top-with-search;
 }
 .data-list-container {
   padding-left: 15px;
@@ -531,14 +508,6 @@ export default DataManagementView;
   width: 100%;
   color: #757575;
 }
-.footer {
-  position: absolute;
-  bottom: 10px;
-  text-align: center;
-  width: 100%;
-  color: #757575;
-}
-
 .center {
   display: flex;
   align-items: center;

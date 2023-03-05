@@ -1,27 +1,12 @@
 <template>
   <div class="wrapper">
-    <div class="header">
-      <div class="common-toolbar">
-        <div class="common-toolbar-left">
-          <img :src="arrowIcon" @click="back" />
-        </div>
-        <div class="common-toolbar-middle">
-          {{
-            pageType == "Group"
-              ? $t("dataManagement.group_title")
-              : $t("dataManagement.detail_title")
-          }}
-        </div>
-        <div class="common-toolbar-right">
-          <img :src="homeIcon" @click="home" />
-        </div>
-      </div>
-      <div class="card-sub-title">
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
+      <div class="sub-title-card">
         <div v-if="taskDisplay.isMix == 1">{{ taskId }}+Mix</div>
         <div v-else>{{ taskId }}</div>
       </div>
-    </div>
-    <div class="content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <template v-if="pageType == 'Group'">
           <div
@@ -122,13 +107,11 @@ import bridge from "dsbridge";
 import { computed, defineComponent, onMounted, Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { LP, Carton } from "../models/profile";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
+import { useI18n } from "vue-i18n";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 const DataMgmtView = defineComponent({
-  methods: {
-    home() {
-      this.router.push("/home");
-    },
+  components: {
+    HeaderComponent,
   },
   setup() {
     const router = useRouter();
@@ -138,13 +121,14 @@ const DataMgmtView = defineComponent({
     const pageTitle = ref("");
     const detailViewLabel = ref("");
     const groupViewLabel = ref("");
-
-    const homeIcon = homeImg;
-    const arrowIcon = arrowImg;
-
+    const i18n = useI18n();
+    const titleParam =
+      pageType.value == "Group"
+        ? i18n.t("dataManagement.group_title")
+        : i18n.t("dataManagement.detail_title");
+    const backUrlParam = "/dataManagement";
     const taskDisplay: Ref<LP> = ref({} as LP);
     const cartonListDisplay: Ref<Carton[]> = ref([]);
-
     const onClickLP = (item: any) => {
       router.push({
         path: "/dataMgmtGDEdit",
@@ -168,12 +152,6 @@ const DataMgmtView = defineComponent({
 
     const changPageType = (type: string) => {
       pageType.value = type;
-    };
-
-    const back = () => {
-      router.push({
-        path: "/dataManagement",
-      });
     };
 
     const fetchTaskByTaskId = (taskId: string) => {
@@ -213,11 +191,9 @@ const DataMgmtView = defineComponent({
     });
 
     return {
-      router,
       onClickLP,
       taskDisplay,
       cartonListDisplay,
-      back,
       taskId,
       pageType,
       changPageType,
@@ -226,19 +202,15 @@ const DataMgmtView = defineComponent({
       detailViewLabel,
       groupViewLabel,
       cartonfilterList,
-      homeIcon,
-      arrowIcon,
+      titleParam,
+      backUrlParam,
     };
   },
 });
 export default DataMgmtView;
 </script>
 <style lang="scss" scoped>
-.content {
-  margin-top: $--page-content-margin-top-with-subtitle;
-}
 .card-item {
-  background-color: #ffffff;
   padding: 10px 0 10px 15px;
   .card-item-content {
     width: 100%;
