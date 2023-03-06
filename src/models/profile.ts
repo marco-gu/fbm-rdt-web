@@ -201,6 +201,7 @@ export interface MixCartonProduct {
   upc: string;
   color: string;
   size: string;
+  style: string;
   quantity: string;
 }
 
