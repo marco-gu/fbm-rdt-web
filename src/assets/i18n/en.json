@@ -116,7 +116,8 @@
     "add_image": "Add Image",
     "add_image_reason": "Reason",
     "add_image_save": "Save",
-    "add_image_cancel": "Cancel"
+    "add_image_cancel": "Cancel",
+    "no_record": "No records found."
   },
   "dataManagement": {
     "data_management_header": "Data Management",

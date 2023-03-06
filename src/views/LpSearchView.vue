@@ -108,6 +108,7 @@ import {
 import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import { softKeyPopUp } from "../utils/screen.util";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -157,19 +158,8 @@ const LpSearchView = defineComponent({
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
-      // hide bottom button if soft key up
-      window.onresize = () => {
-        // get resize height and recalculate scroll area
-        const resizeHeight = window.innerHeight;
-        const scrollArea = document.getElementById("scroll-area") as any;
-        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
-        const bottom = document.getElementById("bottom-button") as any;
-        if (deviceHeight - resizeHeight > 0) {
-          bottom.style.visibility = "hidden";
-        } else {
-          bottom.style.visibility = "visible";
-        }
-      };
+      // softkey popup
+      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
       ) as ProfileMaster;

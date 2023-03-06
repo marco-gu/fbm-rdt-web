@@ -17,19 +17,25 @@
         </q-input>
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <div v-for="(item, index) in images" :key="index">
-          <q-item class="card-item">
-            <div class="card-item-labels" @click="onClick(item)">
-              <q-item-label>Reason: {{ item.reason }}</q-item-label>
-              <q-item-label>SO: {{ item.so }}</q-item-label>
-              <q-item-label>PO: {{ item.po }}</q-item-label>
-              <q-item-label>CID: {{ item.cid }}</q-item-label>
-            </div>
-            <q-item-section side>
-              <q-icon name="chevron_right" color="black" />
-            </q-item-section>
-          </q-item>
-        </div>
+        <template v-if="imagesDisplay.length > 0">
+          <div v-for="(item, index) in imagesDisplay" :key="index">
+            <q-item class="card-item">
+              <div class="card-item-labels" @click="onClick(item)">
+                <q-item-label>Reason: {{ item.reason }}</q-item-label>
+                <q-item-label>ClientCode: {{ item.clientCode }}</q-item-label>
+                <q-item-label>SO: {{ item.so }}</q-item-label>
+                <q-item-label>PO: {{ item.po }}</q-item-label>
+                <q-item-label>CID: {{ item.cid }}</q-item-label>
+              </div>
+              <q-item-section side>
+                <q-icon name="chevron_right" color="black" />
+              </q-item-section>
+            </q-item>
+          </div>
+        </template>
+        <template v-else>
+          <div class="no-record">{{ $t("image.no_record") }}</div>
+        </template>
       </q-scroll-area>
     </div>
     <div class="bottom-button" id="bottom-button">
@@ -47,7 +53,7 @@
 <script lang="ts">
 import { defineComponent, onMounted } from "@vue/runtime-core";
 import bridge from "dsbridge";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { ImageModel } from "../models/image";
 import { useI18n } from "vue-i18n";
@@ -57,14 +63,16 @@ const ImageAccessView = defineComponent({
     HeaderComponent,
   },
   setup() {
-    const pageTitle = "Cargo Images";
-    const images = ref([] as ImageModel[]);
+    const imagesDisplay = ref([] as ImageModel[]);
+    const imageResponse = ref([] as ImageModel[]);
     const router = useRouter();
     const i18n = useI18n();
     const titleParam = i18n.t("image.access_image_header");
+    const search = ref();
     bridge.register("refreshCargoImages", () => {
       bridge.call("retrieveCargoImages", null, (data: string) => {
-        images.value = JSON.parse(data) as ImageModel[];
+        imageResponse.value = JSON.parse(data) as ImageModel[];
+        imagesDisplay.value = imageResponse.value;
       });
     });
     onMounted(() => {
@@ -74,15 +82,10 @@ const ImageAccessView = defineComponent({
       scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
       // retrieve
       bridge.call("retrieveCargoImages", null, (data: any) => {
-        images.value = JSON.parse(data) as ImageModel[];
+        imageResponse.value = JSON.parse(data) as ImageModel[];
+        imagesDisplay.value = imageResponse.value;
       });
     });
-    const onScan = () => {
-      alert("scan");
-    };
-    const onSearch = () => {
-      alert("search");
-    };
     const back = () => {
       router.push({
         path: "/home",
@@ -101,15 +104,28 @@ const ImageAccessView = defineComponent({
     const onAdd = () => {
       router.push("/cargoImage");
     };
+    watch(search, () => {
+      if (search.value) {
+        const filteredResult = imageResponse.value.filter(
+          (item) =>
+            item.so.toLowerCase().indexOf(search.value.toLowerCase()) > -1 ||
+            item.po.toLowerCase().indexOf(search.value.toLowerCase()) > -1 ||
+            item.cid.toLowerCase().indexOf(search.value.toLowerCase()) > -1 ||
+            item.clientCode.toLowerCase().indexOf(search.value.toLowerCase()) >
+              -1
+        );
+        imagesDisplay.value = filteredResult;
+      } else {
+        imagesDisplay.value = imageResponse.value;
+      }
+    });
     return {
       back,
-      pageTitle,
-      onScan,
-      onSearch,
       onClick,
-      images,
+      imagesDisplay,
       onAdd,
       titleParam,
+      search,
     };
   },
 });

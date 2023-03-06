@@ -96,23 +96,19 @@ export default {
           username.value = res.toUpperCase();
         }
       });
-
       bridge.call("getUserPassword", null, (res: string) => {
         if (res) {
           password.value = res;
         }
       });
-
       bridge.call("getScanDevice", null, (device: string) => {
         scanningDevice.value = i18n.t("setting." + device);
       });
-
       bridge.call("getRingVoice", null, (res: string) => {
         if (res) {
           ringVoice.value = i18n.t("setting." + res);
         }
       });
-
       bridge.call("getProfileLastSyncDate", null, (date: string) => {
         if (date) {
           lastProfileSyncTime.value = date;

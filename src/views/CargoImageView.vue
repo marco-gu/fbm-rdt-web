@@ -70,8 +70,6 @@ import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref, watch } from "vue";
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
-import homeImg from "../assets/images/home.svg";
-import arrowImg from "../assets/images/arrow.svg";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { useI18n } from "vue-i18n";
 const cargoImageView = defineComponent({

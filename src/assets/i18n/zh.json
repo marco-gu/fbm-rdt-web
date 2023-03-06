@@ -116,7 +116,8 @@
     "add_image": "增加图片",
     "add_image_reason": "原因",
     "add_image_save": "保存",
-    "add_image_cancel": "取消"
+    "add_image_cancel": "取消",
+    "no_record": "找不到记录"
   },
   "dataManagement": {
     "data_management_header": "货物管理",
