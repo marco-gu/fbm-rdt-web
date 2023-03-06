@@ -50,7 +50,9 @@
     "search": "搜索",
     "delete": "删除",
     "download": "下载",
-    "ok": "确认"
+    "ok": "确认",
+    "uploaded": "已上传",
+    "finished": "已扫完"
   },
   "login": {
     "login": "登录",
@@ -101,6 +103,7 @@
     "scan": "扫描",
     "scanned": "已扫",
     "total_number": "总数",
+    "total": "总数",
     "start_scan": "开始扫描",
     "lp_list": "LP列表",
     "lp_detail_list": "LP列表详情"
@@ -117,7 +120,10 @@
     "add_image_reason": "原因",
     "add_image_save": "保存",
     "add_image_cancel": "取消",
-    "no_record": "找不到记录"
+    "no_record": "找不到记录",
+    "damage": "损坏",
+    "other": "其他",
+    "po_so_not_exist": "PO/SO 不存在"
   },
   "dataManagement": {
     "data_management_header": "货物管理",
@@ -128,7 +134,19 @@
     "upload": "上传",
     "group_view": "组视图",
     "detail_view": "详情视图",
-    "mix": "Mix"
+    "mix": "Mix",
+    "count": "数量",
+    "delete_dialog_message": "确定要删除吗?",
+    "update_dialog_message": "确定要更新吗?",
+    "successfully_saved": "成功保存",
+    "successfully_deleted": "成功删除",
+    "successfully_uploaded": "成功上传",
+    "successfully_updated": "更新成功",
+    "no_record_selected": "没有选择数据",
+    "confirm_upload": "确认上传",
+    "upload_carton_matched": "CID全部匹配",
+    "upload_carton_partially": "CID部分匹配",
+    "upload_carton_exceed": "扫描的货物数量超出"
   },
   "setting": {
     "setting_header": "设置",
@@ -157,6 +175,8 @@
     "carton_detail_save": "保存",
     "carton_detail_cancel": "取消",
     "mix_carton_add": "添加",
-    "mix_carton_complete": "完成"
+    "mix_carton_complete": "完成",
+    "miss_input_message": "不允许跳过输入",
+    "item_count": "箱子数量"
   }
 }

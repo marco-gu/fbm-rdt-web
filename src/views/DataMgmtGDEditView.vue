@@ -419,7 +419,10 @@ const DataManagementDetailView = defineComponent({
                 if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
                   taskId.value = androidResponse.data;
                   back();
-                  popupSuccessMsg($q, "Updated Successfully");
+                  popupSuccessMsg(
+                    $q,
+                    i18n.t("dataManagement.successfully_updated")
+                  );
                 }
               }
             );
@@ -443,7 +446,10 @@ const DataManagementDetailView = defineComponent({
                 if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
                   taskId.value = androidResponse.data;
                   back();
-                  popupSuccessMsg($q, "Updated Successfully");
+                  popupSuccessMsg(
+                    $q,
+                    i18n.t("dataManagement.successfully_updated")
+                  );
                 } else if (
                   androidResponse.status == AndroidResponseStatus.ERROR
                 ) {
@@ -469,7 +475,7 @@ const DataManagementDetailView = defineComponent({
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
 
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            popupSuccessMsg($q, "Deleted Successfully");
+            popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
             router.push({
               path: "/dataManagement",
             });
@@ -487,7 +493,7 @@ const DataManagementDetailView = defineComponent({
         bridge.call("deleteCartonForDataManagement", args, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            popupSuccessMsg($q, "Deleted Successfully");
+            popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
             back();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
             const message = i18n.t(

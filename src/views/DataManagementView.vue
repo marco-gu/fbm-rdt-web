@@ -57,7 +57,7 @@
                           class="center"
                           style="font-size: 8px; margin-top: 8px"
                         >
-                          FINISHED
+                          {{ $t("common.finished") }}
                         </div>
                       </div>
                       <div class="column center">
@@ -73,7 +73,7 @@
                           class="center"
                           style="font-size: 8px; margin-top: 8px"
                         >
-                          UPLOADED
+                          {{ $t("common.uploaded") }}
                         </div>
                       </div>
                     </q-item-section>
@@ -124,7 +124,9 @@
                         "
                       />
                       <div style="height: 8px"></div>
-                      <div class="center" style="font-size: 8px">FINISHED</div>
+                      <div class="center" style="font-size: 8px">
+                        {{ $t("common.finished") }}
+                      </div>
                     </div>
                     <div style="width: 8px"></div>
                     <div class="column center">
@@ -140,7 +142,7 @@
                         class="center"
                         style="font-size: 8px; margin-top: 8px"
                       >
-                        UPLOADED
+                        {{ $t("common.uploaded") }}
                       </div>
                     </div>
                   </div>
@@ -195,7 +197,7 @@
           <button class="dialog-button cancel" v-close-popup>
             {{ $t("common.cancel") }}
           </button>
-          <button class="dialog-button confirm" @click="onConfirm">
+          <button class="dialog-button confirm" @click="onConfirm(dialogMode)">
             {{ $t("common.confirm") }}
           </button>
         </div>
@@ -226,45 +228,29 @@ import formatDate from "../utils/formatDate";
 import { ProfileMaster } from "../models/profile";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import HeaderComponent from "@/components/HeaderComponent.vue";
-const enum UploadAlertMsg {
-  MATCHED = "CIDs all matched",
-  PARTIALLY = "CIDs partially matched",
-  EXCEED = "Scanned carton number exceed expected carton number",
-}
 const DataManagementView = defineComponent({
   components: {
     HeaderComponent,
   },
   setup() {
-    const router = useRouter();
+    const $q = useQuasar();
     const i18n = useI18n();
+    const router = useRouter();
     const titleParam = i18n.t("dataManagement.data_management_header");
     const finishedDisabled = finishedDisableUrl;
     const finished = finishedUrl;
-
     const uploadedDisabled = uploadedDisableUrl;
     const uploaded = uploadedUrl;
-
     const arrowRight = arrowRightUrl;
     const checkedIcon = checkedUrl;
     const uncheckedIcon = uncheckedUrl;
-
-    const $q = useQuasar();
     const search = ref("");
-    const isEditMode = ref(false);
-    const status = ref("pending");
-    let result: ScanDataManagement[] = [];
-    const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
-    const pageTitle = ref("");
-    const cancelLabel = ref("");
-    const deleteLabel = ref("");
-    const finishedLabel = ref("");
-    const pendingLabel = ref("");
-    const searchPlaceHolder = ref("");
-    const statusLabel = ref("");
-    const uploadLabel = ref("");
-    const dialogVisible = ref(false);
     const dialogMessage = ref("");
+    const dialogVisible = ref(false);
+    const dialogMode = ref("");
+    const isEditMode = ref(false);
+    const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
+    let result: ScanDataManagement[] = [];
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -278,7 +264,6 @@ const DataManagementView = defineComponent({
         var profileNames = profiles.map((element) => {
           return element.profileName;
         });
-
         bridge.call("fetchTaskForDataManagement", null, (res: string) => {
           result = JSON.parse(res) as ScanDataManagement[];
           result = result.filter((item) =>
@@ -354,29 +339,36 @@ const DataManagementView = defineComponent({
             const scannedCartonNumber = item["scannedCartonNumber"];
             const allCartonNumber = item["allCartonNumber"];
             if (scannedCartonNumber == allCartonNumber) {
-              alertMessage = UploadAlertMsg.MATCHED;
+              alertMessage = i18n.t("dataManagement.upload_carton_matched");
             } else if (scannedCartonNumber < allCartonNumber) {
-              alertMessage = UploadAlertMsg.PARTIALLY;
+              alertMessage = i18n.t("dataManagement.upload_carton_partially");
             } else {
-              alertMessage = UploadAlertMsg.EXCEED;
+              alertMessage = i18n.t("dataManagement.upload_carton_exceed");
             }
             dialogMessage.value += `${item["taskId"]}: ${alertMessage}.\n`;
           }
         });
-        dialogMessage.value += "\nConfirm to upload?";
+        dialogMessage.value += `\n${i18n.t("dataManagement.confirm_upload")}?`;
         dialogVisible.value = true;
+        dialogMode.value = "upload";
       } else {
-        popupErrorMsg($q, "No record selected");
+        popupErrorMsg($q, i18n.t("dataManagement.no_record_selected"));
       }
     };
-    const onConfirm = () => {
+    const resetDialog = () => {
       dialogVisible.value = false;
       dialogMessage.value = "";
-      uploadScanData();
+    };
+    const onConfirm = (mode: string) => {
+      resetDialog();
+      if (mode === "upload") {
+        uploadScanData();
+      } else if (mode === "delete") {
+        deleteScanData();
+      }
     };
     const onClose = () => {
-      dialogVisible.value = false;
-      dialogMessage.value = "";
+      resetDialog();
     };
     const uploadScanData = () => {
       showLoading($q);
@@ -387,7 +379,7 @@ const DataManagementView = defineComponent({
         closeLoading($q);
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          popupSuccessMsg($q, "Successfully uploaded");
+          popupSuccessMsg($q, i18n.t("dataManagement.successfully_uploaded"));
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t(androidResponse.messageCode);
           popupErrorMsg($q, message);
@@ -397,30 +389,33 @@ const DataManagementView = defineComponent({
       });
     };
     const handleDelete = () => {
-      let taskIdList = getSelectedTaskIdList();
-      if (taskIdList.length > 0) {
-        const args = {
-          taskIdList: taskIdList,
-        };
-        bridge.call("deleteTaskForDataManagement", args, (res: string) => {
-          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            popupSuccessMsg($q, "Successfully deleted");
-            isEditMode.value = false;
-            getScanDataList();
-          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.t(androidResponse.messageCode);
-            popupErrorMsg($q, message);
-          }
-        });
+      if (getSelectedTaskIdList().length > 0) {
+        dialogMessage.value = i18n.t("dataManagement.delete_dialog_message");
+        dialogVisible.value = true;
+        dialogMode.value = "delete";
       } else {
-        popupErrorMsg($q, "No record selected");
+        popupErrorMsg($q, i18n.t("dataManagement.no_record_selected"));
       }
+    };
+    const deleteScanData = () => {
+      const args = {
+        taskIdList: getSelectedTaskIdList(),
+      };
+      bridge.call("deleteTaskForDataManagement", args, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
+          isEditMode.value = false;
+          getScanDataList();
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          const message = i18n.t(androidResponse.messageCode);
+          popupErrorMsg($q, message);
+        }
+      });
     };
     const cancelEditMode = () => {
       isEditMode.value = false;
     };
-
     const formatTaskId = (taskId: string) => {
       const a = taskId.split("+").join("<br/>");
       return a;
@@ -428,11 +423,9 @@ const DataManagementView = defineComponent({
     return {
       back,
       cancelEditMode,
-      cancelLabel,
-      deleteLabel,
       dialogMessage,
+      dialogMode,
       dialogVisible,
-      finishedLabel,
       handleDelete,
       handleHold,
       handleUpload,
@@ -440,14 +433,8 @@ const DataManagementView = defineComponent({
       onClickScanTask,
       onClose,
       onConfirm,
-      pageTitle,
-      pendingLabel,
       scanDataListDisplay,
       search,
-      searchPlaceHolder,
-      status,
-      statusLabel,
-      uploadLabel,
       uploaded,
       uploadedDisabled,
       finished,

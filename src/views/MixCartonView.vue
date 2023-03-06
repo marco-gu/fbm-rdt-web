@@ -9,7 +9,7 @@
     <div class="page-content">
       <div class="sub-title-card">
         <div>{{ cartonID }}</div>
-        <div>Item count: {{ itemCount }}</div>
+        <div>{{ $t("carton.item_count") }}: {{ itemCount }}</div>
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
@@ -270,8 +270,7 @@ const MixCartonView = defineComponent({
         }
       });
       if (!allowReturn) {
-        const message = "Don't allow to miss the input";
-        popupErrorMsg($q, message);
+        popupErrorMsg($q, i18n.t("carton.miss_input_message"));
       } else {
         bridge.call("completeMixCarton", null, () => {
           reset(inputRef.value);

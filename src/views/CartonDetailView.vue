@@ -170,8 +170,7 @@ const CartonDetailView = defineComponent({
         }
       });
       if (!allowReturn) {
-        const message = "Don't allow to miss the input";
-        popupErrorMsg($q, message);
+        popupErrorMsg($q, i18n.t("carton.miss_input_message"));
       } else {
         bridge.call("completeCartonDetail", null, () => {
           reset();

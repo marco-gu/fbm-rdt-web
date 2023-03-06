@@ -44,7 +44,6 @@ export default {
       bridge.call("settingLanguage", args, () => {
         selectedLanguage.value = args.language;
         store.dispatch("languageModule/setCurrentLang", language);
-        console.log("setting language successfully ", args.language);
       });
     };
     onMounted(() => {

@@ -34,7 +34,8 @@
                 <div class="card-item-right">
                   <q-item-section>
                     <q-item-label>
-                      Count: {{ taskDisplay.scannedCartonNumber }}</q-item-label
+                      {{ $t("dataManagement.count") }}:
+                      {{ taskDisplay.scannedCartonNumber }}</q-item-label
                     >
                   </q-item-section>
                 </div>
@@ -118,9 +119,6 @@ const DataMgmtView = defineComponent({
     const route = useRoute();
     const taskId = ref(route.query.taskId);
     const pageType = ref("Group");
-    const pageTitle = ref("");
-    const detailViewLabel = ref("");
-    const groupViewLabel = ref("");
     const i18n = useI18n();
     const titleParam =
       pageType.value == "Group"
@@ -198,9 +196,6 @@ const DataMgmtView = defineComponent({
       pageType,
       changPageType,
       onClickCarton,
-      pageTitle,
-      detailViewLabel,
-      groupViewLabel,
       cartonfilterList,
       titleParam,
       backUrlParam,
