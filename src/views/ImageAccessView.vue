@@ -21,7 +21,10 @@
           <div v-for="(item, index) in imagesDisplay" :key="index">
             <q-item class="card-item">
               <div class="card-item-labels" @click="onClick(item)">
-                <q-item-label>Reason: {{ item.reason }}</q-item-label>
+                <q-item-label
+                  >{{ $t("image.add_image_reason") }}:
+                  {{ item.reason }}</q-item-label
+                >
                 <q-item-label>ClientCode: {{ item.clientCode }}</q-item-label>
                 <q-item-label>SO: {{ item.so }}</q-item-label>
                 <q-item-label>PO: {{ item.po }}</q-item-label>

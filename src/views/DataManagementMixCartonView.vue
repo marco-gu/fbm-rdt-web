@@ -150,9 +150,6 @@ const DataManagementMixCartonView = defineComponent({
     const dynamicViews: Ref<ViewDisplayAttribute[]> = ref([]);
     const mixCartonProduct = ref();
     const profileAttrListDisplay: Ref<ProfileDisplayAttribute[]> = ref([]);
-    const cancelLabel = ref("");
-    const deleteLabel = ref("");
-    const saveLabel = ref("");
     const showDeleteDialog = ref(false);
     const showUpdateDialog = ref(false);
     const myForm = ref();
@@ -280,7 +277,7 @@ const DataManagementMixCartonView = defineComponent({
           bridge.call("updateCartonProduct", args, (res: string) => {
             const androidResponse = JSON.parse(res) as AndroidResponse<any>;
             if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              popupSuccessMsg($q, "Successfully saved");
+              popupSuccessMsg($q, i18n.t("dataManagement.successfully_saved"));
               router.push({
                 path: "/dataManagementMixCartonList",
                 query: {
@@ -311,7 +308,7 @@ const DataManagementMixCartonView = defineComponent({
       bridge.call("deleteCartonProduct", args, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          popupSuccessMsg($q, "Successfully deleted");
+          popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
           router.push({
             path: "/dataManagementMixCartonList",
             query: {
@@ -327,13 +324,10 @@ const DataManagementMixCartonView = defineComponent({
     };
     return {
       back,
-      cancelLabel,
-      deleteLabel,
       dynamicViews,
       handleSave,
       handleDelete,
       inputRef,
-      saveLabel,
       scan,
       taskId,
       showDeleteDialog,

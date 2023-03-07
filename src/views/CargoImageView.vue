@@ -80,10 +80,10 @@ const cargoImageView = defineComponent({
     const i18n = useI18n();
     const store = useStore();
     const router = useRouter();
-    const reason = ref("Damage");
+    const reason = ref(i18n.t("image.damage"));
     const $q = useQuasar();
     const pageViews = ref([] as any);
-    const options = ["Damage", "Other"];
+    const options = [i18n.t("image.damage"), i18n.t("image.other")];
     const scanType = ref("CargoImage");
     const titleParam = i18n.t("image.add_image");
     const backUrlParam = "/imageAccess";
@@ -153,7 +153,7 @@ const cargoImageView = defineComponent({
       bridge.call("checkSoAndPoExist", param, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          popupErrorMsg($q, "PO or SO not exist");
+          popupErrorMsg($q, i18n.t("image.po_so_not_exist"));
         } else {
           const param2 = {
             cartonID: cartonID,

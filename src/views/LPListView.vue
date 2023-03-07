@@ -30,7 +30,8 @@
                     <div class="card-item-label-content">
                       <q-item-label>{{ item.taskId }}</q-item-label>
                       <q-item-label
-                        >Total: {{ item.allCartonNumber }}</q-item-label
+                        >{{ $t("lp.total") }}:
+                        {{ item.allCartonNumber }}</q-item-label
                       >
                       <q-item-label class="card-item-date-text">{{
                         item.updateDatetime

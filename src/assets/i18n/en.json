@@ -54,7 +54,9 @@
     "search": "Search",
     "delete": "Delete",
     "download": "Download",
-    "ok": "OK"
+    "ok": "OK",
+    "uploaded": "UPLOADED",
+    "finished": "FINISHED"
   },
   "login": {
     "login": "Log in",
@@ -105,6 +107,7 @@
     "scan": "Scan",
     "scanned": "Scanned",
     "total_number": "Total Number",
+    "total": "Total",
     "start_scan": "Start Scan Carton ID",
     "lp_list": "LP List",
     "lp_detail_list": "LP Detail List"
@@ -121,7 +124,10 @@
     "add_image_reason": "Reason",
     "add_image_save": "Save",
     "add_image_cancel": "Cancel",
-    "no_record": "No records found."
+    "no_record": "No records found.",
+    "damage": "Damage",
+    "other": "Other",
+    "po_so_not_exist": "PO or SO not exist"
   },
   "dataManagement": {
     "data_management_header": "Data Management",
@@ -133,8 +139,18 @@
     "group_view": "Group View",
     "detail_view": "Detail View",
     "mix": "Mix",
+    "count": "Count",
     "delete_dialog_message": "Are you sure you want to delete it?",
-    "update_dialog_message": "Are you sure you want to update it?"
+    "update_dialog_message": "Are you sure you want to update it?",
+    "successfully_saved": "Successfully saved",
+    "successfully_deleted": "Successfully deleted",
+    "successfully_uploaded": "Successfully uploaded",
+    "successfully_updated": "Successfully updated",
+    "no_record_selected": "No record selected",
+    "confirm_upload": "Confirm to upload",
+    "upload_carton_matched": "CIDs all matched",
+    "upload_carton_partially": "CIDs partially matched",
+    "upload_carton_exceed": "Scanned carton number exceed expected carton number"
   },
   "setting": {
     "setting_header": "Settings",
@@ -163,6 +179,8 @@
     "carton_detail_save": "Save",
     "carton_detail_cancel": "Cancel",
     "mix_carton_add": "Add",
-    "mix_carton_complete": "Complete"
+    "mix_carton_complete": "Complete",
+    "miss_input_message": "Don't allow to miss the input",
+    "item_count": "Item count"
   }
 }

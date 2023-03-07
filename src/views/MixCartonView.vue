@@ -9,7 +9,7 @@
     <div class="page-content">
       <div class="sub-title-card">
         <div>{{ cartonID }}</div>
-        <div>Item count: {{ itemCount }}</div>
+        <div>{{ $t("carton.item_count") }}: {{ itemCount }}</div>
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
