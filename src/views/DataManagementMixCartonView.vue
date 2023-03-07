@@ -271,25 +271,35 @@ const DataManagementMixCartonView = defineComponent({
             Size: "",
             Quantity: "",
             Style: "",
+            taskId: taskId.value,
           };
           showUpdateDialog.value = false;
           composeSaveApiArgs(args, dynamicViews.value);
-          bridge.call("updateCartonProduct", args, (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              popupSuccessMsg($q, i18n.t("dataManagement.successfully_saved"));
-              router.push({
-                path: "/dataManagementMixCartonList",
-                query: {
-                  taskId: taskId.value,
-                  cartonId: cartonId.value,
-                },
-              });
-            } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-              const message = i18n.t(androidResponse.messageCode);
-              popupErrorMsg($q, message);
+          bridge.call(
+            "updateCartonProductForDataManagement",
+            args,
+            (res: string) => {
+              const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+              if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+                popupSuccessMsg(
+                  $q,
+                  i18n.t("dataManagement.successfully_saved")
+                );
+                router.push({
+                  path: "/dataManagementMixCartonList",
+                  query: {
+                    taskId: taskId.value,
+                    cartonId: cartonId.value,
+                  },
+                });
+              } else if (
+                androidResponse.status == AndroidResponseStatus.ERROR
+              ) {
+                const message = i18n.t(androidResponse.messageCode);
+                popupErrorMsg($q, message);
+              }
             }
-          });
+          );
         }
       });
     };
