@@ -173,15 +173,11 @@ const MixCartonView = defineComponent({
         });
       });
     };
-    const reset = (param: any) => {
+    const reset = () => {
       pageViews.value.forEach((t) => {
         t.model = "";
       });
-      param.forEach((t: any) => {
-        if (t) {
-          t.resetValidation();
-        }
-      });
+      myForm.value.resetValidation();
     };
     const scan = (fieldName: string, event: Event) => {
       if (isCamera) {
@@ -245,13 +241,13 @@ const MixCartonView = defineComponent({
                 break;
             }
           });
-          bridge.call("addMixCarton", args, (arg) => {
+          bridge.call("addMixCarton", args, () => {
             if (completeMixCarton.value) {
               completeMixCarton.value = false;
               bridge.call("completeMixCarton", null, () => {
                 itemCount.value++;
                 nextTick(() => {
-                  reset(inputRef.value);
+                  reset();
                 });
               });
             } else {
@@ -262,19 +258,27 @@ const MixCartonView = defineComponent({
       });
     };
     const back = () => {
-      let allowReturn = true;
+      // Step 1: Check is include mandatory field
+      let isIncludeMandatory = false;
       pageViews.value.forEach((view) => {
         if (view.mandatory == 1) {
-          allowReturn = false;
-          return;
+          isIncludeMandatory = true;
         }
       });
-      if (!allowReturn) {
-        const message = "Don't allow to miss the input";
-        popupErrorMsg($q, message);
-      } else {
+      if (!isIncludeMandatory) {
         bridge.call("completeMixCarton", null, () => {
-          reset(inputRef.value);
+          reset();
+        });
+      } else {
+        // Step 2: Check input all required field
+        myForm.value.validate().then((success: any) => {
+          if (success) {
+            const message = i18n.t("messageCode.E93-07-0001");
+            popupErrorMsg($q, message);
+          } else {
+            const message = i18n.t("messageCode.E93-07-0002");
+            popupErrorMsg($q, message);
+          }
         });
       }
     };
@@ -286,7 +290,7 @@ const MixCartonView = defineComponent({
     const onConfirm = () => {
       dialogVisible.value = false;
       nextTick(() => {
-        reset(inputRef.value);
+        reset();
       });
       itemCount.value++;
     };
@@ -295,7 +299,7 @@ const MixCartonView = defineComponent({
       bridge.call("completeMixCarton", null, () => {
         itemCount.value++;
         nextTick(() => {
-          reset(inputRef.value);
+          reset();
         });
       });
     };

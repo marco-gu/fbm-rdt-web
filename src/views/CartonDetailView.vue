@@ -161,20 +161,29 @@ const CartonDetailView = defineComponent({
       });
       myForm.value.resetValidation();
     };
+
     const back = () => {
-      let allowReturn = true;
+      // Step 1: Check is include mandatory field
+      let isIncludeMandatory = false;
       pageViews.value.forEach((view) => {
         if (view.mandatory == 1) {
-          allowReturn = false;
-          return;
+          isIncludeMandatory = true;
         }
       });
-      if (!allowReturn) {
-        const message = "Don't allow to miss the input";
-        popupErrorMsg($q, message);
-      } else {
+      if (!isIncludeMandatory) {
         bridge.call("completeCartonDetail", null, () => {
           reset();
+        });
+      } else {
+        // Step 2: Check input all required field
+        myForm.value.validate().then((success: any) => {
+          if (success) {
+            const message = i18n.t("messageCode.E93-08-0001");
+            popupErrorMsg($q, message);
+          } else {
+            const message = i18n.t("messageCode.E93-08-0002");
+            popupErrorMsg($q, message);
+          }
         });
       }
     };

@@ -324,7 +324,6 @@ const LpSearchView = defineComponent({
               reset(inputRef.value);
             });
           }
-          // yay, models are correct
         }
       });
     };

@@ -133,9 +133,7 @@ const ProfileView = defineComponent({
     };
     onMounted(() => {
       // calculate scroll area height
-      const deviceHeight = store.state.screenModule.screenHeight
-        ? store.state.screenModule.screenHeight
-        : window.innerHeight;
+      const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       // Initialize
