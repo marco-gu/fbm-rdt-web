@@ -170,13 +170,7 @@ const CartonDetailView = defineComponent({
           isIncludeMandatory = true;
         }
       });
-<<<<<<< HEAD
       if (!isIncludeMandatory) {
-=======
-      if (!allowReturn) {
-        popupErrorMsg($q, i18n.t("carton.miss_input_message"));
-      } else {
->>>>>>> 1a38aff61c888e31b6187c03087b6e5bfe62a002
         bridge.call("completeCartonDetail", null, () => {
           reset();
         });
