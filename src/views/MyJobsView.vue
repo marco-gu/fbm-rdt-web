@@ -88,6 +88,9 @@ const MyJobsView = defineComponent({
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       getScanDataList();
     });
+    bridge.register("refreshJobs", () => {
+      getScanDataList();
+    });
     const getScanDataList = () => {
       bridge.call("fetchProfile", (res: string) => {
         const profiles = JSON.parse(res) as ProfileMaster[];
@@ -128,6 +131,7 @@ const MyJobsView = defineComponent({
         profileName: scanTask.profileName,
         pageType:
           scanTask.validationType == "PreValidation" ? "online" : "offline",
+        fromPageName: "continueJob",
       };
       bridge.call("continueJobScan", args);
     };
