@@ -23,7 +23,7 @@
     </div>
     <div class="card" @click="goContinue()">
       <div class="image">
-        <q-img no-spinner :src="continueLogo" width="80px" />
+        <q-img no-spinner :src="continueLogo" width="100px" />
       </div>
       <div class="content">
         <div class="title">{{ $t("home.continue") }}</div>
