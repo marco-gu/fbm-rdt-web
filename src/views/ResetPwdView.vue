@@ -234,16 +234,7 @@ const ResetPwdView = defineComponent({
     };
     const cancel = () => {
       if (from.value == "LoginView") {
-        bridge.call("logout", null, (data: string) => {
-          const androidResponse = JSON.parse(
-            data
-          ) as AndroidResponse<LogoutResponse>;
-          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            const message = i18n.t("messageCode.E93-06-0001");
-            router.push("/");
-            popupSuccessMsg($q, message);
-          }
-        });
+        router.push("/home");
       } else if (from.value == "SettingView") {
         router.push("/setting");
       }
