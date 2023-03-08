@@ -27,7 +27,7 @@
               >
                 <q-item class="card-item">
                   <div class="card-item-content">
-                    <q-item-section>
+                    <q-item-section class="content-section-1">
                       <div
                         style="text-align: left"
                         v-html="formatTaskId(item.taskId)"
@@ -36,14 +36,18 @@
                         {{ formatDate(new Date(item.updateDatetime)) }}
                       </div>
                     </q-item-section>
-                    <q-item-section>
+                    <q-item-section class="content-section-2 process">
                       <q-item-label>
                         {{ item.scannedCartonNumber }}/{{
                           item.allCartonNumber
-                        }}</q-item-label
-                      >
+                        }}
+                        <!-- 9999/9999 -->
+                      </q-item-label>
                     </q-item-section>
-                    <q-item-section style="display: flex; flex-direction: row">
+                    <q-item-section
+                      class="content-section-3"
+                      style="display: flex; flex-direction: row"
+                    >
                       <div class="column center" style="margin-right: 10px">
                         <q-img
                           width="20px"
@@ -455,10 +459,22 @@ export default DataManagementView;
   background-color: #ffffff;
   padding: 10px 0px 10px 15px;
 }
+
 .card-item-content {
   display: flex;
   width: 100%;
+  .content-section-1 {
+    flex: 2.1;
+  }
+  .content-section-2 {
+    text-align: center;
+    flex: 1.2;
+  }
+  .content-section-3 {
+    flex: 1.5;
+  }
 }
+
 .data-list-container {
   padding-left: 15px;
   padding-top: 8px;
