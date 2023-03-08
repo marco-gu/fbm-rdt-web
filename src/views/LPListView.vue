@@ -25,7 +25,7 @@
               @click="onClickItem(item)"
             >
               <q-item class="card-item">
-                <div>
+                <div class="card-item-content">
                   <q-item-section class="card-item-labels">
                     <div class="card-item-label-content">
                       <q-item-label>{{ item.taskId }}</q-item-label>
@@ -148,14 +148,18 @@ export default LPListView;
 .card-item {
   padding: 10px 0 10px 15px;
 }
-.card-item {
+.card-item-content {
+  width: 100%;
+  display: flex;
   text-align: left;
-  word-break: break-all;
-  .card-item-label-content {
-    width: 75%;
-  }
+  word-break: break-word;
+  justify-content: space-between;
   .card-item-date-text {
     color: $--card-item-date-text-color;
+  }
+  .card-item-labels {
+    width: 100%;
+    text-align: left;
   }
 }
 </style>
