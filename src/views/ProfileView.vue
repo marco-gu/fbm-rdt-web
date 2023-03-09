@@ -41,6 +41,21 @@
         </q-pull-to-refresh>
       </q-scroll-area>
     </div>
+    <q-dialog v-model="dialogVisible" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("profile.sync_profile") }}
+        </div>
+        <div class="dialog-container__content">
+          {{ $t("profile.sync_latest") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button confirm" @click="refresh">
+            {{ $t("common.ok") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -74,6 +89,7 @@ const ProfileView = defineComponent({
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const search = ref("");
+    const dialogVisible = ref(false);
     const refresh = (done: any) => {
       bridge.call("refreshProfile", null, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<
@@ -85,12 +101,12 @@ const ProfileView = defineComponent({
           bridge.call("setProfileLastSyncDate", {
             formatDate: formatDate(new Date()),
           });
-          done();
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
-          done();
         }
+        dialogVisible.value = false;
+        done();
       });
     };
     const sortProfileList = (profileListDisplay: any[]) => {
@@ -115,13 +131,7 @@ const ProfileView = defineComponent({
         profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
         if (result.length === 0) {
           if (isFirstSync.value) {
-            $q.dialog({
-              title: i18n.t("profile.sync_profile"),
-              message: i18n.t("profile.sync_latest"),
-              noBackdropDismiss: true,
-            }).onOk(() => {
-              refresh(() => void 0);
-            });
+            dialogVisible.value = true;
           }
         } else {
           sortProfileList(profileListDisplay.value);
@@ -162,6 +172,7 @@ const ProfileView = defineComponent({
       search,
       titleParam,
       backUrlParam,
+      dialogVisible,
     };
   },
 });

@@ -82,6 +82,21 @@
         @click="deleteProfile"
       />
     </div>
+    <q-dialog v-model="dialogVisible" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("profile.sync_profile") }}
+        </div>
+        <div class="dialog-container__content">
+          {{ $t("profile.sync_latest") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button confirm" @click="refresh">
+            {{ $t("common.ok") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -112,6 +127,7 @@ const ProfileManagementView = defineComponent({
     const isFirstSync = ref(true);
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const titleParam = i18n.t("profile.profile");
+    const dialogVisible = ref(false);
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -130,13 +146,7 @@ const ProfileManagementView = defineComponent({
         profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
         if (result.length === 0) {
           if (isFirstSync.value) {
-            $q.dialog({
-              title: i18n.t("profile.sync_profile"),
-              message: i18n.t("profile.sync_latest"),
-              noBackdropDismiss: true,
-            }).onOk(() => {
-              refresh(() => void 0);
-            });
+            dialogVisible.value = true;
           }
         } else {
           sortProfileList(profileListDisplay.value);
@@ -166,14 +176,14 @@ const ProfileManagementView = defineComponent({
             bridge.call("setProfileLastSyncDate", {
               formatDate: formatDate(new Date()),
             });
-            done();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
             const message = i18n.t(
               "messageCode." + androidResponse.messageCode
             );
             popupErrorMsg($q, message);
-            done();
           }
+          dialogVisible.value = false;
+          done();
         });
       }
     };
@@ -234,6 +244,7 @@ const ProfileManagementView = defineComponent({
       cancelEditMode,
       back,
       deleteProfile,
+      dialogVisible,
       formatDate,
       handleHold,
       isEditMode,

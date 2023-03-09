@@ -50,15 +50,14 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "save": "Save",
-    "service_unavailable": "Service Unavailable",
     "receiving": "Receiving",
     "stuffing": "Stuffing",
     "search": "Search",
     "delete": "Delete",
     "download": "Download",
     "ok": "OK",
-    "uploaded": "UPLOADED",
-    "finished": "FINISHED"
+    "uploaded": "Uploaded",
+    "finished": "Finished"
   },
   "login": {
     "login": "Log in",
@@ -128,15 +127,13 @@
     "add_image_cancel": "Cancel",
     "no_record": "No records found.",
     "damage": "Damage",
-    "other": "Other",
-    "po_so_not_exist": "PO or SO not exist"
+    "other": "Other"
   },
   "dataManagement": {
     "data_management_header": "Data Management",
     "group_title": "Data Management",
     "detail_title": "Data Management",
     "mix_title": "Data Management/Mix",
-    "no_record": "No data found.",
     "upload": "Upload",
     "group_view": "Group View",
     "detail_view": "Detail View",
@@ -171,7 +168,6 @@
     "camera": "Camera",
     "bluetooth": "Bluetooth",
     "scanner": "Scanner",
-    "download": "Download",
     "already_latest_version_label": "It is the latest version",
     "latest_version_label": "The latest version"
   },
@@ -182,7 +178,6 @@
     "carton_detail_cancel": "Cancel",
     "mix_carton_add": "Add",
     "mix_carton_complete": "Complete",
-    "miss_input_message": "Don't allow to miss the input",
     "item_count": "Item count",
     "add_mix_carton": "Do you want to add another mix carton?"
   }
