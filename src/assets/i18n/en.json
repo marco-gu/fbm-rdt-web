@@ -42,7 +42,9 @@
     "E93-07-0001": "Mix item data must be completed!",
     "E93-07-0002": "Mix item data cannot be empty!",
     "E93-08-0001": "Detail item data must be completed!",
-    "E93-08-0002": "Detail item data cannot be empty!"
+    "E93-08-0002": "Detail item data cannot be empty!",
+    "E93-09-0001": "SO/PO not exist",
+    "E93-09-0002": "CID not exist"
   },
   "common": {
     "confirm": "Confirm",

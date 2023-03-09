@@ -188,7 +188,6 @@ const LpSearchView = defineComponent({
         scanType.value == ScanType.RECEIVING
           ? receivingViews.value
           : stuffingViews.value;
-
       nextTick(() => {
         if (store.state.commonModule.scanDevice !== "camera") {
           const param = inputRef.value as any;

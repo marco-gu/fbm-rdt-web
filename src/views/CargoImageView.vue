@@ -4,38 +4,42 @@
     </header-component>
     <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <div class="card-item-select">
-          {{ $t("image.add_image_reason") }}
-          <q-select
-            hide-bottom-space
-            borderless
-            v-model="reason"
-            :options="options"
-            behavior="menu"
-          />
-        </div>
-        <div v-for="(item, i) in pageViews" :key="i">
-          <div class="card-item-input">
-            <div>
-              {{ item.displayFieldName }}
-            </div>
-            <q-input
-              class="card-item-input-field no-shadow"
-              :input-style="{ fontSize: '15px' }"
-              input-class="text-right"
-              v-model="item.value"
-              clearable
+        <q-form @submit="onSubmit" ref="myForm">
+          <div class="card-item-select">
+            {{ $t("image.add_image_reason") }}
+            <q-select
+              hide-bottom-space
               borderless
-              dense
-            >
-              <template v-slot:append>
-                <q-avatar @click="scan(item.displayFieldName)">
-                  <q-icon name="qr_code_scanner" size="16px" />
-                </q-avatar>
-              </template>
-            </q-input>
+              v-model="reason"
+              :options="options"
+              behavior="menu"
+            />
           </div>
-        </div>
+          <div v-for="(item, i) in pageViews" :key="i">
+            <div class="card-item-input">
+              <div>
+                {{ item.displayFieldName }}
+              </div>
+              <q-input
+                class="card-item-input-field no-shadow"
+                :input-style="{ fontSize: '15px' }"
+                input-class="text-right"
+                v-model="item.value"
+                lazy-rules
+                :rules="[item.valid]"
+                clearable
+                borderless
+                dense
+              >
+                <template v-slot:append>
+                  <q-avatar @click="scan(item.displayFieldName)">
+                    <q-icon name="qr_code_scanner" size="16px" />
+                  </q-avatar>
+                </template>
+              </q-input>
+            </div>
+          </div>
+        </q-form>
       </q-scroll-area>
     </div>
     <div class="bottom-coherent-button" id="bottom-button">
@@ -54,7 +58,7 @@
         flat
         push
         :label="$t('image.add_image_save')"
-        @click="save"
+        @click="onSubmit"
       />
     </div>
   </div>
@@ -87,6 +91,48 @@ const cargoImageView = defineComponent({
     const scanType = ref("CargoImage");
     const titleParam = i18n.t("image.add_image");
     const backUrlParam = "/imageAccess";
+    const myForm = ref();
+    pageViews.value = [
+      {
+        displayFieldName: "SO",
+        value: ref(""),
+        valid: (val: string) => {
+          return new Promise((resolve) => {
+            if (!val) {
+              resolve(`Please input SO`);
+            } else {
+              resolve(true);
+            }
+          });
+        },
+      },
+      {
+        displayFieldName: "PO",
+        value: ref(""),
+        valid: (val: string) => {
+          return new Promise((resolve) => {
+            if (!val) {
+              resolve(`Please input PO`);
+            } else {
+              resolve(true);
+            }
+          });
+        },
+      },
+      {
+        displayFieldName: "CID",
+        value: ref(""),
+        valid: (val: string) => {
+          return new Promise((resolve) => {
+            if (!val) {
+              resolve(`Please input CID`);
+            } else {
+              resolve(true);
+            }
+          });
+        },
+      },
+    ];
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -105,20 +151,6 @@ const cargoImageView = defineComponent({
           bottom.style.visibility = "visible";
         }
       };
-      pageViews.value = [
-        {
-          displayFieldName: "SO",
-          value: ref(""),
-        },
-        {
-          displayFieldName: "PO",
-          value: ref(""),
-        },
-        {
-          displayFieldName: "CID",
-          value: ref(""),
-        },
-      ];
     });
     watch(
       pageViews,
@@ -131,38 +163,47 @@ const cargoImageView = defineComponent({
       },
       { immediate: true, deep: true }
     );
-    const save = () => {
-      let cartonID = "";
-      const param = {
-        so: "",
-        po: "",
-      };
-      pageViews.value.forEach((t: any) => {
-        switch (t.displayFieldName) {
-          case "PO":
-            param.po = t.value;
-            break;
-          case "SO":
-            param.so = t.value;
-            break;
-          case "CID":
-            cartonID = t.value;
-            break;
-        }
-      });
-      bridge.call("checkSoAndPoExist", param, (res: string) => {
-        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-        if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          popupErrorMsg($q, i18n.t("image.po_so_not_exist"));
-        } else {
-          const param2 = {
-            cartonID: cartonID,
-            taskID: androidResponse.data.taskId,
+    const onSubmit = () => {
+      myForm.value.validate().then((success: any) => {
+        if (success) {
+          let cartonID = "";
+          const param = {
+            so: "",
+            po: "",
+            cid: "",
           };
-          bridge.call("createCargoImageTask", param2);
-          setTimeout(() => {
-            router.push("/imageAccess");
-          }, 500);
+          pageViews.value.forEach((t: any) => {
+            switch (t.displayFieldName) {
+              case "PO":
+                param.po = t.value;
+                break;
+              case "SO":
+                param.so = t.value;
+                break;
+              case "CID":
+                param.cid = t.value;
+                cartonID = t.value;
+                break;
+            }
+          });
+          bridge.call("checkImageInputCondition", param, (res: string) => {
+            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+            if (androidResponse.status == AndroidResponseStatus.ERROR) {
+              const message = i18n.t(
+                "messageCode." + androidResponse.messageCode
+              );
+              popupErrorMsg($q, message);
+            } else {
+              const param2 = {
+                cartonID: cartonID,
+                taskID: androidResponse.data.taskId,
+              };
+              bridge.call("createCargoImageTask", param2);
+              setTimeout(() => {
+                router.push("/imageAccess");
+              }, 500);
+            }
+          });
         }
       });
     };
@@ -189,11 +230,12 @@ const cargoImageView = defineComponent({
     return {
       pageViews,
       reason,
-      save,
+      onSubmit,
       scan,
       options,
       titleParam,
       backUrlParam,
+      myForm,
     };
   },
 });

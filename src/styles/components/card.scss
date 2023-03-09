@@ -19,6 +19,7 @@
     // text-align: left;
     padding: $--card-input-padding;
     .card-item-input-field {
+        width: 85%;
         height: $--card-input-field-height;
         padding: $--card-input-field-padding;
         &.no-shadow {
