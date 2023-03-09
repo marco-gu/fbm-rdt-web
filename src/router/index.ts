@@ -25,6 +25,7 @@ import MyJobsView from "../views/MyJobsView.vue";
 import ImageAccessView from "../views/ImageAccessView.vue";
 import CargoImageView from "../views/CargoImageView.vue";
 import SoftwareUpdateView from "../views/SoftwareUpdateView.vue";
+import NativeBridgeView from "../views/NativeBridgeView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -156,6 +157,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/software-update",
     name: "SoftwareUpdateView",
     component: SoftwareUpdateView,
+  },
+  {
+    path: "/nativeBridge",
+    name: "NativeBridgeView",
+    component: NativeBridgeView,
   },
 ];
 

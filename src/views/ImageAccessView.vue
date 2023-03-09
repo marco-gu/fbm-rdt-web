@@ -57,7 +57,7 @@
 import { defineComponent, onMounted } from "@vue/runtime-core";
 import bridge from "dsbridge";
 import { ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ImageModel } from "../models/image";
 import { useI18n } from "vue-i18n";
 import HeaderComponent from "@/components/HeaderComponent.vue";
@@ -66,18 +66,24 @@ const ImageAccessView = defineComponent({
     HeaderComponent,
   },
   setup() {
+    const route = useRoute();
     const imagesDisplay = ref([] as ImageModel[]);
     const imageResponse = ref([] as ImageModel[]);
     const router = useRouter();
     const i18n = useI18n();
     const titleParam = i18n.t("image.access_image_header");
     const search = ref();
-    bridge.register("refreshCargoImages", () => {
-      bridge.call("retrieveCargoImages", null, (data: string) => {
-        imageResponse.value = JSON.parse(data) as ImageModel[];
-        imagesDisplay.value = imageResponse.value;
-      });
-    });
+    const param = route.query.data as any;
+    if (param) {
+      imageResponse.value = JSON.parse(param) as ImageModel[];
+      imagesDisplay.value = imageResponse.value;
+    }
+    // bridge.register("refreshCargoImages", () => {
+    //   bridge.call("retrieveCargoImages", null, (data: string) => {
+    //     imageResponse.value = JSON.parse(data) as ImageModel[];
+    //     imagesDisplay.value = imageResponse.value;
+    //   });
+    // });
     onMounted(() => {
       // calculate scroll area
       const scrollArea = document.getElementById("scroll-area") as any;
@@ -103,6 +109,7 @@ const ImageAccessView = defineComponent({
         taskID: item.taskID,
       };
       bridge.call("enterCargoImage", args);
+      router.push("/nativeBridge");
     };
     const onAdd = () => {
       router.push("/cargoImage");
