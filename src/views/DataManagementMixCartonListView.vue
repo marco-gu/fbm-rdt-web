@@ -62,7 +62,7 @@ const DataManagementMixCartonListView = defineComponent({
     });
     const getMixCartonList = () => {
       var scanType = "";
-      if (taskId.value?.indexOf("Receiving") != -1) {
+      if (taskId.value != null && taskId.value.indexOf("Receiving") != -1) {
         scanType = "Receiving";
       } else {
         scanType = "Stuffing";

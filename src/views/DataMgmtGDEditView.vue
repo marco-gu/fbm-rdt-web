@@ -199,8 +199,12 @@ const DataManagementDetailView = defineComponent({
           bottom.style.visibility = "visible";
         }
       };
-      scanType.value =
-        taskId.value?.indexOf("Receiving") !== -1 ? "Receiving" : "Stuffing";
+
+      if (taskId.value != null) {
+        scanType.value =
+          taskId.value.indexOf("Receiving") !== -1 ? "Receiving" : "Stuffing";
+      }
+
       if (typeof taskId.value === "string") {
         fetchTaskByTaskId(taskId.value);
         getCartonByTaskId(taskId.value);

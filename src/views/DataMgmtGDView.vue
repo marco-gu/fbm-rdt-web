@@ -171,7 +171,9 @@ const DataMgmtView = defineComponent({
     };
 
     const cartonfilterList = computed(() =>
-      cartonListDisplay.value.filter((item) => item.scanStatus == 1)
+      cartonListDisplay.value.filter((item) => {
+        item.scanStatus == 1;
+      })
     );
 
     onMounted(() => {

@@ -95,15 +95,16 @@ const LPListView = defineComponent({
     const getTaskList = () => {
       bridge.call("fetchProfile", (res: string) => {
         const profiles = JSON.parse(res) as ProfileMaster[];
-        var profileNames = profiles.map((element) => {
+        const profileNames = profiles.map((element) => {
           return element.profileName;
         });
 
         bridge.call("fetchTaskForDataManagement", null, (res: string) => {
           result = JSON.parse(res) as ScanDataManagement[];
-          result = result.filter((item) =>
-            profileNames?.includes(item.profileName)
-          );
+          result = result.filter((item) => {
+            profileNames.includes(item.profileName);
+          });
+
           taskListDisplay.value = result;
           sortScanDataList(taskListDisplay.value);
         });
