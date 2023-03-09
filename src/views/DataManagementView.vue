@@ -32,7 +32,11 @@
                         style="text-align: left"
                         v-html="formatTaskId(item.taskId)"
                       ></div>
-                      <div style="text-align: left; white-space: nowrap">
+                      <div style="height: 8px"></div>
+                      <div
+                        class="cardTime"
+                        style="text-align: left; white-space: nowrap"
+                      >
                         {{ formatDate(new Date(item.updateDatetime)) }}
                       </div>
                     </q-item-section>
@@ -101,7 +105,7 @@
                   />
                 </div>
                 <div class="row edit-data-list-container" style="width: 89%">
-                  <div style="width: 42%">
+                  <q-item-section class="content-section-1">
                     <div
                       class="cardTask"
                       v-html="formatTaskId(item.taskId)"
@@ -110,14 +114,17 @@
                     <div class="cardTime">
                       {{ formatDate(new Date(item.updateDatetime)) }}
                     </div>
-                  </div>
-                  <div class="center process">
+                  </q-item-section>
+                  <q-item-section class="content-section-2 process">
                     <div>
                       {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
                       <!-- 9999/9999 -->
                     </div>
-                  </div>
-                  <div class="center" style="text-align: center; width: 32%">
+                  </q-item-section>
+                  <q-item-section
+                    class="content-section-3"
+                    style="display: flex; flex-direction: row"
+                  >
                     <div class="column center">
                       <q-img
                         width="20px"
@@ -149,7 +156,7 @@
                         {{ $t("common.uploaded") }}
                       </div>
                     </div>
-                  </div>
+                  </q-item-section>
                 </div>
               </div>
             </div>
@@ -475,23 +482,12 @@ export default DataManagementView;
   }
 }
 
-.data-list-container {
-  padding-left: 15px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  background: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0px 4px 12px 2px rgba(11, 69, 95, 0.08);
-  text-align: left;
-  min-height: 99px;
-  &:first-of-type {
-    margin-top: 5px;
-  }
-}
 .mb-15 {
   margin-bottom: 20px;
 }
+
 .edit-data-list-container {
+  display: flex;
   margin-left: 15px;
   padding-left: 15px;
   padding-right: 15px;
@@ -506,6 +502,7 @@ export default DataManagementView;
     margin-top: 5px;
   }
 }
+
 .no-record {
   text-align: center;
   width: 100%;
@@ -531,7 +528,7 @@ export default DataManagementView;
 }
 
 .process {
-  width: 26%;
+  text-align: center;
   font-size: 15px;
   font-family: Maersk Text-Bold, Maersk Text;
   font-weight: bold;
