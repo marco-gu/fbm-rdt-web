@@ -69,12 +69,15 @@ import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { ProfileMaster } from "../models/profile";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { useI18n } from "vue-i18n";
+import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
+import { useQuasar } from "quasar";
 const MyJobsView = defineComponent({
   components: {
     CircularProgressComponent,
     HeaderComponent,
   },
   setup() {
+    const $q = useQuasar();
     const search = ref("");
     const i18n = useI18n();
     let result: ScanDataManagement[] = [];
@@ -92,7 +95,9 @@ const MyJobsView = defineComponent({
       getScanDataList();
     });
     const getScanDataList = () => {
+      showLoading($q);
       bridge.call("fetchProfile", (res: string) => {
+        closeLoading($q);
         const profiles = JSON.parse(res) as ProfileMaster[];
         var profileNames = profiles.map((element) => {
           return element.profileName;
