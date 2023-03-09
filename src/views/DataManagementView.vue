@@ -21,7 +21,7 @@
           <div v-if="isEditMode == false">
             <div v-for="(item, index) in scanDataListDisplay" :key="index">
               <div
-                v-touch-hold:1800="handleHold"
+                v-touch-hold:900="handleHold"
                 clickable
                 @click="onClickScanTask(item)"
               >
@@ -272,14 +272,14 @@ const DataManagementView = defineComponent({
     const getScanDataList = () => {
       bridge.call("fetchProfile", (res: string) => {
         const profiles = JSON.parse(res) as ProfileMaster[];
-        const profileNames = profiles.map((element) => {
+        var profileNames = profiles.map((element) => {
           return element.profileName;
         });
         bridge.call("fetchTaskForDataManagement", null, (res: string) => {
           result = JSON.parse(res) as ScanDataManagement[];
-          result = result.filter((item) => {
-            profileNames.includes(item.profileName);
-          });
+          result = result.filter((item) =>
+            profileNames.includes(item.profileName)
+          );
           scanDataListDisplay.value = result;
           sortScanDataList(scanDataListDisplay.value);
         });

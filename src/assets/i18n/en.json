@@ -57,8 +57,8 @@
     "delete": "Delete",
     "download": "Download",
     "ok": "OK",
-    "uploaded": "UPLOADED",
-    "finished": "FINISHED"
+    "uploaded": "Uploaded",
+    "finished": "Finished"
   },
   "login": {
     "login": "Log in",
