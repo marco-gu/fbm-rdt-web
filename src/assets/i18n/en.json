@@ -183,6 +183,7 @@
     "mix_carton_add": "Add",
     "mix_carton_complete": "Complete",
     "miss_input_message": "Don't allow to miss the input",
-    "item_count": "Item count"
+    "item_count": "Item count",
+    "add_mix_carton": "Do you want to add another mix carton?"
   }
 }

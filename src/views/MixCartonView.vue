@@ -67,16 +67,24 @@
         @click="complete"
       />
     </div>
-    <DialogComponent
-      :dialogVisible="dialogVisible"
-      @confirm="onConfirm"
-      @close="onClose"
-    >
-    </DialogComponent>
+    <q-dialog v-model="dialogVisible" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__content">
+          {{ $t("carton.add_mix_carton") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button cancel" @click="onClose">
+            {{ $t("carton.mix_carton_complete") }}
+          </button>
+          <button class="dialog-button confirm" @click="onConfirm">
+            {{ $t("carton.mix_carton_add") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
-import DialogComponent from "@/components/DialogComponent.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { CartonDetailAttribute } from "@/models/profile";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
@@ -93,7 +101,6 @@ import { defineComponent, nextTick, ref, onBeforeMount, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 const MixCartonView = defineComponent({
   components: {
-    DialogComponent,
     HeaderComponent,
   },
   setup() {

@@ -183,6 +183,7 @@
     "mix_carton_add": "添加",
     "mix_carton_complete": "完成",
     "miss_input_message": "不允许跳过输入",
-    "item_count": "箱子数量"
+    "item_count": "箱子数量",
+    "add_mix_carton": "你想再添加另一个箱子信息吗?"
   }
 }

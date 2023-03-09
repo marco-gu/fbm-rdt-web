@@ -78,7 +78,7 @@
         no-caps
         flat
         push
-        @click="onSubmit"
+        @click="showUpdateDialog = true"
         :label="$t('common.save')"
       />
       <q-separator vertical inset color="white" />
