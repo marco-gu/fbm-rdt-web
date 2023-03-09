@@ -50,7 +50,6 @@
     "confirm": "确认",
     "cancel": "取消",
     "save": "保存",
-    "service_unavailable": "遇到了些问题，请重试",
     "receiving": "收货",
     "stuffing": "出货",
     "search": "搜索",
@@ -128,15 +127,13 @@
     "add_image_cancel": "取消",
     "no_record": "找不到记录",
     "damage": "损坏",
-    "other": "其他",
-    "po_so_not_exist": "PO/SO 不存在"
+    "other": "其他"
   },
   "dataManagement": {
     "data_management_header": "货物管理",
     "group_title": "数据管理/组",
     "detail_title": "数据管理/详情",
     "mix_title": "数据管理/Mix",
-    "no_record": "无数据.",
     "upload": "上传",
     "group_view": "组视图",
     "detail_view": "详情视图",
@@ -171,7 +168,6 @@
     "camera": "摄像头",
     "bluetooth": "蓝牙外接扫描",
     "scanner": "扫描器",
-    "download": "下载",
     "already_latest_version_label": "已经是最新的版本",
     "latest_version_label": "最新版本"
   },
@@ -182,7 +178,6 @@
     "carton_detail_cancel": "取消",
     "mix_carton_add": "添加",
     "mix_carton_complete": "完成",
-    "miss_input_message": "不允许跳过输入",
     "item_count": "箱子数量",
     "add_mix_carton": "你想再添加另一个箱子信息吗?"
   }
