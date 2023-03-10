@@ -44,7 +44,7 @@
               v-if="profileListDisplay.length === 0 && !isFirstSync.value"
             >
               <div class="no-data">
-                {{ $t("profile.no_profile") }}
+                {{ $t("common.no_record") }}
               </div>
             </template>
             <template v-else>

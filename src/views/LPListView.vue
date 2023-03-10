@@ -46,7 +46,7 @@
             </div>
           </template>
           <template v-else>
-            <div class="no-record">{{ $t("continue.no_record") }}</div>
+            <div class="no-record">{{ $t("common.no_record") }}</div>
           </template>
         </q-pull-to-refresh>
       </q-scroll-area>

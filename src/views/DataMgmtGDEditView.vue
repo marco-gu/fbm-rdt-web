@@ -425,7 +425,7 @@ const DataManagementDetailView = defineComponent({
                   back();
                   popupSuccessMsg(
                     $q,
-                    i18n.t("dataManagement.successfully_updated")
+                    i18n.t("dataManagement.successfully_saved")
                   );
                 }
               }
@@ -452,7 +452,7 @@ const DataManagementDetailView = defineComponent({
                   back();
                   popupSuccessMsg(
                     $q,
-                    i18n.t("dataManagement.successfully_updated")
+                    i18n.t("dataManagement.successfully_saved")
                   );
                 } else if (
                   androidResponse.status == AndroidResponseStatus.ERROR

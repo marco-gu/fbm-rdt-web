@@ -55,7 +55,9 @@
     "search": "搜索",
     "delete": "删除",
     "download": "下载",
+    "upload": "上传",
     "ok": "确认",
+    "no_record": "找不到记录!",
     "uploaded": "已上传",
     "finished": "已扫完"
   },
@@ -94,10 +96,9 @@
   },
   "profile": {
     "profile": "用户Profile",
-    "sync_complete": "同步完成",
+    "sync_complete": "同步完成!",
     "sync_profile": "同步Profile",
     "sync_latest": "请同步最新的profile",
-    "no_profile": "当前用户无profile配置",
     "profile_text": "Profile"
   },
   "lp": {
@@ -115,8 +116,7 @@
   },
   "continue": {
     "job_list": "任务进度",
-    "instruction": "请选择一条任务并继续",
-    "no_record": "没找到任何任务进度"
+    "instruction": "请选择一条任务并继续"
   },
   "image": {
     "access_image_header": "货物图片",
@@ -125,7 +125,6 @@
     "add_image_reason": "原因",
     "add_image_save": "保存",
     "add_image_cancel": "取消",
-    "no_record": "找不到记录",
     "damage": "损坏",
     "other": "其他"
   },
@@ -134,22 +133,19 @@
     "group_title": "数据管理/组",
     "detail_title": "数据管理/详情",
     "mix_title": "数据管理/Mix",
-    "upload": "上传",
     "group_view": "组视图",
     "detail_view": "详情视图",
     "mix": "Mix",
     "count": "数量",
     "delete_dialog_message": "确定要删除吗?",
     "update_dialog_message": "确定要更新吗?",
-    "successfully_saved": "成功保存",
-    "successfully_deleted": "成功删除",
-    "successfully_uploaded": "成功上传",
-    "successfully_updated": "更新成功",
-    "no_record_selected": "没有选择数据",
-    "confirm_upload": "确认上传",
-    "upload_carton_matched": "CID全部匹配",
-    "upload_carton_partially": "CID部分匹配",
-    "upload_carton_exceed": "扫描的货物数量超出"
+    "successfully_saved": "成功保存!",
+    "successfully_deleted": "成功删除!",
+    "successfully_uploaded": "成功上传!",
+    "no_record_selected": "没有选择数据!",
+    "upload_dialog_message": "确定要上传吗?",
+    "upload_carton_matched": "CID全部匹配!",
+    "upload_carton_partially": "CID部分匹配!"
   },
   "setting": {
     "setting_header": "设置",
