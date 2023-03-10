@@ -275,7 +275,10 @@ const DataManagementView = defineComponent({
         var profileNames = profiles.map((element) => {
           return element.profileName;
         });
-        bridge.call("fetchTaskForDataManagement", null, (res: string) => {
+        const args = {
+          filterPrevalidation: false,
+        };
+        bridge.call("fetchTaskForDataManagement", args, (res: string) => {
           result = JSON.parse(res) as ScanDataManagement[];
           result = result.filter((item) =>
             profileNames.includes(item.profileName)
