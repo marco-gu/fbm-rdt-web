@@ -2,7 +2,7 @@
   <div class="wrapper">
     <header-component
       :titleParam="titleParam"
-      :backFunctionParam="back"
+      :backFunctionParam="closeMixCarton"
       :homeVisibleParam="false"
     >
     </header-component>
@@ -86,19 +86,23 @@
 </template>
 <script lang="ts">
 import HeaderComponent from "@/components/HeaderComponent.vue";
-import { CartonDetailAttribute } from "@/models/profile";
+import {
+  ProfileDisplayAttribute,
+  ProfileMixCartonLevel,
+} from "@/models/profile";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
 import {
   composeViewElement,
-  ProfileElementLevel,
   ViewDisplayAttribute,
   toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
+import { softKeyPopUp } from "@/utils/screen.util";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, nextTick, ref, onBeforeMount, onMounted } from "vue";
+import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
 const MixCartonView = defineComponent({
   components: {
     HeaderComponent,
@@ -106,79 +110,72 @@ const MixCartonView = defineComponent({
   setup() {
     const i18n = useI18n();
     const pageViews = ref([] as ViewDisplayAttribute[]);
-    const cartonID = ref("");
+    const cartonID = ref("99999999999999999999");
     const itemCount = ref(0);
     const $q = useQuasar();
     const inputRef = ref(null);
     const dialogVisible = ref(false);
     const scanType = ref("");
-    let firstRender = false;
     const completeMixCarton = ref(false);
-    let mixCartonView = {} as CartonDetailAttribute;
+    const lastCartonID = ref("99999999999999999999");
     const myForm = ref();
     const titleParam = i18n.t("carton.mix_carton_header");
+    const route = useRoute();
     let isCamera = true;
+    bridge.register("getMixCartonParam", (res: string) => {
+      const mixCartonParam = JSON.parse(res);
+      cartonID.value = mixCartonParam.cartonID;
+      scanType.value = mixCartonParam.scanType;
+      if (lastCartonID.value != cartonID.value) {
+        itemCount.value = 0;
+        lastCartonID.value = cartonID.value;
+      }
+    });
+    bridge.register("getScanResult", (res: string) => {
+      const param = inputRef.value as any;
+      let scanFieldName = "";
+      pageViews.value.forEach((pageView: any) => {
+        const key = "Default_" + pageView.fieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          pageView.model = res.substring(res.lastIndexOf("_") + 1);
+          scanFieldName = pageView.fieldName;
+        }
+      });
+      param.forEach((t: any, i: number) => {
+        if (pageViews.value[i].fieldName == scanFieldName) {
+          t.validate(pageViews.value[i].model);
+        }
+      });
+    });
+    bridge.register("closeMixCarton", () => {
+      closeMixCarton();
+    });
+    onBeforeMount(() => {
+      const args = {
+        profileName: route.params.id,
+      };
+      bridge.call("getMixCartonProfile", args, (res: any) => {
+        const mixProfiles = JSON.parse(res) as ProfileDisplayAttribute[];
+        mixProfiles.forEach((item) => {
+          const element = composeViewElement(item);
+          pageViews.value.push(element);
+        });
+      });
+      bridge.call("getScanDevice", (res: string) => {
+        isCamera = res === "camera";
+      });
+    });
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       // hide bottom button if soft key up
-      window.onresize = () => {
-        const resizeHeight = window.innerHeight;
-        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
-        const bottom = document.getElementById("bottom-button") as any;
-        if (deviceHeight - window.innerHeight > 0) {
-          bottom.style.visibility = "hidden";
-        } else {
-          bottom.style.visibility = "visible";
-        }
-      };
-    });
-    onBeforeMount(() => {
-      bridge.call("getScanDevice", (res: string) => {
-        isCamera = res === "camera";
-      });
-    });
-    bridge.register("closeMixCarton", () => {
-      back();
-    });
-    bridge.register("getMixCartonProfile", (res: string) => {
-      mixCartonView = JSON.parse(res);
-      if (!firstRender) {
-        firstRender = true;
-        mixCartonView.profileDetails.forEach((item) => {
-          if (item.level == ProfileElementLevel.CARTON_UPC) {
-            const element = composeViewElement(item);
-            pageViews.value.push(element);
-          }
-        });
-      }
-      if (cartonID.value && cartonID.value == mixCartonView.cartonID) {
-        itemCount.value++;
-      } else {
-        cartonID.value = mixCartonView.cartonID;
-        itemCount.value = 0;
-      }
-      scanType.value = mixCartonView.scanType;
+      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
     });
     const complete = () => {
-      const param = inputRef.value as any;
-      let invalid = false;
-      param.forEach((t: any, i: number) => {
-        t.validate(t.modelValue).then((resovle: any) => {
-          if (i < param.length - 1) {
-            if (resovle == false && invalid == false) {
-              invalid = true;
-            }
-          } else {
-            if (resovle != false && invalid == false) {
-              completeMixCarton.value = true;
-              onSubmit();
-            }
-          }
-        });
-      });
+      completeMixCarton.value = true;
+      onSubmit();
     };
     const reset = () => {
       pageViews.value.forEach((t) => {
@@ -197,65 +194,34 @@ const MixCartonView = defineComponent({
         event.stopPropagation();
       }
     };
-    bridge.register("getScanResult", (res: string) => {
-      const param = inputRef.value as any;
-      let scanFieldName = "";
-      pageViews.value.forEach((pageView: any) => {
-        const key = "Default_" + pageView.fieldName;
-        if (key == res.substring(0, res.lastIndexOf("_"))) {
-          pageView.model = res.substring(res.lastIndexOf("_") + 1);
-          scanFieldName = pageView.fieldName;
+    const composeApiParam = (apiParams: any, source: any[]) => {
+      const profileMixCartonLevel = new ProfileMixCartonLevel();
+      let j: keyof ProfileMixCartonLevel;
+      for (j in profileMixCartonLevel) {
+        apiParams[j] = "";
+      }
+      source.forEach((view: ViewDisplayAttribute) => {
+        for (j in profileMixCartonLevel) {
+          if (j == view.fieldName) {
+            apiParams[j] = view.model;
+          }
         }
       });
-      param.forEach((t: any, i: number) => {
-        if (pageViews.value[i].fieldName == scanFieldName) {
-          t.validate(pageViews.value[i].model);
-        }
-      });
-    });
+    };
     const onSubmit = () => {
       myForm.value.validate().then((success: any) => {
         if (success) {
-          const args: any = {
+          const apiParams = {
             cartonID: cartonID.value,
             scanType: scanType.value,
-            UPC: "",
-            Style: "",
-            SKU: "",
-            Color: "",
-            Size: "",
-            Quantity: "",
           };
-          pageViews.value.forEach((t) => {
-            switch (t.fieldName) {
-              case "UPC":
-                args["UPC"] = t.model;
-                break;
-              case "Style":
-                args["Style"] = t.model;
-                break;
-              case "SKU":
-                args["SKU"] = t.model;
-                break;
-              case "Color":
-                args["Color"] = t.model;
-                break;
-              case "Size":
-                args["Size"] = t.model;
-                break;
-              case "Quantity":
-                args["Quantity"] = t.model;
-                break;
-            }
-          });
-          bridge.call("addMixCarton", args, () => {
+          composeApiParam(apiParams, pageViews.value);
+          bridge.call("addMixCarton", apiParams, () => {
             if (completeMixCarton.value) {
               completeMixCarton.value = false;
               bridge.call("completeMixCarton", null, () => {
                 itemCount.value++;
-                nextTick(() => {
-                  reset();
-                });
+                reset();
               });
             } else {
               dialogVisible.value = true;
@@ -264,7 +230,7 @@ const MixCartonView = defineComponent({
         }
       });
     };
-    const back = () => {
+    const closeMixCarton = () => {
       // Step 1: Check is include mandatory field
       let isIncludeMandatory = false;
       pageViews.value.forEach((view) => {
@@ -296,18 +262,14 @@ const MixCartonView = defineComponent({
     toUpperCaseElementInput(multiWatchSources);
     const onConfirm = () => {
       dialogVisible.value = false;
-      nextTick(() => {
-        reset();
-      });
       itemCount.value++;
+      reset();
     };
     const onClose = () => {
       dialogVisible.value = false;
       bridge.call("completeMixCarton", null, () => {
         itemCount.value++;
-        nextTick(() => {
-          reset();
-        });
+        reset();
       });
     };
     return {
@@ -319,7 +281,7 @@ const MixCartonView = defineComponent({
       itemCount,
       cartonID,
       inputRef,
-      back,
+      closeMixCarton,
       validPaste,
       scan,
       dialogVisible,

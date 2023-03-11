@@ -69,12 +69,12 @@ const routes: Array<RouteRecordRaw> = [
     component: ScanView,
   },
   {
-    path: "/mixCarton",
+    path: "/mixCarton/:id",
     name: "mixCarton",
     component: MixCartonView,
   },
   {
-    path: "/cartonDetail",
+    path: "/cartonDetail/:id",
     name: "cartonDetail",
     component: CartonDetailView,
   },

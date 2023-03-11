@@ -2,7 +2,7 @@
   <div class="wrapper">
     <header-component
       :titleParam="titleParam"
-      :backFunctionParam="back"
+      :backFunctionParam="closeCartonDetail"
       :homeVisibleParam="false"
     >
     </header-component>
@@ -71,21 +71,22 @@
 <script lang="ts">
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import {
-  CartonDetailAttribute,
   ProfileCartonIndividualLevel,
+  ProfileDisplayAttribute,
 } from "@/models/profile";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
 import {
   composeViewElement,
-  ProfileElementLevel,
   ViewDisplayAttribute,
   toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
+import { softKeyPopUp } from "@/utils/screen.util";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
 const CartonDetailView = defineComponent({
   components: {
     HeaderComponent,
@@ -93,54 +94,61 @@ const CartonDetailView = defineComponent({
   setup() {
     const i18n = useI18n();
     const pageViews = ref([] as ViewDisplayAttribute[]);
-    const cartonID = ref();
+    const cartonID = ref("99999999999999999999");
     const $q = useQuasar();
-    let alreadyRendered = false;
-    let cartonView = {} as CartonDetailAttribute;
     const inputRef = ref(null);
     const myForm = ref();
     let isCamera = true;
     const titleParam = i18n.t("carton.carton_detail_header");
+    const route = useRoute();
+    bridge.register("getCartonDetailParam", (res: string) => {
+      const cartonDetailParam = JSON.parse(res);
+      cartonID.value = cartonDetailParam.cartonID;
+    });
+    bridge.register("closeCartonDetail", () => {
+      closeCartonDetail();
+    });
+    bridge.register("getScanResult", (res: string) => {
+      const param = inputRef.value as any;
+      let scanFieldName = "";
+      pageViews.value.forEach((pageView: any) => {
+        const key = "Default_" + pageView.fieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          pageView.model = res.substring(res.lastIndexOf("_") + 1);
+          scanFieldName = pageView.fieldName;
+        }
+      });
+      param.forEach((t: any, i: number) => {
+        if (pageViews.value[i].fieldName == scanFieldName) {
+          t.validate(pageViews.value[i].model);
+        }
+      });
+    });
+    onBeforeMount(() => {
+      const args = {
+        profileName: route.params.id,
+      };
+      bridge.call("getCartonDetailProfile", args, (res: any) => {
+        const cartonDetailProfiles = JSON.parse(
+          res
+        ) as ProfileDisplayAttribute[];
+        cartonDetailProfiles.forEach((item) => {
+          const element = composeViewElement(item);
+          pageViews.value.push(element);
+        });
+      });
+      bridge.call("getScanDevice", (res: string) => {
+        isCamera = res === "camera";
+      });
+    });
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       // hide bottom button if soft key up
-      window.onresize = () => {
-        const resizeHeight = window.innerHeight;
-        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
-        const bottom = document.getElementById("bottom-button") as any;
-        if (deviceHeight - window.innerHeight > 0) {
-          bottom.style.visibility = "hidden";
-        } else {
-          bottom.style.visibility = "visible";
-        }
-      };
+      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
     });
-    onBeforeMount(() => {
-      bridge.call("getScanDevice", (res: string) => {
-        isCamera = res === "camera";
-      });
-    });
-    bridge.register("closeCartonDetail", () => {
-      back();
-    });
-    if (alreadyRendered == false) {
-      bridge.register("getCartonDetail", (res: string) => {
-        cartonView = JSON.parse(res);
-        if (!alreadyRendered) {
-          alreadyRendered = true;
-          cartonView.profileDetails.forEach((item) => {
-            if (item.level == ProfileElementLevel.CARTON_INDIVIDUAL) {
-              const element = composeViewElement(item);
-              pageViews.value.push(element);
-            }
-          });
-        }
-        cartonID.value = cartonView.cartonID;
-      });
-    }
     const composeApiParam = (apiParams: any, source: any[]) => {
       const profileCartonIndividualLevel = new ProfileCartonIndividualLevel();
       let j: keyof ProfileCartonIndividualLevel;
@@ -161,8 +169,7 @@ const CartonDetailView = defineComponent({
       });
       myForm.value.resetValidation();
     };
-
-    const back = () => {
+    const closeCartonDetail = () => {
       // Step 1: Check is include mandatory field
       let isIncludeMandatory = false;
       pageViews.value.forEach((view) => {
@@ -216,26 +223,10 @@ const CartonDetailView = defineComponent({
         event.stopPropagation();
       }
     };
-    bridge.register("getScanResult", (res: string) => {
-      const param = inputRef.value as any;
-      let scanFieldName = "";
-      pageViews.value.forEach((pageView: any) => {
-        const key = "Default_" + pageView.fieldName;
-        if (key == res.substring(0, res.lastIndexOf("_"))) {
-          pageView.model = res.substring(res.lastIndexOf("_") + 1);
-          scanFieldName = pageView.fieldName;
-        }
-      });
-      param.forEach((t: any, i: number) => {
-        if (pageViews.value[i].fieldName == scanFieldName) {
-          t.validate(pageViews.value[i].model);
-        }
-      });
-    });
     return {
       cartonID,
       pageViews,
-      back,
+      closeCartonDetail,
       onSubmit,
       inputRef,
       validPaste,
