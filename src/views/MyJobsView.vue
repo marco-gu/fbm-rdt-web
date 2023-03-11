@@ -55,7 +55,7 @@
           <div class="footer-message">{{ $t("continue.instruction") }}</div>
         </template>
         <template v-else>
-          <div class="no-record">{{ $t("continue.no_record") }}</div>
+          <div class="no-record">{{ $t("common.no_record") }}</div>
         </template>
       </q-scroll-area>
     </div>
@@ -102,7 +102,10 @@ const MyJobsView = defineComponent({
         const profileNames = profiles.map((element) => {
           return element.profileName;
         });
-        bridge.call("fetchTaskForDataManagement", null, (res: string) => {
+        const args = {
+          filterPrevalidation: false,
+        };
+        bridge.call("fetchTaskForDataManagement", args, (res: string) => {
           result = JSON.parse(res) as ScanDataManagement[];
           result = result.filter((item) =>
             profileNames.includes(item.profileName)

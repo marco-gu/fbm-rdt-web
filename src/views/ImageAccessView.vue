@@ -37,7 +37,7 @@
           </div>
         </template>
         <template v-else>
-          <div class="no-record">{{ $t("image.no_record") }}</div>
+          <div class="no-record">{{ $t("common.no_record") }}</div>
         </template>
       </q-scroll-area>
     </div>

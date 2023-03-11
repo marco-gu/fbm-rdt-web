@@ -20,7 +20,7 @@
         <q-pull-to-refresh @refresh="refresh">
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
             <div class="no-data">
-              {{ $t("profile.no_profile") }}
+              {{ $t("common.no_record") }}
             </div>
           </template>
           <template v-else>

@@ -38,7 +38,7 @@
     "E93-05-0005": "LP has been successfully downloaded!",
     "E93-05-0006": "No Record is found!",
     "E93-05-0007": "Offline input completed",
-    "E93-06-0001": "Logout Success!",
+    "E93-06-0001": "Logout Successfully!",
     "E93-07-0001": "Mix item data must be completed!",
     "E93-07-0002": "Mix item data cannot be empty!",
     "E93-08-0001": "Detail item data must be completed!",
@@ -55,7 +55,9 @@
     "search": "Search",
     "delete": "Delete",
     "download": "Download",
+    "upload": "Upload",
     "ok": "OK",
+    "no_record": "No record found!",
     "uploaded": "Uploaded",
     "finished": "Finished"
   },
@@ -90,14 +92,13 @@
     "setting": "Settings",
     "user_manual": "User Manual",
     "logout": "Logout",
-    "logout_promot": "Are you sure?"
+    "logout_promot": "Are you sure to logout?"
   },
   "profile": {
     "profile": "My Client Profile",
     "sync_complete": "Synchronize completed!",
     "sync_profile": "Sync Profile",
     "sync_latest": "Please synchronize the latest profiles",
-    "no_profile": "No profile found for this user.",
     "profile_text": "Profile"
   },
   "lp": {
@@ -115,8 +116,7 @@
   },
   "continue": {
     "job_list": "My Job List",
-    "instruction": "Please select one job and continue",
-    "no_record": "No jobs found."
+    "instruction": "Please select one job and continue"
   },
   "image": {
     "access_image_header": "Cargo Images",
@@ -125,7 +125,6 @@
     "add_image_reason": "Reason",
     "add_image_save": "Save",
     "add_image_cancel": "Cancel",
-    "no_record": "No records found.",
     "damage": "Damage",
     "other": "Other"
   },
@@ -134,22 +133,19 @@
     "group_title": "Data Management",
     "detail_title": "Data Management",
     "mix_title": "Data Management/Mix",
-    "upload": "Upload",
     "group_view": "Group View",
     "detail_view": "Detail View",
     "mix": "Mix",
     "count": "Count",
-    "delete_dialog_message": "Are you sure you want to delete it?",
-    "update_dialog_message": "Are you sure you want to update it?",
-    "successfully_saved": "Successfully saved",
-    "successfully_deleted": "Successfully deleted",
-    "successfully_uploaded": "Successfully uploaded",
-    "successfully_updated": "Successfully updated",
-    "no_record_selected": "No record selected",
-    "confirm_upload": "Confirm to upload",
-    "upload_carton_matched": "CIDs all matched",
-    "upload_carton_partially": "CIDs partially matched",
-    "upload_carton_exceed": "Scanned carton number exceed expected carton number"
+    "delete_dialog_message": "Are you sure to delete it?",
+    "update_dialog_message": "Are you sure to save it?",
+    "successfully_saved": "Successfully saved!",
+    "successfully_deleted": "Successfully deleted!",
+    "successfully_uploaded": "Successfully uploaded!",
+    "no_record_selected": "No record selected!",
+    "upload_dialog_message": "Are you sure to upload?",
+    "upload_carton_matched": "Scanned CartonIDs are all matched!",
+    "upload_carton_partially": "Scanned CartonIDs are partially matched!"
   },
   "setting": {
     "setting_header": "Settings",
@@ -179,6 +175,6 @@
     "mix_carton_add": "Add",
     "mix_carton_complete": "Complete",
     "item_count": "Item count",
-    "add_mix_carton": "Do you want to add another mix carton?"
+    "add_mix_carton": "Are you sure to add another Mix Item?"
   }
 }

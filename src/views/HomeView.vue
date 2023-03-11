@@ -107,7 +107,7 @@
             {{ $t("common.cancel") }}
           </button>
           <button class="dialog-button confirm" @click="logout">
-            {{ $t("common.ok") }}
+            {{ $t("home.logout") }}
           </button>
         </div>
       </div>

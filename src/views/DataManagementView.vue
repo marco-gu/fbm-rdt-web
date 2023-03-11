@@ -163,7 +163,7 @@
           </div>
         </template>
         <template v-else>
-          <div class="no-record">{{ $t("continue.no_record") }}</div>
+          <div class="no-record">{{ $t("common.no_record") }}</div>
         </template>
       </q-scroll-area>
     </div>
@@ -173,7 +173,7 @@
         class="full-width"
         flat
         push
-        :label="$t('dataManagement.upload')"
+        :label="$t('common.upload')"
         @click="handleUpload"
       />
       <q-separator vertical inset color="white" />
@@ -195,21 +195,40 @@
         @click="cancelEditMode"
       />
     </div>
-    <q-dialog v-model="dialogVisible" persistent>
+    <q-dialog v-model="showDeleteDialog" persistent>
       <div class="dialog-container">
         <div class="dialog-container__title">
           {{ $t("common.confirm") }}
           <q-icon name="close" v-close-popup />
         </div>
         <div class="dialog-container__content">
-          {{ dialogMessage }}
+          {{ $t("dataManagement.delete_dialog_message") }}
         </div>
         <div class="dialog-container__button">
           <button class="dialog-button cancel" v-close-popup>
             {{ $t("common.cancel") }}
           </button>
-          <button class="dialog-button confirm" @click="onConfirm(dialogMode)">
-            {{ $t("common.confirm") }}
+          <button class="dialog-button confirm" @click="deleteScanData">
+            {{ $t("common.delete") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
+    <q-dialog v-model="showUploadDialog" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("common.confirm") }}
+          <q-icon name="close" v-close-popup />
+        </div>
+        <div class="dialog-container__content">
+          {{ uploadDialogMessage }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button cancel" v-close-popup>
+            {{ $t("common.cancel") }}
+          </button>
+          <button class="dialog-button confirm" @click="uploadScanData">
+            {{ $t("common.upload") }}
           </button>
         </div>
       </div>
@@ -256,9 +275,9 @@ const DataManagementView = defineComponent({
     const checkedIcon = checkedUrl;
     const uncheckedIcon = uncheckedUrl;
     const search = ref("");
-    const dialogMessage = ref("");
-    const dialogVisible = ref(false);
-    const dialogMode = ref("");
+    const uploadDialogMessage = ref("");
+    const showDeleteDialog = ref(false);
+    const showUploadDialog = ref(false);
     const isEditMode = ref(false);
     const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
     let result: ScanDataManagement[] = [];
@@ -275,7 +294,10 @@ const DataManagementView = defineComponent({
         var profileNames = profiles.map((element) => {
           return element.profileName;
         });
-        bridge.call("fetchTaskForDataManagement", null, (res: string) => {
+        const args = {
+          filterPrevalidation: false,
+        };
+        bridge.call("fetchTaskForDataManagement", args, (res: string) => {
           result = JSON.parse(res) as ScanDataManagement[];
           result = result.filter((item) =>
             profileNames.includes(item.profileName)
@@ -341,45 +363,31 @@ const DataManagementView = defineComponent({
       return taskIdList;
     };
     const handleUpload = () => {
-      dialogMessage.value = "";
+      showUploadDialog.value = true;
       let taskIdList = getSelectedTaskIdList();
       if (taskIdList.length > 0) {
+        var isCartonMatched = true;
         scanDataListDisplay.value.forEach((item: any) => {
-          if (item["isSelected"]) {
-            let alertMessage = "";
-            const scannedCartonNumber = item["scannedCartonNumber"];
-            const allCartonNumber = item["allCartonNumber"];
-            if (scannedCartonNumber == allCartonNumber) {
-              alertMessage = i18n.t("dataManagement.upload_carton_matched");
-            } else if (scannedCartonNumber < allCartonNumber) {
-              alertMessage = i18n.t("dataManagement.upload_carton_partially");
-            } else {
-              alertMessage = i18n.t("dataManagement.upload_carton_exceed");
-            }
-            dialogMessage.value += `${item["taskId"]}: ${alertMessage}.\n`;
+          if (
+            item["isSelected"] &&
+            item["scannedCartonNumber"] != item["allCartonNumber"]
+          ) {
+            isCartonMatched = false;
+            return;
           }
         });
-        dialogMessage.value += `\n${i18n.t("dataManagement.confirm_upload")}?`;
-        dialogVisible.value = true;
-        dialogMode.value = "upload";
+        if (isCartonMatched) {
+          uploadDialogMessage.value = `${i18n.t(
+            "dataManagement.upload_carton_matched"
+          )} ${i18n.t("dataManagement.upload_dialog_message")}`;
+        } else {
+          uploadDialogMessage.value = `${i18n.t(
+            "dataManagement.upload_carton_partially"
+          )} ${i18n.t("dataManagement.upload_dialog_message")}`;
+        }
       } else {
         popupErrorMsg($q, i18n.t("dataManagement.no_record_selected"));
       }
-    };
-    const resetDialog = () => {
-      dialogVisible.value = false;
-      dialogMessage.value = "";
-    };
-    const onConfirm = (mode: string) => {
-      resetDialog();
-      if (mode === "upload") {
-        uploadScanData();
-      } else if (mode === "delete") {
-        deleteScanData();
-      }
-    };
-    const onClose = () => {
-      resetDialog();
     };
     const uploadScanData = () => {
       showLoading($q);
@@ -397,13 +405,12 @@ const DataManagementView = defineComponent({
         }
         isEditMode.value = false;
         getScanDataList();
+        showUploadDialog.value = false;
       });
     };
     const handleDelete = () => {
       if (getSelectedTaskIdList().length > 0) {
-        dialogMessage.value = i18n.t("dataManagement.delete_dialog_message");
-        dialogVisible.value = true;
-        dialogMode.value = "delete";
+        showDeleteDialog.value = true;
       } else {
         popupErrorMsg($q, i18n.t("dataManagement.no_record_selected"));
       }
@@ -422,6 +429,7 @@ const DataManagementView = defineComponent({
           const message = i18n.t(androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
+        showDeleteDialog.value = false;
       });
     };
     const cancelEditMode = () => {
@@ -432,30 +440,30 @@ const DataManagementView = defineComponent({
       return a;
     };
     return {
+      arrowRight,
       back,
       cancelEditMode,
-      dialogMessage,
-      dialogMode,
-      dialogVisible,
+      checkedIcon,
+      deleteScanData,
+      finished,
+      finishedDisabled,
+      formatTaskId,
+      formatDate,
       handleDelete,
       handleHold,
       handleUpload,
       isEditMode,
       onClickScanTask,
-      onClose,
-      onConfirm,
       scanDataListDisplay,
       search,
+      showDeleteDialog,
+      showUploadDialog,
+      titleParam,
       uploaded,
       uploadedDisabled,
-      finished,
-      finishedDisabled,
-      arrowRight,
-      checkedIcon,
+      uploadDialogMessage,
+      uploadScanData,
       uncheckedIcon,
-      formatTaskId,
-      formatDate,
-      titleParam,
     };
   },
 });
