@@ -9,36 +9,56 @@
           outlined
           dense
           :placeholder="$t('common.search')"
-          clearable
         >
           <template v-slot:prepend>
-            <q-icon name="search" />
+            <q-icon name="search" @click="onSearch" />
+          </template>
+          <template v-slot:append>
+            <q-icon name="close" @click="onClear" class="cursor-pointer" />
           </template>
         </q-input>
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <template v-if="imagesDisplay.length > 0">
+        <q-infinite-scroll @load="onLoad" :offset="50" ref="myInfiniteScroll">
           <div v-for="(item, index) in imagesDisplay" :key="index">
             <q-item class="card-item">
               <div class="card-item-labels" @click="onClick(item)">
-                <q-item-label
-                  >{{ $t("image.add_image_reason") }}:
-                  {{ item.reason }}</q-item-label
-                >
-                <q-item-label>ClientCode: {{ item.clientCode }}</q-item-label>
-                <q-item-label>SO: {{ item.so }}</q-item-label>
-                <q-item-label>PO: {{ item.po }}</q-item-label>
-                <q-item-label>CID: {{ item.cid }}</q-item-label>
+                <div style="display: flex; flex: 1; flex-direction: column">
+                  <div>
+                    <q-item-label
+                      >{{ $t("image.add_image_reason") }}:
+                      {{ item.reason }}</q-item-label
+                    >
+                  </div>
+                  <div>
+                    <q-item-label>SO: {{ item.so }}</q-item-label>
+                  </div>
+                  <div>
+                    <q-item-label>PO: {{ item.po }}</q-item-label>
+                  </div>
+                </div>
+                <div style="display: flex; flex: 1; flex-direction: column">
+                  <div>
+                    <q-item-label>CID: {{ item.cid }}</q-item-label>
+                  </div>
+                  <div>
+                    <q-item-label
+                      >ClientCode: {{ item.clientCode }}</q-item-label
+                    >
+                  </div>
+                </div>
               </div>
               <q-item-section side>
                 <q-icon name="chevron_right" color="black" />
               </q-item-section>
             </q-item>
           </div>
-        </template>
-        <template v-else>
-          <div class="no-record">{{ $t("common.no_record") }}</div>
-        </template>
+          <template v-slot:loading>
+            <div class="row justify-center q-my-md">
+              <q-spinner-dots color="primary" size="40px" />
+            </div>
+          </template>
+        </q-infinite-scroll>
       </q-scroll-area>
     </div>
     <div class="bottom-button" id="bottom-button">
@@ -54,46 +74,47 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted } from "@vue/runtime-core";
+import { defineComponent, onBeforeMount, onMounted } from "@vue/runtime-core";
 import bridge from "dsbridge";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ImageModel } from "../models/image";
 import { useI18n } from "vue-i18n";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
 const ImageAccessView = defineComponent({
   components: {
     HeaderComponent,
   },
   setup() {
     const route = useRoute();
-    const imagesDisplay = ref([] as ImageModel[]);
-    const imageResponse = ref([] as ImageModel[]);
     const router = useRouter();
+    const imagesDisplay = ref([] as ImageModel[]);
     const i18n = useI18n();
     const titleParam = i18n.t("image.access_image_header");
     const search = ref();
     const param = route.query.data as any;
+    const imagesSearchResult = ref([] as ImageModel[]);
+    const imagesInitResult = ref([] as ImageModel[]);
+    const myInfiniteScroll = ref();
     if (param) {
-      imageResponse.value = JSON.parse(param) as ImageModel[];
-      imagesDisplay.value = imageResponse.value;
+      imagesDisplay.value = JSON.parse(param) as ImageModel[];
     }
-    // bridge.register("refreshCargoImages", () => {
-    //   bridge.call("retrieveCargoImages", null, (data: string) => {
-    //     imageResponse.value = JSON.parse(data) as ImageModel[];
-    //     imagesDisplay.value = imageResponse.value;
-    //   });
-    // });
+    onBeforeMount(() => {
+      const args = {
+        pageLimit: "20",
+        pageOffset: 1,
+      };
+      bridge.call("retrieveCargoImages", args, (data: any) => {
+        imagesInitResult.value = JSON.parse(data) as ImageModel[];
+        imagesDisplay.value = imagesInitResult.value;
+      });
+    });
     onMounted(() => {
       // calculate scroll area
-      const scrollArea = document.getElementById("scroll-area") as any;
-      const bottom = document.getElementById("bottom-button") as any;
-      scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
-      // retrieve
-      bridge.call("retrieveCargoImages", null, (data: any) => {
-        imageResponse.value = JSON.parse(data) as ImageModel[];
-        imagesDisplay.value = imageResponse.value;
-      });
+      calScrollAreaWithBottom("scroll-area", "bottom-button");
+      // softkey popup
+      softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
     });
     const back = () => {
       router.push({
@@ -114,28 +135,45 @@ const ImageAccessView = defineComponent({
     const onAdd = () => {
       router.push("/cargoImage");
     };
-    watch(search, () => {
-      if (search.value) {
-        const filteredResult = imageResponse.value.filter(
-          (item) =>
-            item.so.toLowerCase().indexOf(search.value.toLowerCase()) > -1 ||
-            item.po.toLowerCase().indexOf(search.value.toLowerCase()) > -1 ||
-            item.cid.toLowerCase().indexOf(search.value.toLowerCase()) > -1 ||
-            item.clientCode.toLowerCase().indexOf(search.value.toLowerCase()) >
-              -1
-        );
-        imagesDisplay.value = filteredResult;
-      } else {
-        imagesDisplay.value = imageResponse.value;
-      }
-    });
+    const onLoad = (index: any, done: any) => {
+      const args = {
+        pageLimit: "20",
+        pageOffset: index + 1,
+      };
+      bridge.call("retrieveCargoImages", args, (data: any) => {
+        const result = JSON.parse(data) as ImageModel[];
+        result.forEach((t) => {
+          imagesInitResult.value.push(t);
+        });
+        imagesDisplay.value = imagesInitResult.value;
+        done();
+      });
+    };
+    const onSearch = () => {
+      const args = {
+        condition: search.value,
+      };
+      bridge.call("searchCargoImages", args, (data) => {
+        imagesSearchResult.value = JSON.parse(data) as ImageModel[];
+        imagesDisplay.value = imagesSearchResult.value;
+        myInfiniteScroll.value.stop();
+      });
+    };
+    const onClear = () => {
+      search.value = "";
+      imagesDisplay.value = imagesInitResult.value;
+    };
     return {
+      onClear,
       back,
       onClick,
       imagesDisplay,
       onAdd,
-      titleParam,
       search,
+      titleParam,
+      onSearch,
+      onLoad,
+      myInfiniteScroll,
     };
   },
 });
@@ -145,9 +183,9 @@ export default ImageAccessView;
 .card-item {
   padding: 10px 0 10px 15px;
   .card-item-labels {
+    display: flex;
     width: 100%;
     text-align: left;
-    align-items: center;
   }
 }
 .show {

@@ -15,3 +15,9 @@ export function softKeyPopUp(
     }
   };
 }
+
+export function calScrollAreaWithBottom(startEL: string, endEL: string) {
+  const scrollArea = document.getElementById(startEL) as any;
+  const bottom = document.getElementById(endEL) as any;
+  scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop - 20 + "px";
+}
