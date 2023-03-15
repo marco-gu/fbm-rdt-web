@@ -72,7 +72,6 @@ import bridge from "dsbridge";
 import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import config from "../assets/config.json";
 import formatDate from "../utils/formatDate";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 export default {
@@ -114,8 +113,11 @@ export default {
           lastProfileSyncTime.value = date;
         }
       });
-
-      softwareUpdate.value = config.app_version_number;
+      bridge.call("getAppVersion", null, (res: string) => {
+        if (res) {
+          softwareUpdate.value = res;
+        }
+      });
     });
 
     const back = () => {
