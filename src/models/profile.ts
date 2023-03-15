@@ -209,3 +209,9 @@ export interface VersionInfo {
   version: string;
   detail: string;
 }
+
+export interface TaskLPList {
+  taskId: string;
+  updateDatetime: string;
+  allCartonNumber: number;
+}

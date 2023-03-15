@@ -12,38 +12,47 @@
           clearable
         >
           <template v-slot:prepend>
-            <q-icon name="search" />
+            <q-icon name="search" @click="onSearch" />
+          </template>
+          <template v-slot:append>
+            <q-icon name="close" @click="onClear" class="cursor-pointer" />
           </template>
         </q-input>
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-pull-to-refresh @refresh="refresh">
           <template v-if="taskListDisplay.length > 0">
-            <div
-              v-for="(item, index) in taskListDisplay"
-              :key="index"
-              @click="onClickItem(item)"
+            <q-infinite-scroll
+              @load="onLoad"
+              :offset="50"
+              ref="myInfiniteScroll"
             >
-              <q-item class="card-item">
-                <div class="card-item-content">
-                  <q-item-section class="card-item-labels">
-                    <div class="card-item-label-content">
-                      <q-item-label>{{ item.taskId }}</q-item-label>
-                      <q-item-label
-                        >{{ $t("lp.total") }}:
-                        {{ item.allCartonNumber }}</q-item-label
-                      >
-                      <q-item-label class="card-item-date-text">{{
-                        item.updateDatetime
-                      }}</q-item-label>
-                    </div>
+              <div
+                v-for="(item, index) in taskListDisplay"
+                :key="index"
+                @click="onClickItem(item)"
+              >
+                <q-item class="card-item">
+                  <div class="card-item-content">
+                    <q-item-section class="card-item-labels">
+                      <div class="card-item-label-content">
+                        <q-item-label>{{ item.taskId }}</q-item-label>
+                        <q-item-label
+                          >{{ $t("lp.total") }}:
+                          {{ item.allCartonNumber }}</q-item-label
+                        >
+                        <q-item-label class="card-item-date-text">{{
+                          item.updateDatetime
+                        }}</q-item-label>
+                      </div>
+                    </q-item-section>
+                  </div>
+                  <q-item-section side>
+                    <q-icon name="chevron_right" color="black" />
                   </q-item-section>
-                </div>
-                <q-item-section side>
-                  <q-icon name="chevron_right" color="black" />
-                </q-item-section>
-              </q-item>
-            </div>
+                </q-item>
+              </div>
+            </q-infinite-scroll>
           </template>
           <template v-else>
             <div class="no-record">{{ $t("common.no_record") }}</div>
@@ -55,10 +64,9 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
-import { ScanDataManagement } from "../models/profile";
-import { ProfileMaster } from "../models/profile";
+import { TaskLPList } from "../models/profile";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { useI18n } from "vue-i18n";
 const LPListView = defineComponent({
@@ -67,14 +75,78 @@ const LPListView = defineComponent({
   },
   setup() {
     const router = useRouter();
-    let result: ScanDataManagement[] = [];
-    const taskListDisplay: Ref<ScanDataManagement[]> = ref([]);
-    const search = ref("");
     const i18n = useI18n();
     const titleParam = i18n.t("lp.lp_list");
+    const search = ref("");
+    const taskListDisplay = ref([] as TaskLPList[]);
+    const taskListSearchResult = ref([] as TaskLPList[]);
+    const taskListInitResult = ref([] as TaskLPList[]);
+    const myInfiniteScroll = ref();
+    const defaultPageLimit = ref(10);
+    const defaultPageOffset = ref(0);
+    onBeforeMount(() => {
+      const args = {
+        pageLimit: defaultPageLimit.value,
+        pageOffset: defaultPageOffset.value,
+      };
+      bridge.call("fetchTaskForLPList", args, (res: string) => {
+        taskListInitResult.value = JSON.parse(res) as TaskLPList[];
+        taskListDisplay.value = taskListInitResult.value;
+        sortScanDataList(taskListDisplay.value);
+      });
+    });
+    onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+    });
     const refresh = (done: any) => {
-      getTaskList();
-      done();
+      const args = {
+        pageLimit: defaultPageLimit.value,
+        pageOffset: defaultPageOffset.value,
+      };
+      bridge.call("fetchTaskForLPList", args, (res: string) => {
+        taskListInitResult.value = JSON.parse(res) as TaskLPList[];
+        taskListDisplay.value = taskListInitResult.value;
+        sortScanDataList(taskListDisplay.value);
+        done();
+      });
+    };
+    const onLoad = (index: any, done: any) => {
+      const args = {
+        pageLimit: defaultPageLimit.value,
+        pageOffset: taskListInitResult.value.length,
+      };
+      bridge.call("fetchTaskForLPList", args, (res: string) => {
+        const result = JSON.parse(res) as TaskLPList[];
+        result.forEach((taskList) => {
+          taskListInitResult.value.push(taskList);
+        });
+        taskListDisplay.value = taskListInitResult.value;
+        sortScanDataList(taskListDisplay.value);
+        done();
+      });
+    };
+    const onSearch = () => {
+      const args = {
+        taskId: search.value,
+      };
+      bridge.call("searchTaskForLPList", args, (res: string) => {
+        taskListSearchResult.value = JSON.parse(res) as TaskLPList[];
+        taskListDisplay.value = taskListSearchResult.value;
+        sortScanDataList(taskListDisplay.value);
+        myInfiniteScroll.value.stop();
+      });
+    };
+    const onClear = () => {
+      search.value = "";
+      taskListDisplay.value = taskListInitResult.value;
+    };
+    const sortScanDataList = (taskListDisplay: any[]) => {
+      taskListDisplay.sort((a: any, b: any) => {
+        return b.updateDatetime.localeCompare(a.updateDatetime);
+      });
     };
     const onClickItem = (item: any) => {
       router.push({
@@ -92,56 +164,17 @@ const LPListView = defineComponent({
         },
       });
     };
-    const getTaskList = () => {
-      bridge.call("fetchProfile", (res: string) => {
-        const profiles = JSON.parse(res) as ProfileMaster[];
-        const profileNames = profiles.map((element) => {
-          return element.profileName;
-        });
-        const args = {
-          filterPrevalidation: true,
-        };
-        bridge.call("fetchTaskForDataManagement", args, (res: string) => {
-          result = JSON.parse(res) as ScanDataManagement[];
-          result = result.filter((item) =>
-            profileNames.includes(item.profileName)
-          );
-
-          taskListDisplay.value = result;
-          sortScanDataList(taskListDisplay.value);
-        });
-      });
-    };
-    const sortScanDataList = (scanDataListDisplay: any[]) => {
-      scanDataListDisplay.sort((a: any, b: any) => {
-        return b.updateDatetime.localeCompare(a.updateDatetime);
-      });
-    };
-    onMounted(() => {
-      // calculate scroll area height
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
-      getTaskList();
-    });
-    watch(search, () => {
-      if (search.value) {
-        const filteredResult = result.filter(
-          (item) =>
-            item.taskId.toLowerCase().indexOf(search.value.toLowerCase()) > -1
-        );
-        taskListDisplay.value = filteredResult;
-      } else {
-        taskListDisplay.value = result;
-      }
-    });
     return {
-      refresh,
-      onClickItem,
-      taskListDisplay,
-      search,
       back,
+      myInfiniteScroll,
+      refresh,
+      search,
+      taskListDisplay,
       titleParam,
+      onClear,
+      onClickItem,
+      onLoad,
+      onSearch,
     };
   },
 });
