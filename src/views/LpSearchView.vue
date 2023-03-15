@@ -60,7 +60,7 @@
                       v-if="item.scan == 1"
                       @click="scan(item.fieldName, $event)"
                     >
-                      <q-icon name="qr_code_scanner" size="16px" />
+                      <q-img no-transition :src="inputScanIcon" width="16px" />
                     </q-avatar>
                   </template>
                 </q-input>
@@ -109,6 +109,7 @@ import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { softKeyPopUp } from "../utils/screen.util";
+import inputScan from "../assets/images/input_scan.svg";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -135,6 +136,7 @@ const LpSearchView = defineComponent({
     const clientCode = ref("");
     const scanType = ref("");
     const myForm = ref();
+    const inputScanIcon = inputScan;
     // Define Page Elements
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const receivingViews = ref([] as ViewDisplayAttribute[]);
@@ -153,6 +155,7 @@ const LpSearchView = defineComponent({
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
+
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -408,6 +411,7 @@ const LpSearchView = defineComponent({
       myForm,
       onInputKeyUp,
       titleParam,
+      inputScanIcon,
       backUrlParam,
     };
   },

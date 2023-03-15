@@ -26,64 +26,64 @@
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-grey-2">
       <div class="drawer-content">
         <div>
-          <q-list>
-            <q-item class="bg-secondary">
+          <q-list class="drawer-content-menu">
+            <!-- <q-item class="bg-secondary">
               <q-img no-spinner :src="logoIcon" />
-            </q-item>
+            </q-item> -->
             <q-item clickable @click="goMyProfile()" v-ripple>
-              <q-item-section avatar>
+              <!-- <q-item-section avatar>
                 <q-img no-spinner :src="userProfileIcon" />
-              </q-item-section>
-              <q-item-section avatar>
+              </q-item-section> -->
+              <q-item-section>
                 <q-item-label>{{ $t("home.profile") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable @click="goDataManagement()" v-ripple>
-              <q-item-section avatar>
+              <!-- <q-item-section avatar>
                 <q-img no-spinner :src="dataManagementIcon" />
-              </q-item-section>
-              <q-item-section avatar>
+              </q-item-section> -->
+              <q-item-section>
                 <q-item-label>{{ $t("home.data_management") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable @click="goLPList" v-ripple>
-              <q-item-section avatar>
+              <!-- <q-item-section avatar>
                 <q-img no-spinner :src="lpListIcon" />
-              </q-item-section>
-              <q-item-section avatar>
+              </q-item-section> -->
+              <q-item-section>
                 <q-item-label>{{ $t("home.lp_list") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable @click="goImageAccess" v-ripple>
-              <q-item-section avatar>
+              <!-- <q-item-section avatar>
                 <q-img no-spinner :src="cargoImageIcon" />
-              </q-item-section>
-              <q-item-section avatar>
+              </q-item-section> -->
+              <q-item-section>
                 <q-item-label>{{ $t("home.cargo_image") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable @click="goSetting" v-ripple>
-              <q-item-section avatar>
+              <!-- <q-item-section avatar>
                 <q-img no-spinner :src="settingIcon" />
-              </q-item-section>
-              <q-item-section avatar>
+              </q-item-section> -->
+              <q-item-section>
                 <q-item-label>{{ $t("home.setting") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
-              <q-item-section avatar>
+              <!-- <q-item-section avatar>
                 <q-img no-spinner :src="userManualIcon" />
-              </q-item-section>
-              <q-item-section avatar>
+              </q-item-section> -->
+              <q-item-section>
                 <q-item-label>{{ $t("home.user_manual") }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
           <q-item clickable @click="showLogoutDialog = true" v-ripple>
-            <q-item-section avatar>
+            <!-- <q-item-section avatar>
               <q-img no-spinner :src="logoutIcon" />
-            </q-item-section>
-            <q-item-section avatar>
+            </q-item-section> -->
+            <q-item-section>
               <q-item-label>{{ $t("home.logout") }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -226,5 +226,8 @@ export default {
 }
 .q-layout {
   background: transparent;
+}
+.drawer-content-menu {
+  justify-content: center;
 }
 </style>

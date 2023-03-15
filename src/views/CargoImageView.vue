@@ -33,7 +33,7 @@
               >
                 <template v-slot:append>
                   <q-avatar @click="scan(item.displayFieldName)">
-                    <q-icon name="qr_code_scanner" size="16px" />
+                    <q-img no-transition :src="inputScanIcon" width="16px" />
                   </q-avatar>
                 </template>
               </q-input>
@@ -76,6 +76,7 @@ import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { useI18n } from "vue-i18n";
+import inputScan from "../assets/images/input_scan.svg";
 const cargoImageView = defineComponent({
   components: {
     HeaderComponent,
@@ -92,6 +93,7 @@ const cargoImageView = defineComponent({
     const titleParam = i18n.t("image.add_image");
     const backUrlParam = "/imageAccess";
     const myForm = ref();
+    const inputScanIcon = inputScan;
     pageViews.value = [
       {
         displayFieldName: "SO",
@@ -236,6 +238,7 @@ const cargoImageView = defineComponent({
       titleParam,
       backUrlParam,
       myForm,
+      inputScanIcon,
     };
   },
 });

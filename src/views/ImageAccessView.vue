@@ -3,8 +3,9 @@
     <header-component :titleParam="titleParam" :backFunctionParam="back">
     </header-component>
     <div class="page-content">
-      <div class="search">
+      <div class="search" id="search">
         <q-input
+          ref="input"
           v-model="search"
           outlined
           dense
@@ -18,9 +19,21 @@
           </template>
         </q-input>
       </div>
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <q-infinite-scroll @load="onLoad" :offset="50" ref="myInfiniteScroll">
-          <div v-for="(item, index) in imagesDisplay" :key="index">
+      <q-scroll-area
+        ref="myScrollArea"
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+      >
+        <template v-if="noRecord">
+          <div class="no-record">{{ $t("common.no_record") }}</div>
+        </template>
+        <template v-if="loading">
+          <div class="row justify-center q-my-md">
+            <q-spinner-dots color="primary" size="40px" />
+          </div>
+        </template>
+        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+          <div v-for="(item, index) in defaultDisplay" :key="index">
             <q-item class="card-item">
               <div class="card-item-labels" @click="onClick(item)">
                 <div style="display: flex; flex: 1; flex-direction: column">
@@ -76,12 +89,16 @@
 <script lang="ts">
 import { defineComponent, onBeforeMount, onMounted } from "@vue/runtime-core";
 import bridge from "dsbridge";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ImageModel } from "../models/image";
 import { useI18n } from "vue-i18n";
 import HeaderComponent from "@/components/HeaderComponent.vue";
-import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
+import {
+  calScrollAreaWithBottom,
+  softKeyPopUpWithSearch,
+} from "@/utils/screen.util";
+const virtualPageLimit = 20;
 const ImageAccessView = defineComponent({
   components: {
     HeaderComponent,
@@ -89,32 +106,109 @@ const ImageAccessView = defineComponent({
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const loading = ref(false);
+    // page default display
+    const defaultDisplay = ref([] as ImageModel[]);
     const imagesDisplay = ref([] as ImageModel[]);
+    const onSearchMode = ref(false);
+    const apiIndex = ref(0);
+    const searchIndex = ref(0);
+    const searchResult = ref([] as ImageModel[]);
+    const apiResult = ref([] as ImageModel[]);
     const i18n = useI18n();
     const titleParam = i18n.t("image.access_image_header");
     const search = ref();
     const param = route.query.data as any;
-    const imagesSearchResult = ref([] as ImageModel[]);
-    const imagesInitResult = ref([] as ImageModel[]);
     const myInfiniteScroll = ref();
+    const myScrollArea = ref();
+    const noRecord = ref(false);
+    const input = ref();
     if (param) {
       imagesDisplay.value = JSON.parse(param) as ImageModel[];
     }
     onBeforeMount(() => {
+      loading.value = true;
       const args = {
-        pageLimit: "20",
-        pageOffset: 1,
+        pageLimit: virtualPageLimit,
+        pageOffset: apiIndex.value,
       };
       bridge.call("retrieveCargoImages", args, (data: any) => {
-        imagesInitResult.value = JSON.parse(data) as ImageModel[];
-        imagesDisplay.value = imagesInitResult.value;
+        loading.value = false;
+        apiResult.value = JSON.parse(data) as ImageModel[];
+        if (apiResult.value.length == 0) {
+          noRecord.value = true;
+        } else {
+          if (apiResult.value.length > 10) {
+            defaultDisplay.value = apiResult.value.slice(0, 10);
+            // alert(
+            //   "current default page is " +
+            //     apiIndex.value +
+            //     " and current defaulte count number is" +
+            //     defaultDisplay.value.length
+            // );
+            apiIndex.value++;
+          } else {
+            defaultDisplay.value = apiResult.value;
+          }
+        }
       });
     });
+    const onLoad = (index: any, done: any) => {
+      if (onSearchMode.value) {
+        const start = searchIndex.value * 10;
+        const end = (searchIndex.value + 1) * 10;
+        setTimeout(() => {
+          for (let i = start; i < end; i++) {
+            if (searchResult.value[i]) {
+              defaultDisplay.value.push(searchResult.value[i]);
+            }
+          }
+          // alert(
+          //   "current search page is " +
+          //     searchIndex.value +
+          //     " and current search count number is" +
+          //     defaultDisplay.value.length
+          // );
+          if (defaultDisplay.value.length == (searchIndex.value + 1) * 10) {
+            searchIndex.value++;
+          } else {
+            myInfiniteScroll.value.stop();
+          }
+          done();
+        }, 200);
+      } else {
+        const start = apiIndex.value * 10;
+        const end = (apiIndex.value + 1) * 10;
+        setTimeout(() => {
+          for (let i = start; i < end; i++) {
+            if (apiResult.value[i]) {
+              defaultDisplay.value.push(apiResult.value[i]);
+            }
+          }
+          // alert(
+          //   "current default page is " +
+          //     apiIndex.value +
+          //     " and current defaulte count number is " +
+          //     defaultDisplay.value.length
+          // );
+          if (defaultDisplay.value.length == (apiIndex.value + 1) * 10) {
+            apiIndex.value++;
+          } else {
+            myInfiniteScroll.value.stop();
+          }
+          done();
+        }, 200);
+      }
+    };
     onMounted(() => {
       // calculate scroll area
       calScrollAreaWithBottom("scroll-area", "bottom-button");
       // softkey popup
-      softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
+      softKeyPopUpWithSearch(
+        window.innerHeight,
+        "scroll-area",
+        "bottom-button"
+      );
     });
     const back = () => {
       router.push({
@@ -135,33 +229,56 @@ const ImageAccessView = defineComponent({
     const onAdd = () => {
       router.push("/cargoImage");
     };
-    const onLoad = (index: any, done: any) => {
-      const args = {
-        pageLimit: "20",
-        pageOffset: index + 1,
-      };
-      bridge.call("retrieveCargoImages", args, (data: any) => {
-        const result = JSON.parse(data) as ImageModel[];
-        result.forEach((t) => {
-          imagesInitResult.value.push(t);
-        });
-        imagesDisplay.value = imagesInitResult.value;
-        done();
-      });
-    };
-    const onSearch = () => {
-      const args = {
-        condition: search.value,
-      };
-      bridge.call("searchCargoImages", args, (data) => {
-        imagesSearchResult.value = JSON.parse(data) as ImageModel[];
-        imagesDisplay.value = imagesSearchResult.value;
-        myInfiniteScroll.value.stop();
-      });
-    };
     const onClear = () => {
+      noRecord.value = false;
       search.value = "";
-      imagesDisplay.value = imagesInitResult.value;
+      onSearchMode.value = false;
+      defaultDisplay.value = apiResult.value.slice(0, 10);
+      searchIndex.value = 0;
+      apiIndex.value = 1;
+      myScrollArea.value.setScrollPosition("vertical", 0);
+      myInfiniteScroll.value.resume();
+    };
+    watch(search, () => {
+      if (search.value) {
+        if (search.value.length >= 5) {
+          input.value.blur;
+          onSearch();
+        }
+      }
+    });
+    const onSearch = () => {
+      myScrollArea.value.setScrollPosition("vertical", 0);
+      onSearchMode.value = true;
+      defaultDisplay.value = [];
+      searchResult.value = [];
+      for (let i = 0; i < apiResult.value.length; i++) {
+        if (apiResult.value[i].taskID.indexOf(search.value) >= 0) {
+          searchResult.value.push(apiResult.value[i]);
+        }
+      }
+      // alert("current search page is " + searchIndex.value);
+      if (searchResult.value.length > 0) {
+        noRecord.value = false;
+        if (searchResult.value.length > 10) {
+          // alert("10");
+          // defaultDisplay.value = searchResult.value.slice(0, 10);
+          // searchIndex.value++;
+          // myInfiniteScroll.value.resume();
+          // alert(
+          //   "current search count number is " + defaultDisplay.value.length
+          // );
+        } else {
+          // alert(searchResult.value.length);
+          defaultDisplay.value = searchResult.value;
+          // alert(
+          //   "current search count number is " + defaultDisplay.value.length
+          // );
+        }
+        input.value.foucus();
+      } else {
+        noRecord.value = true;
+      }
     };
     return {
       onClear,
@@ -174,6 +291,11 @@ const ImageAccessView = defineComponent({
       onSearch,
       onLoad,
       myInfiniteScroll,
+      noRecord,
+      input,
+      myScrollArea,
+      loading,
+      defaultDisplay,
     };
   },
 });
