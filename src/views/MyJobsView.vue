@@ -95,31 +95,13 @@ const MyJobsView = defineComponent({
       getScanDataList();
     });
     const getScanDataList = () => {
-      showLoading($q);
-      bridge.call("fetchProfile", (res: string) => {
-        closeLoading($q);
-        const profiles = JSON.parse(res) as ProfileMaster[];
-        const profileNames = profiles.map((element) => {
-          return element.profileName;
-        });
-        const args = {
-          filterPrevalidation: false,
-        };
-        bridge.call("fetchTaskForDataManagement", args, (res: string) => {
-          result = JSON.parse(res) as ScanDataManagement[];
-          result = result.filter((item) =>
-            profileNames.includes(item.profileName)
-          );
-          scanDataListDisplay.value = result;
-          sortScanDataList(scanDataListDisplay.value);
-        });
+      bridge.call("fetchTaskForDataManagement", null, (res: string) => {
+        result = JSON.parse(res) as ScanDataManagement[];
+
+        scanDataListDisplay.value = result;
       });
     };
-    const sortScanDataList = (scanDataListDisplay: any[]) => {
-      scanDataListDisplay.sort((a: any, b: any) => {
-        return b.updateDatetime.localeCompare(a.updateDatetime);
-      });
-    };
+
     watch(search, () => {
       if (search.value) {
         const filteredResult = result.filter(

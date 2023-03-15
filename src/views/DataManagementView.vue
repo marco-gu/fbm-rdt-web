@@ -12,7 +12,7 @@
           clearable
         >
           <template v-slot:prepend>
-            <q-icon name="search" />
+            <q-icon name="search" @click="serachClick" />
           </template>
         </q-input>
       </div>
@@ -281,6 +281,7 @@ const DataManagementView = defineComponent({
     const isEditMode = ref(false);
     const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
     let result: ScanDataManagement[] = [];
+    let searchResult: ScanDataManagement[] = [];
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -288,28 +289,22 @@ const DataManagementView = defineComponent({
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
       getScanDataList();
     });
-    const getScanDataList = () => {
-      bridge.call("fetchProfile", (res: string) => {
-        const profiles = JSON.parse(res) as ProfileMaster[];
-        var profileNames = profiles.map((element) => {
-          return element.profileName;
-        });
-        const args = {
-          filterPrevalidation: false,
-        };
-        bridge.call("fetchTaskForDataManagement", args, (res: string) => {
-          result = JSON.parse(res) as ScanDataManagement[];
-          result = result.filter((item) =>
-            profileNames.includes(item.profileName)
-          );
-          scanDataListDisplay.value = result;
-          sortScanDataList(scanDataListDisplay.value);
-        });
+    const serachClick = () => {
+      const args = {
+        keyWords: search.value,
+        filterPrevalidation: false,
+      };
+      showLoading($q);
+      bridge.call("searchTaskForDataManagement", args, (res: string) => {
+        closeLoading($q);
+        searchResult = JSON.parse(res) as ScanDataManagement[];
+        scanDataListDisplay.value = searchResult;
       });
     };
-    const sortScanDataList = (scanDataListDisplay: any[]) => {
-      scanDataListDisplay.sort((a: any, b: any) => {
-        return b.updateDatetime.localeCompare(a.updateDatetime);
+    const getScanDataList = () => {
+      bridge.call("fetchTaskForDataManagement", null, (res: string) => {
+        result = JSON.parse(res) as ScanDataManagement[];
+        scanDataListDisplay.value = result;
       });
     };
     const back = () => {
@@ -321,13 +316,7 @@ const DataManagementView = defineComponent({
       });
     };
     watch(search, () => {
-      if (search.value) {
-        const filteredResult = result.filter(
-          (item) =>
-            item.taskId.toLowerCase().indexOf(search.value.toLowerCase()) > -1
-        );
-        scanDataListDisplay.value = filteredResult;
-      } else {
+      if (search.value == null || search.value.length == 0) {
         scanDataListDisplay.value = result;
       }
     });
@@ -439,7 +428,9 @@ const DataManagementView = defineComponent({
       const a = taskId.split("+").join("<br/>");
       return a;
     };
+
     return {
+      serachClick,
       arrowRight,
       back,
       cancelEditMode,
