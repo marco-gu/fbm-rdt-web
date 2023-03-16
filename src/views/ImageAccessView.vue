@@ -135,7 +135,7 @@ const ImageAccessView = defineComponent({
             apiIndex.value++;
           } else {
             defaultDisplay.value = apiResult.value;
-            // myInfiniteScroll.value.stop();
+            myInfiniteScroll.value.stop();
           }
         }
       });
