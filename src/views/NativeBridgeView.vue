@@ -11,12 +11,9 @@ export default defineComponent({
     bridge.register("backHome", () => {
       router.push("/home");
     });
-    bridge.call("retrieveCargoImages", null, (data: any) => {
+    bridge.register("refreshCargoImages", () => {
       router.push({
         path: "/imageAccess",
-        query: {
-          data: data,
-        },
       });
     });
   },
