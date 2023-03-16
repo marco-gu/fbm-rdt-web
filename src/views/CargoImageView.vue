@@ -196,7 +196,7 @@ const cargoImageView = defineComponent({
             } else {
               const param2 = {
                 cartonID: cartonID,
-                taskID: androidResponse.data.taskId,
+                taskID: androidResponse.data,
               };
               bridge.call("createCargoImageTask", param2);
               setTimeout(() => {
