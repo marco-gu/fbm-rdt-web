@@ -185,12 +185,6 @@ const ImageAccessView = defineComponent({
               defaultDisplay.value.push(apiResult.value[i]);
             }
           }
-          // alert(
-          //   "current default page is " +
-          //     apiIndex.value +
-          //     " and current defaulte count number is " +
-          //     defaultDisplay.value.length
-          // );
           if (defaultDisplay.value.length == (apiIndex.value + 1) * 10) {
             apiIndex.value++;
           } else {
@@ -244,41 +238,34 @@ const ImageAccessView = defineComponent({
         if (search.value.length >= 5) {
           input.value.blur;
           onSearch();
+        } else if (search.value.length == 0) {
+          onClear();
         }
       }
     });
     const onSearch = () => {
+      const args = {
+        condition: search.value,
+      };
       myScrollArea.value.setScrollPosition("vertical", 0);
       onSearchMode.value = true;
       defaultDisplay.value = [];
       searchResult.value = [];
-      for (let i = 0; i < apiResult.value.length; i++) {
-        if (apiResult.value[i].taskID.indexOf(search.value) >= 0) {
-          searchResult.value.push(apiResult.value[i]);
-        }
-      }
-      // alert("current search page is " + searchIndex.value);
-      if (searchResult.value.length > 0) {
-        noRecord.value = false;
-        if (searchResult.value.length > 10) {
-          // alert("10");
-          // defaultDisplay.value = searchResult.value.slice(0, 10);
-          // searchIndex.value++;
-          // myInfiniteScroll.value.resume();
-          // alert(
-          //   "current search count number is " + defaultDisplay.value.length
-          // );
+      bridge.call("searchCargoImages", args, (data: any) => {
+        searchResult.value = JSON.parse(data) as ImageModel[];
+        if (searchResult.value.length == 0) {
+          noRecord.value = true;
         } else {
-          // alert(searchResult.value.length);
-          defaultDisplay.value = searchResult.value;
-          // alert(
-          //   "current search count number is " + defaultDisplay.value.length
-          // );
+          if (searchResult.value.length > 10) {
+            defaultDisplay.value = searchResult.value.slice(0, 10);
+            searchIndex.value++;
+            myInfiniteScroll.value.resume();
+          } else {
+            defaultDisplay.value = searchResult.value;
+            myInfiniteScroll.value.stop();
+          }
         }
-        input.value.foucus();
-      } else {
-        noRecord.value = true;
-      }
+      });
     };
     return {
       onClear,

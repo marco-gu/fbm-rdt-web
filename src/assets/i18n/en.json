@@ -85,7 +85,7 @@
     "offline_hint": "Offline scan without LP downloaded",
     "continue": "Continue",
     "continue_hint": "Continue unfinished jobs",
-    "profile": "My Client Profile",
+    "profile": "Client Profile",
     "data_management": "Data Management",
     "lp_list": "LP List",
     "cargo_image": "Cargo Image",
@@ -95,7 +95,7 @@
     "logout_promot": "Are you sure to logout?"
   },
   "profile": {
-    "profile": "My Client Profile",
+    "profile": "Client Profile",
     "sync_complete": "Synchronize completed!",
     "sync_profile": "Sync Profile",
     "sync_latest": "Please synchronize the latest profiles",

@@ -25,8 +25,11 @@
     </q-header>
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-grey-2">
       <div class="drawer-content">
+        <div style="margin-top: 50px">
+          <q-img no-transition :src="menuIcon" width="24px" />
+        </div>
         <div>
-          <q-list class="drawer-content-menu">
+          <q-list>
             <!-- <q-item class="bg-secondary">
               <q-img no-spinner :src="logoIcon" />
             </q-item> -->
@@ -38,6 +41,7 @@
                 <q-item-label>{{ $t("home.profile") }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-separator inset color="grey-3" />
             <q-item clickable @click="goDataManagement()" v-ripple>
               <!-- <q-item-section avatar>
                 <q-img no-spinner :src="dataManagementIcon" />
@@ -46,6 +50,7 @@
                 <q-item-label>{{ $t("home.data_management") }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-separator inset color="grey-3" />
             <q-item clickable @click="goLPList" v-ripple>
               <!-- <q-item-section avatar>
                 <q-img no-spinner :src="lpListIcon" />
@@ -54,6 +59,7 @@
                 <q-item-label>{{ $t("home.lp_list") }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-separator inset color="grey-3" />
             <q-item clickable @click="goImageAccess" v-ripple>
               <!-- <q-item-section avatar>
                 <q-img no-spinner :src="cargoImageIcon" />
@@ -62,6 +68,7 @@
                 <q-item-label>{{ $t("home.cargo_image") }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-separator inset color="grey-3" />
             <q-item clickable @click="goSetting" v-ripple>
               <!-- <q-item-section avatar>
                 <q-img no-spinner :src="settingIcon" />
@@ -70,6 +77,7 @@
                 <q-item-label>{{ $t("home.setting") }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-separator inset color="grey-3" />
             <q-item clickable v-ripple>
               <!-- <q-item-section avatar>
                 <q-img no-spinner :src="userManualIcon" />
@@ -79,14 +87,33 @@
               </q-item-section>
             </q-item>
           </q-list>
-          <q-item clickable @click="showLogoutDialog = true" v-ripple>
-            <!-- <q-item-section avatar>
+          <!-- <q-item clickable @click="showLogoutDialog = true" v-ripple>
+            <q-item-section avatar>
               <q-img no-spinner :src="logoutIcon" />
-            </q-item-section> -->
+            </q-item-section>
             <q-item-section>
               <q-item-label>{{ $t("home.logout") }}</q-item-label>
             </q-item-section>
-          </q-item>
+          </q-item> -->
+        </div>
+        <div>
+          <div>
+            <q-img no-transition :src="gearSolidIcon" width="24px" />
+          </div>
+          <div style="margin-top: 20px">
+            <q-img no-transition :src="doorOpenSolidIcon" width="24px" />
+          </div>
+        </div>
+        <div>
+          <span style="display: block; font-size: 14px"
+            >Label & Scan System</span
+          >
+          <span style="display: block; font-size: 10px; color: #757575"
+            >version Beta 1.0</span
+          >
+          <span style="display: block; font-size: 10px; color: #757575"
+            >by Maersk WDP@2023-3-10</span
+          >
         </div>
       </div>
     </q-drawer>
@@ -135,6 +162,9 @@ import logo from "../assets/images/Maersk_Logo_Neg.svg";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
+import menu from "../assets/images/bars-solid.svg";
+import gearSolid from "../assets/images/gear-solid.svg";
+import doorOpenSolid from "../assets/images/door-open-solid.svg";
 export default {
   name: "HomeView",
   components: {},
@@ -152,6 +182,9 @@ export default {
     const userManualIcon = userManual;
     const logoutIcon = logOut;
     const logoIcon = logo;
+    const menuIcon = menu;
+    const gearSolidIcon = gearSolid;
+    const doorOpenSolidIcon = doorOpenSolid;
     const showLogoutDialog = ref(false);
     onMounted(() => {
       if (route.query.leftDrawerOpen == "true") {
@@ -213,6 +246,9 @@ export default {
       goLPList,
       goImageAccess,
       showLogoutDialog,
+      menuIcon,
+      gearSolidIcon,
+      doorOpenSolidIcon,
     };
   },
 };
@@ -222,12 +258,10 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  height: 100%;
+  height: 80%;
+  font-size: 14px;
 }
 .q-layout {
   background: transparent;
-}
-.drawer-content-menu {
-  justify-content: center;
 }
 </style>
