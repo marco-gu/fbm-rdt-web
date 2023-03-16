@@ -85,7 +85,6 @@ import ForgotPwdComponent from "@/components/ForgotPwdComponent.vue";
 import UserManual from "@/components/UserManualComponent.vue";
 import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
-import config from "../assets/config.json";
 import { useI18n } from "vue-i18n";
 const LoginView = defineComponent({
   components: {
@@ -117,7 +116,11 @@ const LoginView = defineComponent({
           inputPassword.value.focus();
         }
       });
-      versionNum.value = config.app_version;
+      bridge.call("getAppInfo", null, async (res: string) => {
+        if (res) {
+          versionNum.value = res;
+        }
+      });
     });
     watch(
       username,

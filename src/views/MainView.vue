@@ -42,8 +42,7 @@ import continueJob from "../assets/images/home_continue.svg";
 import { useRouter } from "vue-router";
 import logo from "../assets/images/Maersk_Logo_RGB.svg";
 import { onMounted, ref } from "vue";
-import config from "../assets/config.json";
-
+import bridge from "dsbridge";
 export default {
   name: "MainView",
   components: {},
@@ -64,7 +63,11 @@ export default {
       router.push("/continueJobs");
     };
     onMounted(() => {
-      versionNum.value = config.app_version;
+      bridge.call("getAppInfo", null, async (res: string) => {
+        if (res) {
+          versionNum.value = res;
+        }
+      });
     });
     return {
       router,
