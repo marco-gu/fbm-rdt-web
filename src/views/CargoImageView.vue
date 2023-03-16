@@ -229,6 +229,9 @@ const cargoImageView = defineComponent({
         }
       });
     });
+    const back = () => {
+      router.push("/imageAccess");
+    };
     return {
       pageViews,
       reason,
@@ -239,6 +242,7 @@ const cargoImageView = defineComponent({
       backUrlParam,
       myForm,
       inputScanIcon,
+      back,
     };
   },
 });
