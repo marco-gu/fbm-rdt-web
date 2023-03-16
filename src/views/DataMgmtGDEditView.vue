@@ -34,7 +34,7 @@
                       v-if="item.scan == 1"
                       @click="scan(item.fieldName, $event)"
                     >
-                      <q-icon name="qr_code_scanner" size="16px" />
+                      <q-img no-transition :src="inputScanIcon" width="16px" />
                     </q-avatar>
                   </template>
                 </q-input>
@@ -151,6 +151,7 @@ import {
 } from "@/models/android.response";
 import { useStore } from "@/store";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import inputScan from "../assets/images/input_scan.svg";
 const DataManagementDetailView = defineComponent({
   components: {
     HeaderComponent,
@@ -180,6 +181,7 @@ const DataManagementDetailView = defineComponent({
       pageType.value == "Group"
         ? i18n.t("dataManagement.group_title")
         : i18n.t("dataManagement.detail_title");
+    const inputScanIcon = inputScan;
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -543,6 +545,7 @@ const DataManagementDetailView = defineComponent({
       isMix,
       myForm,
       titleParam,
+      inputScanIcon,
     };
   },
 });

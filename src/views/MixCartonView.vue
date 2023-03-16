@@ -38,7 +38,7 @@
                       v-if="item.scan == 1"
                       @click="scan(item.fieldName, $event)"
                     >
-                      <q-icon name="qr_code_scanner" size="16px" />
+                      <q-img no-transition :src="inputScanIcon" width="16px" />
                     </q-avatar>
                   </template>
                 </q-input>
@@ -97,12 +97,13 @@ import {
   toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
-import { softKeyPopUp } from "@/utils/screen.util";
+import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
+import inputScan from "../assets/images/input_scan.svg";
 const MixCartonView = defineComponent({
   components: {
     HeaderComponent,
@@ -122,6 +123,7 @@ const MixCartonView = defineComponent({
     const titleParam = i18n.t("carton.mix_carton_header");
     const route = useRoute();
     let isCamera = true;
+    const inputScanIcon = inputScan;
     bridge.register("getMixCartonParam", (res: string) => {
       const mixCartonParam = JSON.parse(res);
       cartonID.value = mixCartonParam.cartonID;
@@ -151,8 +153,12 @@ const MixCartonView = defineComponent({
       closeMixCarton();
     });
     onBeforeMount(() => {
+      const param = route.params.id as any;
+      const profileName = param.substring(0, param.indexOf("&"));
+      const scanType = param.substring(param.indexOf("&") + 1, param.length);
       const args = {
-        profileName: route.params.id,
+        profileName: profileName,
+        scanType: scanType,
       };
       bridge.call("getMixCartonProfile", args, (res: any) => {
         const mixProfiles = JSON.parse(res) as ProfileDisplayAttribute[];
@@ -167,11 +173,9 @@ const MixCartonView = defineComponent({
     });
     onMounted(() => {
       // calculate scroll area height
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      calScrollAreaWithBottom("scroll-area", "bottom-button");
       // hide bottom button if soft key up
-      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
     });
     const complete = () => {
       completeMixCarton.value = true;
@@ -287,6 +291,7 @@ const MixCartonView = defineComponent({
       dialogVisible,
       myForm,
       titleParam,
+      inputScanIcon,
     };
   },
 });
