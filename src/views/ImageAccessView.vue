@@ -118,21 +118,13 @@ const ImageAccessView = defineComponent({
     const i18n = useI18n();
     const titleParam = i18n.t("image.access_image_header");
     const search = ref();
-    const param = route.query.data as any;
     const myInfiniteScroll = ref();
     const myScrollArea = ref();
     const noRecord = ref(false);
     const input = ref();
-    if (param) {
-      imagesDisplay.value = JSON.parse(param) as ImageModel[];
-    }
     onBeforeMount(() => {
       loading.value = true;
-      const args = {
-        pageLimit: virtualPageLimit,
-        pageOffset: apiIndex.value,
-      };
-      bridge.call("retrieveCargoImages", args, (data: any) => {
+      bridge.call("retrieveCargoImages", {}, (data: any) => {
         loading.value = false;
         apiResult.value = JSON.parse(data) as ImageModel[];
         if (apiResult.value.length == 0) {
@@ -140,15 +132,10 @@ const ImageAccessView = defineComponent({
         } else {
           if (apiResult.value.length > 10) {
             defaultDisplay.value = apiResult.value.slice(0, 10);
-            // alert(
-            //   "current default page is " +
-            //     apiIndex.value +
-            //     " and current defaulte count number is" +
-            //     defaultDisplay.value.length
-            // );
             apiIndex.value++;
           } else {
             defaultDisplay.value = apiResult.value;
+            // myInfiniteScroll.value.stop();
           }
         }
       });
@@ -163,12 +150,6 @@ const ImageAccessView = defineComponent({
               defaultDisplay.value.push(searchResult.value[i]);
             }
           }
-          // alert(
-          //   "current search page is " +
-          //     searchIndex.value +
-          //     " and current search count number is" +
-          //     defaultDisplay.value.length
-          // );
           if (defaultDisplay.value.length == (searchIndex.value + 1) * 10) {
             searchIndex.value++;
           } else {
@@ -224,19 +205,28 @@ const ImageAccessView = defineComponent({
       router.push("/cargoImage");
     };
     const onClear = () => {
-      noRecord.value = false;
       search.value = "";
       onSearchMode.value = false;
-      defaultDisplay.value = apiResult.value.slice(0, 10);
+      if (apiResult.value.length > 0) {
+        noRecord.value = false;
+        if (apiResult.value.length > 10) {
+          defaultDisplay.value = apiResult.value.slice(0, 10);
+          apiIndex.value = 1;
+          myInfiniteScroll.value.resume();
+        } else {
+          defaultDisplay.value = apiResult.value;
+          myInfiniteScroll.value.stop();
+        }
+      } else {
+        noRecord.value = true;
+      }
       searchIndex.value = 0;
-      apiIndex.value = 1;
       myScrollArea.value.setScrollPosition("vertical", 0);
-      myInfiniteScroll.value.resume();
     };
     watch(search, () => {
       if (search.value) {
         if (search.value.length >= 5) {
-          input.value.blur;
+          input.value.blur();
           onSearch();
         } else if (search.value.length == 0) {
           onClear();
@@ -245,7 +235,7 @@ const ImageAccessView = defineComponent({
     });
     const onSearch = () => {
       const args = {
-        condition: search.value,
+        condition: search.value.toUpperCase(),
       };
       myScrollArea.value.setScrollPosition("vertical", 0);
       onSearchMode.value = true;
