@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <q-img :src="maerskLogo" no-spinner class="logo-image" />
+    <q-img no-transition no-spinner :src="maerskLogo" class="logo-image" />
     <q-form @submit="onSubmit">
       <div class="login-form">
         <div class="input-label">{{ $t("login.account") }}</div>

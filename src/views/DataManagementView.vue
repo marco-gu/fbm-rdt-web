@@ -54,6 +54,7 @@
                     >
                       <div class="column center" style="margin-right: 10px">
                         <q-img
+                          no-transition
                           width="20px"
                           height="20px"
                           no-spinner
@@ -70,6 +71,7 @@
                       </div>
                       <div class="column center">
                         <q-img
+                          no-transition
                           width="20px"
                           height="20px"
                           no-spinner
@@ -127,6 +129,7 @@
                   >
                     <div class="column center">
                       <q-img
+                        no-transition
                         width="20px"
                         height="20px"
                         no-spinner
@@ -142,6 +145,7 @@
                     <div style="width: 8px"></div>
                     <div class="column center">
                       <q-img
+                        no-transition
                         width="20px"
                         height="20px"
                         no-spinner

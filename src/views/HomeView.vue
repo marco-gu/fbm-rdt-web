@@ -26,16 +26,16 @@
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-grey-2">
       <div class="drawer-content">
         <div style="margin-top: 50px">
-          <q-img no-transition :src="menuIcon" width="24px" />
+          <q-img no-transition no-spinner :src="menuIcon" width="24px" />
         </div>
         <div>
           <q-list>
             <!-- <q-item class="bg-secondary">
-              <q-img no-spinner :src="logoIcon" />
+              <q-img no-transition no-spinner :src="logoIcon" />
             </q-item> -->
             <q-item clickable @click="goMyProfile()" v-ripple>
               <!-- <q-item-section avatar>
-                <q-img no-spinner :src="userProfileIcon" />
+                <q-img no-transition no-spinner :src="userProfileIcon" />
               </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.profile") }}</q-item-label>
@@ -44,7 +44,7 @@
             <q-separator inset color="grey-3" />
             <q-item clickable @click="goDataManagement()" v-ripple>
               <!-- <q-item-section avatar>
-                <q-img no-spinner :src="dataManagementIcon" />
+                <q-img no-transition no-spinner :src="dataManagementIcon" />
               </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.data_management") }}</q-item-label>
@@ -53,7 +53,7 @@
             <q-separator inset color="grey-3" />
             <q-item clickable @click="goLPList" v-ripple>
               <!-- <q-item-section avatar>
-                <q-img no-spinner :src="lpListIcon" />
+                <q-img no-transition no-spinner :src="lpListIcon" />
               </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.lp_list") }}</q-item-label>
@@ -62,7 +62,7 @@
             <q-separator inset color="grey-3" />
             <q-item clickable @click="goImageAccess" v-ripple>
               <!-- <q-item-section avatar>
-                <q-img no-spinner :src="cargoImageIcon" />
+                <q-img no-transition no-spinner :src="cargoImageIcon" />
               </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.cargo_image") }}</q-item-label>
@@ -71,7 +71,7 @@
             <q-separator inset color="grey-3" />
             <q-item clickable @click="goSetting" v-ripple>
               <!-- <q-item-section avatar>
-                <q-img no-spinner :src="settingIcon" />
+                <q-img no-transition no-spinner :src="settingIcon" />
               </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.setting") }}</q-item-label>
@@ -80,7 +80,7 @@
             <q-separator inset color="grey-3" />
             <q-item clickable v-ripple>
               <!-- <q-item-section avatar>
-                <q-img no-spinner :src="userManualIcon" />
+                <q-img no-transition no-spinner :src="userManualIcon" />
               </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.user_manual") }}</q-item-label>
@@ -89,7 +89,7 @@
           </q-list>
           <!-- <q-item clickable @click="showLogoutDialog = true" v-ripple>
             <q-item-section avatar>
-              <q-img no-spinner :src="logoutIcon" />
+              <q-img no-transition no-spinner :src="logoutIcon" />
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ $t("home.logout") }}</q-item-label>
@@ -98,10 +98,10 @@
         </div>
         <div>
           <div>
-            <q-img no-transition :src="gearSolidIcon" width="24px" />
+            <q-img no-transition no-spinner :src="gearIcon" width="24px" />
           </div>
           <div style="margin-top: 20px">
-            <q-img no-transition :src="doorOpenSolidIcon" width="24px" />
+            <q-img no-transition no-spinner :src="doorOpenIcon" width="24px" />
           </div>
         </div>
         <div>
@@ -163,8 +163,8 @@ import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
 import menu from "../assets/images/bars-solid.svg";
-import gearSolid from "../assets/images/gear-solid.svg";
-import doorOpenSolid from "../assets/images/door-open-solid.svg";
+import gear from "../assets/images/gear-solid.svg";
+import doorOpen from "../assets/images/door-open-solid.svg";
 export default {
   name: "HomeView",
   components: {},
@@ -183,8 +183,8 @@ export default {
     const logoutIcon = logOut;
     const logoIcon = logo;
     const menuIcon = menu;
-    const gearSolidIcon = gearSolid;
-    const doorOpenSolidIcon = doorOpenSolid;
+    const gearIcon = gear;
+    const doorOpenIcon = doorOpen;
     const showLogoutDialog = ref(false);
     onMounted(() => {
       if (route.query.leftDrawerOpen == "true") {
@@ -247,8 +247,8 @@ export default {
       goImageAccess,
       showLogoutDialog,
       menuIcon,
-      gearSolidIcon,
-      doorOpenSolidIcon,
+      gearIcon,
+      doorOpenIcon,
     };
   },
 };

@@ -60,7 +60,12 @@
                       v-if="item.scan == 1"
                       @click="scan(item.fieldName, $event)"
                     >
-                      <q-img no-transition :src="inputScanIcon" width="16px" />
+                      <q-img
+                        no-transition
+                        no-spinner
+                        :src="inputScanIcon"
+                        width="16px"
+                      />
                     </q-avatar>
                   </template>
                 </q-input>
