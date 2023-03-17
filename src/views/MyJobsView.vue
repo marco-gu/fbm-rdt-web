@@ -5,13 +5,14 @@
     <div class="page-content">
       <div class="search">
         <q-input
+          ref="input"
           v-model="search"
           outlined
           dense
           :placeholder="$t('common.search')"
         >
           <template v-slot:prepend>
-            <q-icon name="search" />
+            <q-icon name="search" @click="onSearch" />
           </template>
           <template v-slot:append>
             <q-icon name="close" @click="onClear" class="cursor-pointer" />
@@ -98,7 +99,7 @@ const MyJobsView = defineComponent({
   },
   setup() {
     const loading = ref(false);
-    const search = ref("");
+    const search = ref();
     const i18n = useI18n();
     const defaultDisplay = ref([] as ScanDataManagement[]);
     const onSearchMode = ref(false);
@@ -234,7 +235,7 @@ const MyJobsView = defineComponent({
       onSearchMode.value = true;
       defaultDisplay.value = [];
       searchResult.value = [];
-      bridge.call("searchCargoImages", args, (data: any) => {
+      bridge.call("searchTaskForDataManagement", args, (data: any) => {
         searchResult.value = JSON.parse(data) as ScanDataManagement[];
         if (searchResult.value.length == 0) {
           noRecord.value = true;
