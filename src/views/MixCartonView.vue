@@ -117,13 +117,14 @@ const MixCartonView = defineComponent({
     const i18n = useI18n();
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const cartonID = ref("99999999999999999999");
+    const lastCartonID = ref("99999999999999999999");
     const itemCount = ref(0);
     const $q = useQuasar();
     const inputRef = ref(null);
     const dialogVisible = ref(false);
     const scanType = ref("");
     const completeMixCarton = ref(false);
-    const lastCartonID = ref("99999999999999999999");
+    const taskID = ref("");
     const myForm = ref();
     const titleParam = i18n.t("carton.mix_carton_header");
     const route = useRoute();
@@ -133,6 +134,7 @@ const MixCartonView = defineComponent({
       const mixCartonParam = JSON.parse(res);
       cartonID.value = mixCartonParam.cartonID;
       scanType.value = mixCartonParam.scanType;
+      taskID.value = mixCartonParam.taskID;
       if (lastCartonID.value != cartonID.value) {
         itemCount.value = 0;
         lastCartonID.value = cartonID.value;
@@ -223,6 +225,7 @@ const MixCartonView = defineComponent({
           const apiParams = {
             cartonID: cartonID.value,
             scanType: scanType.value,
+            taskID: taskID.value,
           };
           composeApiParam(apiParams, pageViews.value);
           bridge.call("addMixCarton", apiParams, () => {

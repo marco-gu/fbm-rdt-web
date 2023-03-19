@@ -103,9 +103,11 @@ const CartonDetailView = defineComponent({
     const titleParam = i18n.t("carton.carton_detail_header");
     const route = useRoute();
     const inputScanIcon = inputScan;
+    const taskID = ref("");
     bridge.register("getCartonDetailParam", (res: string) => {
-      const cartonDetailParam = JSON.parse(res);
-      cartonID.value = cartonDetailParam.cartonID;
+      const param = JSON.parse(res);
+      cartonID.value = param.cartonID;
+      taskID.value = param.taskID;
     });
     bridge.register("closeCartonDetail", () => {
       closeCartonDetail();
@@ -207,6 +209,7 @@ const CartonDetailView = defineComponent({
         if (success) {
           const apiParams = {
             cartonID: cartonID.value,
+            taskID: taskID.value,
           };
           composeApiParam(apiParams, pageViews.value);
           bridge.call("addCartonDetail", apiParams, () => {
