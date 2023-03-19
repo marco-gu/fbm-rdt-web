@@ -26,12 +26,19 @@ import ImageAccessView from "../views/ImageAccessView.vue";
 import CargoImageView from "../views/CargoImageView.vue";
 import SoftwareUpdateView from "../views/SoftwareUpdateView.vue";
 import NativeBridgeView from "../views/NativeBridgeView.vue";
+import NewLoginView from "../views/NewLoginView.vue";
 
 const routes: Array<RouteRecordRaw> = [
+  // {
+  //   path: "/",
+  //   name: "login",
+  //   component: LoginView,
+  //   meta: { isLogin: true },
+  // },
   {
     path: "/",
     name: "login",
-    component: LoginView,
+    component: NewLoginView,
     meta: { isLogin: true },
   },
   {
@@ -169,49 +176,50 @@ const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
   routes,
 });
+
 // fix defect #6
-let fromPath = "/";
-router.beforeEach((to, from, next) => {
-  if (to.path == "mixcarton") {
-    next("/mixCarton");
-  }
-  if (to.path == "cartonDetail") {
-    next("/cartonDetail");
-  }
-  fromPath = from.path;
-  if (from.path == "/" && to.path == "/") {
-    bridge.call("fetchUserToken", null, (res: string) => {
-      if (res) {
-        next("home");
-      } else {
-        next();
-      }
-    });
-  }
-  if (from.path == "/home" && to.path == "/") {
-    bridge.call("fetchUserToken", null, (res: string) => {
-      if (res) {
-        return false;
-      } else {
-        next();
-      }
-    });
-  } else if (from.path == "/resetPwd" && to.path == "/") {
-    bridge.call("fetchUserToken", null, (res: string) => {
-      if (res) {
-        return next("/resetPwd");
-      } else {
-        next();
-      }
-    });
-  } else if (from.path != "/" && to.path == "/") {
-    next(fromPath);
-  } else {
-    next();
-  }
-  if (from.path == "/setting" && to.path == "/home") {
-    next({ path: "/home", query: { leftDrawerOpen: "true" } });
-  }
-});
+// let fromPath = "/";
+// router.beforeEach((to, from, next) => {
+//   if (to.path == "mixcarton") {
+//     next("/mixCarton");
+//   }
+//   if (to.path == "cartonDetail") {
+//     next("/cartonDetail");
+//   }
+//   fromPath = from.path;
+//   if (from.path == "/" && to.path == "/") {
+//     bridge.call("fetchUserToken", null, (res: string) => {
+//       if (res) {
+//         next("home");
+//       } else {
+//         next();
+//       }
+//     });
+//   }
+//   if (from.path == "/home" && to.path == "/") {
+//     bridge.call("fetchUserToken", null, (res: string) => {
+//       if (res) {
+//         return false;
+//       } else {
+//         next();
+//       }
+//     });
+//   } else if (from.path == "/resetPwd" && to.path == "/") {
+//     bridge.call("fetchUserToken", null, (res: string) => {
+//       if (res) {
+//         return next("/resetPwd");
+//       } else {
+//         next();
+//       }
+//     });
+//   } else if (from.path != "/" && to.path == "/") {
+//     next(fromPath);
+//   } else {
+//     next();
+//   }
+//   if (from.path == "/setting" && to.path == "/home") {
+//     next({ path: "/home", query: { leftDrawerOpen: "true" } });
+//   }
+// });
 
 export default router;

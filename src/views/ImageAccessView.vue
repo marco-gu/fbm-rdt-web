@@ -104,7 +104,7 @@ const ImageAccessView = defineComponent({
     HeaderComponent,
   },
   setup() {
-    const route = useRoute();
+    // const route = useRoute();
     const router = useRouter();
     const loading = ref(false);
     // page default display

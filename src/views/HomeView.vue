@@ -11,8 +11,8 @@
           icon="menu"
           color="black"
         />
-        <q-space />
-        <q-btn
+        <!-- <q-space /> -->
+        <!-- <q-btn
           class="header-logout-btn"
           flat
           dense
@@ -20,13 +20,19 @@
           @click="logout()"
           icon="logout"
           color="black"
-        />
+        /> -->
       </q-toolbar>
     </q-header>
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-grey-2">
       <div class="drawer-content">
         <div style="margin-top: 50px">
-          <q-img no-transition no-spinner :src="menuIcon" width="24px" />
+          <q-img
+            no-transition
+            no-spinner
+            :src="menuIcon"
+            width="24px"
+            @click="onCloseMenu"
+          />
         </div>
         <div>
           <q-list>
@@ -68,15 +74,15 @@
                 <q-item-label>{{ $t("home.cargo_image") }}</q-item-label>
               </q-item-section>
             </q-item>
-            <q-separator inset color="grey-3" />
+            <!-- <q-separator inset color="grey-3" />
             <q-item clickable @click="goSetting" v-ripple>
-              <!-- <q-item-section avatar>
+              <q-item-section avatar>
                 <q-img no-transition no-spinner :src="settingIcon" />
-              </q-item-section> -->
+              </q-item-section>
               <q-item-section>
                 <q-item-label>{{ $t("home.setting") }}</q-item-label>
               </q-item-section>
-            </q-item>
+            </q-item> -->
             <q-separator inset color="grey-3" />
             <q-item clickable v-ripple>
               <!-- <q-item-section avatar>
@@ -86,6 +92,7 @@
                 <q-item-label>{{ $t("home.user_manual") }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-separator inset color="grey-3" />
           </q-list>
           <!-- <q-item clickable @click="showLogoutDialog = true" v-ripple>
             <q-item-section avatar>
@@ -97,10 +104,10 @@
           </q-item> -->
         </div>
         <div>
-          <div>
+          <div @click="goSetting">
             <q-img no-transition no-spinner :src="gearIcon" width="24px" />
           </div>
-          <div style="margin-top: 20px">
+          <div style="margin-top: 30px" @click="showLogoutDialog = true">
             <q-img no-transition no-spinner :src="doorOpenIcon" width="24px" />
           </div>
         </div>
@@ -186,6 +193,9 @@ export default {
     const gearIcon = gear;
     const doorOpenIcon = doorOpen;
     const showLogoutDialog = ref(false);
+    const onCloseMenu = () => {
+      toggleLeftDrawer();
+    };
     onMounted(() => {
       if (route.query.leftDrawerOpen == "true") {
         toggleLeftDrawer();
@@ -249,6 +259,7 @@ export default {
       menuIcon,
       gearIcon,
       doorOpenIcon,
+      onCloseMenu,
     };
   },
 };
