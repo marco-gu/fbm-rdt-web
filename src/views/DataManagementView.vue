@@ -178,7 +178,7 @@
           </div>
         </q-infinite-scroll>
       </q-scroll-area>
-      <div class="bottom-button" id="bottom-button"></div>
+      <!-- <div class="bottom-button" id="bottom-button"></div> -->
     </div>
     <div class="bottom-coherent-button" v-show="isEditMode">
       <q-btn
@@ -269,10 +269,6 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import formatDate from "../utils/formatDate";
-import {
-  calScrollAreaWithBottom,
-  softKeyPopUpWithSearch,
-} from "@/utils/screen.util";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 const DataManagementView = defineComponent({
@@ -306,7 +302,6 @@ const DataManagementView = defineComponent({
     const showUploadDialog = ref(false);
     const isEditMode = ref(false);
 
-    const backUrlParam = "/home";
     const myInfiniteScroll = ref();
     const myScrollArea = ref();
     const noRecord = ref(false);
@@ -321,7 +316,7 @@ const DataManagementView = defineComponent({
         if (apiResult.value.length == 0) {
           noRecord.value = true;
         } else {
-          if (apiResult.value.length > 10) {
+          if (apiResult.value.length >= 10) {
             defaultDisplay.value = apiResult.value.slice(0, 10);
             apiIndex.value++;
           } else {
@@ -367,14 +362,9 @@ const DataManagementView = defineComponent({
       }
     };
     onMounted(() => {
-      // calculate scroll area
-      calScrollAreaWithBottom("scroll-area", "bottom-button");
-      // softkey popup
-      softKeyPopUpWithSearch(
-        window.innerHeight,
-        "scroll-area",
-        "bottom-button"
-      );
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
     });
 
     const getScanDataList = () => {

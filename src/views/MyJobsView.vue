@@ -74,9 +74,8 @@
           </template>
         </q-infinite-scroll>
       </q-scroll-area>
-      <div class="bottom-button" id="bottom-button">
-        <div class="footer-message">{{ $t("continue.instruction") }}</div>
-      </div>
+
+      <div class="footer-message">{{ $t("continue.instruction") }}</div>
     </div>
   </div>
 </template>
@@ -88,10 +87,6 @@ import { ScanDataManagement } from "../models/profile";
 import { ref, watch } from "vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { useI18n } from "vue-i18n";
-import {
-  calScrollAreaWithBottom,
-  softKeyPopUpWithSearch,
-} from "@/utils/screen.util";
 const MyJobsView = defineComponent({
   components: {
     CircularProgressComponent,
@@ -168,14 +163,9 @@ const MyJobsView = defineComponent({
       }
     };
     onMounted(() => {
-      // calculate scroll area
-      calScrollAreaWithBottom("scroll-area", "bottom-button");
-      // softkey popup
-      softKeyPopUpWithSearch(
-        window.innerHeight,
-        "scroll-area",
-        "bottom-button"
-      );
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 40 + "px";
     });
     bridge.register("refreshJobs", () => {
       getScanDataList();
@@ -322,7 +312,7 @@ export default MyJobsView;
   color: #757575;
 }
 .footer-message {
-  margin-top: 5px;
+  margin-top: 10px;
   text-align: center;
   width: 100%;
   color: #757575;
