@@ -6,24 +6,42 @@
       <div class="sub-title-card">
         <span> {{ taskId }}</span>
       </div>
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <div
-          class="card-item"
-          v-for="(item, index) in filterList"
-          :key="index"
-          @click="onClickItem(item)"
-        >
-          <div>CID: {{ item.cartonId }}</div>
-        </div>
+      <q-scroll-area
+        ref="myScrollArea"
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+      >
+        <template v-if="noRecord">
+          <div class="no-record">{{ $t("common.no_record") }}</div>
+        </template>
+        <template v-if="loading">
+          <div class="row justify-center q-my-md">
+            <q-spinner-dots color="primary" size="40px" />
+          </div>
+        </template>
+        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+          <div
+            class="card-item"
+            v-for="(item, index) in lpDetailListDisplay"
+            :key="index"
+          >
+            <div>CID: {{ item.cartonID }}</div>
+          </div>
+          <template v-slot:loading>
+            <div class="row justify-center q-my-md">
+              <q-spinner-dots color="primary" size="40px" />
+            </div>
+          </template>
+        </q-infinite-scroll>
       </q-scroll-area>
     </div>
   </div>
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { computed, defineComponent, onMounted, Ref, ref } from "vue";
+import { onBeforeMount, defineComponent, onMounted, Ref, ref } from "vue";
 import { useRoute } from "vue-router";
-import { Carton } from "../models/profile";
+import { LPDetailList } from "../models/profile";
 import { useI18n } from "vue-i18n";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 const LPDetailListView = defineComponent({
@@ -34,35 +52,81 @@ const LPDetailListView = defineComponent({
     const route = useRoute();
     const taskId = ref(route.query.taskId);
     const i18n = useI18n();
-    const lpListDisplay: Ref<Carton[]> = ref([]);
     const titleParam = i18n.t("lp.lp_detail_list");
     const backUrlParam = "/lpList";
-    const getLPListByTaskId = (taskId: string) => {
+    const lpDetailListDisplay = ref([] as LPDetailList[]);
+    const lpDetailListInitResult = ref([] as LPDetailList[]);
+    const myInfiniteScroll = ref();
+    const myScrollArea = ref();
+    const loading = ref(false);
+    const noRecord = ref(false);
+    const retrieveIndex = ref(0);
+    const pageSlice = 15;
+    onBeforeMount(() => {
+      loading.value = true;
       const args = {
-        taskId: taskId,
+        taskID: taskId.value,
       };
-      bridge.call("fetchLPByTaskId", args, (res: string) => {
-        lpListDisplay.value = JSON.parse(res) as Carton[];
+      bridge.call("fetchCartonForLPDetailList", args, (res: string) => {
+        loading.value = false;
+        composeLpDetailListDisplay(res);
       });
-    };
-    const filterList = computed(() =>
-      lpListDisplay.value.filter((item) => item.expected == true)
-    );
+    });
     onMounted(() => {
-      // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
-      if (typeof taskId.value === "string") {
-        getLPListByTaskId(taskId.value);
-      }
     });
+    const composeLpDetailListDisplay = (res: string) => {
+      lpDetailListInitResult.value = JSON.parse(res) as LPDetailList[];
+      if (lpDetailListInitResult.value.length == 0) {
+        noRecord.value = true;
+      } else {
+        noRecord.value = false;
+        if (lpDetailListInitResult.value.length > pageSlice) {
+          lpDetailListDisplay.value = lpDetailListInitResult.value.slice(
+            0,
+            pageSlice
+          );
+          retrieveIndex.value++;
+        } else {
+          lpDetailListDisplay.value = lpDetailListInitResult.value;
+          myInfiniteScroll.value.stop();
+        }
+      }
+    };
+    const onLoad = (index: any, done: any) => {
+      alert("onLoad");
+      const start = retrieveIndex.value * pageSlice;
+      const end = (retrieveIndex.value + 1) * pageSlice;
+      setTimeout(() => {
+        alert("onLoad");
+        for (let i = start; i < end; i++) {
+          if (lpDetailListInitResult.value[i]) {
+            lpDetailListDisplay.value.push(lpDetailListInitResult.value[i]);
+          }
+        }
+        if (
+          lpDetailListDisplay.value.length ==
+          (retrieveIndex.value + 1) * pageSlice
+        ) {
+          retrieveIndex.value++;
+        } else {
+          myInfiniteScroll.value.stop();
+        }
+        done();
+      }, 200);
+    };
     return {
-      lpListDisplay,
-      filterList,
+      backUrlParam,
+      loading,
+      lpDetailListDisplay,
+      myInfiniteScroll,
+      myScrollArea,
+      noRecord,
+      onLoad,
       taskId,
       titleParam,
-      backUrlParam,
     };
   },
 });
