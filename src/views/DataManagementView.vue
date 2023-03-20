@@ -5,21 +5,36 @@
     <div class="page-content">
       <div class="search" v-show="!isEditMode">
         <q-input
+          ref="input"
           v-model="search"
           outlined
           dense
           :placeholder="$t('common.search')"
-          clearable
         >
           <template v-slot:prepend>
-            <q-icon name="search" />
+            <q-icon name="search" @click="onSearch" />
+          </template>
+          <template v-slot:append>
+            <q-icon name="close" @click="onClear" class="cursor-pointer" />
           </template>
         </q-input>
       </div>
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <template v-if="scanDataListDisplay.length > 0">
+      <q-scroll-area
+        ref="myScrollArea"
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+      >
+        <template v-if="noRecord">
+          <div class="no-record">{{ $t("common.no_record") }}</div>
+        </template>
+        <template v-if="loading">
+          <div class="row justify-center q-my-md">
+            <q-spinner-dots color="primary" size="40px" />
+          </div>
+        </template>
+        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
           <div v-if="isEditMode == false">
-            <div v-for="(item, index) in scanDataListDisplay" :key="index">
+            <div v-for="(item, index) in defaultDisplay" :key="index">
               <div
                 v-touch-hold:900="handleHold"
                 clickable
@@ -97,7 +112,7 @@
           </div>
           <div v-else>
             <div style="height: 26px"></div>
-            <div v-for="(item, index) in scanDataListDisplay" :key="index">
+            <div v-for="(item, index) in defaultDisplay" :key="index">
               <div class="row mb-15">
                 <div class="center" style="width: 6%">
                   <q-checkbox
@@ -165,11 +180,9 @@
               </div>
             </div>
           </div>
-        </template>
-        <template v-else>
-          <div class="no-record">{{ $t("common.no_record") }}</div>
-        </template>
+        </q-infinite-scroll>
       </q-scroll-area>
+      <!-- <div class="bottom-button" id="bottom-button"></div> -->
     </div>
     <div class="bottom-coherent-button" v-show="isEditMode">
       <q-btn
@@ -241,12 +254,13 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
+import { defineComponent, onBeforeMount, onMounted } from "@vue/runtime-core";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { ScanDataManagement } from "../models/profile";
-import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { Ref, ref, watch } from "vue";
 import finishedUrl from "../assets/icon/finished.svg";
 import finishedDisableUrl from "../assets/icon/finished_disable.svg";
 import uploadedUrl from "../assets/icon/uploaded.svg";
@@ -259,7 +273,6 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import formatDate from "../utils/formatDate";
-import { ProfileMaster } from "../models/profile";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 const DataManagementView = defineComponent({
@@ -267,10 +280,19 @@ const DataManagementView = defineComponent({
     HeaderComponent,
   },
   setup() {
+    const loading = ref(false);
+    const search = ref();
     const $q = useQuasar();
     const i18n = useI18n();
     const router = useRouter();
+    const defaultDisplay = ref([] as ScanDataManagement[]);
+    const onSearchMode = ref(false);
+    const apiIndex = ref(0);
+    const searchIndex = ref(0);
+    const searchResult = ref([] as ScanDataManagement[]);
+    const apiResult = ref([] as ScanDataManagement[]);
     const titleParam = i18n.t("dataManagement.data_management_header");
+
     const finishedDisabled = finishedDisableUrl;
     const finished = finishedUrl;
     const uploadedDisabled = uploadedDisableUrl;
@@ -278,42 +300,93 @@ const DataManagementView = defineComponent({
     const arrowRight = arrowRightUrl;
     const checkedIcon = checkedUrl;
     const uncheckedIcon = uncheckedUrl;
-    const search = ref("");
+
     const uploadDialogMessage = ref("");
     const showDeleteDialog = ref(false);
     const showUploadDialog = ref(false);
     const isEditMode = ref(false);
-    const scanDataListDisplay: Ref<ScanDataManagement[]> = ref([]);
-    let result: ScanDataManagement[] = [];
+
+    const myInfiniteScroll = ref();
+    const myScrollArea = ref();
+    const noRecord = ref(false);
+    const input = ref();
+
+    onBeforeMount(() => {
+      loading.value = true;
+      bridge.call("fetchTaskForDataManagement", {}, (data: any) => {
+        loading.value = false;
+        apiResult.value = JSON.parse(data) as ScanDataManagement[];
+
+        if (apiResult.value.length == 0) {
+          noRecord.value = true;
+        } else {
+          if (apiResult.value.length >= 10) {
+            defaultDisplay.value = apiResult.value.slice(0, 10);
+            apiIndex.value++;
+          } else {
+            defaultDisplay.value = apiResult.value;
+            // myInfiniteScroll.value.stop();
+          }
+        }
+      });
+    });
+    const onLoad = (index: any, done: any) => {
+      if (onSearchMode.value) {
+        const start = searchIndex.value * 10;
+        const end = (searchIndex.value + 1) * 10;
+        setTimeout(() => {
+          for (let i = start; i < end; i++) {
+            if (searchResult.value[i]) {
+              defaultDisplay.value.push(searchResult.value[i]);
+            }
+          }
+          if (defaultDisplay.value.length == (searchIndex.value + 1) * 10) {
+            searchIndex.value++;
+          } else {
+            myInfiniteScroll.value.stop();
+          }
+          done();
+        }, 200);
+      } else {
+        const start = apiIndex.value * 10;
+        const end = (apiIndex.value + 1) * 10;
+        setTimeout(() => {
+          for (let i = start; i < end; i++) {
+            if (apiResult.value[i]) {
+              defaultDisplay.value.push(apiResult.value[i]);
+            }
+          }
+          if (defaultDisplay.value.length == (apiIndex.value + 1) * 10) {
+            apiIndex.value++;
+          } else {
+            myInfiniteScroll.value.stop();
+          }
+          done();
+        }, 200);
+      }
+    };
     onMounted(() => {
-      // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
-      getScanDataList();
     });
+
     const getScanDataList = () => {
-      bridge.call("fetchProfile", (res: string) => {
-        const profiles = JSON.parse(res) as ProfileMaster[];
-        var profileNames = profiles.map((element) => {
-          return element.profileName;
-        });
-        const args = {
-          filterPrevalidation: false,
-        };
-        bridge.call("fetchTaskForDataManagement", args, (res: string) => {
-          result = JSON.parse(res) as ScanDataManagement[];
-          result = result.filter((item) =>
-            profileNames.includes(item.profileName)
-          );
-          scanDataListDisplay.value = result;
-          sortScanDataList(scanDataListDisplay.value);
-        });
-      });
-    };
-    const sortScanDataList = (scanDataListDisplay: any[]) => {
-      scanDataListDisplay.sort((a: any, b: any) => {
-        return b.updateDatetime.localeCompare(a.updateDatetime);
+      bridge.call("fetchTaskForDataManagement", {}, (data: any) => {
+        loading.value = false;
+        apiResult.value = JSON.parse(data) as ScanDataManagement[];
+
+        if (apiResult.value.length == 0) {
+          noRecord.value = true;
+        } else {
+          if (apiResult.value.length > 10) {
+            defaultDisplay.value = apiResult.value.slice(0, 10);
+            apiIndex.value++;
+          } else {
+            defaultDisplay.value = apiResult.value;
+            // myInfiniteScroll.value.stop();
+          }
+        }
       });
     };
     const back = () => {
@@ -324,17 +397,7 @@ const DataManagementView = defineComponent({
         },
       });
     };
-    watch(search, () => {
-      if (search.value) {
-        const filteredResult = result.filter(
-          (item) =>
-            item.taskId.toLowerCase().indexOf(search.value.toLowerCase()) > -1
-        );
-        scanDataListDisplay.value = filteredResult;
-      } else {
-        scanDataListDisplay.value = result;
-      }
-    });
+
     const onClickScanTask = (scanTask: any) => {
       router.push({
         path: "/dataMgmtGD",
@@ -345,7 +408,7 @@ const DataManagementView = defineComponent({
       });
     };
     const updateScanDataListDisplay = () => {
-      scanDataListDisplay.value.forEach((item: any) => {
+      defaultDisplay.value.forEach((item: any) => {
         item["isSelected"] = false;
       });
     };
@@ -359,7 +422,7 @@ const DataManagementView = defineComponent({
     };
     const getSelectedTaskIdList = () => {
       let taskIdList: any = [];
-      scanDataListDisplay.value.forEach((item: any) => {
+      defaultDisplay.value.forEach((item: any) => {
         if (item["isSelected"]) {
           taskIdList.push(item.taskId);
         }
@@ -371,7 +434,7 @@ const DataManagementView = defineComponent({
       let taskIdList = getSelectedTaskIdList();
       if (taskIdList.length > 0) {
         var isCartonMatched = true;
-        scanDataListDisplay.value.forEach((item: any) => {
+        defaultDisplay.value.forEach((item: any) => {
           if (
             item["isSelected"] &&
             item["scannedCartonNumber"] != item["allCartonNumber"]
@@ -443,7 +506,63 @@ const DataManagementView = defineComponent({
       const a = taskId.split("+").join("<br/>");
       return a;
     };
+
+    const onClear = () => {
+      search.value = "";
+      onSearchMode.value = false;
+      if (apiResult.value.length > 0) {
+        noRecord.value = false;
+        if (apiResult.value.length > 10) {
+          defaultDisplay.value = apiResult.value.slice(0, 10);
+          apiIndex.value = 1;
+          myInfiniteScroll.value.resume();
+        } else {
+          defaultDisplay.value = apiResult.value;
+          myInfiniteScroll.value.stop();
+        }
+      } else {
+        noRecord.value = true;
+      }
+      searchIndex.value = 0;
+      myScrollArea.value.setScrollPosition("vertical", 0);
+    };
+    watch(search, () => {
+      if (search.value) {
+        if (search.value.length >= 5) {
+          input.value.blur();
+          onSearch();
+        } else if (search.value.length == 0) {
+          onClear();
+        }
+      }
+    });
+    const onSearch = () => {
+      const args = {
+        condition: search.value.toUpperCase(),
+      };
+      myScrollArea.value.setScrollPosition("vertical", 0);
+      onSearchMode.value = true;
+      defaultDisplay.value = [];
+      searchResult.value = [];
+      bridge.call("searchTaskForDataManagement", args, (data: any) => {
+        searchResult.value = JSON.parse(data) as ScanDataManagement[];
+        if (searchResult.value.length == 0) {
+          noRecord.value = true;
+        } else {
+          if (searchResult.value.length > 10) {
+            defaultDisplay.value = searchResult.value.slice(0, 10);
+            searchIndex.value++;
+            myInfiniteScroll.value.resume();
+          } else {
+            defaultDisplay.value = searchResult.value;
+            myInfiniteScroll.value.stop();
+          }
+        }
+      });
+    };
+
     return {
+      onClear,
       arrowRight,
       back,
       cancelEditMode,
@@ -458,7 +577,6 @@ const DataManagementView = defineComponent({
       handleUpload,
       isEditMode,
       onClickScanTask,
-      scanDataListDisplay,
       search,
       showDeleteDialog,
       showUploadDialog,
@@ -468,6 +586,14 @@ const DataManagementView = defineComponent({
       uploadDialogMessage,
       uploadScanData,
       uncheckedIcon,
+      onSearch,
+      onLoad,
+      myInfiniteScroll,
+      noRecord,
+      input,
+      myScrollArea,
+      loading,
+      defaultDisplay,
     };
   },
 });
