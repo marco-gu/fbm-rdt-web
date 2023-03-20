@@ -89,6 +89,7 @@ import {
 import { LoginResponse } from "@/models/login.response";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
 import eyeSolid from "../assets/icon/eye-slash-solid.svg";
+import { useStore } from "@/store";
 const NewLoginView = defineComponent({
   components: {
     ForgotPwdComponent,
@@ -105,6 +106,7 @@ const NewLoginView = defineComponent({
     const userManualVisible = ref(false);
     const isPwd = ref(true);
     const versionNum = ref();
+    const store = useStore();
     onMounted(() => {
       bridge.call("checkUserUid", null, async (res: string) => {
         if (res) {
@@ -156,6 +158,7 @@ const NewLoginView = defineComponent({
             });
           } else {
             router.push("/home");
+            store.dispatch("commonModule/setIsLogin");
           }
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
