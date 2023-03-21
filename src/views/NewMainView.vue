@@ -26,7 +26,7 @@
       </div>
       <div>
         There is (are)
-        <span style="color: #d62d23l font-weight:bold">{{ count }}</span>
+        <span style="color: #d62d23; font-weight: bold">{{ count }}</span>
         incomplete job(s), please click this card to continue.
       </div>
     </template>
