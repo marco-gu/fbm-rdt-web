@@ -40,25 +40,28 @@
         </template>
         <template v-else>
           <q-pull-to-refresh @refresh="refresh">
-            <template
+            <template v-if="noRecord">
+              <div class="no-record">{{ $t("common.no_record") }}</div>
+            </template>
+            <!-- <template
               v-if="profileListDisplay.length === 0 && !isFirstSync.value"
             >
               <div class="no-data">
                 {{ $t("common.no_record") }}
               </div>
-            </template>
-            <template v-else>
-              <q-list v-for="(item, index) in profileListDisplay" :key="index">
-                <q-item class="card-item" v-touch-hold:1800="handleHold">
-                  <q-item-section class="card-item-labels">
-                    <q-item-label>{{ item.profileCode }}</q-item-label>
-                    <q-item-label class="card-item-date-text">
-                      {{ formatDate(new Date(item.updateDatetime)) }}
-                    </q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </template>
+            </template> -->
+            <!-- <template v-else> -->
+            <q-list v-for="(item, index) in profileListDisplay" :key="index">
+              <q-item class="card-item" v-touch-hold:1800="handleHold">
+                <q-item-section class="card-item-labels">
+                  <q-item-label>{{ item.profileCode }}</q-item-label>
+                  <q-item-label class="card-item-date-text">
+                    {{ formatDate(new Date(item.updateDatetime)) }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+            <!-- </template> -->
           </q-pull-to-refresh>
         </template>
       </q-scroll-area>
@@ -128,6 +131,7 @@ const ProfileManagementView = defineComponent({
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const titleParam = i18n.t("profile.profile");
     const dialogVisible = ref(false);
+    const noRecord = ref(false);
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -147,6 +151,8 @@ const ProfileManagementView = defineComponent({
         if (result.length === 0) {
           if (isFirstSync.value) {
             dialogVisible.value = true;
+          } else {
+            noRecord.value = true;
           }
         } else {
           sortProfileList(profileListDisplay.value);
@@ -253,6 +259,7 @@ const ProfileManagementView = defineComponent({
       refresh,
       search,
       titleParam,
+      noRecord,
     };
   },
 });

@@ -1,27 +1,30 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header class="common-header-toolbar">
-      <q-toolbar>
+    <q-header
+      style="
+        background-color: #64b2d4;
+        height: 12%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <div style="width: 100%; margin: 0 auto; color: #fff; text-align: center">
         <q-btn
+          style="position: absolute; left: 10px; color: #f6f3f1"
           flat
           dense
           round
           @click="toggleLeftDrawer"
           aria-label="Menu"
           icon="menu"
-          color="black"
+          color="white"
         />
-        <!-- <q-space /> -->
-        <!-- <q-btn
-          class="header-logout-btn"
-          flat
-          dense
-          round
-          @click="logout()"
-          icon="logout"
-          color="black"
-        /> -->
-      </q-toolbar>
+        <q-img no-transition no-spinner :src="maerskLogoIcon" width="46px" />
+        <!-- <q-toolbar-title style="text-align: center">
+          <q-img no-transition no-spinner :src="maerskLogoIcon" width="46px" />
+        </q-toolbar-title> -->
+      </div>
     </q-header>
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-grey-2">
       <div class="drawer-content">
@@ -29,79 +32,44 @@
           <q-img
             no-transition
             no-spinner
-            :src="menuIcon"
+            :src="barBlackIcon"
             width="24px"
             @click="onCloseMenu"
           />
         </div>
         <div>
           <q-list>
-            <!-- <q-item class="bg-secondary">
-              <q-img no-transition no-spinner :src="logoIcon" />
-            </q-item> -->
             <q-item clickable @click="goMyProfile()" v-ripple>
-              <!-- <q-item-section avatar>
-                <q-img no-transition no-spinner :src="userProfileIcon" />
-              </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.profile") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-separator inset color="grey-3" />
             <q-item clickable @click="goDataManagement()" v-ripple>
-              <!-- <q-item-section avatar>
-                <q-img no-transition no-spinner :src="dataManagementIcon" />
-              </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.data_management") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-separator inset color="grey-3" />
             <q-item clickable @click="goLPList" v-ripple>
-              <!-- <q-item-section avatar>
-                <q-img no-transition no-spinner :src="lpListIcon" />
-              </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.lp_list") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-separator inset color="grey-3" />
             <q-item clickable @click="goImageAccess" v-ripple>
-              <!-- <q-item-section avatar>
-                <q-img no-transition no-spinner :src="cargoImageIcon" />
-              </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.cargo_image") }}</q-item-label>
               </q-item-section>
             </q-item>
-            <!-- <q-separator inset color="grey-3" />
-            <q-item clickable @click="goSetting" v-ripple>
-              <q-item-section avatar>
-                <q-img no-transition no-spinner :src="settingIcon" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ $t("home.setting") }}</q-item-label>
-              </q-item-section>
-            </q-item> -->
             <q-separator inset color="grey-3" />
             <q-item clickable v-ripple>
-              <!-- <q-item-section avatar>
-                <q-img no-transition no-spinner :src="userManualIcon" />
-              </q-item-section> -->
               <q-item-section>
                 <q-item-label>{{ $t("home.user_manual") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-separator inset color="grey-3" />
           </q-list>
-          <!-- <q-item clickable @click="showLogoutDialog = true" v-ripple>
-            <q-item-section avatar>
-              <q-img no-transition no-spinner :src="logoutIcon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ $t("home.logout") }}</q-item-label>
-            </q-item-section>
-          </q-item> -->
         </div>
         <div>
           <div @click="goSetting">
@@ -149,6 +117,7 @@
   </q-layout>
 </template>
 <script lang="ts">
+import barBlack from "../assets/icon/bars-solid-black.svg";
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import bridge from "dsbridge";
@@ -172,6 +141,7 @@ import { useI18n } from "vue-i18n";
 import menu from "../assets/images/bars-solid.svg";
 import gear from "../assets/images/gear-solid.svg";
 import doorOpen from "../assets/images/door-open-solid.svg";
+import maerskLogo from "../assets/icon/Maersk.png";
 export default {
   name: "HomeView",
   components: {},
@@ -190,9 +160,11 @@ export default {
     const logoutIcon = logOut;
     const logoIcon = logo;
     const menuIcon = menu;
+    const barBlackIcon = barBlack;
     const gearIcon = gear;
     const doorOpenIcon = doorOpen;
     const showLogoutDialog = ref(false);
+    const maerskLogoIcon = maerskLogo;
     const onCloseMenu = () => {
       toggleLeftDrawer();
     };
@@ -220,9 +192,11 @@ export default {
           data
         ) as AndroidResponse<LogoutResponse>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          const msg = i18n.t("messageCode.E93-06-0001");
+          // const msg = i18n.t("messageCode.E93-06-0001");
+          // router.push("/");
+          // popupSuccessMsg($q, msg);
+          bridge.call("goFirstPage");
           router.push("/");
-          popupSuccessMsg($q, msg);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
@@ -260,6 +234,8 @@ export default {
       gearIcon,
       doorOpenIcon,
       onCloseMenu,
+      maerskLogoIcon,
+      barBlackIcon,
     };
   },
 };
@@ -274,5 +250,8 @@ export default {
 }
 .q-layout {
   background: transparent;
+}
+svg {
+  fill: red;
 }
 </style>

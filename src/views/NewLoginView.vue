@@ -7,7 +7,6 @@
       <div class="login-form">
         <div class="input-label">{{ $t("login.account") }}</div>
         <q-input
-          ref="inputUsername"
           clearable
           v-model="username"
           outlined
@@ -17,7 +16,6 @@
         />
         <div class="input-label">{{ $t("login.password") }}</div>
         <q-input
-          ref="inputPassword"
           clearable
           v-model="password"
           outlined
@@ -63,7 +61,7 @@
         </p>
       </div>
       <div style="margin-top: 30px">
-        <q-icon name="home" color="black" size="24px" />
+        <q-icon name="home" color="black" size="24px" @click="goFirstPage" />
       </div>
     </div>
     <ForgotPwdComponent
@@ -74,7 +72,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, nextTick, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import ForgotPwdComponent from "@/components/ForgotPwdComponent.vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -88,7 +86,6 @@ import {
 } from "@/models/android.response";
 import { LoginResponse } from "@/models/login.response";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
-import eyeSolid from "../assets/icon/eye-slash-solid.svg";
 import { useStore } from "@/store";
 const NewLoginView = defineComponent({
   components: {
@@ -100,30 +97,33 @@ const NewLoginView = defineComponent({
     const $q = useQuasar();
     const username = ref("");
     const password = ref("");
-    const inputUsername = ref();
-    const inputPassword = ref();
+    // const inputUsername = ref();
+    // const inputPassword = ref();
     const forgotPwdVisible = ref(false);
     const userManualVisible = ref(false);
     const isPwd = ref(true);
-    const versionNum = ref();
+    // const versionNum = ref();
     const store = useStore();
+    const goFirstPage = () => {
+      bridge.call("goFirstPage");
+    };
     onMounted(() => {
       bridge.call("checkUserUid", null, async (res: string) => {
         if (res) {
           username.value = res.toUpperCase();
         }
-        await nextTick();
-        if (!username.value) {
-          inputUsername.value.focus();
-        } else {
-          inputPassword.value.focus();
-        }
+        // await nextTick();
+        // if (!username.value) {
+        //   inputUsername.value.focus();
+        // } else {
+        //   inputPassword.value.focus();
+        // }
       });
-      bridge.call("getAppInfo", null, async (res: string) => {
-        if (res) {
-          versionNum.value = res;
-        }
-      });
+      // bridge.call("getAppInfo", null, async (res: string) => {
+      //   if (res) {
+      //     versionNum.value = res;
+      //   }
+      // });
     });
     watch(
       username,
@@ -173,10 +173,11 @@ const NewLoginView = defineComponent({
       forgotPwdVisible,
       userManualVisible,
       onSubmit,
-      i18n,
-      versionNum,
-      inputUsername,
-      inputPassword,
+      goFirstPage,
+      // i18n,
+      // versionNum,
+      // inputUsername,
+      // inputPassword,
     };
   },
 });
