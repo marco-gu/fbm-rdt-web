@@ -14,10 +14,22 @@
     </div>
   </div>
   <div class="card" @click="goContinue">
-    <div style="margin-bottom: 5px">
-      <q-img no-transition no-spinner :src="bellIcon" width="20px" />
-    </div>
-    <div>No outstanding scan job, well done!</div>
+    <template v-if="count == 0">
+      <div style="margin-bottom: 5px">
+        <q-img no-transition no-spinner :src="bellCompleteIcon" width="20px" />
+      </div>
+      <div>No outstanding scan job, well done!</div>
+    </template>
+    <template v-else>
+      <div style="margin-bottom: 5px">
+        <q-img no-transition no-spinner :src="bellIcon" width="20px" />
+      </div>
+      <div>
+        There is (are)
+        <span style="color: #d62d23l font-weight:bold">{{ count }}</span>
+        incomplete job(s), please click this card to continue.
+      </div>
+    </template>
     <!-- <div>
       There is (are)
       <span style="color: #d62d23">{{ count }}</span>
@@ -36,19 +48,28 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import bell from "../assets/icon/bell-complete.svg";
-// import bell from "../assets/icon/bell-solid.svg";
+import { defineComponent, onBeforeMount, ref } from "vue";
+import bellComplete from "../assets/icon/bell-complete.svg";
+import bell from "../assets/icon/bell-solid.svg";
 import point from "../assets/icon/arrow-pointer-solid.svg";
 import spirit from "../assets/icon/lns_spirit.png";
 import { useRouter } from "vue-router";
+import bridge from "dsbridge";
+import { ScanDataManagement } from "@/models/profile";
 const NewMainView = defineComponent({
   setup() {
     const router = useRouter();
     const bellIcon = bell;
+    const bellCompleteIcon = bellComplete;
     const pointIcon = point;
     const spiritIcon = spirit;
     const count = ref(0);
+    onBeforeMount(() => {
+      bridge.call("retrieveContinueJobCounts", null, (data: any) => {
+        const apiResult = JSON.parse(data) as ScanDataManagement[];
+        count.value = apiResult.length;
+      });
+    });
     const goOnline = () => {
       router.push("/profile/online");
     };
@@ -66,6 +87,7 @@ const NewMainView = defineComponent({
       goOnline,
       goOffline,
       goContinue,
+      bellCompleteIcon,
     };
   },
 });
