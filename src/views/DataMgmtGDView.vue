@@ -242,12 +242,12 @@ const DataMgmtView = defineComponent({
         if (apiResult.value.length == 0) {
           noRecord.value = true;
         } else {
-          if (apiResult.value.length >= 10) {
+          if (apiResult.value.length > 10) {
             defaultDisplay.value = apiResult.value.slice(0, 10);
             apiIndex.value++;
           } else {
             defaultDisplay.value = apiResult.value;
-            // myInfiniteScroll.value.stop();
+            myInfiniteScroll.value.stop();
           }
         }
       });

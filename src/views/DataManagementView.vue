@@ -313,22 +313,7 @@ const DataManagementView = defineComponent({
 
     onBeforeMount(() => {
       loading.value = true;
-      bridge.call("fetchTaskForDataManagement", {}, (data: any) => {
-        loading.value = false;
-        apiResult.value = JSON.parse(data) as ScanDataManagement[];
-
-        if (apiResult.value.length == 0) {
-          noRecord.value = true;
-        } else {
-          if (apiResult.value.length >= 10) {
-            defaultDisplay.value = apiResult.value.slice(0, 10);
-            apiIndex.value++;
-          } else {
-            defaultDisplay.value = apiResult.value;
-            // myInfiniteScroll.value.stop();
-          }
-        }
-      });
+      getScanDataList();
     });
     const onLoad = (index: any, done: any) => {
       if (onSearchMode.value) {
@@ -384,7 +369,7 @@ const DataManagementView = defineComponent({
             apiIndex.value++;
           } else {
             defaultDisplay.value = apiResult.value;
-            // myInfiniteScroll.value.stop();
+            myInfiniteScroll.value.stop();
           }
         }
       });
