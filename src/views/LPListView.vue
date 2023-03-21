@@ -34,8 +34,12 @@
             </div>
           </template>
           <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
-            <div v-for="(item, index) in taskListDisplay" :key="index">
-              <q-item class="card-item" @click="onClickItem(item)">
+            <div
+              v-for="(item, index) in taskListDisplay"
+              :key="index"
+              @click="onClickItem(item)"
+            >
+              <q-item class="card-item">
                 <div class="card-item-content">
                   <q-item-section class="card-item-labels">
                     <div class="card-item-label-content">
@@ -93,6 +97,7 @@ const LPListView = defineComponent({
     const retrieveIndex = ref(0);
     const searchIndex = ref(0);
     const onSearchMode = ref(false);
+    const pageSlice = 10;
     onBeforeMount(() => {
       loading.value = true;
       bridge.call("fetchTaskForLPList", null, (res: string) => {
@@ -112,8 +117,8 @@ const LPListView = defineComponent({
         noRecord.value = true;
       } else {
         noRecord.value = false;
-        if (taskListInitResult.value.length > 10) {
-          taskListDisplay.value = taskListInitResult.value.slice(0, 10);
+        if (taskListInitResult.value.length > pageSlice) {
+          taskListDisplay.value = taskListInitResult.value.slice(0, pageSlice);
           retrieveIndex.value++;
         } else {
           taskListDisplay.value = taskListInitResult.value;
@@ -129,15 +134,18 @@ const LPListView = defineComponent({
     };
     const onLoad = (index: any, done: any) => {
       if (onSearchMode.value) {
-        const start = searchIndex.value * 10;
-        const end = (searchIndex.value + 1) * 10;
+        const start = searchIndex.value * pageSlice;
+        const end = (searchIndex.value + 1) * pageSlice;
         setTimeout(() => {
           for (let i = start; i < end; i++) {
             if (taskListSearchResult.value[i]) {
               taskListDisplay.value.push(taskListSearchResult.value[i]);
             }
           }
-          if (taskListDisplay.value.length == (searchIndex.value + 1) * 10) {
+          if (
+            taskListDisplay.value.length ==
+            (searchIndex.value + 1) * pageSlice
+          ) {
             searchIndex.value++;
           } else {
             myInfiniteScroll.value.stop();
@@ -145,15 +153,18 @@ const LPListView = defineComponent({
           done();
         }, 200);
       } else {
-        const start = retrieveIndex.value * 10;
-        const end = (retrieveIndex.value + 1) * 10;
+        const start = retrieveIndex.value * pageSlice;
+        const end = (retrieveIndex.value + 1) * pageSlice;
         setTimeout(() => {
           for (let i = start; i < end; i++) {
             if (taskListInitResult.value[i]) {
               taskListDisplay.value.push(taskListInitResult.value[i]);
             }
           }
-          if (taskListDisplay.value.length == (retrieveIndex.value + 1) * 10) {
+          if (
+            taskListDisplay.value.length ==
+            (retrieveIndex.value + 1) * pageSlice
+          ) {
             retrieveIndex.value++;
           } else {
             myInfiniteScroll.value.stop();
@@ -188,8 +199,11 @@ const LPListView = defineComponent({
           noRecord.value = true;
         } else {
           noRecord.value = false;
-          if (taskListSearchResult.value.length > 10) {
-            taskListDisplay.value = taskListSearchResult.value.slice(0, 10);
+          if (taskListSearchResult.value.length > pageSlice) {
+            taskListDisplay.value = taskListSearchResult.value.slice(
+              0,
+              pageSlice
+            );
             searchIndex.value++;
             myInfiniteScroll.value.resume();
           } else {
@@ -208,7 +222,7 @@ const LPListView = defineComponent({
       if (taskListInitResult.value.length > 0) {
         noRecord.value = false;
         if (taskListInitResult.value.length > 10) {
-          taskListDisplay.value = taskListInitResult.value.slice(0, 10);
+          taskListDisplay.value = taskListInitResult.value.slice(0, pageSlice);
           retrieveIndex.value = 1;
           myInfiniteScroll.value.resume();
         } else {

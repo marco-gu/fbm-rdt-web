@@ -254,7 +254,7 @@ const DataManagementDetailView = defineComponent({
       const args = {
         taskId: taskId,
       };
-      bridge.call("fetchLPByTaskId", args, (res: string) => {
+      bridge.call("fetchLPByTaskIdForDataManagement", args, (res: string) => {
         const lpList = JSON.parse(res) as Carton[];
         if (lpList.length > 0) {
           lpCarton = lpList[0];

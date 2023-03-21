@@ -17,16 +17,25 @@
               <div class="card-item-content">
                 <div class="card-item-left">
                   <q-item-section>
-                    <div v-show="taskDisplay.containerNumber != ''">
+                    <div
+                      v-show="
+                        taskDisplay.containerNumber != '' &&
+                        taskDisplay.containerNumber != null
+                      "
+                    >
                       <q-item-label
                         >Container:
                         {{ taskDisplay.containerNumber }}</q-item-label
                       >
                     </div>
-                    <div v-show="taskDisplay.po != ''">
+                    <div
+                      v-show="taskDisplay.po != '' && taskDisplay.po != null"
+                    >
                       <q-item-label>PO: {{ taskDisplay.po }}</q-item-label>
                     </div>
-                    <div v-show="taskDisplay.sku != ''">
+                    <div
+                      v-show="taskDisplay.sku != '' && taskDisplay.sku != null"
+                    >
                       <q-item-label>SKU: {{ taskDisplay.sku }}</q-item-label>
                     </div>
                   </q-item-section>
@@ -47,35 +56,50 @@
           </div>
         </template>
         <template v-else>
-          <div
-            v-for="(item, index) in cartonfilterList"
-            :key="index"
-            @click="onClickCarton(item)"
-          >
-            <q-item class="card-item">
-              <div class="card-detail-left">
-                <q-item-section>
-                  <div v-show="item.containerNumber != ''">
-                    <q-item-label
-                      >Container: {{ item.containerNumber }}</q-item-label
+          <template v-if="noRecord">
+            <div class="no-record">{{ $t("common.no_record") }}</div>
+          </template>
+          <template v-if="loading">
+            <div class="row justify-center q-my-md">
+              <q-spinner-dots color="primary" size="40px" />
+            </div>
+          </template>
+          <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+            <div
+              v-for="(item, index) in defaultDisplay"
+              :key="index"
+              @click="onClickCarton(item)"
+            >
+              <q-item class="card-item">
+                <div class="card-detail-left">
+                  <q-item-section>
+                    <div
+                      v-show="
+                        item.containerNumber != '' &&
+                        item.containerNumber != null
+                      "
                     >
-                  </div>
-                  <div v-show="item.po != ''">
-                    <q-item-label>PO: {{ item.po }}</q-item-label>
-                  </div>
-                  <div v-show="item.sku != ''">
-                    <q-item-label>SKU: {{ item.sku }}</q-item-label>
-                  </div>
-                  <div v-show="item.cartonId != ''">
-                    <q-item-label>CID: {{ item.cartonId }}</q-item-label>
-                  </div>
+                      <q-item-label
+                        >Container: {{ item.containerNumber }}</q-item-label
+                      >
+                    </div>
+                    <div v-show="item.po != '' && item.po != null">
+                      <q-item-label>PO: {{ item.po }}</q-item-label>
+                    </div>
+                    <div v-show="item.sku != '' && item.sku != null">
+                      <q-item-label>SKU: {{ item.sku }}</q-item-label>
+                    </div>
+                    <div v-show="item.cartonId != '' && item.cartonId != null">
+                      <q-item-label>CID: {{ item.cartonId }}</q-item-label>
+                    </div>
+                  </q-item-section>
+                </div>
+                <q-item-section side>
+                  <q-icon name="chevron_right" color="black" />
                 </q-item-section>
-              </div>
-              <q-item-section side>
-                <q-icon name="chevron_right" color="black" />
-              </q-item-section>
-            </q-item>
-          </div>
+              </q-item>
+            </div>
+          </q-infinite-scroll>
         </template>
       </q-scroll-area>
     </div>
@@ -105,7 +129,8 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { computed, defineComponent, onMounted, Ref, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted } from "@vue/runtime-core";
+import { Ref, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { LP, Carton } from "../models/profile";
 import { useI18n } from "vue-i18n";
@@ -126,7 +151,52 @@ const DataMgmtView = defineComponent({
         : i18n.t("dataManagement.detail_title");
     const backUrlParam = "/dataManagement";
     const taskDisplay: Ref<LP> = ref({} as LP);
-    const cartonListDisplay: Ref<Carton[]> = ref([]);
+
+    const apiIndex = ref(0);
+    const defaultDisplay = ref([] as Carton[]);
+    const apiResult = ref([] as Carton[]);
+    const loading = ref(false);
+    const myInfiniteScroll = ref();
+    const myScrollArea = ref();
+    const noRecord = ref(false);
+    const input = ref();
+
+    onBeforeMount(() => {
+      loading.value = true;
+
+      if (typeof taskId.value === "string") {
+        fetchTaskByTaskId(taskId.value);
+        getLPDetailList(taskId.value);
+      }
+      if (typeof route.query.pageType === "string") {
+        pageType.value = route.query.pageType;
+      }
+    });
+    const onLoad = (index: any, done: any) => {
+      const start = apiIndex.value * 10;
+      const end = (apiIndex.value + 1) * 10;
+      setTimeout(() => {
+        for (let i = start; i < end; i++) {
+          if (apiResult.value[i]) {
+            defaultDisplay.value.push(apiResult.value[i]);
+          }
+        }
+        if (defaultDisplay.value.length == (apiIndex.value + 1) * 10) {
+          apiIndex.value++;
+        } else {
+          myInfiniteScroll.value.stop();
+        }
+        done();
+      }, 200);
+    };
+
+    onMounted(() => {
+      // calculate scroll area
+      const scrollArea = document.getElementById("scroll-area") as any;
+      const bottom = document.getElementById("bottom-button") as any;
+      scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
+    });
+
     const onClickLP = (item: any) => {
       router.push({
         path: "/dataMgmtGDEdit",
@@ -165,40 +235,40 @@ const DataMgmtView = defineComponent({
       const args = {
         taskId: taskId,
       };
-      bridge.call("fetchLPByTaskId", args, (res: string) => {
-        cartonListDisplay.value = JSON.parse(res) as Carton[];
+      bridge.call("fetchLPByTaskIdForDataManagement", args, (res: string) => {
+        loading.value = false;
+        apiResult.value = JSON.parse(res) as Carton[];
+
+        if (apiResult.value.length == 0) {
+          noRecord.value = true;
+        } else {
+          if (apiResult.value.length >= 10) {
+            defaultDisplay.value = apiResult.value.slice(0, 10);
+            apiIndex.value++;
+          } else {
+            defaultDisplay.value = apiResult.value;
+            // myInfiniteScroll.value.stop();
+          }
+        }
       });
     };
-
-    const cartonfilterList = computed(() =>
-      cartonListDisplay.value.filter((item) => item.scanStatus == 1)
-    );
-
-    onMounted(() => {
-      // calculate scroll area
-      const scrollArea = document.getElementById("scroll-area") as any;
-      const bottom = document.getElementById("bottom-button") as any;
-      scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
-      if (typeof taskId.value === "string") {
-        fetchTaskByTaskId(taskId.value);
-        getLPDetailList(taskId.value);
-      }
-      if (typeof route.query.pageType === "string") {
-        pageType.value = route.query.pageType;
-      }
-    });
 
     return {
       onClickLP,
       taskDisplay,
-      cartonListDisplay,
       taskId,
       pageType,
       changPageType,
       onClickCarton,
-      cartonfilterList,
       titleParam,
       backUrlParam,
+      onLoad,
+      myInfiniteScroll,
+      noRecord,
+      input,
+      myScrollArea,
+      loading,
+      defaultDisplay,
     };
   },
 });
