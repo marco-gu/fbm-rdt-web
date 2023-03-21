@@ -516,9 +516,9 @@ const DataManagementView = defineComponent({
         if (search.value.length >= 5) {
           input.value.blur();
           onSearch();
-        } else if (search.value.length == 0) {
-          onClear();
         }
+      } else if (search.value.length == 0) {
+        onClear();
       }
     });
     const onSearch = () => {
