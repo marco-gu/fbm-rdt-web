@@ -8,63 +8,66 @@
         <div v-else>{{ taskId }}</div>
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <template v-if="pageType == 'Group'">
-          <div
-            v-show="taskDisplay.scannedCartonNumber > 0"
-            @click="onClickLP(taskDisplay)"
-          >
-            <q-item class="card-item">
-              <div class="card-item-content">
-                <div class="card-item-left">
-                  <q-item-section>
-                    <div
-                      v-show="
-                        taskDisplay.containerNumber != '' &&
-                        taskDisplay.containerNumber != null
-                      "
-                    >
-                      <q-item-label
-                        >Container:
-                        {{ taskDisplay.containerNumber }}</q-item-label
+        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+          <template v-if="pageType == 'Group'">
+            <div
+              v-show="taskDisplay.scannedCartonNumber > 0"
+              @click="onClickLP(taskDisplay)"
+            >
+              <q-item class="card-item">
+                <div class="card-item-content">
+                  <div class="card-item-left">
+                    <q-item-section>
+                      <div
+                        v-show="
+                          taskDisplay.containerNumber != '' &&
+                          taskDisplay.containerNumber != null
+                        "
                       >
-                    </div>
-                    <div
-                      v-show="taskDisplay.po != '' && taskDisplay.po != null"
-                    >
-                      <q-item-label>PO: {{ taskDisplay.po }}</q-item-label>
-                    </div>
-                    <div
-                      v-show="taskDisplay.sku != '' && taskDisplay.sku != null"
-                    >
-                      <q-item-label>SKU: {{ taskDisplay.sku }}</q-item-label>
-                    </div>
-                  </q-item-section>
+                        <q-item-label
+                          >Container:
+                          {{ taskDisplay.containerNumber }}</q-item-label
+                        >
+                      </div>
+                      <div
+                        v-show="taskDisplay.po != '' && taskDisplay.po != null"
+                      >
+                        <q-item-label>PO: {{ taskDisplay.po }}</q-item-label>
+                      </div>
+                      <div
+                        v-show="
+                          taskDisplay.sku != '' && taskDisplay.sku != null
+                        "
+                      >
+                        <q-item-label>SKU: {{ taskDisplay.sku }}</q-item-label>
+                      </div>
+                    </q-item-section>
+                  </div>
+                  <div class="card-item-right">
+                    <q-item-section>
+                      <q-item-label>
+                        {{ $t("dataManagement.count") }}:
+                        {{ taskDisplay.scannedCartonNumber }}</q-item-label
+                      >
+                    </q-item-section>
+                  </div>
                 </div>
-                <div class="card-item-right">
-                  <q-item-section>
-                    <q-item-label>
-                      {{ $t("dataManagement.count") }}:
-                      {{ taskDisplay.scannedCartonNumber }}</q-item-label
-                    >
-                  </q-item-section>
-                </div>
-              </div>
-              <q-item-section side>
-                <q-icon name="chevron_right" color="black" />
-              </q-item-section>
-            </q-item>
-          </div>
-        </template>
-        <template v-else>
-          <template v-if="noRecord">
-            <div class="no-record">{{ $t("common.no_record") }}</div>
-          </template>
-          <template v-if="loading">
-            <div class="row justify-center q-my-md">
-              <q-spinner-dots color="primary" size="40px" />
+                <q-item-section side>
+                  <q-icon name="chevron_right" color="black" />
+                </q-item-section>
+              </q-item>
             </div>
           </template>
-          <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+          <template v-else>
+            <template v-if="noRecord">
+              <div class="no-record">{{ $t("common.no_record") }}</div>
+            </template>
+            <template v-if="loading">
+              <div class="row justify-center q-my-md">
+                <q-spinner-dots color="primary" size="40px" />
+              </div>
+            </template>
+
             <div
               v-for="(item, index) in defaultDisplay"
               :key="index"
@@ -99,8 +102,8 @@
                 </q-item-section>
               </q-item>
             </div>
-          </q-infinite-scroll>
-        </template>
+          </template>
+        </q-infinite-scroll>
       </q-scroll-area>
     </div>
     <div class="bottom row" id="bottom-button">
@@ -135,6 +138,7 @@ import { useRouter, useRoute } from "vue-router";
 import { LP, Carton } from "../models/profile";
 import { useI18n } from "vue-i18n";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+
 const DataMgmtView = defineComponent({
   components: {
     HeaderComponent,
@@ -177,7 +181,10 @@ const DataMgmtView = defineComponent({
       const end = (apiIndex.value + 1) * 10;
       setTimeout(() => {
         for (let i = start; i < end; i++) {
-          if (apiResult.value[i]) {
+          if (
+            apiResult.value[i] &&
+            defaultDisplay.value.length < apiResult.value.length
+          ) {
             defaultDisplay.value.push(apiResult.value[i]);
           }
         }
@@ -239,14 +246,16 @@ const DataMgmtView = defineComponent({
         loading.value = false;
         apiResult.value = JSON.parse(res) as Carton[];
 
+        const deepCopyRef = ref(apiResult.value.map((item) => item));
+
         if (apiResult.value.length == 0) {
           noRecord.value = true;
         } else {
           if (apiResult.value.length > 10) {
-            defaultDisplay.value = apiResult.value.slice(0, 10);
+            defaultDisplay.value = deepCopyRef.value.slice(0, 10);
             apiIndex.value++;
           } else {
-            defaultDisplay.value = apiResult.value;
+            defaultDisplay.value = deepCopyRef.value;
             myInfiniteScroll.value.stop();
           }
         }
