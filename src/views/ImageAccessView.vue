@@ -285,6 +285,7 @@ export default ImageAccessView;
     display: flex;
     width: 100%;
     text-align: left;
+    font-size: 14px;
   }
 }
 .show {

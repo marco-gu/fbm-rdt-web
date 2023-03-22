@@ -154,8 +154,9 @@ const NewLoginView = defineComponent({
               },
             });
           } else {
-            router.push("/home");
             store.dispatch("commonModule/setIsLogin");
+            store.dispatch("commonModule/setAnimation");
+            router.push("/home");
           }
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);

@@ -178,9 +178,6 @@ export default NewMainView;
   0% {
     transform: translateX(-100px);
   }
-  // 80% {
-  //   transform: translateX(15px);
-  // }
   100% {
     transform: translateX(0px);
   }

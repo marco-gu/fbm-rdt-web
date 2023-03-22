@@ -10,7 +10,7 @@
       "
     >
       <div style="width: 100%; margin: 0 auto; color: #fff; text-align: center">
-        <q-btn
+        <!-- <q-btn
           style="position: absolute; left: 10px; color: #f6f3f1"
           flat
           dense
@@ -19,7 +19,17 @@
           aria-label="Menu"
           icon="menu"
           color="white"
+        /> -->
+
+        <q-img
+          style="position: absolute; left: 20px; top: 35px"
+          no-transition
+          no-spinner
+          :src="barWhiteIcon"
+          @click="toggleLeftDrawer"
+          width="20px"
         />
+
         <q-img no-transition no-spinner :src="maerskLogoIcon" width="46px" />
         <!-- <q-toolbar-title style="text-align: center">
           <q-img no-transition no-spinner :src="maerskLogoIcon" width="46px" />
@@ -84,7 +94,7 @@
             >Label & Scan System</span
           >
           <span style="display: block; font-size: 10px; color: #757575"
-            >version Beta 1.0</span
+            >Version Beta 3.1</span
           >
           <span style="display: block; font-size: 10px; color: #757575"
             >by Maersk WDP@2023-3-10</span
@@ -118,6 +128,7 @@
 </template>
 <script lang="ts">
 import barBlack from "../assets/icon/bars-solid-black.svg";
+import barWhite from "../assets/icon/bars-solid-white.svg";
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import bridge from "dsbridge";
@@ -136,7 +147,7 @@ import userManual from "../assets/icon/user-manual.svg";
 import logOut from "../assets/icon/logout.svg";
 import logo from "../assets/images/Maersk_Logo_Neg.svg";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
+import { popupErrorMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
 import menu from "../assets/images/bars-solid.svg";
 import gear from "../assets/images/gear-solid.svg";
@@ -161,6 +172,7 @@ export default {
     const logoIcon = logo;
     const menuIcon = menu;
     const barBlackIcon = barBlack;
+    const barWhiteIcon = barWhite;
     const gearIcon = gear;
     const doorOpenIcon = doorOpen;
     const showLogoutDialog = ref(false);
@@ -236,6 +248,7 @@ export default {
       onCloseMenu,
       maerskLogoIcon,
       barBlackIcon,
+      barWhiteIcon,
     };
   },
 };
@@ -250,8 +263,5 @@ export default {
 }
 .q-layout {
   background: transparent;
-}
-svg {
-  fill: red;
 }
 </style>
