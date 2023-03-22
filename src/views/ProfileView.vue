@@ -17,14 +17,18 @@
         </q-input>
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <q-pull-to-refresh @refresh="refresh">
+        <q-pull-to-refresh @refresh="refresh" style="margin-right: 30px">
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
             <div class="no-data">
               {{ $t("common.no_record") }}
             </div>
           </template>
           <template v-else>
-            <q-list v-for="(item, index) in profileListDisplay" :key="index">
+            <q-list
+              v-for="(item, index) in profileListDisplay"
+              :key="index"
+              style="margin-right: -30px"
+            >
               <q-item class="card-item" clickable @click="onClickProfile(item)">
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>
@@ -73,6 +77,7 @@ import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
 import formatDate from "../utils/formatDate";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import rotate from "../assets/icon/rotate-solid.svg";
 const ProfileView = defineComponent({
   components: {
     HeaderComponent,
@@ -90,6 +95,7 @@ const ProfileView = defineComponent({
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
     const search = ref("");
     const dialogVisible = ref(false);
+    const rotateIcon = rotate;
     const refresh = (done: any) => {
       bridge.call("refreshProfile", null, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<
@@ -173,6 +179,7 @@ const ProfileView = defineComponent({
       titleParam,
       backUrlParam,
       dialogVisible,
+      rotateIcon,
     };
   },
 });

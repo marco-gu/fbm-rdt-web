@@ -15,16 +15,16 @@ const App = defineComponent({
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
-    let isLoggedIn = false;
+    // let isLoggedIn = false;
     const deviceHeight = window.innerHeight;
     store.dispatch("screenModule/saveScreenHeight", {
       screenHeight: deviceHeight,
     });
 
-    bridge.register("reLogin", () => {
-      isLoggedIn = false;
-      router.push({ name: "login", params: { message: "TOKEN EXPIRED" } });
-    });
+    // bridge.register("reLogin", () => {
+    //   isLoggedIn = false;
+    //   router.push({ name: "login", params: { message: "TOKEN EXPIRED" } });
+    // });
     bridge.register("onKeyCodeClick", (keycode: string) => {
       console.log("CUSTOM_KEY_CODE_WEBVIEW ===> " + keycode);
     });
@@ -34,11 +34,12 @@ const App = defineComponent({
         i18n.locale.value = res;
         store.dispatch("languageModule/setCurrentLang", res);
       });
-      bridge.call("fetchUserToken", null, (res: string) => {
-        isLoggedIn = !!res;
-      });
+      // bridge.call("fetchUserToken", null, (res: string) => {
+      //   isLoggedIn = !!res;
+      // });
       // override back pressed event
       bridge.register("onBackPressed", () => {
+        const isLoggedIn = store.state.commonModule.isLogin;
         const currentRoute = route.path;
         if (isLoggedIn) {
           const matchedItem = searchRoute(routeTableLoggedIn[0], currentRoute);

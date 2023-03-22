@@ -104,7 +104,7 @@ const ImageAccessView = defineComponent({
     HeaderComponent,
   },
   setup() {
-    const route = useRoute();
+    // const route = useRoute();
     const router = useRouter();
     const loading = ref(false);
     // page default display
@@ -135,7 +135,7 @@ const ImageAccessView = defineComponent({
             apiIndex.value++;
           } else {
             defaultDisplay.value = apiResult.value;
-            // myInfiniteScroll.value.stop();
+            myInfiniteScroll.value.stop();
           }
         }
       });
@@ -228,9 +228,9 @@ const ImageAccessView = defineComponent({
         if (search.value.length >= 5) {
           input.value.blur();
           onSearch();
-        } else if (search.value.length == 0) {
-          onClear();
         }
+      } else if (search.value.length == 0) {
+        onClear();
       }
     });
     const onSearch = () => {

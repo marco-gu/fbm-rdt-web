@@ -85,6 +85,10 @@ const routeTableLoggedIn = [
             path: "/software-update",
             children: [],
           },
+          {
+            path: "/resetPwd",
+            children: [],
+          },
         ],
       },
       {

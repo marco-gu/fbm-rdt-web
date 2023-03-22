@@ -1,11 +1,11 @@
 <template>
   <div class="home-container">
     <div class="logo-container">
-      <q-img :src="maerskLogo" no-spinner class="logo-image" />
+      <q-img no-transition no-spinner :src="maerskLogo" class="logo-image" />
     </div>
     <div class="card" @click="goOnline()">
       <div class="image">
-        <q-img no-spinner :src="onlineLogo" width="100px" />
+        <q-img no-transition no-spinner :src="onlineLogo" width="100px" />
       </div>
       <div class="content">
         <div class="title">{{ $t("home.pre_validation") }}</div>
@@ -14,7 +14,7 @@
     </div>
     <div class="card" @click="goOffline()">
       <div class="image">
-        <q-img no-spinner :src="offlineLogo" width="100px" />
+        <q-img no-transition no-spinner :src="offlineLogo" width="100px" />
       </div>
       <div class="content">
         <div class="title">{{ $t("home.offline") }}</div>
@@ -23,16 +23,16 @@
     </div>
     <div class="card" @click="goContinue()">
       <div class="image">
-        <q-img no-spinner :src="continueLogo" width="100px" />
+        <q-img no-transition no-spinner :src="continueLogo" width="100px" />
       </div>
       <div class="content">
         <div class="title">{{ $t("home.continue") }}</div>
         <div class="sub-title">{{ $t("home.continue_hint") }}</div>
       </div>
     </div>
-    <div class="version-bottom">
+    <!-- <div class="version-bottom">
       <span> {{ versionNum }} </span>
-    </div>
+    </div> -->
   </div>
 </template>
 <script lang="ts">

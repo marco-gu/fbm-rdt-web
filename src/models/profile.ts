@@ -215,3 +215,7 @@ export interface TaskLPList {
   updateDatetime: string;
   allCartonNumber: number;
 }
+
+export interface LPDetailList {
+  cartonID: string;
+}
