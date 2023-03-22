@@ -19,7 +19,6 @@
                   ref="inputRef"
                   v-model="item.model"
                   @paste="validPaste($event, i)"
-                  clearable
                   :maxlength="item.length"
                   lazy-rules
                   :rules="[item.valid]"

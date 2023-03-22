@@ -21,7 +21,6 @@
                   input-class="text-right"
                   ref="inputRef"
                   v-model="item.model"
-                  clearable
                   @paste="validPaste($event, i)"
                   :maxlength="item.length"
                   lazy-rules

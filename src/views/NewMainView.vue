@@ -14,13 +14,13 @@
     </div>
   </div>
   <div class="card" @click="goContinue">
-    <template v-if="count == 0">
+    <div v-show="count == 0">
       <div style="margin-bottom: 5px">
         <q-img no-transition no-spinner :src="bellCompleteIcon" width="20px" />
       </div>
       <div>No outstanding scan job, well done!</div>
-    </template>
-    <template v-else>
+    </div>
+    <div v-show="count != 0">
       <div style="margin-bottom: 5px">
         <q-img no-transition no-spinner :src="bellIcon" width="20px" />
       </div>
@@ -29,20 +29,24 @@
         <span style="color: #d62d23; font-weight: bold">{{ count }}</span>
         incomplete job(s), please click this card to continue.
       </div>
-    </template>
-    <!-- <div>
-      There is (are)
-      <span style="color: #d62d23">{{ count }}</span>
-      incomplete job(s), please click this card to continue.
-    </div> -->
+    </div>
   </div>
   <div class="more">
-    <div>Please get started</div>
-    <div>Need help?</div>
-    <div class="more-icon">
+    <div
+      :class="[isAnimation == true ? 'more-message-animation' : 'more-message']"
+    >
+      <div>Please get started</div>
+      <div>Need help?</div>
+    </div>
+    <div
+      :class="[isAnimation == true ? 'more-icon-animation' : 'more-icon']"
+      id="pointer"
+    >
       <q-img no-transition no-spinner :src="pointIcon" width="14px" />
     </div>
-    <div class="more-spirit">
+    <div
+      :class="[isAnimation == true ? 'more-spirit-animation' : 'more-spirit']"
+    >
       <q-img no-transition no-spinner :src="spiritIcon" width="60px" />
     </div>
   </div>
@@ -56,6 +60,7 @@ import spirit from "../assets/icon/lns_spirit.png";
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
 import { ScanDataManagement } from "@/models/profile";
+import store, { useStore } from "@/store";
 const NewMainView = defineComponent({
   setup() {
     const router = useRouter();
@@ -64,12 +69,22 @@ const NewMainView = defineComponent({
     const pointIcon = point;
     const spiritIcon = spirit;
     const count = ref(0);
+    const isAnimation = ref();
+    const store = useStore();
+    setTimeout(() => {
+      if (isAnimation.value) {
+        const pointer = document.getElementById("pointer") as any;
+        pointer.style.visibility = "visible";
+      }
+    }, 2000);
     onBeforeMount(() => {
       bridge.call("retrieveContinueJobCounts", null, (data: any) => {
         const apiResult = JSON.parse(data) as ScanDataManagement[];
         count.value = apiResult.length;
       });
     });
+    isAnimation.value = store.state.commonModule.isAnimation;
+    store.dispatch("commonModule/setStopAnimation");
     const goOnline = () => {
       router.push("/profile/online");
     };
@@ -88,6 +103,7 @@ const NewMainView = defineComponent({
       goOffline,
       goContinue,
       bellCompleteIcon,
+      isAnimation,
     };
   },
 });
@@ -116,16 +132,36 @@ export default NewMainView;
   position: absolute;
   top: 18px;
   right: 60px;
-  animation: twinkle 5s;
+  animation: twinkle 8s;
   animation-iteration-count: infinite;
 }
-.more-spirit {
+
+.more-icon-animation {
+  visibility: hidden;
+  position: absolute;
+  top: 18px;
+  right: 60px;
+  animation: twinkle 8s;
+  animation-iteration-count: infinite;
+}
+.more-message-animation {
+  animation-name: moveMsg;
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
+}
+.more-spirit-animation {
   position: absolute;
   top: 36px;
   animation-name: move;
   animation-duration: 1.5s;
   animation-fill-mode: forwards;
   animation-timing-function: ease-in-out;
+}
+.more-spirit {
+  position: absolute;
+  top: 36px;
+  left: 30px;
 }
 @keyframes move {
   0% {
@@ -135,7 +171,29 @@ export default NewMainView;
     transform: translateX(45px);
   }
   100% {
-    transform: translateX(40px);
+    transform: translateX(30px);
+  }
+}
+@keyframes moveMsg {
+  0% {
+    transform: translateX(-100px);
+  }
+  // 80% {
+  //   transform: translateX(15px);
+  // }
+  100% {
+    transform: translateX(0px);
+  }
+}
+@keyframes movePointer {
+  0% {
+    transform: translateX(-100px);
+  }
+  80% {
+    transform: translateX(15px);
+  }
+  100% {
+    transform: translateX(0px);
   }
 }
 

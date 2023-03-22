@@ -25,7 +25,6 @@
           </q-toolbar>
           <q-card-section>
             <q-input
-              clearable
               outlined
               dense
               v-model="mail"

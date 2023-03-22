@@ -27,7 +27,6 @@
                 v-model="item.value"
                 lazy-rules
                 :rules="[item.valid]"
-                clearable
                 borderless
                 dense
               >
