@@ -215,6 +215,7 @@ const MyJobsView = defineComponent({
         if (searchResult.value.length == 0) {
           noRecord.value = true;
         } else {
+          noRecord.value = false;
           if (searchResult.value.length > 10) {
             defaultDisplay.value = searchResult.value.slice(0, 10);
             searchIndex.value++;
