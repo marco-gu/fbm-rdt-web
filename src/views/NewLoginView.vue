@@ -7,26 +7,26 @@
       <div class="login-form">
         <div class="input-label">{{ $t("login.account") }}</div>
         <q-input
-          clearable
           v-model="username"
           outlined
+          color="secondary"
           dense
           lazy-rules
           :rules="[(val) => !!val || $t('messageCode.E91-01-0004')]"
         />
         <div class="input-label">{{ $t("login.password") }}</div>
         <q-input
-          clearable
           v-model="password"
           outlined
           dense
+          color="secondary"
           :type="isPwd ? 'password' : 'text'"
           lazy-rules
           :rules="[(val) => !!val || $t('messageCode.E91-01-0005')]"
         >
           <template v-slot:append>
             <q-icon
-              color="black"
+              color="secondary"
               :name="isPwd ? 'visibility_off' : 'visibility'"
               class="cursor-pointer"
               @click="isPwd = !isPwd"
@@ -69,6 +69,12 @@
       @confirm="forgotPwdVisible = false"
       @close="forgotPwdVisible = false"
     ></ForgotPwdComponent>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
   </div>
 </template>
 <script lang="ts">
@@ -87,9 +93,11 @@ import {
 import { LoginResponse } from "@/models/login.response";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
 import { useStore } from "@/store";
+import PopupComponent from "@/components/PopupComponent.vue";
 const NewLoginView = defineComponent({
   components: {
     ForgotPwdComponent,
+    PopupComponent,
   },
   setup() {
     const router = useRouter();
@@ -97,33 +105,23 @@ const NewLoginView = defineComponent({
     const $q = useQuasar();
     const username = ref("");
     const password = ref("");
-    // const inputUsername = ref();
-    // const inputPassword = ref();
     const forgotPwdVisible = ref(false);
     const userManualVisible = ref(false);
     const isPwd = ref(true);
-    // const versionNum = ref();
     const store = useStore();
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
     const goFirstPage = () => {
       bridge.call("goFirstPage");
     };
+
     onMounted(() => {
       bridge.call("checkUserUid", null, async (res: string) => {
         if (res) {
           username.value = res.toUpperCase();
         }
-        // await nextTick();
-        // if (!username.value) {
-        //   inputUsername.value.focus();
-        // } else {
-        //   inputPassword.value.focus();
-        // }
       });
-      // bridge.call("getAppInfo", null, async (res: string) => {
-      //   if (res) {
-      //     versionNum.value = res;
-      //   }
-      // });
     });
     watch(
       username,
@@ -140,7 +138,6 @@ const NewLoginView = defineComponent({
         username: username.value.toUpperCase(),
         password: md5(password.value),
       };
-
       bridge.call("login", args, (res: string) => {
         const androidResponse = JSON.parse(
           res
@@ -162,7 +159,9 @@ const NewLoginView = defineComponent({
           }
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          type.value = "error";
+          popupVisible.value = true;
+          msg.value = message;
         }
       });
     };
@@ -174,10 +173,13 @@ const NewLoginView = defineComponent({
       userManualVisible,
       onSubmit,
       goFirstPage,
+      type,
+      popupVisible,
       // i18n,
       // versionNum,
       // inputUsername,
       // inputPassword,
+      msg,
     };
   },
 });

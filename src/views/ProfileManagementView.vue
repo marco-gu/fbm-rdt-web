@@ -9,7 +9,6 @@
           outlined
           dense
           :placeholder="$t('common.search')"
-          clearable
         >
           <template v-slot:prepend>
             <q-icon name="search" />

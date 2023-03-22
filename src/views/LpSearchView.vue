@@ -48,7 +48,6 @@
                   v-model="item.model"
                   @keyup.enter="onInputKeyUp($event, i)"
                   @paste="validPaste($event, i)"
-                  clearable
                   :maxlength="item.length"
                   lazy-rules
                   :rules="[item.valid]"
@@ -80,6 +79,12 @@
         {{ bottomButtonLable }}
       </q-btn>
     </div>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
   </div>
 </template>
 <script lang="ts">
@@ -94,11 +99,6 @@ import {
   ProfileMaster,
 } from "@/models/profile";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
-import {
-  popupErrorMsg,
-  popupInfoMsg,
-  popupSuccessMsg,
-} from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, onMounted, onUnmounted, ref } from "vue";
@@ -115,6 +115,7 @@ import { useStore } from "@/store";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { softKeyPopUp } from "../utils/screen.util";
 import inputScan from "../assets/images/input_scan.svg";
+import PopupComponent from "@/components/PopupComponent.vue";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -128,6 +129,7 @@ const enum ValidationType {
 const LpSearchView = defineComponent({
   components: {
     HeaderComponent,
+    PopupComponent,
   },
   setup() {
     const router = useRouter();
@@ -160,7 +162,9 @@ const LpSearchView = defineComponent({
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
     });
-
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -299,8 +303,11 @@ const LpSearchView = defineComponent({
                 routeParams.total = androidResponse.data.total;
                 routeParams.taskID = androidResponse.data.taskID;
                 routeParams.type = scanType.value;
-                const message = i18n.t("messageCode.E93-05-0005");
-                popupSuccessMsg($q, message);
+                type.value = "success";
+                popupVisible.value = true;
+                msg.value = i18n.t("messageCode.E93-05-0005");
+                // const message = i18n.t("messageCode.E93-05-0005");
+                // popupSuccessMsg($q, message);
                 setTimeout(() => {
                   router.push({
                     name: "scan",
@@ -308,17 +315,27 @@ const LpSearchView = defineComponent({
                   });
                 }, 2000);
               } else if (androidResponse.status == AndroidResponseStatus.INFO) {
-                const message = i18n.t(
+                // const message = i18n.t(
+                //   "messageCode." + androidResponse.messageCode
+                // );
+                // popupInfoMsg($q, message);
+                type.value = "info";
+                popupVisible.value = true;
+                msg.value = i18n.t(
                   "messageCode." + androidResponse.messageCode
                 );
-                popupInfoMsg($q, message);
               } else if (
                 androidResponse.status == AndroidResponseStatus.ERROR
               ) {
-                const message = i18n.t(
+                // const message = i18n.t(
+                //   "messageCode." + androidResponse.messageCode
+                // );
+                // popupErrorMsg($q, message);
+                type.value = "error";
+                popupVisible.value = true;
+                msg.value = i18n.t(
                   "messageCode." + androidResponse.messageCode
                 );
-                popupErrorMsg($q, message);
               }
             });
           } else {
@@ -418,6 +435,9 @@ const LpSearchView = defineComponent({
       titleParam,
       inputScanIcon,
       backUrlParam,
+      type,
+      popupVisible,
+      msg,
     };
   },
 });

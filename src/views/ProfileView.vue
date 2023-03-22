@@ -9,7 +9,6 @@
           outlined
           dense
           :placeholder="$t('common.search')"
-          clearable
         >
           <template v-slot:prepend>
             <q-icon name="search" />
@@ -45,6 +44,12 @@
         </q-pull-to-refresh>
       </q-scroll-area>
     </div>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
     <q-dialog v-model="dialogVisible" persistent>
       <div class="dialog-container">
         <div class="dialog-container__title">
@@ -73,14 +78,15 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
 import formatDate from "../utils/formatDate";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import rotate from "../assets/icon/rotate-solid.svg";
+import PopupComponent from "@/components/PopupComponent.vue";
 const ProfileView = defineComponent({
   components: {
     HeaderComponent,
+    PopupComponent,
   },
   setup() {
     const $q = useQuasar();
@@ -96,6 +102,9 @@ const ProfileView = defineComponent({
     const search = ref("");
     const dialogVisible = ref(false);
     const rotateIcon = rotate;
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
     const refresh = (done: any) => {
       bridge.call("refreshProfile", null, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<
@@ -108,8 +117,11 @@ const ProfileView = defineComponent({
             formatDate: formatDate(new Date()),
           });
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          // const message = i18n.t("messageCode." + androidResponse.messageCode);
+          // popupErrorMsg($q, message);
+          type.value = "error";
+          popupVisible.value = true;
+          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
         }
         dialogVisible.value = false;
         done();
@@ -142,7 +154,10 @@ const ProfileView = defineComponent({
         } else {
           sortProfileList(profileListDisplay.value);
           if (!isFirstSync.value) {
-            popupSuccessMsg($q, i18n.t("profile.sync_complete"));
+            type.value = "success";
+            popupVisible.value = true;
+            msg.value = i18n.t("profile.sync_complete");
+            // popupSuccessMsg($q, i18n.t("profile.sync_complete"));
           }
         }
       });
@@ -180,6 +195,9 @@ const ProfileView = defineComponent({
       backUrlParam,
       dialogVisible,
       rotateIcon,
+      type,
+      popupVisible,
+      msg,
     };
   },
 });

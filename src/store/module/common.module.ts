@@ -4,12 +4,14 @@ import RootState from "../state";
 export interface CommonState {
   scanDevice: string;
   isLogin: boolean;
+  isAnimation: boolean;
 }
 
 const commonModule: Module<CommonState, RootState> = {
   state: {
     scanDevice: "camera",
     isLogin: false,
+    isAnimation: true,
   },
   getters: {
     getScanDevice(state: any) {
@@ -17,6 +19,9 @@ const commonModule: Module<CommonState, RootState> = {
     },
     getIsLogin(state: any) {
       return state.isLogin;
+    },
+    getIsAnimation(state: any) {
+      return state.isAnimation;
     },
   },
   actions: {
@@ -26,6 +31,9 @@ const commonModule: Module<CommonState, RootState> = {
     setIsLogin(context: any) {
       context.commit("setIsLogin");
     },
+    setStopAnimation(context: any) {
+      context.commit("setStopAnimation");
+    },
   },
   mutations: {
     setScanDevice(state: CommonState, payload: string) {
@@ -33,6 +41,9 @@ const commonModule: Module<CommonState, RootState> = {
     },
     setIsLogin(state: CommonState) {
       state.isLogin = true;
+    },
+    setStopAnimation(state: CommonState) {
+      state.isAnimation = false;
     },
   },
   namespaced: true,

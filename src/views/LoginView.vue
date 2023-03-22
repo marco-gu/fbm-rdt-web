@@ -6,7 +6,6 @@
         <div class="input-label">{{ $t("login.account") }}</div>
         <q-input
           ref="inputUsername"
-          clearable
           v-model="username"
           outlined
           dense
@@ -17,7 +16,6 @@
         <div class="input-label">{{ $t("login.password") }}</div>
         <q-input
           ref="inputPassword"
-          clearable
           v-model="password"
           outlined
           dense
