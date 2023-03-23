@@ -79,8 +79,10 @@ const NewMainView = defineComponent({
     }, 2000);
     onBeforeMount(() => {
       bridge.call("retrieveContinueJobCounts", null, (data: any) => {
-        const apiResult = JSON.parse(data) as ScanDataManagement[];
-        count.value = apiResult.length;
+        const apiResult = JSON.parse(data);
+        if (apiResult) {
+          count.value = apiResult;
+        }
       });
     });
     isAnimation.value = store.state.commonModule.isAnimation;
