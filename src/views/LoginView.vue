@@ -82,7 +82,6 @@ import md5 from "md5";
 import ForgotPwdComponent from "@/components/ForgotPwdComponent.vue";
 import UserManual from "@/components/UserManualComponent.vue";
 import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
-import { popupErrorMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
 const LoginView = defineComponent({
   components: {
@@ -155,8 +154,8 @@ const LoginView = defineComponent({
             router.push("/home");
           }
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          // const message = i18n.t("messageCode." + androidResponse.messageCode);
+          // popupErrorMsg($q, message);
         }
       });
     };

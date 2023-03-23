@@ -90,7 +90,7 @@
 import { defineComponent, onBeforeMount, onMounted } from "@vue/runtime-core";
 import bridge from "dsbridge";
 import { ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { ImageModel } from "../models/image";
 import { useI18n } from "vue-i18n";
 import HeaderComponent from "@/components/HeaderComponent.vue";
@@ -98,7 +98,6 @@ import {
   calScrollAreaWithBottom,
   softKeyPopUpWithSearch,
 } from "@/utils/screen.util";
-const virtualPageLimit = 20;
 const ImageAccessView = defineComponent({
   components: {
     HeaderComponent,

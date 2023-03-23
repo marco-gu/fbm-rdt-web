@@ -38,7 +38,7 @@
           </div>
         </template>
         <template v-else>
-          <q-pull-to-refresh @refresh="refresh">
+          <q-pull-to-refresh @refresh="refresh" style="margin-right: 40px">
             <template v-if="noRecord">
               <div class="no-record">{{ $t("common.no_record") }}</div>
             </template>
@@ -50,7 +50,11 @@
               </div>
             </template> -->
             <!-- <template v-else> -->
-            <q-list v-for="(item, index) in profileListDisplay" :key="index">
+            <q-list
+              v-for="(item, index) in profileListDisplay"
+              :key="index"
+              style="margin-right: -40px"
+            >
               <q-item class="card-item" v-touch-hold:1800="handleHold">
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>
@@ -65,7 +69,7 @@
         </template>
       </q-scroll-area>
     </div>
-    <div class="bottom-coherent-button" v-show="isEditMode">
+    <div class="bottom-coherent-button" id="bottom-button" v-show="isEditMode">
       <q-btn
         no-caps
         class="full-width"
@@ -84,6 +88,12 @@
         @click="deleteProfile"
       />
     </div>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
     <q-dialog v-model="dialogVisible" persistent>
       <div class="dialog-container">
         <div class="dialog-container__title">
@@ -112,15 +122,17 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import formatDate from "../utils/formatDate";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import PopupComponent from "@/components/PopupComponent.vue";
+import { calScrollAreaWithBottom } from "@/utils/screen.util";
 const ProfileManagementView = defineComponent({
   components: {
     HeaderComponent,
+    PopupComponent,
   },
   setup() {
-    const $q = useQuasar();
+    // const $q = useQuasar();
     const router = useRouter();
     const i18n = useI18n();
     const search = ref("");
@@ -131,6 +143,9 @@ const ProfileManagementView = defineComponent({
     const titleParam = i18n.t("profile.profile");
     const dialogVisible = ref(false);
     const noRecord = ref(false);
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -156,7 +171,10 @@ const ProfileManagementView = defineComponent({
         } else {
           sortProfileList(profileListDisplay.value);
           if (!isFirstSync.value && mode != "delete") {
-            popupSuccessMsg($q, i18n.t("profile.sync_complete"));
+            type.value = "success";
+            popupVisible.value = true;
+            msg.value = i18n.t("profile.sync_complete");
+            // popupSuccessMsg($q, i18n.t("profile.sync_complete"));
           }
         }
       });
@@ -182,10 +200,13 @@ const ProfileManagementView = defineComponent({
               formatDate: formatDate(new Date()),
             });
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.t(
-              "messageCode." + androidResponse.messageCode
-            );
-            popupErrorMsg($q, message);
+            // const message = i18n.t(
+            //   "messageCode." + androidResponse.messageCode
+            // );
+            // popupErrorMsg($q, message);
+            type.value = "error";
+            popupVisible.value = true;
+            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
           }
           dialogVisible.value = false;
           done();
@@ -231,15 +252,21 @@ const ProfileManagementView = defineComponent({
             isEditMode.value = false;
             getProfileList("delete");
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            const message = i18n.t(
-              "messageCode." + androidResponse.messageCode
-            );
-            popupErrorMsg($q, message);
+            // const message = i18n.t(
+            //   "messageCode." + androidResponse.messageCode
+            // );
+            // popupErrorMsg($q, message);
+            type.value = "error";
+            popupVisible.value = true;
+            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
           }
         });
       } else {
-        const message = i18n.t("messageCode.E93-04-0004");
-        popupErrorMsg($q, message);
+        type.value = "error";
+        popupVisible.value = true;
+        msg.value = i18n.t("messageCode.E93-04-0004");
+        // const message = i18n.t("messageCode.E93-04-0004");
+        // popupErrorMsg($q, message);
       }
     };
     const cancelEditMode = () => {
@@ -259,6 +286,9 @@ const ProfileManagementView = defineComponent({
       search,
       titleParam,
       noRecord,
+      type,
+      popupVisible,
+      msg,
     };
   },
 });

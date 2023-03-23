@@ -9,7 +9,12 @@
       <q-card style="min-width: 250px; background-color: #ef5350">
         <div style="display: flex; padding: 10px; justify-content: center">
           <div>
-            <q-icon name="error_outline" size="20px" color="white" />
+            <q-icon
+              name="error_outline"
+              size="18px"
+              color="white"
+              style="padding-bottom: 1px"
+            />
           </div>
           <div style="margin-left: 10px; color: white">
             <div class="text-h7">{{ msg }}</div>
@@ -21,7 +26,12 @@
       <q-card style="min-width: 250px; background-color: #21ba45">
         <div style="display: flex; padding: 10px; justify-content: center">
           <div>
-            <q-icon name="check_circle" size="20px" color="white" />
+            <q-icon
+              name="check_circle"
+              size="18px"
+              style="padding-bottom: 1px"
+              color="white"
+            />
           </div>
           <div style="margin-left: 10px; color: white">
             <div class="text-h7">{{ msg }}</div>
@@ -33,7 +43,12 @@
       <q-card style="min-width: 250px; background-color: #42a5f5">
         <div style="display: flex; padding: 10px; justify-content: center">
           <div>
-            <q-icon name="info" size="20px" color="white" />
+            <q-icon
+              name="info"
+              size="18px"
+              color="white"
+              style="padding-bottom: 1px"
+            />
           </div>
           <div style="margin-left: 10px; color: white">
             <div class="text-h7">{{ msg }}</div>

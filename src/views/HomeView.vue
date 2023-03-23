@@ -124,6 +124,12 @@
         </div>
       </div>
     </q-dialog>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
   </q-layout>
 </template>
 <script lang="ts">
@@ -147,15 +153,17 @@ import userManual from "../assets/icon/user-manual.svg";
 import logOut from "../assets/icon/logout.svg";
 import logo from "../assets/images/Maersk_Logo_Neg.svg";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
-import { popupErrorMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
 import menu from "../assets/images/bars-solid.svg";
 import gear from "../assets/images/gear-solid.svg";
 import doorOpen from "../assets/images/door-open-solid.svg";
 import maerskLogo from "../assets/icon/Maersk.png";
+import PopupComponent from "@/components/PopupComponent.vue";
 export default {
   name: "HomeView",
-  components: {},
+  components: {
+    PopupComponent,
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -177,6 +185,9 @@ export default {
     const doorOpenIcon = doorOpen;
     const showLogoutDialog = ref(false);
     const maerskLogoIcon = maerskLogo;
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
     const onCloseMenu = () => {
       toggleLeftDrawer();
     };
@@ -210,8 +221,11 @@ export default {
           bridge.call("goFirstPage");
           router.push("/");
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          type.value = "error";
+          popupVisible.value = true;
+          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+          // const message = i18n.t("messageCode." + androidResponse.messageCode);
+          // popupErrorMsg($q, message);
         }
       });
     };
@@ -249,6 +263,9 @@ export default {
       maerskLogoIcon,
       barBlackIcon,
       barWhiteIcon,
+      type,
+      popupVisible,
+      msg,
     };
   },
 };
@@ -261,7 +278,7 @@ export default {
   height: 80%;
   font-size: 14px;
 }
-.q-layout {
-  background: transparent;
-}
+// .q-layout {
+//   background: transparent;
+// }
 </style>
