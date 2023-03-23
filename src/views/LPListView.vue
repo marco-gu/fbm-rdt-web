@@ -126,11 +126,44 @@ const LPListView = defineComponent({
         }
       }
     };
+    const composeTaskListSearchResult = (res: string) => {
+      taskListSearchResult.value = JSON.parse(res) as TaskLPList[];
+      sortTaskList(taskListSearchResult.value);
+      if (taskListSearchResult.value.length == 0) {
+        noRecord.value = true;
+      } else {
+        noRecord.value = false;
+        if (taskListSearchResult.value.length > pageSlice) {
+          taskListDisplay.value = taskListSearchResult.value.slice(
+            0,
+            pageSlice
+          );
+          searchIndex.value++;
+          myInfiniteScroll.value.resume();
+        } else {
+          taskListDisplay.value = taskListSearchResult.value;
+          myInfiniteScroll.value.stop();
+        }
+      }
+    };
     const refresh = (done: any) => {
-      bridge.call("fetchTaskForLPList", null, (res: string) => {
-        composeTaskListResult(res);
-        done();
-      });
+      myInfiniteScroll.value.resume();
+      if (onSearchMode.value) {
+        searchIndex.value = 0;
+        const args = {
+          searchCondition: search.value.toUpperCase(),
+        };
+        bridge.call("searchTaskForLPList", args, (res: string) => {
+          composeTaskListSearchResult(res);
+          done();
+        });
+      } else {
+        retrieveIndex.value = 0;
+        bridge.call("fetchTaskForLPList", null, (res: string) => {
+          composeTaskListResult(res);
+          done();
+        });
+      }
     };
     const onLoad = (index: any, done: any) => {
       if (onSearchMode.value) {
@@ -175,7 +208,7 @@ const LPListView = defineComponent({
     };
     watch(search, () => {
       if (search.value) {
-        if (search.value.length >= 5) {
+        if (search.value.length >= 4) {
           input.value.blur();
           onSearch();
         }
@@ -193,25 +226,7 @@ const LPListView = defineComponent({
         searchCondition: search.value.toUpperCase(),
       };
       bridge.call("searchTaskForLPList", args, (res: string) => {
-        taskListSearchResult.value = JSON.parse(res) as TaskLPList[];
-        sortTaskList(taskListSearchResult.value);
-        if (taskListSearchResult.value.length == 0) {
-          noRecord.value = true;
-        } else {
-          noRecord.value = false;
-          if (taskListSearchResult.value.length > pageSlice) {
-            taskListDisplay.value = taskListSearchResult.value.slice(
-              0,
-              pageSlice
-            );
-            searchIndex.value++;
-            myInfiniteScroll.value.resume();
-          } else {
-            taskListDisplay.value = taskListSearchResult.value;
-            myInfiniteScroll.value.stop();
-          }
-        }
-        myInfiniteScroll.value.stop();
+        composeTaskListSearchResult(res);
       });
     };
     const onClear = () => {
