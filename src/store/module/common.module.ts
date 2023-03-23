@@ -34,6 +34,9 @@ const commonModule: Module<CommonState, RootState> = {
     setStopAnimation(context: any) {
       context.commit("setStopAnimation");
     },
+    setAnimation(context: any) {
+      context.commit("setAnimation");
+    },
   },
   mutations: {
     setScanDevice(state: CommonState, payload: string) {
@@ -44,6 +47,9 @@ const commonModule: Module<CommonState, RootState> = {
     },
     setStopAnimation(state: CommonState) {
       state.isAnimation = false;
+    },
+    setAnimation(state: CommonState) {
+      state.isAnimation = true;
     },
   },
   namespaced: true,

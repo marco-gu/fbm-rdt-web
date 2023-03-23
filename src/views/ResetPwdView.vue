@@ -81,6 +81,12 @@
         @click="onSubmit"
       />
     </div>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
   </div>
 </template>
 <script lang="ts">
@@ -88,19 +94,20 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { LogoutResponse, UpdateLoginUser } from "@/models/login.response";
+import { UpdateLoginUser } from "@/models/login.response";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import md5 from "md5";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { useI18n } from "vue-i18n";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import PopupComponent from "@/components/PopupComponent.vue";
 const ResetPwdView = defineComponent({
   components: {
     HeaderComponent,
+    PopupComponent,
   },
   setup() {
     const route = useRoute();
@@ -116,6 +123,9 @@ const ResetPwdView = defineComponent({
     const isPwd = ref(true);
     const myForm = ref();
     const titleParam = i18n.t("login.change_password");
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -151,18 +161,27 @@ const ResetPwdView = defineComponent({
             closeLoading($q);
             const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
             if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              const message = i18n.t("messageCode.E93-02-0001");
-              if (from.value == "LoginView") {
-                router.push("/home");
+              type.value = "success";
+              popupVisible.value = true;
+              msg.value = i18n.t("messageCode.E93-02-0001");
+              if (from.value == "NewLoginView") {
+                setTimeout(() => {
+                  router.push("/home");
+                }, 1800);
               } else if (from.value == "SettingView") {
-                router.push("/setting");
+                setTimeout(() => {
+                  router.push("/setting");
+                }, 1800);
               }
-              popupSuccessMsg($q, message);
+              // popupSuccessMsg($q, message);
             } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-              const message = i18n.t(
-                "messageCode." + androidResponse.messageCode
-              );
-              popupErrorMsg($q, message);
+              // const message = i18n.t(
+              //   "messageCode." + androidResponse.messageCode
+              // );
+              // popupErrorMsg($q, message);
+              type.value = "error";
+              popupVisible.value = true;
+              msg.value = i18n.t("messageCode." + androidResponse.messageCode);
             }
           });
         }
@@ -259,6 +278,9 @@ const ResetPwdView = defineComponent({
       newPwdRule,
       reNewPwdRule,
       myForm,
+      type,
+      popupVisible,
+      msg,
     };
   },
 });

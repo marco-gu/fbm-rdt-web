@@ -16,7 +16,7 @@
         </q-input>
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <q-pull-to-refresh @refresh="refresh" style="margin-right: 30px">
+        <q-pull-to-refresh @refresh="refresh" style="margin-right: 40px">
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
             <div class="no-data">
               {{ $t("common.no_record") }}
@@ -26,7 +26,7 @@
             <q-list
               v-for="(item, index) in profileListDisplay"
               :key="index"
-              style="margin-right: -30px"
+              style="margin-right: -40px"
             >
               <q-item class="card-item" clickable @click="onClickProfile(item)">
                 <q-item-section class="card-item-labels">
@@ -69,7 +69,6 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { useQuasar } from "quasar";
 import { defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { ProfileMaster } from "../models/profile";
@@ -89,7 +88,6 @@ const ProfileView = defineComponent({
     PopupComponent,
   },
   setup() {
-    const $q = useQuasar();
     const router = useRouter();
     const route = useRoute();
     const i18n = useI18n();

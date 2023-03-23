@@ -10,7 +10,7 @@
       "
     >
       <div style="width: 100%; margin: 0 auto; color: #fff; text-align: center">
-        <q-btn
+        <!-- <q-btn
           style="position: absolute; left: 10px; color: #f6f3f1"
           flat
           dense
@@ -19,7 +19,17 @@
           aria-label="Menu"
           icon="menu"
           color="white"
+        /> -->
+
+        <q-img
+          style="position: absolute; left: 20px; top: 35px"
+          no-transition
+          no-spinner
+          :src="barWhiteIcon"
+          @click="toggleLeftDrawer"
+          width="20px"
         />
+
         <q-img no-transition no-spinner :src="maerskLogoIcon" width="46px" />
         <!-- <q-toolbar-title style="text-align: center">
           <q-img no-transition no-spinner :src="maerskLogoIcon" width="46px" />
@@ -84,7 +94,7 @@
             >Label & Scan System</span
           >
           <span style="display: block; font-size: 10px; color: #757575"
-            >version Beta 1.0</span
+            >Version Beta 3.1</span
           >
           <span style="display: block; font-size: 10px; color: #757575"
             >by Maersk WDP@2023-3-10</span
@@ -114,10 +124,17 @@
         </div>
       </div>
     </q-dialog>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
   </q-layout>
 </template>
 <script lang="ts">
 import barBlack from "../assets/icon/bars-solid-black.svg";
+import barWhite from "../assets/icon/bars-solid-white.svg";
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import bridge from "dsbridge";
@@ -136,15 +153,17 @@ import userManual from "../assets/icon/user-manual.svg";
 import logOut from "../assets/icon/logout.svg";
 import logo from "../assets/images/Maersk_Logo_Neg.svg";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { useI18n } from "vue-i18n";
 import menu from "../assets/images/bars-solid.svg";
 import gear from "../assets/images/gear-solid.svg";
 import doorOpen from "../assets/images/door-open-solid.svg";
 import maerskLogo from "../assets/icon/Maersk.png";
+import PopupComponent from "@/components/PopupComponent.vue";
 export default {
   name: "HomeView",
-  components: {},
+  components: {
+    PopupComponent,
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -161,10 +180,14 @@ export default {
     const logoIcon = logo;
     const menuIcon = menu;
     const barBlackIcon = barBlack;
+    const barWhiteIcon = barWhite;
     const gearIcon = gear;
     const doorOpenIcon = doorOpen;
     const showLogoutDialog = ref(false);
     const maerskLogoIcon = maerskLogo;
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
     const onCloseMenu = () => {
       toggleLeftDrawer();
     };
@@ -198,8 +221,11 @@ export default {
           bridge.call("goFirstPage");
           router.push("/");
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          type.value = "error";
+          popupVisible.value = true;
+          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+          // const message = i18n.t("messageCode." + androidResponse.messageCode);
+          // popupErrorMsg($q, message);
         }
       });
     };
@@ -236,6 +262,10 @@ export default {
       onCloseMenu,
       maerskLogoIcon,
       barBlackIcon,
+      barWhiteIcon,
+      type,
+      popupVisible,
+      msg,
     };
   },
 };
@@ -248,10 +278,7 @@ export default {
   height: 80%;
   font-size: 14px;
 }
-.q-layout {
-  background: transparent;
-}
-svg {
-  fill: red;
-}
+// .q-layout {
+//   background: transparent;
+// }
 </style>

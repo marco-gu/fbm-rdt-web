@@ -60,6 +60,12 @@
         @click="onSubmit"
       />
     </div>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
   </div>
 </template>
 <script lang="ts">
@@ -67,25 +73,24 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { popupErrorMsg } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
-import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref, watch } from "vue";
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { useI18n } from "vue-i18n";
 import inputScan from "../assets/images/input_scan.svg";
+import PopupComponent from "@/components/PopupComponent.vue";
 const cargoImageView = defineComponent({
   components: {
     HeaderComponent,
+    PopupComponent,
   },
   setup() {
     const i18n = useI18n();
     const store = useStore();
     const router = useRouter();
     const reason = ref(i18n.t("image.damage"));
-    const $q = useQuasar();
     const pageViews = ref([] as any);
     const options = [i18n.t("image.damage"), i18n.t("image.other")];
     const scanType = ref("CargoImage");
@@ -93,6 +98,9 @@ const cargoImageView = defineComponent({
     const backUrlParam = "/imageAccess";
     const myForm = ref();
     const inputScanIcon = inputScan;
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
     pageViews.value = [
       {
         displayFieldName: "SO",
@@ -190,10 +198,13 @@ const cargoImageView = defineComponent({
           bridge.call("checkImageInputCondition", param, (res: string) => {
             const androidResponse = JSON.parse(res) as AndroidResponse<any>;
             if (androidResponse.status == AndroidResponseStatus.ERROR) {
-              const message = i18n.t(
-                "messageCode." + androidResponse.messageCode
-              );
-              popupErrorMsg($q, message);
+              // const message = i18n.t(
+              //   "messageCode." + androidResponse.messageCode
+              // );
+              // popupErrorMsg($q, message);
+              type.value = "error";
+              popupVisible.value = true;
+              msg.value = i18n.t("messageCode." + androidResponse.messageCode);
             } else {
               const param2 = {
                 cartonID: cartonID,
@@ -242,6 +253,9 @@ const cargoImageView = defineComponent({
       myForm,
       inputScanIcon,
       back,
+      type,
+      popupVisible,
+      msg,
     };
   },
 });

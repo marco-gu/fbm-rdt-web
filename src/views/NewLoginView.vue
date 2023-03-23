@@ -91,7 +91,6 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import { LoginResponse } from "@/models/login.response";
-import { popupErrorMsg } from "@/plugin/popupPlugins";
 import { useStore } from "@/store";
 import PopupComponent from "@/components/PopupComponent.vue";
 const NewLoginView = defineComponent({
@@ -154,8 +153,9 @@ const NewLoginView = defineComponent({
               },
             });
           } else {
-            router.push("/home");
             store.dispatch("commonModule/setIsLogin");
+            store.dispatch("commonModule/setAnimation");
+            router.push("/home");
           }
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);

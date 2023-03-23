@@ -71,6 +71,12 @@
         @click="complete"
       />
     </div>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
     <q-dialog v-model="dialogVisible" persistent>
       <div class="dialog-container">
         <div class="dialog-container__content">
@@ -90,11 +96,11 @@
 </template>
 <script lang="ts">
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import PopupComponent from "@/components/PopupComponent.vue";
 import {
   ProfileDisplayAttribute,
   ProfileMixCartonLevel,
 } from "@/models/profile";
-import { popupErrorMsg } from "@/plugin/popupPlugins";
 import {
   composeViewElement,
   ViewDisplayAttribute,
@@ -103,7 +109,6 @@ import {
 } from "@/utils/profile.render";
 import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
 import bridge from "dsbridge";
-import { useQuasar } from "quasar";
 import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
@@ -111,6 +116,7 @@ import inputScan from "../assets/images/input_scan.svg";
 const MixCartonView = defineComponent({
   components: {
     HeaderComponent,
+    PopupComponent,
   },
   setup() {
     const i18n = useI18n();
@@ -118,7 +124,6 @@ const MixCartonView = defineComponent({
     const cartonID = ref("99999999999999999999");
     const lastCartonID = ref("99999999999999999999");
     const itemCount = ref(0);
-    const $q = useQuasar();
     const inputRef = ref(null);
     const dialogVisible = ref(false);
     const scanType = ref("");
@@ -129,6 +134,9 @@ const MixCartonView = defineComponent({
     const route = useRoute();
     let isCamera = true;
     const inputScanIcon = inputScan;
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
     bridge.register("getMixCartonParam", (res: string) => {
       const mixCartonParam = JSON.parse(res);
       cartonID.value = mixCartonParam.cartonID;
@@ -257,11 +265,17 @@ const MixCartonView = defineComponent({
         // Step 2: Check input all required field
         myForm.value.validate().then((success: any) => {
           if (success) {
-            const message = i18n.t("messageCode.E93-07-0001");
-            popupErrorMsg($q, message);
+            // const message = i18n.t("messageCode.E93-07-0001");
+            // popupErrorMsg($q, message);
+            type.value = "error";
+            popupVisible.value = true;
+            msg.value = i18n.t("messageCode.E93-07-0001");
           } else {
-            const message = i18n.t("messageCode.E93-07-0002");
-            popupErrorMsg($q, message);
+            // const message = i18n.t("messageCode.E93-07-0002");
+            // popupErrorMsg($q, message);
+            type.value = "error";
+            popupVisible.value = true;
+            msg.value = i18n.t("messageCode.E93-07-0002");
           }
         });
       }
@@ -299,6 +313,9 @@ const MixCartonView = defineComponent({
       myForm,
       titleParam,
       inputScanIcon,
+      type,
+      popupVisible,
+      msg,
     };
   },
 });
