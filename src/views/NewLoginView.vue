@@ -50,7 +50,7 @@
           {{ $t("login.sso_login") }}
         </p>
       </div>
-      <div @click="forgotPwdVisible = true">
+      <div @click="userManualVisible = true">
         <p class="login-link-label">
           {{ $t("login.help") }}
         </p>
@@ -69,6 +69,11 @@
       @confirm="forgotPwdVisible = false"
       @close="forgotPwdVisible = false"
     ></ForgotPwdComponent>
+    <UserManual
+      :dialogVisible="userManualVisible"
+      @close="userManualVisible = false"
+    >
+    </UserManual>
     <PopupComponent
       :visible="popupVisible"
       :message="msg"
@@ -93,10 +98,12 @@ import {
 import { LoginResponse } from "@/models/login.response";
 import { useStore } from "@/store";
 import PopupComponent from "@/components/PopupComponent.vue";
+import UserManual from "@/components/UserManualComponent.vue";
 const NewLoginView = defineComponent({
   components: {
     ForgotPwdComponent,
     PopupComponent,
+    UserManual,
   },
   setup() {
     const router = useRouter();
