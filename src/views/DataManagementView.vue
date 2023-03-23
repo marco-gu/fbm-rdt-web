@@ -24,50 +24,133 @@
         id="scroll-area"
         :thumb-style="{ width: '0px' }"
       >
-        <template v-if="noRecord">
-          <div class="no-record">{{ $t("common.no_record") }}</div>
-        </template>
-        <template v-if="loading">
-          <div class="row justify-center q-my-md">
-            <q-spinner-dots color="primary" size="40px" />
-          </div>
-        </template>
-        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
-          <div v-if="isEditMode == false">
-            <div v-for="(item, index) in defaultDisplay" :key="index">
-              <div
-                v-touch-hold:900="handleHold"
-                clickable
-                @click="onClickScanTask(item)"
-              >
-                <q-item class="card-item">
-                  <div class="card-item-content">
+        <q-pull-to-refresh @refresh="refresh">
+          <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+            <template v-if="noRecord">
+              <div class="no-record">{{ $t("common.no_record") }}</div>
+            </template>
+            <template v-if="refreshloading">
+              <div class="row justify-center q-my-md">
+                <q-spinner-dots color="primary" size="40px" />
+              </div>
+            </template>
+
+            <div v-if="isEditMode == false">
+              <div v-for="(item, index) in defaultDisplay" :key="index">
+                <div
+                  v-touch-hold:900="handleHold"
+                  clickable
+                  @click="onClickScanTask(item)"
+                >
+                  <q-item class="card-item">
+                    <div class="card-item-content">
+                      <q-item-section class="content-section-1">
+                        <div
+                          style="text-align: left"
+                          v-html="formatTaskId(item.taskId)"
+                        ></div>
+                        <div style="height: 8px"></div>
+                        <div
+                          class="cardTime"
+                          style="text-align: left; white-space: nowrap"
+                        >
+                          {{ formatDate(new Date(item.updateDatetime)) }}
+                        </div>
+                      </q-item-section>
+                      <q-item-section class="content-section-2 process">
+                        <q-item-label>
+                          {{ item.scannedCartonNumber }}/{{
+                            item.allCartonNumber
+                          }}
+                          <!-- 9999/9999 -->
+                        </q-item-label>
+                      </q-item-section>
+                      <q-item-section
+                        class="content-section-3"
+                        style="display: flex; flex-direction: row"
+                      >
+                        <div class="column center" style="margin-right: 10px">
+                          <q-img
+                            no-transition
+                            width="20px"
+                            height="20px"
+                            no-spinner
+                            :src="
+                              item.finishStatus == 0
+                                ? finishedDisabled
+                                : finished
+                            "
+                          />
+                          <div
+                            class="center"
+                            style="font-size: 8px; margin-top: 8px"
+                          >
+                            {{ $t("common.finished") }}
+                          </div>
+                        </div>
+                        <div class="column center">
+                          <q-img
+                            no-transition
+                            width="20px"
+                            height="20px"
+                            no-spinner
+                            :src="
+                              item.uploadStatus == 0
+                                ? uploadedDisabled
+                                : uploaded
+                            "
+                          />
+                          <div
+                            class="center"
+                            style="font-size: 8px; margin-top: 8px"
+                          >
+                            {{ $t("common.uploaded") }}
+                          </div>
+                        </div>
+                      </q-item-section>
+                    </div>
+                    <q-item-section side>
+                      <q-icon name="chevron_right" color="black" />
+                    </q-item-section>
+                  </q-item>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <div style="height: 26px"></div>
+              <div v-for="(item, index) in defaultDisplay" :key="index">
+                <div class="row mb-15">
+                  <div class="center" style="width: 6%">
+                    <q-checkbox
+                      v-model="item.isSelected"
+                      checked-icon="app:checkboxOn"
+                      unchecked-icon="app:checkboxOff"
+                    />
+                  </div>
+                  <div class="row edit-data-list-container" style="width: 89%">
                     <q-item-section class="content-section-1">
                       <div
-                        style="text-align: left"
+                        class="cardTask"
                         v-html="formatTaskId(item.taskId)"
                       ></div>
                       <div style="height: 8px"></div>
-                      <div
-                        class="cardTime"
-                        style="text-align: left; white-space: nowrap"
-                      >
+                      <div class="cardTime">
                         {{ formatDate(new Date(item.updateDatetime)) }}
                       </div>
                     </q-item-section>
                     <q-item-section class="content-section-2 process">
-                      <q-item-label>
+                      <div>
                         {{ item.scannedCartonNumber }}/{{
                           item.allCartonNumber
                         }}
                         <!-- 9999/9999 -->
-                      </q-item-label>
+                      </div>
                     </q-item-section>
                     <q-item-section
                       class="content-section-3"
                       style="display: flex; flex-direction: row"
                     >
-                      <div class="column center" style="margin-right: 10px">
+                      <div class="column center">
                         <q-img
                           no-transition
                           width="20px"
@@ -77,13 +160,12 @@
                             item.finishStatus == 0 ? finishedDisabled : finished
                           "
                         />
-                        <div
-                          class="center"
-                          style="font-size: 8px; margin-top: 8px"
-                        >
+                        <div style="height: 8px"></div>
+                        <div class="center" style="font-size: 8px">
                           {{ $t("common.finished") }}
                         </div>
                       </div>
+                      <div style="width: 8px"></div>
                       <div class="column center">
                         <q-img
                           no-transition
@@ -103,91 +185,17 @@
                       </div>
                     </q-item-section>
                   </div>
-                  <q-item-section side>
-                    <q-icon name="chevron_right" color="black" />
-                  </q-item-section>
-                </q-item>
-              </div>
-            </div>
-          </div>
-          <div v-else>
-            <div style="height: 26px"></div>
-            <div v-for="(item, index) in defaultDisplay" :key="index">
-              <div class="row mb-15">
-                <div class="center" style="width: 6%">
-                  <q-checkbox
-                    v-model="item.isSelected"
-                    checked-icon="app:checkboxOn"
-                    unchecked-icon="app:checkboxOff"
-                  />
-                </div>
-                <div class="row edit-data-list-container" style="width: 89%">
-                  <q-item-section class="content-section-1">
-                    <div
-                      class="cardTask"
-                      v-html="formatTaskId(item.taskId)"
-                    ></div>
-                    <div style="height: 8px"></div>
-                    <div class="cardTime">
-                      {{ formatDate(new Date(item.updateDatetime)) }}
-                    </div>
-                  </q-item-section>
-                  <q-item-section class="content-section-2 process">
-                    <div>
-                      {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
-                      <!-- 9999/9999 -->
-                    </div>
-                  </q-item-section>
-                  <q-item-section
-                    class="content-section-3"
-                    style="display: flex; flex-direction: row"
-                  >
-                    <div class="column center">
-                      <q-img
-                        no-transition
-                        width="20px"
-                        height="20px"
-                        no-spinner
-                        :src="
-                          item.finishStatus == 0 ? finishedDisabled : finished
-                        "
-                      />
-                      <div style="height: 8px"></div>
-                      <div class="center" style="font-size: 8px">
-                        {{ $t("common.finished") }}
-                      </div>
-                    </div>
-                    <div style="width: 8px"></div>
-                    <div class="column center">
-                      <q-img
-                        no-transition
-                        width="20px"
-                        height="20px"
-                        no-spinner
-                        :src="
-                          item.uploadStatus == 0 ? uploadedDisabled : uploaded
-                        "
-                      />
-                      <div
-                        class="center"
-                        style="font-size: 8px; margin-top: 8px"
-                      >
-                        {{ $t("common.uploaded") }}
-                      </div>
-                    </div>
-                  </q-item-section>
                 </div>
               </div>
             </div>
-          </div>
-          <template v-slot:loading>
-            <div class="row justify-center q-my-md">
-              <q-spinner-dots color="primary" size="40px" />
-            </div>
-          </template>
-        </q-infinite-scroll>
+            <template v-slot:loading>
+              <div class="row justify-center q-my-md">
+                <q-spinner-dots color="primary" size="40px" />
+              </div>
+            </template>
+          </q-infinite-scroll>
+        </q-pull-to-refresh>
       </q-scroll-area>
-      <!-- <div class="bottom-button" id="bottom-button"></div> -->
     </div>
     <div class="bottom-coherent-button" v-show="isEditMode">
       <q-btn
@@ -265,7 +273,7 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { ScanDataManagement } from "../models/profile";
-import { Ref, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import finishedUrl from "../assets/icon/finished.svg";
 import finishedDisableUrl from "../assets/icon/finished_disable.svg";
 import uploadedUrl from "../assets/icon/uploaded.svg";
@@ -285,7 +293,7 @@ const DataManagementView = defineComponent({
     HeaderComponent,
   },
   setup() {
-    const loading = ref(false);
+    const refreshloading = ref(false);
     const search = ref();
     const $q = useQuasar();
     const i18n = useI18n();
@@ -317,7 +325,7 @@ const DataManagementView = defineComponent({
     const input = ref();
 
     onBeforeMount(() => {
-      loading.value = true;
+      refreshloading.value = true;
       getScanDataList();
     });
     const onLoad = (index: any, done: any) => {
@@ -360,12 +368,22 @@ const DataManagementView = defineComponent({
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
     });
-
+    const refresh = (done: any) => {
+      if (search.value && search.value.length > 0) {
+        onSearch();
+      } else {
+        apiIndex.value = 0;
+        defaultDisplay.value = [];
+        searchResult.value = [];
+        getScanDataList();
+        myInfiniteScroll.value.resume();
+      }
+      done();
+    };
     const getScanDataList = () => {
       bridge.call("fetchTaskForDataManagement", {}, (data: any) => {
-        loading.value = false;
+        refreshloading.value = false;
         apiResult.value = JSON.parse(data) as ScanDataManagement[];
-
         if (apiResult.value.length == 0) {
           noRecord.value = true;
         } else {
@@ -518,7 +536,7 @@ const DataManagementView = defineComponent({
     };
     watch(search, () => {
       if (search.value) {
-        if (search.value.length >= 5) {
+        if (search.value.length >= 4) {
           input.value.blur();
           onSearch();
         }
@@ -583,8 +601,9 @@ const DataManagementView = defineComponent({
       noRecord,
       input,
       myScrollArea,
-      loading,
+      refreshloading,
       defaultDisplay,
+      refresh,
     };
   },
 });

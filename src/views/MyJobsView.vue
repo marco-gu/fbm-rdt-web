@@ -24,55 +24,59 @@
         id="scroll-area"
         :thumb-style="{ width: '0px' }"
       >
-        <template v-if="noRecord">
-          <div class="no-record">{{ $t("common.no_record") }}</div>
-        </template>
-        <template v-if="loading">
-          <div class="row justify-center q-my-md">
-            <q-spinner-dots color="primary" size="40px" />
-          </div>
-        </template>
-        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
-          <div
-            v-for="(item, index) in defaultDisplay"
-            :key="index"
-            @click="onClickScanTask(item)"
-          >
-            <q-item class="card-item">
-              <div class="card-item-content">
-                <div class="card-item-left">
-                  <q-item-section>
-                    <div style="width: 80%">
-                      <q-item-label>{{ item.taskId }}</q-item-label>
-                      <q-item-label class="card-item-date-text">{{
-                        item.updateDatetime
-                      }}</q-item-label>
-                    </div>
-                  </q-item-section>
-                </div>
-                <div class="card-item-right">
-                  <CircularProgressComponent
-                    :value="
-                      (item.scannedCartonNumber / item.allCartonNumber) * 100
-                    "
-                  >
-                    <div class="card-item-sub-text">
-                      {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
-                    </div>
-                  </CircularProgressComponent>
-                </div>
-              </div>
-              <q-item-section side>
-                <q-icon name="chevron_right" color="black" />
-              </q-item-section>
-            </q-item>
-          </div>
-          <template v-slot:loading>
+        <q-pull-to-refresh @refresh="refresh">
+          <template v-if="noRecord">
+            <div class="no-record">{{ $t("common.no_record") }}</div>
+          </template>
+          <template v-if="refreshloading">
             <div class="row justify-center q-my-md">
               <q-spinner-dots color="primary" size="40px" />
             </div>
           </template>
-        </q-infinite-scroll>
+          <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+            <div
+              v-for="(item, index) in defaultDisplay"
+              :key="index"
+              @click="onClickScanTask(item)"
+            >
+              <q-item class="card-item">
+                <div class="card-item-content">
+                  <div class="card-item-left">
+                    <q-item-section>
+                      <div style="width: 80%">
+                        <q-item-label>{{ item.taskId }}</q-item-label>
+                        <q-item-label class="card-item-date-text">{{
+                          item.updateDatetime
+                        }}</q-item-label>
+                      </div>
+                    </q-item-section>
+                  </div>
+                  <div class="card-item-right">
+                    <CircularProgressComponent
+                      :value="
+                        (item.scannedCartonNumber / item.allCartonNumber) * 100
+                      "
+                    >
+                      <div class="card-item-sub-text">
+                        {{ item.scannedCartonNumber }}/{{
+                          item.allCartonNumber
+                        }}
+                      </div>
+                    </CircularProgressComponent>
+                  </div>
+                </div>
+                <q-item-section side>
+                  <q-icon name="chevron_right" color="black" />
+                </q-item-section>
+              </q-item>
+            </div>
+            <template v-slot:loading>
+              <div class="row justify-center q-my-md">
+                <q-spinner-dots color="primary" size="40px" />
+              </div>
+            </template>
+          </q-infinite-scroll>
+        </q-pull-to-refresh>
       </q-scroll-area>
 
       <div class="footer-message">{{ $t("continue.instruction") }}</div>
@@ -93,7 +97,7 @@ const MyJobsView = defineComponent({
     HeaderComponent,
   },
   setup() {
-    const loading = ref(false);
+    const refreshloading = ref(false);
     const search = ref();
     const i18n = useI18n();
     const defaultDisplay = ref([] as ScanDataManagement[]);
@@ -109,7 +113,7 @@ const MyJobsView = defineComponent({
     const noRecord = ref(false);
     const input = ref();
     onBeforeMount(() => {
-      loading.value = true;
+      refreshloading.value = true;
       getScanDataList();
     });
     const onLoad = (index: any, done: any) => {
@@ -155,14 +159,26 @@ const MyJobsView = defineComponent({
     bridge.register("refreshJobs", () => {
       getScanDataList();
     });
+    const refresh = (done: any) => {
+      if (search.value && search.value.length > 0) {
+        onSearch();
+      } else {
+        apiIndex.value = 0;
+        defaultDisplay.value = [];
+        searchResult.value = [];
+        getScanDataList();
+        myInfiniteScroll.value.resume();
+      }
+      done();
+    };
     const getScanDataList = () => {
-      loading.value = true;
       bridge.call("fetchTaskForDataManagement", {}, (data: any) => {
-        loading.value = false;
+        refreshloading.value = false;
         apiResult.value = JSON.parse(data) as ScanDataManagement[];
         if (apiResult.value.length == 0) {
           noRecord.value = true;
         } else {
+          noRecord.value = false;
           if (apiResult.value.length > 10) {
             defaultDisplay.value = apiResult.value.slice(0, 10);
             apiIndex.value++;
@@ -194,7 +210,7 @@ const MyJobsView = defineComponent({
     };
     watch(search, () => {
       if (search.value) {
-        if (search.value.length >= 5) {
+        if (search.value.length >= 4) {
           input.value.blur();
           onSearch();
         }
@@ -251,8 +267,9 @@ const MyJobsView = defineComponent({
       noRecord,
       input,
       myScrollArea,
-      loading,
+      refreshloading,
       defaultDisplay,
+      refresh,
     };
   },
 });
