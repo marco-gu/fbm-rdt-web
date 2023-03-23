@@ -8,66 +8,63 @@
         <div v-else>{{ taskId }}</div>
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
-          <template v-if="pageType == 'Group'">
-            <div
-              v-show="taskDisplay.scannedCartonNumber > 0"
-              @click="onClickLP(taskDisplay)"
-            >
-              <q-item class="card-item">
-                <div class="card-item-content">
-                  <div class="card-item-left">
-                    <q-item-section>
-                      <div
-                        v-show="
-                          taskDisplay.containerNumber != '' &&
-                          taskDisplay.containerNumber != null
-                        "
+        <template v-if="pageType == 'Group'">
+          <div
+            v-show="taskDisplay.scannedCartonNumber > 0"
+            @click="onClickLP(taskDisplay)"
+          >
+            <q-item class="card-item">
+              <div class="card-item-content">
+                <div class="card-item-left">
+                  <q-item-section>
+                    <div
+                      v-show="
+                        taskDisplay.containerNumber != '' &&
+                        taskDisplay.containerNumber != null
+                      "
+                    >
+                      <q-item-label
+                        >Container:
+                        {{ taskDisplay.containerNumber }}</q-item-label
                       >
-                        <q-item-label
-                          >Container:
-                          {{ taskDisplay.containerNumber }}</q-item-label
-                        >
-                      </div>
-                      <div
-                        v-show="taskDisplay.po != '' && taskDisplay.po != null"
-                      >
-                        <q-item-label>PO: {{ taskDisplay.po }}</q-item-label>
-                      </div>
-                      <div
-                        v-show="
-                          taskDisplay.sku != '' && taskDisplay.sku != null
-                        "
-                      >
-                        <q-item-label>SKU: {{ taskDisplay.sku }}</q-item-label>
-                      </div>
-                    </q-item-section>
-                  </div>
-                  <div class="card-item-right">
-                    <q-item-section>
-                      <q-item-label>
-                        {{ $t("dataManagement.count") }}:
-                        {{ taskDisplay.scannedCartonNumber }}</q-item-label
-                      >
-                    </q-item-section>
-                  </div>
+                    </div>
+                    <div
+                      v-show="taskDisplay.po != '' && taskDisplay.po != null"
+                    >
+                      <q-item-label>PO: {{ taskDisplay.po }}</q-item-label>
+                    </div>
+                    <div
+                      v-show="taskDisplay.sku != '' && taskDisplay.sku != null"
+                    >
+                      <q-item-label>SKU: {{ taskDisplay.sku }}</q-item-label>
+                    </div>
+                  </q-item-section>
                 </div>
-                <q-item-section side>
-                  <q-icon name="chevron_right" color="black" />
-                </q-item-section>
-              </q-item>
+                <div class="card-item-right">
+                  <q-item-section>
+                    <q-item-label>
+                      {{ $t("dataManagement.count") }}:
+                      {{ taskDisplay.scannedCartonNumber }}</q-item-label
+                    >
+                  </q-item-section>
+                </div>
+              </div>
+              <q-item-section side>
+                <q-icon name="chevron_right" color="black" />
+              </q-item-section>
+            </q-item>
+          </div>
+        </template>
+        <template v-else>
+          <template v-if="noRecord">
+            <div class="no-record">{{ $t("common.no_record") }}</div>
+          </template>
+          <template v-if="loading">
+            <div class="row justify-center q-my-md">
+              <q-spinner-dots color="primary" size="40px" />
             </div>
           </template>
-          <template v-else>
-            <template v-if="noRecord">
-              <div class="no-record">{{ $t("common.no_record") }}</div>
-            </template>
-            <template v-if="loading">
-              <div class="row justify-center q-my-md">
-                <q-spinner-dots color="primary" size="40px" />
-              </div>
-            </template>
-
+          <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
             <div
               v-for="(item, index) in defaultDisplay"
               :key="index"
@@ -102,8 +99,13 @@
                 </q-item-section>
               </q-item>
             </div>
-          </template>
-        </q-infinite-scroll>
+            <template v-slot:loading>
+              <div class="row justify-center q-my-md">
+                <q-spinner-dots color="primary" size="40px" />
+              </div>
+            </template>
+          </q-infinite-scroll>
+        </template>
       </q-scroll-area>
     </div>
     <div class="bottom row" id="bottom-button">
@@ -165,6 +167,8 @@ const DataMgmtView = defineComponent({
     const noRecord = ref(false);
     const input = ref();
 
+    var retrieved = false; //这个界面的 onLoad 方法加载页面就会调用，写一个变量控制onLoad不执行
+
     onBeforeMount(() => {
       loading.value = true;
 
@@ -177,9 +181,22 @@ const DataMgmtView = defineComponent({
       }
     });
     const onLoad = (index: any, done: any) => {
+      if (!retrieved) {
+        return;
+      }
+      //console.log("onLoad");
       const start = apiIndex.value * 10;
       const end = (apiIndex.value + 1) * 10;
+      // console.log(
+      //   "apiIndex:" + apiIndex.value + " start:" + start + " end:" + end
+      // );
       setTimeout(() => {
+        // console.log(
+        //   "onLoad start apiResult:" +
+        //     apiResult.value.length +
+        //     " defaultDisplay:" +
+        //     defaultDisplay.value.length
+        // );
         for (let i = start; i < end; i++) {
           if (
             apiResult.value[i] &&
@@ -193,6 +210,12 @@ const DataMgmtView = defineComponent({
         } else {
           myInfiniteScroll.value.stop();
         }
+        // console.log(
+        //   "onLoad end apiResult:" +
+        //     apiResult.value.length +
+        //     " defaultDisplay:" +
+        //     defaultDisplay.value.length
+        // );
         done();
       }, 200);
     };
@@ -242,6 +265,7 @@ const DataMgmtView = defineComponent({
       const args = {
         taskId: taskId,
       };
+      //console.log("fetchLPByTaskIdForDataManagement");
       bridge.call("fetchLPByTaskIdForDataManagement", args, (res: string) => {
         loading.value = false;
         apiResult.value = JSON.parse(res) as Carton[];
@@ -259,6 +283,9 @@ const DataMgmtView = defineComponent({
             myInfiniteScroll.value.stop();
           }
         }
+        retrieved = true;
+        // console.log("fetchLPByTaskIdForDataManagement end");
+        // console.log("defaultDisplay length", defaultDisplay.value.length);
       });
     };
 
