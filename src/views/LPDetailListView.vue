@@ -96,11 +96,9 @@ const LPDetailListView = defineComponent({
       }
     };
     const onLoad = (index: any, done: any) => {
-      alert("onLoad");
       const start = retrieveIndex.value * pageSlice;
       const end = (retrieveIndex.value + 1) * pageSlice;
       setTimeout(() => {
-        alert("onLoad");
         for (let i = start; i < end; i++) {
           if (lpDetailListInitResult.value[i]) {
             lpDetailListDisplay.value.push(lpDetailListInitResult.value[i]);
