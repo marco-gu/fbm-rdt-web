@@ -50,7 +50,7 @@
           {{ $t("login.sso_login") }}
         </p>
       </div>
-      <div @click="forgotPwdVisible = true">
+      <div>
         <p class="login-link-label">
           {{ $t("login.help") }}
         </p>

@@ -1,16 +1,14 @@
 <template>
   <div class="card" @click="goOnline">
-    <div class="title">New Scan</div>
+    <div class="title">{{ onlineTitle }}</div>
     <div>
-      Start a new carton id (SSCC) scan job, validate against the factory file
-      or SO received. Please select client profile firstly.
+      {{ onlineDesc }}
     </div>
   </div>
   <div class="card" @click="goOffline">
-    <div class="title">Blind Scan</div>
+    <div class="title">{{ offlineTitle }}</div>
     <div>
-      Start a new carton id (SSCC) scan job, WITHOUT factory file or SO
-      replaced, you should upload and validate the scan info afterwards.
+      {{ offlineDesc }}
     </div>
   </div>
   <div class="card" @click="goContinue">
@@ -18,16 +16,16 @@
       <div style="margin-bottom: 5px">
         <q-img no-transition no-spinner :src="bellCompleteIcon" width="20px" />
       </div>
-      <div>No outstanding scan job, well done!</div>
+      <div>{{ continueWithNo }}</div>
     </div>
     <div v-show="count != 0">
       <div style="margin-bottom: 5px">
         <q-img no-transition no-spinner :src="bellIcon" width="20px" />
       </div>
       <div>
-        There is (are)
+        {{ continuePartialOne }}
         <span style="color: #d62d23; font-weight: bold">{{ count }}</span>
-        incomplete job(s), please click this card to continue.
+        {{ continuePartialTwo }}
       </div>
     </div>
   </div>
@@ -35,8 +33,8 @@
     <div
       :class="[isAnimation == true ? 'more-message-animation' : 'more-message']"
     >
-      <div>Please get started</div>
-      <div>Need help?</div>
+      <div>{{ labelOne }}</div>
+      <div>{{ labelTwo }}</div>
     </div>
     <div
       :class="[isAnimation == true ? 'more-icon-animation' : 'more-icon']"
@@ -61,6 +59,7 @@ import { useRouter } from "vue-router";
 import bridge from "dsbridge";
 import { ScanDataManagement } from "@/models/profile";
 import store, { useStore } from "@/store";
+import { useI18n } from "vue-i18n";
 const NewMainView = defineComponent({
   setup() {
     const router = useRouter();
@@ -71,6 +70,16 @@ const NewMainView = defineComponent({
     const count = ref(0);
     const isAnimation = ref();
     const store = useStore();
+    const i18n = useI18n();
+    const onlineTitle = i18n.t("main.onlineTitle");
+    const offlineTitle = i18n.t("main.offlineTitle");
+    const onlineDesc = i18n.t("main.online");
+    const offlineDesc = i18n.t("main.offline");
+    const continueWithNo = i18n.t("main.continueWithNo");
+    const continuePartialOne = i18n.t("main.continuePartialOne");
+    const continuePartialTwo = i18n.t("main.continuePartialTwo");
+    const labelOne = i18n.t("main.labelOne");
+    const labelTwo = i18n.t("main.labelTwo");
     setTimeout(() => {
       if (isAnimation.value) {
         const pointer = document.getElementById("pointer") as any;
@@ -106,6 +115,15 @@ const NewMainView = defineComponent({
       goContinue,
       bellCompleteIcon,
       isAnimation,
+      onlineTitle,
+      offlineTitle,
+      onlineDesc,
+      offlineDesc,
+      continuePartialOne,
+      continuePartialTwo,
+      continueWithNo,
+      labelOne,
+      labelTwo,
     };
   },
 });

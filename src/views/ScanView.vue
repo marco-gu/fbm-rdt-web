@@ -43,11 +43,18 @@
       <q-btn
         no-caps
         unelevated
+        class="full-width"
+        :label="$t('lp.start_scan')"
+        @click="onSubmit"
+      />
+      <!-- <q-btn
+        no-caps
+        unelevated
         @click="onSubmit"
         class="full-width"
         :label="$t('lp.start_scan')"
         color="secondary"
-      />
+      /> -->
     </div>
   </div>
 </template>
