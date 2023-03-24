@@ -59,7 +59,7 @@
           <template v-if="noRecord">
             <div class="no-record">{{ $t("common.no_record") }}</div>
           </template>
-          <template v-if="loading">
+          <template v-if="refreshloading">
             <div class="row justify-center q-my-md">
               <q-spinner-dots color="primary" size="40px" />
             </div>
@@ -161,7 +161,7 @@ const DataMgmtView = defineComponent({
     const apiIndex = ref(0);
     const defaultDisplay = ref([] as Carton[]);
     const apiResult = ref([] as Carton[]);
-    const loading = ref(false);
+    const refreshloading = ref(false);
     const myInfiniteScroll = ref();
     const myScrollArea = ref();
     const noRecord = ref(false);
@@ -170,7 +170,7 @@ const DataMgmtView = defineComponent({
     var retrieved = false; //这个界面的 onLoad 方法加载页面就会调用，写一个变量控制onLoad不执行
 
     onBeforeMount(() => {
-      loading.value = true;
+      refreshloading.value = true;
 
       if (typeof taskId.value === "string") {
         fetchTaskByTaskId(taskId.value);
@@ -182,6 +182,7 @@ const DataMgmtView = defineComponent({
     });
     const onLoad = (index: any, done: any) => {
       if (!retrieved) {
+        done();
         return;
       }
       //console.log("onLoad");
@@ -267,7 +268,7 @@ const DataMgmtView = defineComponent({
       };
       //console.log("fetchLPByTaskIdForDataManagement");
       bridge.call("fetchLPByTaskIdForDataManagement", args, (res: string) => {
-        loading.value = false;
+        refreshloading.value = false;
         apiResult.value = JSON.parse(res) as Carton[];
 
         const deepCopyRef = ref(apiResult.value.map((item) => item));
@@ -303,7 +304,7 @@ const DataMgmtView = defineComponent({
       noRecord,
       input,
       myScrollArea,
-      loading,
+      refreshloading,
       defaultDisplay,
     };
   },
