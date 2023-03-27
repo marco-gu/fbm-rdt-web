@@ -147,7 +147,7 @@ const LPListView = defineComponent({
       }
     };
     const refresh = (done: any) => {
-      myInfiniteScroll.value.resume();
+      // myInfiniteScroll.value.resume();
       if (onSearchMode.value) {
         searchIndex.value = 0;
         const args = {

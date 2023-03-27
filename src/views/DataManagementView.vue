@@ -54,7 +54,11 @@
                           class="cardTime"
                           style="text-align: left; white-space: nowrap"
                         >
-                          {{ formatDate(new Date(item.updateDatetime)) }}
+                          {{
+                            item.updateDatetime
+                              ? formatDate(new Date(item.updateDatetime))
+                              : "-"
+                          }}
                         </div>
                       </q-item-section>
                       <q-item-section class="content-section-2 process">
@@ -135,7 +139,11 @@
                       ></div>
                       <div style="height: 8px"></div>
                       <div class="cardTime">
-                        {{ formatDate(new Date(item.updateDatetime)) }}
+                        {{
+                          item.updateDatetime
+                            ? formatDate(new Date(item.updateDatetime))
+                            : "-"
+                        }}
                       </div>
                     </q-item-section>
                     <q-item-section class="content-section-2 process">
@@ -376,7 +384,7 @@ const DataManagementView = defineComponent({
         defaultDisplay.value = [];
         searchResult.value = [];
         getScanDataList();
-        myInfiniteScroll.value.resume();
+        // myInfiniteScroll.value.resume();
       }
       done();
     };

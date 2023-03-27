@@ -167,7 +167,7 @@ const MyJobsView = defineComponent({
         defaultDisplay.value = [];
         searchResult.value = [];
         getScanDataList();
-        myInfiniteScroll.value.resume();
+        // myInfiniteScroll.value.resume();
       }
       done();
     };

@@ -48,9 +48,9 @@
         <div class="label">{{ $t("setting.last_profile_sync_time") }}</div>
         <div class="item-value">
           {{
-            lastProfileSyncTime == ""
-              ? "N/A"
-              : formatDate(new Date(lastProfileSyncTime))
+            lastProfileSyncTime
+              ? formatDate(new Date(lastProfileSyncTime))
+              : "-"
           }}
         </div>
         <div class="spacer"></div>

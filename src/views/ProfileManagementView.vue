@@ -29,7 +29,11 @@
                   <q-item-section class="card-item-labels">
                     <q-item-label>{{ item.profileCode }}</q-item-label>
                     <q-item-label class="card-item-date-text">
-                      {{ formatDate(new Date(item.updateDatetime)) }}
+                      {{
+                        item.updateDatetime
+                          ? formatDate(new Date(item.updateDatetime))
+                          : "-"
+                      }}
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -59,7 +63,11 @@
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>
                   <q-item-label class="card-item-date-text">
-                    {{ formatDate(new Date(item.updateDatetime)) }}
+                    {{
+                      item.updateDatetime
+                        ? formatDate(new Date(item.updateDatetime))
+                        : "-"
+                    }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
