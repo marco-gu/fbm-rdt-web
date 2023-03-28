@@ -454,9 +454,9 @@ const DataManagementView = defineComponent({
       return taskIdList;
     };
     const handleUpload = () => {
-      showUploadDialog.value = true;
       let taskIdList = getSelectedTaskIdList();
       if (taskIdList.length > 0) {
+        showUploadDialog.value = true;
         var isCartonMatched = true;
         defaultDisplay.value.forEach((item: any) => {
           if (
