@@ -17,6 +17,20 @@
         </div>
         <div class="spacer"></div>
       </div>
+      <div class="setting-card-item" @click="onChangeLanguage('da')">
+        <div class="label">{{ $t("setting.danish") }}</div>
+        <div v-if="selectedLanguage == 'da'" class="right-icon">
+          <q-icon name="check" />
+        </div>
+        <div class="spacer"></div>
+      </div>
+      <div class="setting-card-item" @click="onChangeLanguage('ar')">
+        <div class="label">{{ $t("setting.arabic") }}</div>
+        <div v-if="selectedLanguage == 'ar'" class="right-icon">
+          <q-icon name="check" />
+        </div>
+        <div class="spacer"></div>
+      </div>
     </div>
   </div>
 </template>
