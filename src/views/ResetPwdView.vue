@@ -302,4 +302,7 @@ export default ResetPwdView;
   text-align: left;
   font-size: $--card-font-size;
 }
+.q-field--with-bottom {
+  padding-bottom: 25px;
+}
 </style>

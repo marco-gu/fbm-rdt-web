@@ -20,7 +20,7 @@
     "E93-02-0001": "Password is changed!",
     "E93-02-0002": "New password is not same as the new password confirm box!",
     "E93-02-0003": "Initial password is incorrect!",
-    "E93-02-0004": "New changed password is required to be at least 8 characters in length,  contains both numbers and letters in upper & lower cases",
+    "E93-02-0004": "At least 8 characters. Contain number and letter. Contain characters in upper & lower cases.",
     "E93-02-0005": "Please input initial password!",
     "E93-02-0006": "Please input new password!",
     "E93-02-0007": "Please input new password, again!",
