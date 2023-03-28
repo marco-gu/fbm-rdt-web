@@ -7,7 +7,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, toRefs, watch } from "vue";
+import { defineComponent, nextTick, ref, toRefs, watch } from "vue";
 const LoadingComponent = defineComponent({
   props: {
     visible: {
@@ -21,7 +21,9 @@ const LoadingComponent = defineComponent({
     watch(
       visible,
       (newValue) => {
-        persistent.value = newValue;
+        setTimeout(() => {
+          persistent.value = newValue;
+        }, 300);
       },
       { immediate: true }
     );

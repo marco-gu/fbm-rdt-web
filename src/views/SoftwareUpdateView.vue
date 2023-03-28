@@ -1,4 +1,5 @@
 <template>
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component>
@@ -60,10 +61,12 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 export default {
   name: "SoftwareUpdateView",
   components: {
     HeaderComponent,
+    LoadingComponent,
   },
   setup() {
     const $q = useQuasar();
@@ -74,9 +77,12 @@ export default {
     const latestVersionDetail = ref("");
     const titleParam = i18n.t("setting.software_update");
     const backUrlParam = "/setting";
+    const loadingStatus = ref(false);
     onMounted(() => {
-      showLoading($q);
+      // showLoading($q);
+      loadingStatus.value = true;
       bridge.call("getLatestVersion", null, (res: string) => {
+        loadingStatus.value = false;
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
@@ -86,11 +92,12 @@ export default {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
-        closeLoading($q);
+        // closeLoading($q);
       });
     });
     const handleDownload = () => {
-      showLoading($q);
+      // showLoading($q);
+      loadingStatus.value = true;
       downloadPending.value = true;
       bridge.call("downloadLatestVersion", null, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
@@ -98,7 +105,8 @@ export default {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
-        closeLoading($q);
+        // closeLoading($q);
+        loadingStatus.value = false;
         downloadPending.value = false;
       });
     };
@@ -110,6 +118,7 @@ export default {
       latestVersionDetail,
       titleParam,
       backUrlParam,
+      loadingStatus,
     };
   },
 };
