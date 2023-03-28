@@ -1,4 +1,5 @@
 <template>
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <header-component :titleParam="titleParam" :backFunctionParam="back">
     </header-component>
@@ -130,10 +131,12 @@ import formatDate from "../utils/formatDate";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import { calScrollAreaWithBottom } from "@/utils/screen.util";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 const ProfileManagementView = defineComponent({
   components: {
     HeaderComponent,
     PopupComponent,
+    LoadingComponent,
   },
   setup() {
     // const $q = useQuasar();
@@ -150,6 +153,7 @@ const ProfileManagementView = defineComponent({
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
+    const loadingStatus = ref(false);
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -192,8 +196,10 @@ const ProfileManagementView = defineComponent({
       });
     };
     const refresh = (done: any) => {
+      loadingStatus.value = true;
       if (!isEditMode.value) {
         bridge.call("refreshProfile", null, (res: string) => {
+          loadingStatus.value = false;
           const androidResponse = JSON.parse(res) as AndroidResponse<
             ProfileMaster[]
           >;
@@ -293,6 +299,7 @@ const ProfileManagementView = defineComponent({
       type,
       popupVisible,
       msg,
+      loadingStatus,
     };
   },
 });

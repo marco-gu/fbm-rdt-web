@@ -1,4 +1,5 @@
 <template>
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component>
@@ -85,7 +86,7 @@
       :visible="popupVisible"
       :message="msg"
       :type="type"
-      @close="popupVisible = false"
+      @close="OnClosePopUp"
     ></PopupComponent>
   </div>
 </template>
@@ -118,6 +119,7 @@ import HeaderComponent from "@/components/HeaderComponent.vue";
 import { softKeyPopUp } from "../utils/screen.util";
 import inputScan from "../assets/images/input_scan.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -132,6 +134,7 @@ const LpSearchView = defineComponent({
   components: {
     HeaderComponent,
     PopupComponent,
+    LoadingComponent,
   },
   setup() {
     const router = useRouter();
@@ -167,6 +170,9 @@ const LpSearchView = defineComponent({
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
+    const canJumpNextPage = ref(false);
+    const nextPageParam = ref();
+    const loadingStatus = ref(false);
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -277,7 +283,8 @@ const LpSearchView = defineComponent({
     const onSubmit = () => {
       myForm.value.validate().then((success: any) => {
         if (success) {
-          showLoading($q);
+          loadingStatus.value = true;
+          // showLoading($q);
           // the same for online & offline
           const routeParams = {
             scanned: 0,
@@ -298,7 +305,8 @@ const LpSearchView = defineComponent({
           composeRouteParam(routeParams, pageViews.value);
           if (mode == "online") {
             bridge.call("fetchLp", apiParams, (res: string) => {
-              closeLoading($q);
+              // closeLoading($q);
+              loadingStatus.value = false;
               const androidResponse = JSON.parse(res) as AndroidResponse<any>;
               if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
                 routeParams.scanned = androidResponse.data.scanned;
@@ -310,12 +318,14 @@ const LpSearchView = defineComponent({
                 msg.value = i18n.t("messageCode.E93-05-0005");
                 // const message = i18n.t("messageCode.E93-05-0005");
                 // popupSuccessMsg($q, message);
-                setTimeout(() => {
-                  router.push({
-                    name: "scan",
-                    params: routeParams,
-                  });
-                }, 2000);
+                canJumpNextPage.value = true;
+                nextPageParam.value = routeParams;
+                // setTimeout(() => {
+                //   router.push({
+                //     name: "scan",
+                //     params: routeParams,
+                //   });
+                // }, 2000);
               } else if (androidResponse.status == AndroidResponseStatus.INFO) {
                 // const message = i18n.t(
                 //   "messageCode." + androidResponse.messageCode
@@ -352,6 +362,15 @@ const LpSearchView = defineComponent({
           }
         }
       });
+    };
+    const OnClosePopUp = () => {
+      popupVisible.value = false;
+      if (canJumpNextPage.value) {
+        router.push({
+          name: "scan",
+          params: nextPageParam.value,
+        });
+      }
     };
     // 4- Convert the input data value into upper case if it is not
     const multiWatchSources = [receivingViews.value, stuffingViews.value];
@@ -402,9 +421,9 @@ const LpSearchView = defineComponent({
         });
       }
     });
-    onUnmounted(() => {
-      closeLoading($q);
-    });
+    // onUnmounted(() => {
+    //   closeLoading($q);
+    // });
     const onInputKeyUp = (event: KeyboardEvent, index: number) => {
       if (event.code === "Enter" || event.which === 13) {
         const param = inputRef.value as any;
@@ -440,6 +459,8 @@ const LpSearchView = defineComponent({
       type,
       popupVisible,
       msg,
+      OnClosePopUp,
+      loadingStatus,
     };
   },
 });

@@ -14,7 +14,8 @@
         }
     }
     &__content {
-        word-break: break-all;
+        word-break: keep-all;
+        white-space: pre-wrap;
         padding: 0 15px;
         margin: 23px 0;
     }

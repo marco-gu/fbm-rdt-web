@@ -1,4 +1,5 @@
 <template>
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component>
@@ -15,19 +16,6 @@
           </template>
         </q-input>
       </div>
-      <!-- <template v-if="refreshloading">
-        <div
-          style="
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-          "
-        >
-          <q-spinner-dots color="primary" size="40px" />
-        </div>
-      </template> -->
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-pull-to-refresh @refresh="refresh">
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
@@ -91,10 +79,12 @@ import formatDate from "../utils/formatDate";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import rotate from "../assets/icon/rotate-solid.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 const ProfileView = defineComponent({
   components: {
     HeaderComponent,
     PopupComponent,
+    LoadingComponent,
   },
   setup() {
     const router = useRouter();
@@ -112,12 +102,11 @@ const ProfileView = defineComponent({
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
-    const refreshloading = ref(false);
+    const loadingStatus = ref(false);
     const refresh = (done: any) => {
-      refreshloading.value = true;
-      profileListDisplay.value = [];
+      loadingStatus.value = true;
       bridge.call("refreshProfile", null, (res: string) => {
-        refreshloading.value = false;
+        loadingStatus.value = false;
         const androidResponse = JSON.parse(res) as AndroidResponse<
           ProfileMaster[]
         >;
@@ -209,7 +198,7 @@ const ProfileView = defineComponent({
       type,
       popupVisible,
       msg,
-      refreshloading,
+      loadingStatus,
     };
   },
 });

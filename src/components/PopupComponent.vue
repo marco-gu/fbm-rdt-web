@@ -56,7 +56,7 @@
         </div>
         <div class="dialog-container__button">
           <button class="dialog-button confirm" @click="cancel">
-            {{ $t("common.cancel") }}
+            {{ $t("common.ok") }}
           </button>
         </div>
       </div>
@@ -84,7 +84,7 @@
         </div>
         <div class="dialog-container__button">
           <button class="dialog-button confirm" @click="cancel">
-            {{ $t("common.cancel") }}
+            {{ $t("common.ok") }}
           </button>
         </div>
       </div>
