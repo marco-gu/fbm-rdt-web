@@ -19,6 +19,20 @@
           </template>
         </q-input>
       </div>
+      <template v-if="refreshloading">
+        <!-- <div class="row justify-center q-my-md"> -->
+        <div
+          style="
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+          "
+        >
+          <q-spinner-dots color="primary" size="40px" />
+        </div>
+      </template>
       <q-scroll-area
         ref="myScrollArea"
         id="scroll-area"
@@ -29,12 +43,6 @@
             <template v-if="noRecord">
               <div class="no-record">{{ $t("common.no_record") }}</div>
             </template>
-            <template v-if="refreshloading">
-              <div class="row justify-center q-my-md">
-                <q-spinner-dots color="primary" size="40px" />
-              </div>
-            </template>
-
             <div v-if="isEditMode == false">
               <div v-for="(item, index) in defaultDisplay" :key="index">
                 <div
@@ -325,7 +333,7 @@ const DataManagementView = defineComponent({
     const input = ref();
 
     onBeforeMount(() => {
-      refreshloading.value = true;
+      // refreshloading.value = true;
       getScanDataList();
     });
     const onLoad = (index: any, done: any) => {

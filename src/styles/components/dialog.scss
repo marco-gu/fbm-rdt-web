@@ -1,5 +1,5 @@
 .dialog-container {
-    width: 86%;
+    width: 85%;
     border-radius: 5px;
     border: 0px solid #757575;
     font-size: 17px;
@@ -8,9 +8,9 @@
         padding: 15px 15px 0 15px;
         font-weight: bold;
         .q-icon {
-            float: right;
-            right: 0;
-            top: 0;
+            float: left;
+            // right: 0;
+            // top: 0;
         }
     }
     &__content {
@@ -19,7 +19,8 @@
         margin: 23px 0;
     }
     &__button {
-        padding: 15px;
+        // padding: 15px;
+        padding: 10px;
         text-align: right;
         background: #f7f7f7;
         border-radius: 0px 0px 5px 5px;

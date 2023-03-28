@@ -19,6 +19,20 @@
           </template>
         </q-input>
       </div>
+      <template v-if="loading">
+        <!-- <div class="row justify-center q-my-md"> -->
+        <div
+          style="
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+          "
+        >
+          <q-spinner-dots color="primary" size="40px" />
+        </div>
+      </template>
       <q-scroll-area
         ref="myScrollArea"
         id="scroll-area"
@@ -27,11 +41,6 @@
         <q-pull-to-refresh @refresh="refresh">
           <template v-if="noRecord">
             <div class="no-record">{{ $t("common.no_record") }}</div>
-          </template>
-          <template v-if="loading">
-            <div class="row justify-center q-my-md">
-              <q-spinner-dots color="primary" size="40px" />
-            </div>
           </template>
           <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
             <div
@@ -99,7 +108,7 @@ const LPListView = defineComponent({
     const onSearchMode = ref(false);
     const pageSlice = 10;
     onBeforeMount(() => {
-      loading.value = true;
+      // loading.value = true;
       bridge.call("fetchTaskForLPList", null, (res: string) => {
         loading.value = false;
         composeTaskListResult(res);

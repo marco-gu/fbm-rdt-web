@@ -59,7 +59,10 @@
     "ok": "OK",
     "no_record": "No record found!",
     "uploaded": "Uploaded",
-    "finished": "Finished"
+    "finished": "Finished",
+    "success": "Success",
+    "info": "Info",
+    "error": "Error"
   },
   "login": {
     "login": "Continue",

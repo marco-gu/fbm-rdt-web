@@ -40,23 +40,24 @@
             padding: $--page-content-padding;
         }
         .page-content {
-            padding: $--page-content-padding;
+            // padding: $--page-content-padding;
             .search {
                 margin-bottom: 20px;
                 background-color: #ffffff;
+                margin: 0 23px 20px 23px;
             }
             // card for sub title
             .sub-title-card {
                 display: flex;
-                margin-bottom: 20px;
                 border-radius: $--card-radius;
                 padding: $--card-sub-title-padding;
                 align-items: center;
                 justify-content: center;
-                background: #00243d;
+                background: black;
                 color: #fff;
                 word-break: break-word;
                 font-size: 15px;
+                margin: 0px 23px 20px 23px;
             }
         }
     }

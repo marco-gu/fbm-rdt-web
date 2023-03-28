@@ -59,7 +59,10 @@
     "ok": "确认",
     "no_record": "找不到记录!",
     "uploaded": "已上传",
-    "finished": "已扫完"
+    "finished": "已扫完",
+    "success": "成功",
+    "info": "信息",
+    "error": "错误"
   },
   "login": {
     "login": "登录",

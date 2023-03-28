@@ -15,19 +15,28 @@
           </template>
         </q-input>
       </div>
+      <!-- <template v-if="refreshloading">
+        <div
+          style="
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+          "
+        >
+          <q-spinner-dots color="primary" size="40px" />
+        </div>
+      </template> -->
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <q-pull-to-refresh @refresh="refresh" style="margin-right: 40px">
+        <q-pull-to-refresh @refresh="refresh">
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
-            <div class="no-data">
+            <!-- <div class="no-data">
               {{ $t("common.no_record") }}
-            </div>
+            </div> -->
           </template>
           <template v-else>
-            <q-list
-              v-for="(item, index) in profileListDisplay"
-              :key="index"
-              style="margin-right: -40px"
-            >
+            <q-list v-for="(item, index) in profileListDisplay" :key="index">
               <q-item class="card-item" clickable @click="onClickProfile(item)">
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>
@@ -103,8 +112,12 @@ const ProfileView = defineComponent({
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
+    const refreshloading = ref(false);
     const refresh = (done: any) => {
+      refreshloading.value = true;
+      profileListDisplay.value = [];
       bridge.call("refreshProfile", null, (res: string) => {
+        refreshloading.value = false;
         const androidResponse = JSON.parse(res) as AndroidResponse<
           ProfileMaster[]
         >;
@@ -196,6 +209,7 @@ const ProfileView = defineComponent({
       type,
       popupVisible,
       msg,
+      refreshloading,
     };
   },
 });

@@ -6,41 +6,89 @@
     transition-hide="scale"
   >
     <template v-if="msgType == 'error'">
-      <q-card style="min-width: 250px; background-color: #ef5350">
-        <div style="display: flex; padding: 10px; justify-content: center">
-          <div>
-            <q-icon
-              name="error_outline"
-              size="18px"
-              color="white"
-              style="padding-bottom: 1px"
-            />
-          </div>
-          <div style="margin-left: 10px; color: white">
-            <div class="text-h7">{{ msg }}</div>
-          </div>
+      <div class="dialog-container">
+        <div
+          style="
+            padding: 15px 18px 0px 11px;
+            font-size: 17px;
+            font-weight: bold;
+          "
+        >
+          <q-icon
+            name="error_outline"
+            size="18px"
+            color="red"
+            style="padding-bottom: 2px"
+          />
+
+          {{ $t("common.error") }}
         </div>
-      </q-card>
+        <div class="dialog-container__content">
+          {{ msg }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button confirm" @click="cancel">
+            {{ $t("common.cancel") }}
+          </button>
+        </div>
+      </div>
     </template>
     <template v-if="msgType == 'success'">
-      <q-card style="min-width: 250px; background-color: #21ba45">
-        <div style="display: flex; padding: 10px; justify-content: center">
-          <div>
-            <q-icon
-              name="check_circle"
-              size="18px"
-              style="padding-bottom: 1px"
-              color="white"
-            />
-          </div>
-          <div style="margin-left: 10px; color: white">
-            <div class="text-h7">{{ msg }}</div>
-          </div>
+      <div class="dialog-container">
+        <div
+          style="
+            padding: 15px 18px 0px 11px;
+            font-size: 17px;
+            font-weight: bold;
+          "
+        >
+          <q-icon
+            name="check_circle"
+            size="18px"
+            color="green"
+            style="padding-bottom: 2px"
+          />
+
+          {{ $t("common.success") }}
         </div>
-      </q-card>
+        <div class="dialog-container__content">
+          {{ msg }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button confirm" @click="cancel">
+            {{ $t("common.cancel") }}
+          </button>
+        </div>
+      </div>
     </template>
     <template v-if="msgType == 'info'">
-      <q-card style="min-width: 250px; background-color: #42a5f5">
+      <div class="dialog-container">
+        <div
+          style="
+            padding: 15px 18px 0px 11px;
+            font-size: 17px;
+            font-weight: bold;
+          "
+        >
+          <q-icon
+            name="info"
+            size="18px"
+            color="green"
+            style="padding-bottom: 2px"
+          />
+
+          {{ $t("common.info") }}
+        </div>
+        <div class="dialog-container__content">
+          {{ msg }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button confirm" @click="cancel">
+            {{ $t("common.cancel") }}
+          </button>
+        </div>
+      </div>
+      <!-- <q-card style="min-width: 250px; background-color: #42a5f5">
         <div style="display: flex; padding: 10px; justify-content: center">
           <div>
             <q-icon
@@ -54,7 +102,7 @@
             <div class="text-h7">{{ msg }}</div>
           </div>
         </div>
-      </q-card>
+      </q-card> -->
     </template>
   </q-dialog>
 </template>
@@ -79,6 +127,9 @@ const PopupComponent = defineComponent({
     const msg = ref("");
     const msgType = ref("");
     const { visible, message, type } = toRefs(props);
+    const cancel = () => {
+      context.emit("close");
+    };
     watch(
       type,
       (newValue) => {
@@ -97,11 +148,6 @@ const PopupComponent = defineComponent({
       visible,
       (newValue) => {
         persistent.value = newValue;
-        if (persistent.value) {
-          setTimeout(() => {
-            context.emit("close");
-          }, 1500);
-        }
       },
       { immediate: true }
     );
@@ -109,6 +155,7 @@ const PopupComponent = defineComponent({
       msg,
       persistent,
       msgType,
+      cancel,
     };
   },
 });

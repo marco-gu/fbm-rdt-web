@@ -7,6 +7,21 @@
         <div v-if="taskDisplay.isMix == 1">{{ taskId }}+Mix</div>
         <div v-else>{{ taskId }}</div>
       </div>
+      <template v-if="refreshloading">
+        <!-- <div class="row justify-center q-my-md"> -->
+        <div
+          style="
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+          "
+        >
+          <q-spinner-dots color="primary" size="40px" />
+        </div>
+        <!-- </div> -->
+      </template>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <template v-if="pageType == 'Group'">
           <div
@@ -58,11 +73,6 @@
         <template v-else>
           <template v-if="noRecord">
             <div class="no-record">{{ $t("common.no_record") }}</div>
-          </template>
-          <template v-if="refreshloading">
-            <div class="row justify-center q-my-md">
-              <q-spinner-dots color="primary" size="40px" />
-            </div>
           </template>
           <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
             <div
@@ -170,7 +180,7 @@ const DataMgmtView = defineComponent({
     var retrieved = false; //这个界面的 onLoad 方法加载页面就会调用，写一个变量控制onLoad不执行
 
     onBeforeMount(() => {
-      refreshloading.value = true;
+      // refreshloading.value = true;
 
       if (typeof taskId.value === "string") {
         fetchTaskByTaskId(taskId.value);

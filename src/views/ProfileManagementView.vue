@@ -38,7 +38,7 @@
           </div>
         </template>
         <template v-else>
-          <q-pull-to-refresh @refresh="refresh" style="margin-right: 40px">
+          <q-pull-to-refresh @refresh="refresh">
             <template v-if="noRecord">
               <div class="no-record">{{ $t("common.no_record") }}</div>
             </template>
@@ -50,11 +50,7 @@
               </div>
             </template> -->
             <!-- <template v-else> -->
-            <q-list
-              v-for="(item, index) in profileListDisplay"
-              :key="index"
-              style="margin-right: -40px"
-            >
+            <q-list v-for="(item, index) in profileListDisplay" :key="index">
               <q-item class="card-item" v-touch-hold:1800="handleHold">
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>

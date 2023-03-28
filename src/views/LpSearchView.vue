@@ -19,6 +19,7 @@
             <div>{{ $t("lp.scan_type") }}</div>
             <div>
               <q-radio
+                color="secondary"
                 v-if="receivingFlag"
                 v-model="scanType"
                 val="Receiving"
@@ -26,6 +27,7 @@
                 @click="changeScanType('Receiving')"
               />
               <q-radio
+                color="secondary"
                 v-if="stuffingFlag"
                 v-model="scanType"
                 val="Stuffing"

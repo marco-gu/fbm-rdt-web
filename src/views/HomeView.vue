@@ -109,7 +109,7 @@
       <div class="dialog-container">
         <div class="dialog-container__title">
           {{ $t("home.logout") }}
-          <q-icon name="close" v-close-popup />
+          <!-- <q-icon name="close" v-close-popup /> -->
         </div>
         <div class="dialog-container__content">
           {{ $t("home.logout_promot") }}
@@ -208,9 +208,9 @@ export default {
 
     const logout = () => {
       showLogoutDialog.value = false;
-      showLoading($q);
+      // showLoading($q);
       bridge.call("logout", null, (data: string) => {
-        closeLoading($q);
+        // closeLoading($q);
         const androidResponse = JSON.parse(
           data
         ) as AndroidResponse<LogoutResponse>;
