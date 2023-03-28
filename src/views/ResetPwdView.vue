@@ -17,6 +17,7 @@
           >
             <template v-slot:append>
               <q-icon
+                :color="isPwd ? 'gray' : 'secondary'"
                 :name="isPwd ? 'visibility_off' : 'visibility'"
                 class="cursor-pointer"
                 @click="isPwd = !isPwd"
@@ -28,16 +29,17 @@
             v-model="newPwd"
             outlined
             dense
-            :type="isPwd ? 'password' : 'text'"
+            :type="isNewPwd ? 'password' : 'text'"
             :placeholder="$t('login.new_password_hint')"
             lazy-rules
             :rules="[newPwdRule]"
           >
             <template v-slot:append>
               <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
+                :color="isNewPwd ? 'gray' : 'secondary'"
+                :name="isNewPwd ? 'visibility_off' : 'visibility'"
                 class="cursor-pointer"
-                @click="isPwd = !isPwd"
+                @click="isNewPwd = !isNewPwd"
               />
             </template>
           </q-input>
@@ -46,16 +48,17 @@
             v-model="reNewPwd"
             outlined
             dense
-            :type="isPwd ? 'password' : 'text'"
+            :type="isNewRePwd ? 'password' : 'text'"
             :placeholder="$t('login.retype_password_hint')"
             lazy-rules
             :rules="[reNewPwdRule]"
           >
             <template v-slot:append>
               <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
+                :color="isNewRePwd ? 'gray' : 'secondary'"
+                :name="isNewRePwd ? 'visibility_off' : 'visibility'"
                 class="cursor-pointer"
-                @click="isPwd = !isPwd"
+                @click="isNewRePwd = !isNewRePwd"
               />
             </template>
           </q-input>
@@ -121,6 +124,8 @@ const ResetPwdView = defineComponent({
     const initPwd = ref();
     const from = ref("");
     const isPwd = ref(true);
+    const isNewPwd = ref(true);
+    const isNewRePwd = ref(true);
     const myForm = ref();
     const titleParam = i18n.t("login.change_password");
     const type = ref("");
@@ -281,12 +286,17 @@ const ResetPwdView = defineComponent({
       type,
       popupVisible,
       msg,
+      isNewPwd,
+      isNewRePwd,
     };
   },
 });
 export default ResetPwdView;
 </script>
 <style lang="scss" scoped>
+.page-content {
+  padding: $--page-content-padding;
+}
 .input-label {
   color: black;
   text-align: left;

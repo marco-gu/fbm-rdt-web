@@ -26,7 +26,7 @@
         >
           <template v-slot:append>
             <q-icon
-              color="secondary"
+              :color="isPwd ? 'gray' : 'secondary'"
               :name="isPwd ? 'visibility_off' : 'visibility'"
               class="cursor-pointer"
               @click="isPwd = !isPwd"
