@@ -352,7 +352,8 @@ const LpSearchView = defineComponent({
             });
           } else {
             bridge.call("createTask", apiParams);
-            closeLoading($q);
+            // closeLoading($q);
+            loadingStatus.value = false;
             pageViews.value.forEach((t) => {
               t.model = "";
             });
