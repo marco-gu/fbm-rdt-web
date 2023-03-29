@@ -218,8 +218,10 @@ const ResetPwdView = defineComponent({
     };
     const newPwdRule = (val: string) => {
       return new Promise((resolve) => {
-        const reg = /[A-Z]+/g;
-        const reg2 = /[0-9]+/g;
+        const regHasNum = /[0-9]/g;
+        const regHasLetter = /[a-z]|[A-Z]/g;
+        const regHasLowercaseLetter = /[a-z]/g;
+        const regHasUppercaseLetter = /[A-Z]/g;
         if (!val) {
           const message = i18n.t("messageCode.E93-02-0006");
           resolve(message);
@@ -228,11 +230,17 @@ const ResetPwdView = defineComponent({
             const message = i18n.t("messageCode.E93-02-0004");
             resolve(message);
           } else {
-            if (!reg.test(newPwd.value)) {
-              const message = i18n.t("messageCode.E93-02-0004");
+            if (
+              !regHasLetter.test(newPwd.value) ||
+              !regHasNum.test(newPwd.value)
+            ) {
+              const message = i18n.t("messageCode.E93-02-0008");
               resolve(message);
-            } else if (!reg2.test(newPwd.value)) {
-              const message = i18n.t("messageCode.E93-02-0004");
+            } else if (
+              !regHasLowercaseLetter.test(newPwd.value) ||
+              !regHasUppercaseLetter.test(newPwd.value)
+            ) {
+              const message = i18n.t("messageCode.E93-02-0009");
               resolve(message);
             } else {
               resolve(true);
@@ -301,8 +309,5 @@ export default ResetPwdView;
   color: black;
   text-align: left;
   font-size: $--card-font-size;
-}
-.q-field--with-bottom {
-  padding-bottom: 25px;
 }
 </style>
