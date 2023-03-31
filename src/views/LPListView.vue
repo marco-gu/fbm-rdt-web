@@ -98,6 +98,7 @@ const LPListView = defineComponent({
     const searchIndex = ref(0);
     const onSearchMode = ref(false);
     const pageSlice = 10;
+    const isRefresh = ref(false);
     onBeforeMount(() => {
       loading.value = true;
       bridge.call("fetchTaskForLPList", null, (res: string) => {
@@ -147,6 +148,7 @@ const LPListView = defineComponent({
       }
     };
     const refresh = (done: any) => {
+      isRefresh.value = true;
       myInfiniteScroll.value.resume();
       if (onSearchMode.value) {
         searchIndex.value = 0;
@@ -155,55 +157,59 @@ const LPListView = defineComponent({
         };
         bridge.call("searchTaskForLPList", args, (res: string) => {
           composeTaskListSearchResult(res);
+          isRefresh.value = false;
           done();
         });
       } else {
         retrieveIndex.value = 0;
         bridge.call("fetchTaskForLPList", null, (res: string) => {
           composeTaskListResult(res);
+          isRefresh.value = false;
           done();
         });
       }
     };
     const onLoad = (index: any, done: any) => {
-      if (onSearchMode.value) {
-        const start = searchIndex.value * pageSlice;
-        const end = (searchIndex.value + 1) * pageSlice;
-        setTimeout(() => {
-          for (let i = start; i < end; i++) {
-            if (taskListSearchResult.value[i]) {
-              taskListDisplay.value.push(taskListSearchResult.value[i]);
+      if (!isRefresh.value) {
+        if (onSearchMode.value) {
+          const start = searchIndex.value * pageSlice;
+          const end = (searchIndex.value + 1) * pageSlice;
+          setTimeout(() => {
+            for (let i = start; i < end; i++) {
+              if (taskListSearchResult.value[i]) {
+                taskListDisplay.value.push(taskListSearchResult.value[i]);
+              }
             }
-          }
-          if (
-            taskListDisplay.value.length ==
-            (searchIndex.value + 1) * pageSlice
-          ) {
-            searchIndex.value++;
-          } else {
-            myInfiniteScroll.value.stop();
-          }
-          done();
-        }, 200);
-      } else {
-        const start = retrieveIndex.value * pageSlice;
-        const end = (retrieveIndex.value + 1) * pageSlice;
-        setTimeout(() => {
-          for (let i = start; i < end; i++) {
-            if (taskListInitResult.value[i]) {
-              taskListDisplay.value.push(taskListInitResult.value[i]);
+            if (
+              taskListDisplay.value.length ==
+              (searchIndex.value + 1) * pageSlice
+            ) {
+              searchIndex.value++;
+            } else {
+              myInfiniteScroll.value.stop();
             }
-          }
-          if (
-            taskListDisplay.value.length ==
-            (retrieveIndex.value + 1) * pageSlice
-          ) {
-            retrieveIndex.value++;
-          } else {
-            myInfiniteScroll.value.stop();
-          }
-          done();
-        }, 200);
+            done();
+          }, 200);
+        } else {
+          const start = retrieveIndex.value * pageSlice;
+          const end = (retrieveIndex.value + 1) * pageSlice;
+          setTimeout(() => {
+            for (let i = start; i < end; i++) {
+              if (taskListInitResult.value[i]) {
+                taskListDisplay.value.push(taskListInitResult.value[i]);
+              }
+            }
+            if (
+              taskListDisplay.value.length ==
+              (retrieveIndex.value + 1) * pageSlice
+            ) {
+              retrieveIndex.value++;
+            } else {
+              myInfiniteScroll.value.stop();
+            }
+            done();
+          }, 200);
+        }
       }
     };
     watch(search, () => {
