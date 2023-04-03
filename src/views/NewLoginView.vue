@@ -45,6 +45,7 @@
         {{ $t("login.login") }}
       </q-btn>
     </q-form>
+
     <div class="login-link">
       <div @click="userManualVisible = true">
         <p class="login-link-label">
@@ -90,7 +91,6 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import bridge from "dsbridge";
-import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import md5 from "md5";
 import {
   AndroidResponse,

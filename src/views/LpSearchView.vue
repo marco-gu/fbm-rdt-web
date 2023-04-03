@@ -6,7 +6,21 @@
     <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
-          <q-input
+          <div class="field">
+            <div class="input-title">
+              <span class="text">{{ $t("profile.profile_text") }}</span>
+            </div>
+            <q-input
+              class="input-field"
+              :input-style="{ fontSize: '15px', padding: '3px 0 0 0px' }"
+              input-class="text-left"
+              v-model="profileCode"
+              readonly
+              borderless
+            >
+            </q-input>
+          </div>
+          <!-- <q-input
             class="card-item-input"
             v-model="profileCode"
             input-class="text-right"
@@ -15,7 +29,7 @@
             readonly
             borderless
             dense
-          />
+          /> -->
           <div class="card-item-input">
             <div>{{ $t("lp.scan_type") }}</div>
             <div>
@@ -39,7 +53,37 @@
           </div>
           <div v-for="(item, i) in pageViews" :key="i">
             <div v-if="item.display == 1">
-              <div class="card-item-input">
+              <div class="field">
+                <div class="input-title">
+                  <span class="text">{{ item.displayFieldName }}</span>
+                </div>
+                <q-input
+                  class="input-field"
+                  :input-style="{ fontSize: '15px', padding: '3px 0 0 0px' }"
+                  input-class="text-left"
+                  ref="inputRef"
+                  v-model="item.model"
+                  @keyup.enter="onInputKeyUp($event, i)"
+                  @paste="validPaste($event, i)"
+                  :maxlength="item.length"
+                  lazy-rules
+                  :rules="[item.valid]"
+                  borderless
+                >
+                  <template v-slot:append>
+                    <q-avatar class="btn-img">
+                      <q-img
+                        :color="secondary"
+                        no-transition
+                        no-spinner
+                        :src="inputScanIcon"
+                        width="14px"
+                      />
+                    </q-avatar>
+                  </template>
+                </q-input>
+              </div>
+              <!-- <div class="card-item-input">
                 <div>
                   {{ item.displayFieldName }}
                 </div>
@@ -48,9 +92,6 @@
                   :input-style="{ fontSize: '15px' }"
                   input-class="text-right"
                   ref="inputRef"
-                  v-model="item.model"
-                  @keyup.enter="onInputKeyUp($event, i)"
-                  @paste="validPaste($event, i)"
                   :maxlength="item.length"
                   lazy-rules
                   :rules="[item.valid]"
@@ -71,7 +112,7 @@
                     </q-avatar>
                   </template>
                 </q-input>
-              </div>
+              </div> -->
             </div>
           </div>
         </q-form>
@@ -101,10 +142,9 @@ import {
   ProfileOrderLevel,
   ProfileMaster,
 } from "@/models/profile";
-import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, nextTick, onMounted, onUnmounted, ref } from "vue";
+import { defineComponent, nextTick, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   ViewDisplayAttribute,
@@ -117,9 +157,11 @@ import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import { softKeyPopUp } from "../utils/screen.util";
-import inputScan from "../assets/images/input_scan.svg";
+// import inputScan from "../assets/images/input_scan.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import inputScan from "../assets/icon/compress-solid.svg";
+import inputScanBlue from "../assets/icon/compress-solid-blue.svg";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -148,7 +190,8 @@ const LpSearchView = defineComponent({
     const clientCode = ref("");
     const scanType = ref("");
     const myForm = ref();
-    const inputScanIcon = inputScan;
+    const inputScanIcon = ref();
+    inputScanIcon.value = inputScan;
     // Define Page Elements
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const receivingViews = ref([] as ViewDisplayAttribute[]);
@@ -422,9 +465,6 @@ const LpSearchView = defineComponent({
         });
       }
     });
-    // onUnmounted(() => {
-    //   closeLoading($q);
-    // });
     const onInputKeyUp = (event: KeyboardEvent, index: number) => {
       if (event.code === "Enter" || event.which === 13) {
         const param = inputRef.value as any;

@@ -1,0 +1,37 @@
+.field {
+    height: 40px;
+    margin: 26px 23px;
+    border: 1px solid #e5e2dc;
+    // overflow: hidden;
+    .input-field {
+        position: relative;
+        top: -24px
+    }
+    .input-title {
+        position: relative;
+        text-align: left;
+        top: -8px;
+        left: 20px;
+        font-size: 11px;
+        .text {
+            padding: 0 5px;
+            background-color: #ffffff;
+        }
+    }
+    .btn-img {
+        margin-right: -5px;
+    }
+}
+
+.field:focus-within {
+    border: 1px solid #64b2d4;
+    .btn-img {
+        transform: translateX(-1000px);
+        filter: drop-shadow(#64b2d4 1000px 0);
+    }
+}
+
+.q-field {
+    height: 65px;
+    padding: 0 0 0 10px;
+}
