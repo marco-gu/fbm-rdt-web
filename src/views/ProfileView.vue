@@ -1,10 +1,16 @@
 <template>
   <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component>
+    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component> -->
+    <common-header-component
+      :titles="[$t('profile.profile')]"
+      :icons="['home', 'search', 'expand']"
+      @onHome="() => router.push('/home')"
+      @onSearch="onSearch($event)"
+    />
     <div class="page-content">
-      <div class="search">
+      <!-- <div class="search">
         <q-input
           v-model="search"
           outlined
@@ -15,7 +21,7 @@
             <q-icon name="search" />
           </template>
         </q-input>
-      </div>
+      </div> -->
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-pull-to-refresh @refresh="refresh">
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
@@ -76,13 +82,13 @@ import {
 } from "@/models/android.response";
 import { useI18n } from "vue-i18n";
 import formatDate from "../utils/formatDate";
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import rotate from "../assets/icon/rotate-solid.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 const ProfileView = defineComponent({
   components: {
-    HeaderComponent,
+    CommonHeaderComponent,
     PopupComponent,
     LoadingComponent,
   },
@@ -92,7 +98,6 @@ const ProfileView = defineComponent({
     const i18n = useI18n();
     let isFirstSync = ref(true);
     const store = useStore();
-    const titleParam = i18n.t("profile.profile");
     const backUrlParam = "/home";
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
@@ -170,6 +175,9 @@ const ProfileView = defineComponent({
       // Initialize
       getProfileList();
     });
+    const onSearch = (e: string) => {
+      search.value = e.trim();
+    };
     watch(search, () => {
       if (search.value) {
         const filteredResult = result.filter(
@@ -191,7 +199,6 @@ const ProfileView = defineComponent({
       refresh,
       router,
       search,
-      titleParam,
       backUrlParam,
       dialogVisible,
       rotateIcon,
@@ -199,6 +206,7 @@ const ProfileView = defineComponent({
       popupVisible,
       msg,
       loadingStatus,
+      onSearch,
     };
   },
 });

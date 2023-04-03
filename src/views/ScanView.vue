@@ -1,7 +1,12 @@
 <template>
   <div class="wrapper">
-    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component>
+    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component> -->
+    <common-header-component
+      :titles="[$t('lp.scan'), ...navTitleList]"
+      :icons="['home']"
+      @onHome="() => router.push('/home')"
+    />
     <div class="page-content">
       <div class="sub-title-card">
         <div class="sub-title-card_section">
@@ -59,10 +64,10 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, Ref, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import bridge from "dsbridge";
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { useI18n } from "vue-i18n";
 type ViewElement = {
   key: string;
@@ -70,7 +75,7 @@ type ViewElement = {
 };
 const ScanView = defineComponent({
   components: {
-    HeaderComponent,
+    CommonHeaderComponent,
   },
   setup() {
     const router = useRouter();
@@ -86,6 +91,7 @@ const ScanView = defineComponent({
     const data = ref();
     const titleParam = i18n.t("lp.scan");
     const backUrlParam = "/lpSearch/online";
+    const navTitleList: Ref<string[]> = ref([]);
     onMounted(() => {
       // calculate scroll area height if bottom button exist
       const bottom = document.getElementById("bottom-button") as any;
@@ -136,6 +142,10 @@ const ScanView = defineComponent({
           }
         }
       }
+
+      for (let i = 0; i < views.value.length; i++) {
+        navTitleList.value.push(views.value[i].value);
+      }
     });
     const onSubmit = () => {
       const args = {
@@ -156,6 +166,8 @@ const ScanView = defineComponent({
       views,
       titleParam,
       backUrlParam,
+      router,
+      navTitleList,
     };
   },
 });

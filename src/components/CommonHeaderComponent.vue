@@ -125,7 +125,7 @@ export default CommonHeaderComponent;
       font-size: 12px;
     }
     transform-origin: top;
-    animation: search-anim 0.5s ease-out;
+    animation: search-anim 0.3s ease-out;
   }
 }
 @keyframes fade-in {

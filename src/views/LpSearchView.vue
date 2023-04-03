@@ -1,8 +1,18 @@
 <template>
   <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component>
+    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component> -->
+    <common-header-component
+      :titles="[
+        route.params.id == 'online'
+          ? $t('lp.lp_search')
+          : $t('lp.offline_scan'),
+        profileCode,
+      ]"
+      :icons="['home']"
+      @onHome="() => router.push('/home')"
+    />
     <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
@@ -101,7 +111,6 @@ import {
   ProfileOrderLevel,
   ProfileMaster,
 } from "@/models/profile";
-import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, nextTick, onMounted, onUnmounted, ref } from "vue";
@@ -115,7 +124,7 @@ import {
 } from "@/utils/profile.render";
 import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { softKeyPopUp } from "../utils/screen.util";
 import inputScan from "../assets/images/input_scan.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
@@ -132,7 +141,7 @@ const enum ValidationType {
 }
 const LpSearchView = defineComponent({
   components: {
-    HeaderComponent,
+    CommonHeaderComponent,
     PopupComponent,
     LoadingComponent,
   },
@@ -140,7 +149,6 @@ const LpSearchView = defineComponent({
     const router = useRouter();
     const route = useRoute();
     const store = useStore();
-    const $q = useQuasar();
     const inputRef = ref(null);
     const i18n = useI18n();
     const profileName = ref("");
@@ -159,10 +167,6 @@ const LpSearchView = defineComponent({
     const mode = route.params.id as string;
     const bottomButtonLable =
       mode == "online" ? i18n.t("lp.generate") : i18n.t("lp.start_scan");
-    const titleParam =
-      route.params.id == "online"
-        ? i18n.t("lp.lp_search")
-        : i18n.t("lp.offline_scan");
     const backUrlParam = "/profile/" + route.params.id;
     bridge.call("getSettingLanguage", null, (res: string) => {
       i18n.locale.value = res;
@@ -454,7 +458,6 @@ const LpSearchView = defineComponent({
       bottomButtonLable,
       myForm,
       onInputKeyUp,
-      titleParam,
       inputScanIcon,
       backUrlParam,
       type,
@@ -462,6 +465,8 @@ const LpSearchView = defineComponent({
       msg,
       OnClosePopUp,
       loadingStatus,
+      router,
+      route,
     };
   },
 });
