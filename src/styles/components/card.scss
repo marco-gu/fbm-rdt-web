@@ -1,0 +1,37 @@
+// card general
+.card-item {
+    border-radius: $--card-radius;
+    box-shadow: $--card-box-shadow;
+    padding: $--card-padding;
+    margin-bottom: $--card-space-between;
+    font-size: $--card-font-size;
+    text-align: left;
+    background-color: #fff;
+    margin: 0px 23px 20px 23px;
+}
+
+// card with input field
+.card-item-input {
+    @extend .card-item;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    // text-align: left;
+    padding: $--card-input-padding;
+    .card-item-input-field {
+        width: 90%;
+        height: $--card-input-field-height;
+        padding: $--card-input-field-padding;
+        &.no-shadow {
+            box-shadow: none;
+        }
+    }
+}
+
+// card with selection
+.card-item-select {
+    @extend .card-item-input;
+    padding: $--card-selection-padding;
+    height: $--card-selection-height;
+}

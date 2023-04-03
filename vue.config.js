@@ -1,18 +1,8 @@
 const { configs } = require("@typescript-eslint/eslint-plugin");
 const { defineConfig } = require("@vue/cli-service");
-module.exports = defineConfig({
-    // chainWebpack: config => {
-    //     config.module.rule("images")
-    //         .test(/\.(jpg|png|gif|svg)$/)
-    //         .use("url-loader")
-    //         .loader("url-loader")
-    //         .options({
-    //             limit: 20 * 1024,
-    //             name: 'imgages/[name].[ext]'
-    //         })
-    // },
-    transpileDependencies: ["quasar"],
 
+module.exports = defineConfig({
+    transpileDependencies: ["quasar"],
     pluginOptions: {
         quasar: {
             importStrategy: "kebab",
@@ -28,5 +18,11 @@ module.exports = defineConfig({
             },
         },
     },
+    chainWebpack: config => {
+        config.resolve.alias.set("vue-i18n", "vue-i18n/dist/vue-i18n.cjs.js")
+    },
+    publicPath: process.env.NODE_ENV == "product" ? "././" : ""
+
+
 
 });

@@ -1,27 +1,28 @@
 <template>
   <div class="container">
-    <q-img
-      :src="maerskLogo"
-      no-spinner
-      style="max-width: 300px; max-height: 180px"
-    />
+    <q-img no-transition no-spinner :src="maerskLogo" class="logo-image" />
     <q-form @submit="onSubmit">
       <div class="login-form">
+        <div class="input-label">{{ $t("login.account") }}</div>
         <q-input
+          ref="inputUsername"
           v-model="username"
-          filled
-          placeholder="Username"
+          outlined
+          dense
+          :placeholder="$t('login.account_hint')"
           lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please input username']"
+          :rules="[(val) => !!val || $t('messageCode.E91-01-0004')]"
         />
+        <div class="input-label">{{ $t("login.password") }}</div>
         <q-input
-          style="margin-top: 5px"
+          ref="inputPassword"
           v-model="password"
-          filled
-          placeholder="Password"
+          outlined
+          dense
+          :placeholder="$t('login.password_hint')"
           :type="isPwd ? 'password' : 'text'"
           lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please input password']"
+          :rules="[(val) => !!val || $t('messageCode.E91-01-0005')]"
         >
           <template v-slot:append>
             <q-icon
@@ -32,153 +33,193 @@
           </template>
         </q-input>
       </div>
-      <q-btn class="login-button" push type="submit" label="Log In" />
       <div class="login-link">
-        <span>
-          <a href="#">Help</a>
+        <span @click="userManualVisible = true">
+          <a>{{ $t("login.help") }}</a>
         </span>
-        <span @click="clickForgotPassword">
-          <a href="#">Forgot Password?</a>
+        <span @click="forgotPwdVisible = true">
+          <a>{{ $t("login.forgot_password") }}?</a>
         </span>
       </div>
+      <q-btn
+        no-caps
+        class="login-button"
+        unelevated
+        type="submit"
+        color="secondary"
+      >
+        {{ $t("login.login") }}
+      </q-btn>
     </q-form>
-    <ForgotPasswordComponent
-      :dialogVisible="dialogVisible"
-      @confirm="onConfirmForgotPassword"
-      @close="onCloseForgotPassword"
+    <UserManual
+      :dialogVisible="userManualVisible"
+      @close="userManualVisible = false"
     >
-    </ForgotPasswordComponent>
+    </UserManual>
+    <ForgotPwdComponent
+      :dialogVisible="forgotPwdVisible"
+      @confirm="forgotPwdVisible = false"
+      @close="forgotPwdVisible = false"
+    >
+    </ForgotPwdComponent>
     <div class="login-bottom">
-      <q-badge transparent align="middle" color="orange" outline>
-        Ver 0.1 Beta, Prod
-      </q-badge>
+      <span> {{ versionNum }} </span>
     </div>
   </div>
 </template>
-
 <script lang="ts">
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
 import logo from "../assets/images/Maersk_Logo_RGB.svg";
 import { useQuasar } from "quasar";
-import { ApiResponseDto } from "../models/api.response";
+import {
+  AndroidResponse,
+  AndroidResponseStatus,
+} from "../models/android.response";
 import { LoginResponse } from "../models/login.response";
 import md5 from "md5";
-import ForgotPasswordComponent from "@/components/ForgotPassword.vue";
-
+import ForgotPwdComponent from "@/components/ForgotPwdComponent.vue";
+import UserManual from "@/components/UserManualComponent.vue";
+import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
+import { useI18n } from "vue-i18n";
 const LoginView = defineComponent({
   components: {
-    ForgotPasswordComponent,
+    UserManual,
+    ForgotPwdComponent,
   },
   setup() {
     const router = useRouter();
+    const i18n = useI18n();
+    const $q = useQuasar();
     const maerskLogo = logo;
     const username = ref("");
     const password = ref("");
-    const dialogVisible = ref(false);
-    const $q = useQuasar();
-    const alertErrorMessage = (message: any) => {
-      $q.notify({
-        position: "center",
-        color: "red-5",
-        textColor: "white",
-        icon: "error",
-        timeout: 2000,
-        message: message,
-      });
-    };
+    const inputUsername = ref();
+    const inputPassword = ref();
+    const forgotPwdVisible = ref(false);
+    const userManualVisible = ref(false);
+    const isPwd = ref(true);
+    const versionNum = ref();
     onMounted(() => {
-      bridge.call("checkUserUid", null, (res: string) => {
+      bridge.call("checkUserUid", null, async (res: string) => {
         if (res) {
           username.value = res.toUpperCase();
         }
+        await nextTick();
+        if (!username.value) {
+          inputUsername.value.focus();
+        } else {
+          inputPassword.value.focus();
+        }
+      });
+      bridge.call("getAppInfo", null, async (res: string) => {
+        if (res) {
+          versionNum.value = res;
+        }
       });
     });
+    watch(
+      username,
+      () => {
+        if (username.value != null) {
+          username.value = username.value.toUpperCase();
+        }
+      },
+      { immediate: true }
+    );
+    const onSubmit = () => {
+      showLoading($q);
+      const args = {
+        username: username.value.toUpperCase(),
+        password: md5(password.value),
+      };
+
+      bridge.call("login", args, (res: string) => {
+        const androidResponse = JSON.parse(
+          res
+        ) as AndroidResponse<LoginResponse>;
+        closeLoading($q);
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          if (androidResponse.data.autoGeneratedPassword) {
+            router.push({
+              name: "resetPwd",
+              params: {
+                from: "LoginView",
+                username: username.value,
+                password: password.value,
+              },
+            });
+          } else {
+            router.push("/home");
+          }
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          // const message = i18n.t("messageCode." + androidResponse.messageCode);
+          // popupErrorMsg($q, message);
+        }
+      });
+    };
     return {
       username,
       password,
-      isPwd: ref(true),
-      router,
       maerskLogo,
-      dialogVisible,
-      clickForgotPassword() {
-        dialogVisible.value = true;
-      },
-      onCloseForgotPassword() {
-        dialogVisible.value = false;
-      },
-      onConfirmForgotPassword(mail: string) {
-        dialogVisible.value = false;
-      },
-      onSubmit() {
-        $q.loading.show({
-          delay: 400, // ms
-        });
-        const args = {
-          username: username.value,
-          password: md5(password.value),
-        };
-        bridge.call("login", args, (res: string) => {
-          const apiResponse = JSON.parse(res) as ApiResponseDto<LoginResponse>;
-          $q.loading.hide();
-          if (apiResponse.statusCode == 200) {
-            if (apiResponse.data.autoGeneratedPassword) {
-              // First time Login
-              router.push({
-                name: "changePassword",
-                params: {
-                  from: "LoginView",
-                  username: username.value,
-                  password: password.value,
-                },
-              });
-            } else {
-              router.push("/home");
-            }
-          } else {
-            alertErrorMessage(apiResponse.errorMessage);
-          }
-        });
-      },
+      isPwd,
+      forgotPwdVisible,
+      userManualVisible,
+      onSubmit,
+      i18n,
+      versionNum,
+      inputUsername,
+      inputPassword,
     };
   },
 });
 export default LoginView;
 </script>
-<style scoped>
+<style scoped lang="scss">
 .container {
   position: relative;
-  width: 360px;
-  padding: 15% 0 0;
-  margin: auto;
+  width: 100%;
   min-height: 600px;
   height: 100vh;
+  font-size: 17px;
+  padding-top: 15%;
+  .logo-image {
+    max-width: 90%;
+  }
 }
 .login-form {
   width: 85%;
   margin: auto;
+  .input-label {
+    color: #000000;
+    text-align: left;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
 }
 .login-link {
-  width: 84%;
+  width: 85%;
   margin: auto;
   display: flex;
   justify-content: space-between;
-}
-.login-link a {
-  color: black;
+  a {
+    color: #000000;
+    text-decoration: underline;
+  }
 }
 .login-button {
   width: 85%;
-  height: 50px;
-  margin: 15px auto 10px;
-  background-color: #00243d;
   color: white;
+  margin-top: 15%;
 }
 .login-bottom {
   position: absolute;
   bottom: 10px;
   left: 0;
   right: 0;
+  color: #b2b2b2;
+  font-size: 14px;
+  text-size-adjust: none;
 }
 </style>

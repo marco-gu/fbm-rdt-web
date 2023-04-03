@@ -1,97 +1,219 @@
 <template>
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <div class="header">
-      <div style="width: 100%">
-        <q-item clickable>
-          <q-item-section avatar @click="back">
-            <q-icon name="arrow_back" />
-          </q-item-section>
-          <q-item-section>
-            <span style="font-size: 21px">Profile</span></q-item-section
-          >
-          <q-item-section avatar @click="home">
-            <q-icon name="home" />
-          </q-item-section>
-        </q-item>
+    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component>
+    <div class="page-content">
+      <div class="search">
+        <q-input
+          v-model="search"
+          outlined
+          dense
+          :placeholder="$t('common.search')"
+        >
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
       </div>
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <q-pull-to-refresh @refresh="refresh">
+          <template v-if="profileListDisplay.length === 0 && !isFirstSync">
+            <!-- <div class="no-data">
+              {{ $t("common.no_record") }}
+            </div> -->
+          </template>
+          <template v-else>
+            <q-list v-for="(item, index) in profileListDisplay" :key="index">
+              <q-item class="card-item" clickable @click="onClickProfile(item)">
+                <q-item-section class="card-item-labels">
+                  <q-item-label>{{ item.profileCode }}</q-item-label>
+                  <q-item-label class="card-item-date-text">
+                    {{ formatDate(new Date(item.updateDatetime)) }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-icon name="chevron_right" color="black" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </template>
+        </q-pull-to-refresh>
+      </q-scroll-area>
     </div>
-    <div style="margin-top: 10px">
-      <div v-if="result.length > 0">
-        <q-list v-for="(item, index) in result" :key="index">
-          <q-item clickable @click="next(item.client)">
-            <q-item-section style="text-align: left">
-              <q-item-label>{{ item.client }}</q-item-label>
-              <q-item-label caption>{{ item.updateDate }}</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-icon name="chevron_right" color="black" />
-            </q-item-section>
-          </q-item>
-          <q-separator spaced inset />
-        </q-list>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
+    <q-dialog v-model="dialogVisible" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("profile.sync_profile") }}
+        </div>
+        <div class="dialog-container__content">
+          {{ $t("profile.sync_latest") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button confirm" @click="refresh">
+            {{ $t("common.ok") }}
+          </button>
+        </div>
       </div>
-      <q-pull-to-refresh @refresh="refresh">
-        <q-list>
-          <q-item> </q-item>
-        </q-list>
-      </q-pull-to-refresh>
-    </div>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { defineComponent, onMounted, Ref, ref } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { ProfileMaster } from "../models/profile";
+import { useStore } from "@/store";
+import {
+  AndroidResponse,
+  AndroidResponseStatus,
+} from "@/models/android.response";
+import { useI18n } from "vue-i18n";
+import formatDate from "../utils/formatDate";
+import HeaderComponent from "@/components/HeaderComponent.vue";
+import rotate from "../assets/icon/rotate-solid.svg";
+import PopupComponent from "@/components/PopupComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 const ProfileView = defineComponent({
-  methods: {
-    back() {
-      this.router.go(-1);
-    },
-    home() {
-      this.router.push("/home");
-    },
-    next(client: string) {
-      this.router.push({ name: "lpSearch", params: { client } });
-    },
+  components: {
+    HeaderComponent,
+    PopupComponent,
+    LoadingComponent,
   },
   setup() {
     const router = useRouter();
-    const result: Ref<ProfileMaster[]> = ref([]);
-    onMounted(() => {
-      bridge.call("fetchProfile", (res: any) => {
-        result.value = JSON.parse(res) as ProfileMaster[];
-      });
-    });
+    const route = useRoute();
+    const i18n = useI18n();
+    let isFirstSync = ref(true);
+    const store = useStore();
+    const titleParam = i18n.t("profile.profile");
+    const backUrlParam = "/home";
+    let result: ProfileMaster[] = [];
+    const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
+    const search = ref("");
+    const dialogVisible = ref(false);
+    const rotateIcon = rotate;
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
+    const loadingStatus = ref(false);
     const refresh = (done: any) => {
-      const args = { whId: "NAS01" };
-      bridge.call("refreshProfile", args, (res: any) => {
-        result.value = JSON.parse(res) as ProfileMaster[];
+      loadingStatus.value = true;
+      bridge.call("refreshProfile", null, (res: string) => {
+        loadingStatus.value = false;
+        const androidResponse = JSON.parse(res) as AndroidResponse<
+          ProfileMaster[]
+        >;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          getProfileList();
+          isFirstSync.value = false;
+          bridge.call("setProfileLastSyncDate", {
+            formatDate: formatDate(new Date()),
+          });
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          // const message = i18n.t("messageCode." + androidResponse.messageCode);
+          // popupErrorMsg($q, message);
+          type.value = "error";
+          popupVisible.value = true;
+          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+        }
+        dialogVisible.value = false;
         done();
       });
     };
+    const sortProfileList = (profileListDisplay: any[]) => {
+      profileListDisplay.sort((a: any, b: any) => {
+        return (a.profileCode + "").localeCompare(b.profileCode + "");
+      });
+    };
+    const onClickProfile = (profileItem: any) => {
+      store
+        .dispatch("profileModule/saveProfile", {
+          profile: JSON.stringify(profileItem),
+        })
+        .then(() => {
+          localStorage.setItem("profile", JSON.stringify(profileItem));
+          const page = route.params.id;
+          router.push("/lpSearch/" + page);
+        });
+    };
+    const getProfileList = () => {
+      bridge.call("fetchProfile", (res: string) => {
+        result = JSON.parse(res) as ProfileMaster[];
+        profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
+        if (result.length === 0) {
+          if (isFirstSync.value) {
+            dialogVisible.value = true;
+          }
+        } else {
+          sortProfileList(profileListDisplay.value);
+          if (!isFirstSync.value) {
+            type.value = "success";
+            popupVisible.value = true;
+            msg.value = i18n.t("profile.sync_complete");
+            // popupSuccessMsg($q, i18n.t("profile.sync_complete"));
+          }
+        }
+      });
+    };
+    onMounted(() => {
+      // calculate scroll area height
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      // Initialize
+      getProfileList();
+    });
+    watch(search, () => {
+      if (search.value) {
+        const filteredResult = result.filter(
+          (item) =>
+            item.profileCode.toLowerCase().indexOf(search.value.toLowerCase()) >
+            -1
+        );
+        profileListDisplay.value = filteredResult;
+      } else {
+        profileListDisplay.value = result;
+      }
+    });
 
     return {
-      router,
+      formatDate,
+      isFirstSync,
+      onClickProfile,
+      profileListDisplay,
       refresh,
-      result,
+      router,
+      search,
+      titleParam,
+      backUrlParam,
+      dialogVisible,
+      rotateIcon,
+      type,
+      popupVisible,
+      msg,
+      loadingStatus,
     };
   },
 });
 export default ProfileView;
 </script>
 <style lang="scss" scoped>
-.wrapper {
-  height: 100vh;
-  display: flex;
-  flex-flow: column;
+.card-item-labels {
+  text-align: left;
+  .card-item-date-text {
+    margin-top: $--card-item-text-space-between;
+    color: $--card-item-date-text-color;
+  }
 }
-.header {
-  background: #027be3;
-  padding-top: 1px;
-  padding-bottom: 1px;
-  display: flex;
-  color: #fff;
-  justify-content: space-around;
+.no-data {
+  text-align: center;
+  width: 100%;
 }
 </style>

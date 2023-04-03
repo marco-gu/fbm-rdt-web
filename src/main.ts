@@ -1,10 +1,12 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import store from "./store";
+import store, { key } from "./store";
 import { Dialog, Loading, Notify, Quasar } from "quasar";
 import "./styles/quasar.scss";
+import "@maersk-global/fonts/maeu/fonts.css";
 import "@quasar/extras/material-icons/material-icons.css";
+import i18n from "./assets/i18n/i18n";
 
 const quasarUserOptions = {
   config: {},
@@ -13,6 +15,7 @@ const quasarUserOptions = {
 
 createApp(App)
   .use(Quasar, quasarUserOptions)
-  .use(store)
+  .use(store, key)
   .use(router)
+  .use(i18n)
   .mount("#app");
