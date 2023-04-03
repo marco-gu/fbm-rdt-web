@@ -6,6 +6,7 @@
     @onExpand="onExpandClick"
     @onSearch="onSearch($event)"
   />
+  <router-view />
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
