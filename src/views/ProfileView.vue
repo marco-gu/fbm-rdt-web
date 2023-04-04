@@ -7,7 +7,7 @@
       :titles="[$t('profile.profile')]"
       :icons="['home', 'search', 'expand']"
       @onHome="() => router.push('/home')"
-      @onSearch="onSearch($event)"
+      v-model:searchValue="search"
     />
     <div class="page-content">
       <!-- <div class="search">

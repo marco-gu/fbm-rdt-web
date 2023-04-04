@@ -29,10 +29,10 @@
   </div>
   <div v-if="searchVisible" class="common-header--search-container">
     <input
-      v-model="searchValue"
+      :value="searchValue"
       type="search"
-      @keyup.enter="onSearchEmit"
-      @blur="onSearchEmit"
+      @keyup.enter="onSearchEmit($event)"
+      @input="onSearchEmit($event)"
     />
   </div>
 </template>
@@ -48,10 +48,13 @@ const CommonHeaderComponent = defineComponent({
       type: Array,
       default: () => ["home", "search", "expand"],
     },
+    searchValue: {
+      type: String,
+      default: "",
+    },
   },
-  emits: ["onHome", "onSearch", "onExpand"],
+  emits: ["onHome", "onSearch", "onExpand", "update:searchValue"],
   setup(props, context) {
-    const searchValue = ref("");
     const searchVisible = ref(false);
 
     const onHomeClick = () => {
@@ -60,15 +63,14 @@ const CommonHeaderComponent = defineComponent({
     const onExpandClick = () => {
       context.emit("onExpand");
     };
-    const onSearchEmit = () => {
-      context.emit("onSearch", searchValue.value);
+    const onSearchEmit = (e: any) => {
+      context.emit("update:searchValue", e.target.value);
     };
     return {
       onHomeClick,
       onSearchEmit,
       onExpandClick,
       searchVisible,
-      searchValue,
     };
   },
 });
@@ -115,7 +117,7 @@ export default CommonHeaderComponent;
     }
   }
   &--search-container {
-    margin: 10px auto;
+    margin: 10px auto 0;
     width: 90%;
     input {
       width: 100%;
@@ -123,6 +125,9 @@ export default CommonHeaderComponent;
       padding: 0 10px;
       border: 1px solid #e5e2dc;
       font-size: 12px;
+      &:focus {
+        outline-color: #64b2d4;
+      }
     }
     transform-origin: top;
     animation: search-anim 0.3s ease-out;
