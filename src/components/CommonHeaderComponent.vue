@@ -28,6 +28,9 @@
       <a v-if="icons.indexOf('sync') > -1" class="icon" @click="onSyncEmit"
         ><i class="fa-solid fa-rotate"></i>
       </a>
+      <a v-if="icons.indexOf('back') > -1" class="icon" @click="onBackEmit"
+        ><i class="fa-solid fa-arrow-left"></i>
+      </a>
     </div>
   </div>
   <div v-if="searchVisible" class="common-header--search-container">
@@ -56,7 +59,14 @@ const CommonHeaderComponent = defineComponent({
       default: "",
     },
   },
-  emits: ["onHome", "onSearch", "onExpand", "update:searchValue", "onSync"],
+  emits: [
+    "onHome",
+    "onSearch",
+    "onExpand",
+    "update:searchValue",
+    "onSync",
+    "onBack",
+  ],
   setup(props, context) {
     const searchVisible = ref(false);
 
@@ -72,12 +82,16 @@ const CommonHeaderComponent = defineComponent({
     const onSyncEmit = () => {
       context.emit("onSync");
     };
+    const onBackEmit = () => {
+      context.emit("onBack");
+    };
     return {
       onHomeClick,
       onSearchEmit,
       onExpandClick,
       searchVisible,
       onSyncEmit,
+      onBackEmit,
     };
   },
 });
