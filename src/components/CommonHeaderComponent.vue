@@ -25,6 +25,9 @@
       <a v-if="icons.indexOf('expand') > -1" class="icon" @click="onExpandClick"
         ><i class="fa-solid fa-percent"></i
       ></a>
+      <a v-if="icons.indexOf('sync') > -1" class="icon" @click="onSyncEmit"
+        ><i class="fa-solid fa-rotate"></i>
+      </a>
     </div>
   </div>
   <div v-if="searchVisible" class="common-header--search-container">
@@ -53,7 +56,7 @@ const CommonHeaderComponent = defineComponent({
       default: "",
     },
   },
-  emits: ["onHome", "onSearch", "onExpand", "update:searchValue"],
+  emits: ["onHome", "onSearch", "onExpand", "update:searchValue", "onSync"],
   setup(props, context) {
     const searchVisible = ref(false);
 
@@ -66,11 +69,15 @@ const CommonHeaderComponent = defineComponent({
     const onSearchEmit = (e: any) => {
       context.emit("update:searchValue", e.target.value);
     };
+    const onSyncEmit = () => {
+      context.emit("onSync");
+    };
     return {
       onHomeClick,
       onSearchEmit,
       onExpandClick,
       searchVisible,
+      onSyncEmit,
     };
   },
 });
@@ -118,7 +125,7 @@ export default CommonHeaderComponent;
   }
   &--search-container {
     margin: 10px auto 0;
-    width: 90%;
+    padding: 0 23px;
     input {
       width: 100%;
       height: 30px;
