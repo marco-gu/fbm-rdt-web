@@ -350,7 +350,10 @@ const DataManagementView = defineComponent({
         const end = (searchIndex.value + 1) * 10;
         setTimeout(() => {
           for (let i = start; i < end; i++) {
-            if (searchResult.value[i]) {
+            if (
+              searchResult.value[i] &&
+              defaultDisplay.value.length < searchResult.value.length
+            ) {
               defaultDisplay.value.push(searchResult.value[i]);
             }
           }
@@ -366,7 +369,10 @@ const DataManagementView = defineComponent({
         const end = (apiIndex.value + 1) * 10;
         setTimeout(() => {
           for (let i = start; i < end; i++) {
-            if (apiResult.value[i]) {
+            if (
+              apiResult.value[i] &&
+              defaultDisplay.value.length < apiResult.value.length
+            ) {
               defaultDisplay.value.push(apiResult.value[i]);
             }
           }
@@ -400,14 +406,16 @@ const DataManagementView = defineComponent({
       bridge.call("fetchTaskForDataManagement", {}, (data: any) => {
         refreshloading.value = false;
         apiResult.value = JSON.parse(data) as ScanDataManagement[];
+        const deepCopyRef = ref(apiResult.value.map((item) => item));
+
         if (apiResult.value.length == 0) {
           noRecord.value = true;
         } else {
           if (apiResult.value.length > 10) {
-            defaultDisplay.value = apiResult.value.slice(0, 10);
+            defaultDisplay.value = deepCopyRef.value.slice(0, 10);
             apiIndex.value++;
           } else {
-            defaultDisplay.value = apiResult.value;
+            defaultDisplay.value = deepCopyRef.value;
             myInfiniteScroll.value.stop();
           }
         }
