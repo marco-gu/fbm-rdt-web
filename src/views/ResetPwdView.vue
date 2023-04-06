@@ -172,7 +172,7 @@ const ResetPwdView = defineComponent({
               type.value = "success";
               popupVisible.value = true;
               msg.value = i18n.t("messageCode.E93-02-0001");
-              if (from.value == "NewLoginView") {
+              if (from.value == "LoginView") {
                 setTimeout(() => {
                   router.push("/home");
                 }, 1800);
