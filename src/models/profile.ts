@@ -206,7 +206,8 @@ export interface MixCartonProduct {
 }
 
 export interface VersionInfo {
-  version: string;
+  versionCode: number;
+  versionName: string;
   detail: string;
 }
 

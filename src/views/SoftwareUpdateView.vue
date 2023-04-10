@@ -3,24 +3,14 @@
   <div class="wrapper">
     <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component>
-    <div class="page-content" v-if="currentVersion == latestVersion">
-      <div class="setting-card-item">
-        <div class="label">
-          {{ $t("setting.already_latest_version_label") }}
-        </div>
-        <div class="item-value">
-          {{ currentVersion }}
-        </div>
-        <div class="spacer"></div>
-      </div>
-    </div>
-    <div class="page-content" v-else>
+    {{ currentVersionCode < latestVersionCode }}
+    <div class="page-content" v-if="currentVersionCode < latestVersionCode">
       <div class="setting-card-item">
         <div class="label">
           {{ $t("setting.latest_version_label") }}
         </div>
         <div class="item-value">
-          {{ latestVersion }}
+          {{ latestVersionName }}
         </div>
         <div class="spacer"></div>
       </div>
@@ -31,10 +21,21 @@
         <div class="spacer"></div>
       </div>
     </div>
+    <div class="page-content" v-else>
+      <div class="setting-card-item">
+        <div class="label">
+          {{ $t("setting.already_latest_version_label") }}
+        </div>
+        <div class="item-value">
+          {{ currentVersionName }}
+        </div>
+        <div class="spacer"></div>
+      </div>
+    </div>
     <div
       class="bottom-button"
       id="bottom-button"
-      v-show="currentVersion != latestVersion"
+      v-show="currentVersionCode < latestVersionCode"
     >
       <q-btn
         no-caps
@@ -52,7 +53,7 @@
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, version } from "vue";
 import { VersionInfo } from "@/models/profile";
 import { popupErrorMsg } from "@/plugin/popupPlugins";
 import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
@@ -71,22 +72,31 @@ export default {
   setup() {
     const $q = useQuasar();
     const i18n = useI18n();
-    const currentVersion = ref("");
+    const currentVersionCode = ref();
+    const currentVersionName = ref("");
     const downloadPending = ref(false);
-    const latestVersion = ref("");
+    const latestVersionCode = ref();
+    const latestVersionName = ref("");
     const latestVersionDetail = ref("");
     const titleParam = i18n.t("setting.software_update");
     const backUrlParam = "/setting";
     const loadingStatus = ref(false);
     onMounted(() => {
       // showLoading($q);
+
+      bridge.call("getAppVersion", null, (res: string) => {
+        const versionInfo = JSON.parse(res) as VersionInfo;
+        currentVersionCode.value = versionInfo.versionCode;
+        currentVersionName.value = versionInfo.versionName;
+      });
       loadingStatus.value = true;
       bridge.call("getLatestVersion", null, (res: string) => {
         loadingStatus.value = false;
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           const versionInfo = JSON.parse(androidResponse.data) as VersionInfo;
-          latestVersion.value = versionInfo.version;
+          latestVersionCode.value = versionInfo.versionCode;
+          latestVersionName.value = versionInfo.versionName;
           latestVersionDetail.value = versionInfo.detail;
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
@@ -105,16 +115,19 @@ export default {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
+        alert(androidResponse);
         // closeLoading($q);
         loadingStatus.value = false;
         downloadPending.value = false;
       });
     };
     return {
-      currentVersion,
+      currentVersionCode,
+      currentVersionName,
       downloadPending,
       handleDownload,
-      latestVersion,
+      latestVersionCode,
+      latestVersionName,
       latestVersionDetail,
       titleParam,
       backUrlParam,

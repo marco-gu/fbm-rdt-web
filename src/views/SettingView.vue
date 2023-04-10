@@ -74,6 +74,7 @@ import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import formatDate from "../utils/formatDate";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import { VersionInfo } from "@/models/profile";
 export default {
   name: "SettingView",
   components: {
@@ -115,7 +116,8 @@ export default {
       });
       bridge.call("getAppVersion", null, (res: string) => {
         if (res) {
-          softwareUpdate.value = res;
+          const versionInfo = JSON.parse(res) as VersionInfo;
+          softwareUpdate.value = versionInfo.versionName;
         }
       });
     });
