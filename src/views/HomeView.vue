@@ -3,10 +3,11 @@
     <q-header
       style="
         background-color: #64b2d4;
-        height: 12%;
+        height: 13%;
         display: flex;
         justify-content: center;
         align-items: center;
+        padding-top: 30px;
       "
     >
       <div style="width: 100%; margin: 0 auto; color: #fff; text-align: center">
@@ -22,7 +23,7 @@
         /> -->
 
         <q-img
-          style="position: absolute; left: 20px; top: 35px"
+          style="position: absolute; left: 20px; top: 54px"
           no-transition
           no-spinner
           :src="barWhiteIcon"

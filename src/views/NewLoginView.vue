@@ -202,6 +202,7 @@ export default NewLoginView;
 <style lang="scss" scoped>
 .wrapper {
   background: white;
+  padding-top: 30px;
   .login-header {
     font-size: 24px;
     width: 80%;

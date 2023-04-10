@@ -43,7 +43,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, toRefs, watch } from "vue";
+import { defineComponent, ref } from "vue";
 const CommonHeaderComponent = defineComponent({
   props: {
     titles: {
@@ -103,7 +103,7 @@ export default CommonHeaderComponent;
   &--container {
     color: #ffffff;
     width: 100%;
-    padding: 5px;
+    padding: 30px 5px 5px 5px;
     font-size: 12px;
     font-weight: 500;
     font-variant: small-caps;
@@ -130,7 +130,7 @@ export default CommonHeaderComponent;
       margin-top: 10px;
       margin-bottom: 5px;
       .icon {
-        font-size: 14px;
+        font-size: 21px;
         display: inline-block;
         width: 30%;
         text-align: center;
@@ -138,14 +138,14 @@ export default CommonHeaderComponent;
     }
   }
   &--search-container {
-    margin: 10px auto 0;
+    margin: 14px auto 0;
     padding: 0 23px;
     input {
       width: 100%;
-      height: 30px;
+      height: 41px;
       padding: 0 10px;
       border: 1px solid #e5e2dc;
-      font-size: 12px;
+      // font-size: 12px;
       &:focus {
         outline-color: #64b2d4;
       }
