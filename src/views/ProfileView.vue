@@ -5,8 +5,9 @@
     </header-component> -->
     <common-header-component
       :titles="[$t('profile.profile')]"
-      :icons="['home', 'search', 'expand']"
+      :icons="['home', 'search', 'sync']"
       @onHome="() => router.push('/home')"
+      @onSync="refresh"
       v-model:searchValue="search"
     />
     <div class="page-content">
@@ -30,8 +31,19 @@
             </div> -->
           </template>
           <template v-else>
-            <q-list v-for="(item, index) in profileListDisplay" :key="index">
-              <q-item class="card-item" clickable @click="onClickProfile(item)">
+            <div class="scroll-area">
+              <div
+                class="common-card-2"
+                v-for="(item, index) in profileListDisplay"
+                :key="index"
+                @click="onClickProfile(item)"
+              >
+                <div class="label">{{ item.profileCode }}</div>
+                <div class="value">
+                  {{ formatDate(new Date(item.updateDatetime)) }}
+                </div>
+              </div>
+              <!-- <q-item class="card-item" clickable @click="onClickProfile(item)">
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>
                   <q-item-label class="card-item-date-text">
@@ -41,8 +53,8 @@
                 <q-item-section side>
                   <q-icon name="chevron_right" color="black" />
                 </q-item-section>
-              </q-item>
-            </q-list>
+              </q-item> -->
+            </div>
           </template>
         </q-pull-to-refresh>
       </q-scroll-area>
@@ -223,5 +235,8 @@ export default ProfileView;
 .no-data {
   text-align: center;
   width: 100%;
+}
+.scroll-area {
+  margin-bottom: 45px;
 }
 </style>

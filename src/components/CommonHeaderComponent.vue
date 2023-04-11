@@ -26,7 +26,7 @@
         ><i class="fa-solid fa-percent"></i
       ></a>
       <a v-if="icons.indexOf('sync') > -1" class="icon" @click="onSyncEmit"
-        ><i class="fa-solid fa-rotate"></i>
+        ><i class="fa-solid fa-rotate-right"></i>
       </a>
       <a v-if="icons.indexOf('back') > -1" class="icon" @click="onBackEmit"
         ><i class="fa-solid fa-arrow-left"></i>
@@ -104,7 +104,7 @@ export default CommonHeaderComponent;
     color: #ffffff;
     width: 100%;
     padding: 30px 5px 5px 5px;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     font-variant: small-caps;
     text-align: center;
@@ -145,6 +145,7 @@ export default CommonHeaderComponent;
       height: 41px;
       padding: 0 10px;
       border: 1px solid #e5e2dc;
+      border-radius: 5px;
       // font-size: 12px;
       &:focus {
         outline-color: #64b2d4;
