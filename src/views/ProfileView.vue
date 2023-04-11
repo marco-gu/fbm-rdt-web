@@ -7,7 +7,7 @@
       :titles="[$t('profile.profile')]"
       :icons="['home', 'search', 'sync']"
       @onHome="() => router.push('/home')"
-      @onSync="refresh"
+      @onSync="refresh(void 0)"
       v-model:searchValue="search"
     />
     <div class="page-content">
@@ -234,6 +234,6 @@ export default ProfileView;
   width: 100%;
 }
 .scroll-area {
-  margin-bottom: 35px;
+  margin-bottom: 30px;
 }
 </style>
