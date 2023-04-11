@@ -22,13 +22,26 @@
             </div>
             <q-input
               class="input-field"
-              :input-style="{ fontSize: '15px', padding: '3px 0 0 0px' }"
               input-class="text-left"
               v-model="profileCode"
               readonly
               borderless
             >
             </q-input>
+          </div>
+          <div class="field">
+            <div>
+              <div class="input-title">
+                <span class="text">{{ $t("lp.scan_type") }}</span>
+              </div>
+              <q-select
+                behavior="menu"
+                borderless
+                class="select-field"
+                v-model="scanType"
+                :options="options"
+              />
+            </div>
           </div>
           <!-- <q-input
             class="card-item-input"
@@ -40,7 +53,9 @@
             borderless
             dense
           /> -->
-          <div class="card-item-input">
+          <!-- <div class="field"> -->
+          <!-- </div> -->
+          <!-- <div class="card-item-input">
             <div>{{ $t("lp.scan_type") }}</div>
             <div>
               <q-radio
@@ -60,7 +75,7 @@
                 @click="changeScanType('Stuffing')"
               />
             </div>
-          </div>
+          </div> -->
           <div v-for="(item, i) in pageViews" :key="i">
             <div v-if="item.display == 1">
               <div class="field">
@@ -69,7 +84,6 @@
                 </div>
                 <q-input
                   class="input-field"
-                  :input-style="{ fontSize: '15px', padding: '3px 0 0 0px' }"
                   input-class="text-left"
                   ref="inputRef"
                   v-model="item.model"
@@ -87,7 +101,7 @@
                         no-transition
                         no-spinner
                         :src="inputScanIcon"
-                        width="14px"
+                        width="12px"
                       />
                     </q-avatar>
                   </template>
@@ -153,8 +167,7 @@ import {
   ProfileMaster,
 } from "@/models/profile";
 import bridge from "dsbridge";
-import { useQuasar } from "quasar";
-import { defineComponent, nextTick, onMounted, ref } from "vue";
+import { defineComponent, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   ViewDisplayAttribute,
@@ -167,11 +180,9 @@ import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { softKeyPopUp } from "../utils/screen.util";
-// import inputScan from "../assets/images/input_scan.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import inputScan from "../assets/icon/compress-solid.svg";
-import inputScanBlue from "../assets/icon/compress-solid-blue.svg";
 // Define Scan Type
 const enum ScanType {
   RECEIVING = "Receiving",
@@ -221,6 +232,8 @@ const LpSearchView = defineComponent({
     const canJumpNextPage = ref(false);
     const nextPageParam = ref();
     const loadingStatus = ref(false);
+    const options = ref([]);
+    // const options = [i18n.t("common.receiving"), i18n.t("common.stuffing")];
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -236,7 +249,13 @@ const LpSearchView = defineComponent({
 
       clientCode.value = initData.clientCode;
       receivingFlag.value = initData.receivingScanFlag == 1 ? true : false;
+      if (receivingFlag.value) {
+        options.value.push(i18n.t("common.receiving") as never);
+      }
       stuffingFlag.value = initData.stuffingScanFlag == 1 ? true : false;
+      if (stuffingFlag.value) {
+        options.value.push(i18n.t("common.stuffing") as never);
+      }
       scanType.value =
         receivingFlag.value == true ? ScanType.RECEIVING : ScanType.STUFFING;
       initData.attributes.forEach((item: ProfileDisplayAttribute) => {
@@ -314,20 +333,20 @@ const LpSearchView = defineComponent({
         }
       });
     };
-    const changeScanType = (val: string) => {
-      if (
-        (receivingFlag.value && val == ScanType.RECEIVING) ||
-        (stuffingFlag.value && val == ScanType.STUFFING)
-      ) {
-        nextTick(() => {
-          reset(inputRef.value);
-        });
-        pageViews.value =
-          scanType.value == ScanType.RECEIVING
-            ? receivingViews.value
-            : stuffingViews.value;
-      }
-    };
+    // const changeScanType = (val: string) => {
+    //   if (
+    //     (receivingFlag.value && val == ScanType.RECEIVING) ||
+    //     (stuffingFlag.value && val == ScanType.STUFFING)
+    //   ) {
+    //     nextTick(() => {
+    //       reset(inputRef.value);
+    //     });
+    //     pageViews.value =
+    //       scanType.value == ScanType.RECEIVING
+    //         ? receivingViews.value
+    //         : stuffingViews.value;
+    //   }
+    // };
     const onSubmit = () => {
       myForm.value.validate().then((success: any) => {
         if (success) {
@@ -485,6 +504,24 @@ const LpSearchView = defineComponent({
         });
       }
     };
+    watch(
+      scanType,
+      () => {
+        if (
+          (receivingFlag.value && scanType.value == ScanType.RECEIVING) ||
+          (stuffingFlag.value && scanType.value == ScanType.STUFFING)
+        ) {
+          nextTick(() => {
+            reset(inputRef.value);
+          });
+          pageViews.value =
+            scanType.value == ScanType.RECEIVING
+              ? receivingViews.value
+              : stuffingViews.value;
+        }
+      },
+      { immediate: true }
+    );
     return {
       profileCode,
       scanType,
@@ -492,7 +529,7 @@ const LpSearchView = defineComponent({
       receivingFlag,
       stuffingFlag,
       pageViews,
-      changeScanType,
+      // changeScanType,
       scan,
       inputRef,
       validPaste,
@@ -508,6 +545,8 @@ const LpSearchView = defineComponent({
       loadingStatus,
       router,
       route,
+      model: ref(null),
+      options,
     };
   },
 });

@@ -26,7 +26,19 @@
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit">
           <div v-for="(item, i) in views" :key="i">
-            <div class="card-item-input">
+            <div class="field">
+              <div class="input-title">
+                <span class="text"> {{ item.key }}</span>
+              </div>
+              <q-input
+                class="input-field"
+                input-class="text-left"
+                v-model="item.value"
+                borderless
+                readonly
+              />
+            </div>
+            <!-- <div class="card-item-input">
               <div>
                 {{ item.key }}
               </div>
@@ -39,7 +51,7 @@
                 dense
               >
               </q-input>
-            </div>
+            </div> -->
           </div>
         </q-form>
       </q-scroll-area>
@@ -153,8 +165,21 @@ const ScanView = defineComponent({
         type: type.value,
         profileName: profileName.value,
         pageType: route.params.id,
+        // expectedCartonQuantity: 0,
+        // expectedScanCartonQuantity: 0,
       };
       bridge.call("scan", args);
+      // query count of expected carton quantity for pre-validation
+      // bridge.call(
+      //   "retrieveOnlineCartonQuantity",
+      //   { taskID: taskID.value },
+      //   (res) => {
+      //     alert(res.expectedCartonQuantity);
+      //     args.expectedCartonQuantity = res.expectedCartonQuantity;
+      //     args.expectedScanCartonQuantity = res.expectedScanCartonQuantity;
+      //     bridge.call("scan", args);
+      //   }
+      // );
     };
     bridge.register("returnOnlineLpSearch", () => {
       router.push(backUrlParam);
