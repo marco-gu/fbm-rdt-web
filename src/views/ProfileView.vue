@@ -5,8 +5,9 @@
     </header-component> -->
     <common-header-component
       :titles="[$t('profile.profile')]"
-      :icons="['home', 'search', 'expand']"
+      :icons="['home', 'search', 'sync']"
       @onHome="() => router.push('/home')"
+      @onSync="refresh(void 0)"
       v-model:searchValue="search"
     />
     <div class="page-content">
@@ -30,8 +31,19 @@
             </div> -->
           </template>
           <template v-else>
-            <q-list v-for="(item, index) in profileListDisplay" :key="index">
-              <q-item class="card-item" clickable @click="onClickProfile(item)">
+            <div class="scroll-area">
+              <div
+                class="common-card-2"
+                v-for="(item, index) in profileListDisplay"
+                :key="index"
+                @click="onClickProfile(item)"
+              >
+                <div class="label">{{ item.profileCode }}</div>
+                <div class="value">
+                  {{ formatDate(new Date(item.updateDatetime)) }}
+                </div>
+              </div>
+              <!-- <q-item class="card-item" clickable @click="onClickProfile(item)">
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>
                   <q-item-label class="card-item-date-text">
@@ -41,8 +53,8 @@
                 <q-item-section side>
                   <q-icon name="chevron_right" color="black" />
                 </q-item-section>
-              </q-item>
-            </q-list>
+              </q-item> -->
+            </div>
           </template>
         </q-pull-to-refresh>
       </q-scroll-area>
@@ -171,13 +183,11 @@ const ProfileView = defineComponent({
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 55 + "px";
       // Initialize
       getProfileList();
     });
-    const onSearch = (e: string) => {
-      search.value = e.trim();
-    };
+
     watch(search, () => {
       if (search.value) {
         const filteredResult = result.filter(
@@ -206,7 +216,6 @@ const ProfileView = defineComponent({
       popupVisible,
       msg,
       loadingStatus,
-      onSearch,
     };
   },
 });
@@ -223,5 +232,8 @@ export default ProfileView;
 .no-data {
   text-align: center;
   width: 100%;
+}
+.scroll-area {
+  margin-bottom: 30px;
 }
 </style>

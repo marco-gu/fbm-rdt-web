@@ -26,10 +26,13 @@
         ><i class="fa-solid fa-percent"></i
       ></a>
       <a v-if="icons.indexOf('sync') > -1" class="icon" @click="onSyncEmit"
-        ><i class="fa-solid fa-rotate"></i>
+        ><i class="fa-solid fa-rotate-right"></i>
       </a>
       <a v-if="icons.indexOf('back') > -1" class="icon" @click="onBackEmit"
         ><i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <a v-if="icons.indexOf('clear') > -1" class="icon" @click="onClearEmit"
+        ><i class="fa-solid fa-circle-xmark"></i>
       </a>
     </div>
   </div>
@@ -43,7 +46,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, toRefs, watch } from "vue";
+import { defineComponent, ref } from "vue";
 const CommonHeaderComponent = defineComponent({
   props: {
     titles: {
@@ -66,6 +69,7 @@ const CommonHeaderComponent = defineComponent({
     "update:searchValue",
     "onSync",
     "onBack",
+    "onClear",
   ],
   setup(props, context) {
     const searchVisible = ref(false);
@@ -85,6 +89,9 @@ const CommonHeaderComponent = defineComponent({
     const onBackEmit = () => {
       context.emit("onBack");
     };
+    const onClearEmit = () => {
+      context.emit("onClear");
+    };
     return {
       onHomeClick,
       onSearchEmit,
@@ -92,6 +99,7 @@ const CommonHeaderComponent = defineComponent({
       searchVisible,
       onSyncEmit,
       onBackEmit,
+      onClearEmit,
     };
   },
 });
@@ -103,8 +111,8 @@ export default CommonHeaderComponent;
   &--container {
     color: #ffffff;
     width: 100%;
-    padding: 5px;
-    font-size: 12px;
+    padding: 30px 5px 5px 5px;
+    font-size: 14px;
     font-weight: 500;
     font-variant: small-caps;
     text-align: center;
@@ -129,23 +137,25 @@ export default CommonHeaderComponent;
     .button-container {
       margin-top: 10px;
       margin-bottom: 5px;
+      display: flex;
       .icon {
-        font-size: 14px;
+        font-size: 21px;
         display: inline-block;
-        width: 30%;
+        flex: 1;
         text-align: center;
       }
     }
   }
   &--search-container {
-    margin: 10px auto 0;
+    margin: 14px auto 0;
     padding: 0 23px;
     input {
       width: 100%;
-      height: 30px;
+      height: 41px;
       padding: 0 10px;
       border: 1px solid #e5e2dc;
-      font-size: 12px;
+      border-radius: 5px;
+      // font-size: 12px;
       &:focus {
         outline-color: #64b2d4;
       }

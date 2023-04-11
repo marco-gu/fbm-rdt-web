@@ -2,66 +2,81 @@
   <div class="wrapper">
     <header-component :titleParam="titleParam" :backFunctionParam="back">
     </header-component>
-    <div class="page-content">
+    <div class="setting-page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
-          <div class="input-label">{{ $t("login.current_password") }}</div>
-          <q-input
-            v-model="currentPwd"
-            outlined
-            dense
-            :type="isPwd ? 'password' : 'text'"
-            :placeholder="$t('login.current_password_hint')"
-            lazy-rules
-            :rules="[initPwdRule]"
-          >
-            <template v-slot:append>
-              <q-icon
-                :color="isPwd ? 'gray' : 'secondary'"
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
-          <div class="input-label">{{ $t("login.new_password") }}</div>
-          <q-input
-            v-model="newPwd"
-            outlined
-            dense
-            :type="isNewPwd ? 'password' : 'text'"
-            :placeholder="$t('login.new_password_hint')"
-            lazy-rules
-            :rules="[newPwdRule]"
-          >
-            <template v-slot:append>
-              <q-icon
-                :color="isNewPwd ? 'gray' : 'secondary'"
-                :name="isNewPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isNewPwd = !isNewPwd"
-              />
-            </template>
-          </q-input>
-          <div class="input-label">{{ $t("login.retype_password") }}</div>
-          <q-input
-            v-model="reNewPwd"
-            outlined
-            dense
-            :type="isNewRePwd ? 'password' : 'text'"
-            :placeholder="$t('login.retype_password_hint')"
-            lazy-rules
-            :rules="[reNewPwdRule]"
-          >
-            <template v-slot:append>
-              <q-icon
-                :color="isNewRePwd ? 'gray' : 'secondary'"
-                :name="isNewRePwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isNewRePwd = !isNewRePwd"
-              />
-            </template>
-          </q-input>
+          <div class="field">
+            <div class="input-title">
+              <span class="text">{{ $t("login.current_password") }}</span>
+            </div>
+            <q-input
+              class="input-field"
+              :input-style="{ fontSize: '15px', padding: '3px 0 0 0px' }"
+              input-class="text-left"
+              v-model="currentPwd"
+              lazy-rules
+              :rules="[initPwdRule]"
+              borderless
+              :type="isPwd ? 'password' : 'text'"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :color="isPwd ? 'gray' : 'secondary'"
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
+          </div>
+          <div class="field">
+            <div class="input-title">
+              <span class="text">{{ $t("login.new_password") }}</span>
+            </div>
+            <q-input
+              class="input-field"
+              :input-style="{ fontSize: '15px', padding: '3px 0 0 0px' }"
+              input-class="text-left"
+              v-model="newPwd"
+              lazy-rules
+              :rules="[newPwdRule]"
+              borderless
+              :type="isNewPwd ? 'password' : 'text'"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :color="isNewPwd ? 'gray' : 'secondary'"
+                  :name="isNewPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isNewPwd = !isNewPwd"
+                />
+              </template>
+            </q-input>
+          </div>
+          <div class="field">
+            <div class="input-title">
+              <span class="text">{{ $t("login.retype_password") }}</span>
+            </div>
+            <q-input
+              class="input-field"
+              :input-style="{ fontSize: '15px', padding: '3px 0 0 0px' }"
+              input-class="text-left"
+              v-model="reNewPwd"
+              lazy-rules
+              :rules="[reNewPwdRule]"
+              borderless
+              :type="isNewRePwd ? 'password' : 'text'"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :color="isNewRePwd ? 'gray' : 'secondary'"
+                  :name="isNewRePwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isNewRePwd = !isNewRePwd"
+                />
+              </template>
+            </q-input>
+          </div>
         </q-form>
       </q-scroll-area>
     </div>
@@ -305,12 +320,13 @@ const ResetPwdView = defineComponent({
 export default ResetPwdView;
 </script>
 <style lang="scss" scoped>
-.page-content {
-  padding: $--page-content-padding;
-}
 .input-label {
   color: black;
   text-align: left;
   font-size: $--card-font-size;
+}
+.q-field {
+  height: 43px;
+  padding: 0 0 0 10px;
 }
 </style>

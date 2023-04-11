@@ -111,6 +111,7 @@ const CartonDetailView = defineComponent({
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
+    const inputScanType = ref("CartonDetail");
     bridge.register("getCartonDetailParam", (res: string) => {
       const param = JSON.parse(res);
       cartonID.value = param.cartonID;
@@ -123,7 +124,7 @@ const CartonDetailView = defineComponent({
       const param = inputRef.value as any;
       let scanFieldName = "";
       pageViews.value.forEach((pageView: any) => {
-        const key = "Default_" + pageView.fieldName;
+        const key = inputScanType.value + "_" + pageView.fieldName;
         if (key == res.substring(0, res.lastIndexOf("_"))) {
           pageView.model = res.substring(res.lastIndexOf("_") + 1);
           scanFieldName = pageView.fieldName;
@@ -236,7 +237,7 @@ const CartonDetailView = defineComponent({
     const scan = (fieldName: string, event: Event) => {
       if (isCamera) {
         const reqParams = {
-          scanType: "Default",
+          scanType: inputScanType.value,
           fieldName: fieldName,
         };
         bridge.call("scanForInput", reqParams);
