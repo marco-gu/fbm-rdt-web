@@ -183,13 +183,11 @@ const ProfileView = defineComponent({
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 55 + "px";
       // Initialize
       getProfileList();
     });
-    const onSearch = (e: string) => {
-      search.value = e.trim();
-    };
+
     watch(search, () => {
       if (search.value) {
         const filteredResult = result.filter(
@@ -218,7 +216,6 @@ const ProfileView = defineComponent({
       popupVisible,
       msg,
       loadingStatus,
-      onSearch,
     };
   },
 });
@@ -237,6 +234,6 @@ export default ProfileView;
   width: 100%;
 }
 .scroll-area {
-  margin-bottom: 45px;
+  margin-bottom: 35px;
 }
 </style>
