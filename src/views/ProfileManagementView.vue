@@ -1,10 +1,17 @@
 <template>
   <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <header-component :titleParam="titleParam" :backFunctionParam="back">
-    </header-component>
+    <!-- <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component> -->
+    <common-header-component
+      :titles="[$t('profile.profile')]"
+      :icons="!isEditMode ? ['home', 'search', 'sync'] : ['home', 'sync']"
+      @onHome="() => router.push('/home')"
+      @onSync="!isEditMode ? refresh(void 0) : (isEditMode = false)"
+      v-model:searchValue="search"
+    />
     <div class="page-content">
-      <div class="search" v-show="!isEditMode">
+      <!-- <div class="search" v-show="!isEditMode">
         <q-input
           v-model="search"
           outlined
@@ -15,31 +22,35 @@
             <q-icon name="search" />
           </template>
         </q-input>
-      </div>
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      </div> -->
+      <q-scroll-area
+        class="scroll-area"
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+      >
         <template v-if="isEditMode">
           <div class="edit-container">
-            <q-list v-for="(item, index) in profileListDisplay" :key="index">
-              <div class="card-edit-container">
-                <q-checkbox
-                  v-model="item.isSelected"
-                  checked-icon="app:checkboxOn"
-                  unchecked-icon="app:checkboxOff"
-                />
-                <q-item class="card-edit-item">
-                  <q-item-section class="card-item-labels">
-                    <q-item-label>{{ item.profileCode }}</q-item-label>
-                    <q-item-label class="card-item-date-text">
-                      {{
-                        item.updateDatetime
-                          ? formatDate(new Date(item.updateDatetime))
-                          : "-"
-                      }}
-                    </q-item-label>
-                  </q-item-section>
-                </q-item>
+            <div
+              class="common-card-2"
+              v-for="(item, index) in profileListDisplay"
+              :key="index"
+              v-touch-hold:1800="handleHold"
+            >
+              <q-checkbox
+                class="checkbox"
+                v-model="item.isSelected"
+                checked-icon="app:checkboxOn"
+                unchecked-icon="app:checkboxOff"
+              />
+              <div class="label">{{ item.profileCode }}</div>
+              <div class="value">
+                {{
+                  item.updateDatetime
+                    ? formatDate(new Date(item.updateDatetime))
+                    : "-"
+                }}
               </div>
-            </q-list>
+            </div>
           </div>
         </template>
         <template v-else>
@@ -47,29 +58,21 @@
             <template v-if="noRecord">
               <div class="no-record">{{ $t("common.no_record") }}</div>
             </template>
-            <!-- <template
-              v-if="profileListDisplay.length === 0 && !isFirstSync.value"
+            <div
+              class="common-card-2"
+              v-for="(item, index) in profileListDisplay"
+              :key="index"
+              v-touch-hold:1800="handleHold"
             >
-              <div class="no-data">
-                {{ $t("common.no_record") }}
+              <div class="label">{{ item.profileCode }}</div>
+              <div class="value">
+                {{
+                  item.updateDatetime
+                    ? formatDate(new Date(item.updateDatetime))
+                    : "-"
+                }}
               </div>
-            </template> -->
-            <!-- <template v-else> -->
-            <q-list v-for="(item, index) in profileListDisplay" :key="index">
-              <q-item class="card-item" v-touch-hold:1800="handleHold">
-                <q-item-section class="card-item-labels">
-                  <q-item-label>{{ item.profileCode }}</q-item-label>
-                  <q-item-label class="card-item-date-text">
-                    {{
-                      item.updateDatetime
-                        ? formatDate(new Date(item.updateDatetime))
-                        : "-"
-                    }}
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-            <!-- </template> -->
+            </div>
           </q-pull-to-refresh>
         </template>
       </q-scroll-area>
@@ -128,13 +131,12 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import formatDate from "../utils/formatDate";
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
-import { calScrollAreaWithBottom } from "@/utils/screen.util";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 const ProfileManagementView = defineComponent({
   components: {
-    HeaderComponent,
+    CommonHeaderComponent,
     PopupComponent,
     LoadingComponent,
   },
@@ -147,7 +149,6 @@ const ProfileManagementView = defineComponent({
     let result: ProfileMaster[] = [];
     const isFirstSync = ref(true);
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
-    const titleParam = i18n.t("profile.profile");
     const dialogVisible = ref(false);
     const noRecord = ref(false);
     const type = ref("");
@@ -158,7 +159,7 @@ const ProfileManagementView = defineComponent({
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 55 + "px";
       getProfileList("onMounted");
     });
     const sortProfileList = (profileListDisplay: any[]) => {
@@ -294,12 +295,12 @@ const ProfileManagementView = defineComponent({
       profileListDisplay,
       refresh,
       search,
-      titleParam,
       noRecord,
       type,
       popupVisible,
       msg,
       loadingStatus,
+      router,
     };
   },
 });
@@ -314,16 +315,9 @@ export default ProfileManagementView;
   }
 }
 .edit-container {
-  margin-top: 15px;
-  .card-edit-container {
-    padding: 0px 15px 0px 0px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    .card-edit-item {
-      @extend .card-item;
-      flex: 5;
-    }
-  }
+  padding-bottom: 20px;
+}
+.scroll-area {
+  padding-bottom: 35px;
 }
 </style>
