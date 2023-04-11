@@ -31,6 +31,9 @@
       <a v-if="icons.indexOf('back') > -1" class="icon" @click="onBackEmit"
         ><i class="fa-solid fa-arrow-left"></i>
       </a>
+      <a v-if="icons.indexOf('clear') > -1" class="icon" @click="onClearEmit"
+        ><i class="fa-solid fa-circle-xmark"></i>
+      </a>
     </div>
   </div>
   <div v-if="searchVisible" class="common-header--search-container">
@@ -66,6 +69,7 @@ const CommonHeaderComponent = defineComponent({
     "update:searchValue",
     "onSync",
     "onBack",
+    "onClear",
   ],
   setup(props, context) {
     const searchVisible = ref(false);
@@ -85,6 +89,9 @@ const CommonHeaderComponent = defineComponent({
     const onBackEmit = () => {
       context.emit("onBack");
     };
+    const onClearEmit = () => {
+      context.emit("onClear");
+    };
     return {
       onHomeClick,
       onSearchEmit,
@@ -92,6 +99,7 @@ const CommonHeaderComponent = defineComponent({
       searchVisible,
       onSyncEmit,
       onBackEmit,
+      onClearEmit,
     };
   },
 });
@@ -129,10 +137,11 @@ export default CommonHeaderComponent;
     .button-container {
       margin-top: 10px;
       margin-bottom: 5px;
+      display: flex;
       .icon {
         font-size: 21px;
         display: inline-block;
-        width: 30%;
+        flex: 1;
         text-align: center;
       }
     }

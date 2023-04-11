@@ -5,12 +5,12 @@
     </header-component> -->
     <common-header-component
       :titles="[
+        profileCode,
         route.params.id == 'online'
           ? $t('lp.lp_search')
           : $t('lp.offline_scan'),
-        profileCode,
       ]"
-      :icons="['home']"
+      :icons="['home', 'clear']"
       @onHome="() => router.push('/home')"
     />
     <div class="page-content">
