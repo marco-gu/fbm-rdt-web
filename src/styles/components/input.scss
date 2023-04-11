@@ -1,16 +1,16 @@
 .field {
-    height: 30px;
+    height: 40px;
     margin: 20px 23px;
     border: 1px solid #e5e2dc;
     // overflow: hidden;
     .input-field {
         position: relative;
-        top: -26px;
+        top: -20px;
         font-size: 14px;
     }
     .select-field {
         position: relative;
-        top: -27px;
+        top: -20px;
         font-size: 14px;
     }
     .input-title {
@@ -26,7 +26,7 @@
     }
     .btn-img {
         margin-top: -2px;
-        margin-right: -3px;
+        margin-right: -4px;
     }
 }
 
@@ -39,6 +39,6 @@
 }
 
 .q-field {
-    height: 56px;
-    padding: 0 0 0 0px;
+    height: 60px;
+    padding: 0px;
 }
