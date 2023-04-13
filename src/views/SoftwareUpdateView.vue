@@ -115,7 +115,6 @@ export default {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           popupErrorMsg($q, message);
         }
-        alert(androidResponse);
         // closeLoading($q);
         loadingStatus.value = false;
         downloadPending.value = false;
