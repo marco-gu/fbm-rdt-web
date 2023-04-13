@@ -95,7 +95,7 @@
             >Label & Scan System</span
           >
           <span style="display: block; font-size: 10px; color: #757575"
-            >Version Beta 3.1</span
+            >Version {{ appVersionName }}</span
           >
           <span style="display: block; font-size: 10px; color: #757575"
             >by Maersk WDP@2023-3-10</span
@@ -160,6 +160,7 @@ import gear from "../assets/images/gear-solid.svg";
 import doorOpen from "../assets/images/door-open-solid.svg";
 import maerskLogo from "../assets/icon/Maersk.png";
 import PopupComponent from "@/components/PopupComponent.vue";
+import { VersionInfo } from "@/models/profile";
 export default {
   name: "HomeView",
   components: {
@@ -189,6 +190,7 @@ export default {
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
+    const appVersionName = ref("");
     const onCloseMenu = () => {
       toggleLeftDrawer();
     };
@@ -196,6 +198,12 @@ export default {
       if (route.query.leftDrawerOpen == "true") {
         toggleLeftDrawer();
       }
+      bridge.call("getAppVersion", null, (res: string) => {
+        if (res) {
+          const versionInfo = JSON.parse(res) as VersionInfo;
+          appVersionName.value = versionInfo.versionName;
+        }
+      });
     });
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -267,6 +275,7 @@ export default {
       type,
       popupVisible,
       msg,
+      appVersionName,
     };
   },
 };

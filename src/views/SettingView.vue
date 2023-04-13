@@ -61,7 +61,7 @@
         <div class="right-icon">
           <q-icon name="chevron_right" />
         </div>
-        <div class="item-value">{{ softwareUpdate }}</div>
+        <div class="item-value">Ver {{ softwareUpdate }}</div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -157,7 +157,6 @@ export default {
     const goSoftwareUpdate = () => {
       router.push({
         path: "/software-update",
-        query: { softwareUpdate: softwareUpdate.value },
       });
     };
     return {
