@@ -32,7 +32,7 @@
         ><i class="fa-solid fa-arrow-left"></i>
       </a>
       <a v-if="icons.indexOf('clear') > -1" class="icon" @click="onClearEmit"
-        ><i class="fa-solid fa-circle-xmark"></i>
+        ><i class="fa-solid fa-rotate-left"></i>
       </a>
     </div>
   </div>

@@ -12,6 +12,7 @@
       ]"
       :icons="['home', 'clear']"
       @onHome="() => router.push('/home')"
+      @onClear="onClear()"
     />
     <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
@@ -504,6 +505,12 @@ const LpSearchView = defineComponent({
         });
       }
     };
+    const onClear = () => {
+      myForm.value.reset();
+      pageViews.value.forEach((t) => {
+        t.model = "";
+      });
+    };
     watch(
       scanType,
       () => {
@@ -547,6 +554,7 @@ const LpSearchView = defineComponent({
       route,
       model: ref(null),
       options,
+      onClear,
     };
   },
 });
