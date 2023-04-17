@@ -24,26 +24,26 @@
         </q-input>
       </div> -->
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <q-pull-to-refresh @refresh="refresh">
-          <template v-if="profileListDisplay.length === 0 && !isFirstSync">
-            <!-- <div class="no-data">
+        <!-- <q-pull-to-refresh @refresh="refresh"> -->
+        <template v-if="profileListDisplay.length === 0 && !isFirstSync">
+          <!-- <div class="no-data">
               {{ $t("common.no_record") }}
             </div> -->
-          </template>
-          <template v-else>
-            <div class="scroll-area">
-              <div
-                class="common-card-2"
-                v-for="(item, index) in profileListDisplay"
-                :key="index"
-                @click="onClickProfile(item)"
-              >
-                <div class="label">{{ item.profileCode }}</div>
-                <div class="value">
-                  {{ formatDate(new Date(item.updateDatetime)) }}
-                </div>
+        </template>
+        <template v-else>
+          <div class="scroll-area">
+            <div
+              class="common-card-2"
+              v-for="(item, index) in profileListDisplay"
+              :key="index"
+              @click="onClickProfile(item)"
+            >
+              <div class="label">{{ item.profileCode }}</div>
+              <div class="value">
+                {{ formatDate(new Date(item.updateDatetime)) }}
               </div>
-              <!-- <q-item class="card-item" clickable @click="onClickProfile(item)">
+            </div>
+            <!-- <q-item class="card-item" clickable @click="onClickProfile(item)">
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>
                   <q-item-label class="card-item-date-text">
@@ -54,9 +54,9 @@
                   <q-icon name="chevron_right" color="black" />
                 </q-item-section>
               </q-item> -->
-            </div>
-          </template>
-        </q-pull-to-refresh>
+          </div>
+        </template>
+        <!-- </q-pull-to-refresh> -->
       </q-scroll-area>
     </div>
     <PopupComponent
