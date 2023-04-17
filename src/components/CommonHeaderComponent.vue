@@ -34,6 +34,8 @@
       <a v-if="icons.indexOf('clear') > -1" class="icon" @click="onClearEmit"
         ><i class="fa-solid fa-rotate-left"></i>
       </a>
+      <a v-if="icons.indexOf('empty') > -1" class="icon"> </a>
+      <a v-if="icons.indexOf('empty-2') > -1" class="icon"> </a>
     </div>
   </div>
   <div v-if="searchVisible" class="common-header--search-container">
@@ -162,6 +164,9 @@ export default CommonHeaderComponent;
     }
     transform-origin: top;
     animation: search-anim 0.3s ease-out;
+  }
+  .transparent {
+    opacity: 0;
   }
 }
 @keyframes fade-in {

@@ -3,8 +3,8 @@
     <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component> -->
     <common-header-component
-      :titles="[$t('lp.scan'), ...navTitleList]"
-      :icons="['home']"
+      :titles="[profileName, $t('lp.scan')]"
+      :icons="['home', 'empty', 'empty-2']"
       @onHome="() => router.push('/home')"
     />
     <div class="page-content">
@@ -193,6 +193,7 @@ const ScanView = defineComponent({
       backUrlParam,
       router,
       navTitleList,
+      profileName,
     };
   },
 });
@@ -207,9 +208,11 @@ export default ScanView;
   &__number {
     font-weight: bold;
     text-align: center;
+    font-size: 24px;
   }
   &__label {
     text-align: center;
+    font-size: 16px;
   }
 }
 </style>
