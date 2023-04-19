@@ -16,26 +16,26 @@
       <a v-if="icons.indexOf('home') > -1" class="icon" @click="onHomeClick"
         ><i class="fa-solid fa-house"></i
       ></a>
+      <a v-if="icons.indexOf('back') > -1" class="icon" @click="onBackEmit"
+        ><i class="fa-solid fa-arrow-left"></i>
+      </a>
       <a
         v-if="icons.indexOf('search') > -1"
         class="icon"
         @click="searchVisible = !searchVisible"
         ><i class="fa-solid fa-magnifying-glass"></i
       ></a>
+      <a v-if="icons.indexOf('empty') > -1" class="icon"> </a>
+      <a v-if="icons.indexOf('empty-2') > -1" class="icon"> </a>
       <a v-if="icons.indexOf('expand') > -1" class="icon" @click="onExpandClick"
         ><i class="fa-solid fa-percent"></i
       ></a>
       <a v-if="icons.indexOf('sync') > -1" class="icon" @click="onSyncEmit"
         ><i class="fa-solid fa-rotate-right"></i>
       </a>
-      <a v-if="icons.indexOf('back') > -1" class="icon" @click="onBackEmit"
-        ><i class="fa-solid fa-arrow-left"></i>
-      </a>
       <a v-if="icons.indexOf('clear') > -1" class="icon" @click="onClearEmit"
         ><i class="fa-solid fa-rotate-left"></i>
       </a>
-      <a v-if="icons.indexOf('empty') > -1" class="icon"> </a>
-      <a v-if="icons.indexOf('empty-2') > -1" class="icon"> </a>
     </div>
   </div>
   <div v-if="searchVisible" class="common-header--search-container">
