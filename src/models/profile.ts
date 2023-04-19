@@ -193,6 +193,9 @@ export interface ScanDataManagement {
   scannedCartonNumber: number;
   allCartonNumber: number;
   profileName: string;
+  po?: string;
+  so: string;
+  sku?: string;
 }
 
 export interface MixCartonProduct {

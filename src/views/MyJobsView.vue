@@ -1,9 +1,14 @@
 <template>
   <div class="wrapper">
-    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component>
+    <common-header-component
+      :titles="[$t('continue.job_list')]"
+      :icons="['home', 'search', 'expand']"
+      @onHome="() => router.push('/home')"
+      @onExpand="onExpand()"
+      v-model:searchValue="search"
+    />
     <div class="page-content">
-      <div class="search">
+      <!-- <div class="search">
         <q-input
           ref="input"
           v-model="search"
@@ -18,9 +23,8 @@
             <q-icon name="close" @click="onClear" class="cursor-pointer" />
           </template>
         </q-input>
-      </div>
+      </div> -->
       <template v-if="refreshloading">
-        <!-- <div class="row justify-center q-my-md"> -->
         <div
           style="
             position: absolute;
@@ -38,54 +42,81 @@
         id="scroll-area"
         :thumb-style="{ width: '0px' }"
       >
-        <q-pull-to-refresh @refresh="refresh">
-          <template v-if="noRecord">
-            <div class="no-record">{{ $t("common.no_record") }}</div>
-          </template>
-          <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
-            <div
-              v-for="(item, index) in defaultDisplay"
-              :key="index"
-              @click="onClickScanTask(item)"
-            >
-              <q-item class="card-item">
-                <div class="card-item-content">
-                  <div class="card-item-left">
-                    <q-item-section>
-                      <div style="width: 80%">
-                        <q-item-label>{{ item.taskId }}</q-item-label>
-                        <q-item-label class="card-item-date-text">{{
-                          item.updateDatetime
-                        }}</q-item-label>
-                      </div>
-                    </q-item-section>
-                  </div>
-                  <div class="card-item-right">
-                    <CircularProgressComponent
-                      :value="
-                        (item.scannedCartonNumber / item.allCartonNumber) * 100
-                      "
-                    >
-                      <div class="card-item-sub-text">
-                        {{ item.scannedCartonNumber }}/{{
-                          item.allCartonNumber
-                        }}
-                      </div>
-                    </CircularProgressComponent>
-                  </div>
-                </div>
-                <q-item-section side>
-                  <q-icon name="chevron_right" color="black" />
-                </q-item-section>
-              </q-item>
-            </div>
-            <template v-slot:loading>
-              <div class="row justify-center q-my-md">
-                <q-spinner-dots color="primary" size="40px" />
+        <template v-if="noRecord">
+          <div class="no-record">{{ $t("common.no_record") }}</div>
+        </template>
+        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+          <div
+            v-for="(item, index) in defaultDisplay"
+            :key="index"
+            @click="onClickScanTask(item)"
+          >
+            <div class="common-card-2">
+              <div class="label mb-lg">
+                {{ item.profileName
+                }}<span class="separator">&nbsp;|&nbsp;</span>{{ item.so }}
               </div>
-            </template>
-          </q-infinite-scroll>
-        </q-pull-to-refresh>
+              <div class="value">
+                {{ item.po }}<span class="separator">&nbsp;|&nbsp;</span
+                >{{ item.sku }}<span class="separator">&nbsp;|&nbsp;</span
+                >{{ item.scanType }}
+              </div>
+              <div class="value mt-sm mb-lg">
+                {{ item.updateDatetime }}
+              </div>
+              <div class="label">
+                {{ item.scannedCartonNumber
+                }}<span class="separator">&nbsp;of&nbsp;</span
+                >{{ item.allCartonNumber
+                }}<span class="separator">&nbsp;|&nbsp;</span
+                >{{
+                  item.finishStatus === 0
+                    ? $t("common.unfinished")
+                    : $t("common.completed")
+                }}
+                <span class="separator">&nbsp;|&nbsp;</span
+                >{{
+                  item.uploadStatus === 0
+                    ? $t("common.not_upload")
+                    : $t("common.uploaded")
+                }}
+              </div>
+            </div>
+            <!-- <q-item class="card-item">
+              <div class="card-item-content">
+                <div class="card-item-left">
+                  <q-item-section>
+                    <div style="width: 80%">
+                      <q-item-label>{{ item.taskId }}</q-item-label>
+                      <q-item-label class="card-item-date-text">{{
+                        item.updateDatetime
+                      }}</q-item-label>
+                    </div>
+                  </q-item-section>
+                </div>
+                <div class="card-item-right">
+                  <CircularProgressComponent
+                    :value="
+                      (item.scannedCartonNumber / item.allCartonNumber) * 100
+                    "
+                  >
+                    <div class="card-item-sub-text">
+                      {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
+                    </div>
+                  </CircularProgressComponent>
+                </div>
+              </div>
+              <q-item-section side>
+                <q-icon name="chevron_right" color="black" />
+              </q-item-section>
+            </q-item> -->
+          </div>
+          <template v-slot:loading>
+            <div class="row justify-center q-my-md">
+              <q-spinner-dots color="primary" size="40px" />
+            </div>
+          </template>
+        </q-infinite-scroll>
       </q-scroll-area>
 
       <div class="footer-message">{{ $t("continue.instruction") }}</div>
@@ -95,15 +126,14 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { defineComponent, onBeforeMount, onMounted } from "@vue/runtime-core";
-import CircularProgressComponent from "@/components/CircularProgressComponent.vue";
 import { ScanDataManagement } from "../models/profile";
 import { ref, watch } from "vue";
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 const MyJobsView = defineComponent({
   components: {
-    CircularProgressComponent,
-    HeaderComponent,
+    CommonHeaderComponent,
   },
   setup() {
     const refreshloading = ref(false);
@@ -115,8 +145,7 @@ const MyJobsView = defineComponent({
     const searchIndex = ref(0);
     const searchResult = ref([] as ScanDataManagement[]);
     const apiResult = ref([] as ScanDataManagement[]);
-    const titleParam = i18n.t("continue.job_list");
-    const backUrlParam = "/home";
+    const router = useRouter();
     const myInfiniteScroll = ref();
     const myScrollArea = ref();
     const noRecord = ref(false);
@@ -273,12 +302,14 @@ const MyJobsView = defineComponent({
       bridge.call("continueJobScan", args);
     };
 
+    const onExpand = () => {
+      alert(111);
+    };
+
     return {
       onClear,
       onClickScanTask,
       search,
-      titleParam,
-      backUrlParam,
       onSearch,
       onLoad,
       myInfiniteScroll,
@@ -288,6 +319,8 @@ const MyJobsView = defineComponent({
       refreshloading,
       defaultDisplay,
       refresh,
+      router,
+      onExpand,
     };
   },
 });

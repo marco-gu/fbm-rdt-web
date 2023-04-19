@@ -38,7 +38,7 @@
               :key="index"
               @click="onClickProfile(item)"
             >
-              <div class="label">{{ item.profileCode }}</div>
+              <div class="label mb-lg">{{ item.profileCode }}</div>
               <div class="value">
                 {{ formatDate(new Date(item.updateDatetime)) }}
               </div>
