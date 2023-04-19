@@ -82,7 +82,8 @@
     "new_password_hint": "Please enter your new password",
     "retype_password": "Retype New Password",
     "retype_password_hint": "Please retype the new password",
-    "sso_login": "Login via SSO"
+    "sso_login": "Login via SSO",
+    "force_login_dialog": "Your account has been logged in another device, are you sure to force to log in this device?"
   },
   "home": {
     "pre_validation": "Pre-validation",

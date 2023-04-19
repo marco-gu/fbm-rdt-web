@@ -82,6 +82,25 @@
       :type="type"
       @close="popupVisible = false"
     ></PopupComponent>
+    <q-dialog v-model="showForceLoginDialog" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("common.confirm") }}
+          <q-icon name="close" v-close-popup />
+        </div>
+        <div class="dialog-container__content">
+          {{ $t("login.force_login_dialog") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button cancel" v-close-popup>
+            {{ $t("common.cancel") }}
+          </button>
+          <button class="dialog-button confirm" @click="forceLogin">
+            {{ $t("common.confirm") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -122,6 +141,8 @@ const NewLoginView = defineComponent({
     const msg = ref("");
     const popupVisible = ref(false);
     const loadingStatus = ref(false);
+    const showForceLoginDialog = ref(false);
+    const deviceID = ref();
     const goFirstPage = () => {
       bridge.call("goFirstPage");
     };
@@ -166,9 +187,14 @@ const NewLoginView = defineComponent({
               },
             });
           } else {
-            store.dispatch("commonModule/setIsLogin");
-            store.dispatch("commonModule/setAnimation");
-            router.push("/home");
+            if (androidResponse.data.loginStatus == 3) {
+              store.dispatch("commonModule/setIsLogin");
+              store.dispatch("commonModule/setAnimation");
+              router.push("/home");
+            } else if (androidResponse.data.loginStatus == 2) {
+              deviceID.value = androidResponse.data.deviceID;
+              showForceLoginDialog.value = true;
+            }
           }
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
@@ -177,6 +203,28 @@ const NewLoginView = defineComponent({
           msg.value = message;
         }
       });
+    };
+    const forceLogin = () => {
+      showForceLoginDialog.value = false;
+      // TODO: call JSAPI to force login
+      // const args = {
+      //   deviceID: deviceID.value,
+      // };
+      // bridge.call("", args, (res: string) => {
+      //   const androidResponse = JSON.parse(
+      //     res
+      //   ) as AndroidResponse<LoginResponse>;
+      //   if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+      //     store.dispatch("commonModule/setIsLogin");
+      //     store.dispatch("commonModule/setAnimation");
+      //     router.push("/home");
+      //   } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+      //     const message = i18n.t("messageCode." + androidResponse.messageCode);
+      //     type.value = "error";
+      //     popupVisible.value = true;
+      //     msg.value = message;
+      //   }
+      // });
     };
     return {
       username,
@@ -194,6 +242,8 @@ const NewLoginView = defineComponent({
       // inputPassword,
       msg,
       loadingStatus,
+      showForceLoginDialog,
+      forceLogin,
     };
   },
 });
