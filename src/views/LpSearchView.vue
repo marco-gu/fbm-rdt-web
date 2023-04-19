@@ -96,7 +96,11 @@
                   borderless
                 >
                   <template v-slot:append>
-                    <q-avatar class="btn-img">
+                    <q-avatar
+                      class="btn-img"
+                      v-if="item.scan == 1"
+                      @click="scan(item.fieldName, $event)"
+                    >
                       <q-img
                         :color="secondary"
                         no-transition
