@@ -205,6 +205,7 @@ const NewLoginView = defineComponent({
     };
     const forceLogin = () => {
       showForceLoginDialog.value = false;
+
       // TODO: call JSAPI to force login
       // const args = {
       //   deviceID: deviceID.value,
