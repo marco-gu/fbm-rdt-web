@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "copy": "mkdir -p ../wdp-lns-mobile/app/src/main/assets/dist/ && cp -rf ./dist ../wdp-lns-mobile/app/src/main/assets/dist"
+    "copy": "mkdir -p ../wdp-lns-mobile/app/src/main/assets/dist/ && cp -rf ./dist/. ../wdp-lns-mobile/app/src/main/assets/dist/"
   },
   "dependencies": {
     "@maersk-global/fonts": "^1.6.0",
