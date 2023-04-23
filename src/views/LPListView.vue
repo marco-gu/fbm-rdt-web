@@ -1,9 +1,16 @@
 <template>
   <div class="wrapper">
-    <header-component :titleParam="titleParam" :backFunctionParam="back">
-    </header-component>
+    <!-- <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component> -->
+    <common-header-component
+      :titles="[$t('lp.lp_list')]"
+      :icons="['home', 'search', 'sync']"
+      @onHome="() => router.push('/home')"
+      @onSync="refresh(void 0)"
+      v-model:searchValue="search"
+    />
     <div class="page-content">
-      <div class="search" id="search">
+      <!-- <div class="search" id="search">
         <q-input
           ref="input"
           v-model="search"
@@ -18,7 +25,7 @@
             <q-icon name="close" @click="onClear" class="cursor-pointer" />
           </template>
         </q-input>
-      </div>
+      </div> -->
       <template v-if="loading">
         <!-- <div class="row justify-center q-my-md"> -->
         <div
@@ -48,7 +55,30 @@
               :key="index"
               @click="onClickItem(item)"
             >
-              <q-item class="card-item">
+              <div class="common-card-2">
+                <div class="label mb-lg">
+                  {{ item.profileName
+                  }}<span class="separator">&nbsp;|&nbsp;</span>{{ item.so }}
+                </div>
+                <div class="value">
+                  {{ item.po
+                  }}<span
+                    v-show="item.po != '' && item.po != null"
+                    class="separator"
+                    >&nbsp;|&nbsp;</span
+                  >{{ item.sku
+                  }}<span
+                    v-show="item.sku != '' && item.sku != null"
+                    class="separator"
+                    >&nbsp;|&nbsp;</span
+                  >{{ $t("lp.total") }}: {{ item.allCartonNumber }}
+                </div>
+                <div class="value mt-sm mb-lg">
+                  {{ item.createDatetime }}
+                </div>
+              </div>
+
+              <!-- <q-item class="card-item">
                 <div class="card-item-content">
                   <q-item-section class="card-item-labels">
                     <div class="card-item-label-content">
@@ -66,7 +96,7 @@
                 <q-item-section side>
                   <q-icon name="chevron_right" color="black" />
                 </q-item-section>
-              </q-item>
+              </q-item> -->
             </div>
             <template v-slot:loading>
               <div class="row justify-center q-my-md">
@@ -84,11 +114,11 @@ import bridge from "dsbridge";
 import { defineComponent, onMounted, ref, watch, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 import { TaskLPList } from "../models/profile";
-import HeaderComponent from "@/components/HeaderComponent.vue";
 import { useI18n } from "vue-i18n";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 const LPListView = defineComponent({
   components: {
-    HeaderComponent,
+    CommonHeaderComponent,
   },
   setup() {
     const router = useRouter();
@@ -224,7 +254,7 @@ const LPListView = defineComponent({
     watch(search, () => {
       if (search.value) {
         if (search.value.length >= 4) {
-          input.value.blur();
+          //input.value.blur();
           onSearch();
         }
       } else if (search.value.length == 0) {
@@ -236,7 +266,6 @@ const LPListView = defineComponent({
       onSearchMode.value = true;
       taskListDisplay.value = [];
       taskListSearchResult.value = [];
-
       const args = {
         searchCondition: search.value.toUpperCase(),
       };
@@ -300,6 +329,7 @@ const LPListView = defineComponent({
       onClickItem,
       onLoad,
       onSearch,
+      router,
     };
   },
 });
