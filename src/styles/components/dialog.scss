@@ -5,10 +5,12 @@
     font-size: 17px;
     background-color: #ffffff;
     &__title {
-        padding: 15px 15px 0 15px;
-        font-weight: bold;
+        padding: 15px 18px 0px 11px;
+        font-weight: bold; // padding: 15px 15px 0 15px;
+        // font-weight: bold;
         .q-icon {
-            float: left;
+            padding-bottom: 2px;
+            // float: left;
             // right: 0;
             // top: 0;
         }

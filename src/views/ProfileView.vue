@@ -63,6 +63,7 @@
       :visible="popupVisible"
       :message="msg"
       :type="type"
+      :messageCode="msgCode"
       @close="popupVisible = false"
     ></PopupComponent>
     <q-dialog v-model="dialogVisible" persistent>
@@ -118,6 +119,7 @@ const ProfileView = defineComponent({
     const rotateIcon = rotate;
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const popupVisible = ref(false);
     const loadingStatus = ref(false);
     const refresh = (done: any) => {
@@ -134,11 +136,10 @@ const ProfileView = defineComponent({
             formatDate: formatDate(new Date()),
           });
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          // const message = i18n.t("messageCode." + androidResponse.messageCode);
-          // popupErrorMsg($q, message);
           type.value = "error";
           popupVisible.value = true;
           msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+          msgCode.value = androidResponse.messageCode;
         }
         dialogVisible.value = false;
         done();
@@ -200,7 +201,12 @@ const ProfileView = defineComponent({
         profileListDisplay.value = result;
       }
     });
-
+    // const onClose = () => {
+    //   popupVisible.value = false;
+    //   if (msgCode.value == "E92-99-0003" || msgCode.value == "E92-99-0004") {
+    //     router.push("/");
+    //   }
+    // };
     return {
       formatDate,
       isFirstSync,
@@ -216,6 +222,8 @@ const ProfileView = defineComponent({
       popupVisible,
       msg,
       loadingStatus,
+      msgCode,
+      // onClose,
     };
   },
 });

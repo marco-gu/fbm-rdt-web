@@ -44,39 +44,6 @@
               />
             </div>
           </div>
-          <!-- <q-input
-            class="card-item-input"
-            v-model="profileCode"
-            input-class="text-right"
-            :input-style="{ fontSize: '15px' }"
-            :prefix="$t('profile.profile_text')"
-            readonly
-            borderless
-            dense
-          /> -->
-          <!-- <div class="field"> -->
-          <!-- </div> -->
-          <!-- <div class="card-item-input">
-            <div>{{ $t("lp.scan_type") }}</div>
-            <div>
-              <q-radio
-                color="secondary"
-                v-if="receivingFlag"
-                v-model="scanType"
-                val="Receiving"
-                :label="$t('common.receiving')"
-                @click="changeScanType('Receiving')"
-              />
-              <q-radio
-                color="secondary"
-                v-if="stuffingFlag"
-                v-model="scanType"
-                val="Stuffing"
-                :label="$t('common.stuffing')"
-                @click="changeScanType('Stuffing')"
-              />
-            </div>
-          </div> -->
           <div v-for="(item, i) in pageViews" :key="i">
             <div v-if="item.display == 1">
               <div class="field">
@@ -95,10 +62,9 @@
                   :rules="[item.valid]"
                   borderless
                 >
-                  <template v-slot:append>
+                  <template v-if="item.scan == 1" v-slot:append>
                     <q-avatar
                       class="btn-img"
-                      v-if="item.scan == 1"
                       @click="scan(item.fieldName, $event)"
                     >
                       <q-img
@@ -356,7 +322,6 @@ const LpSearchView = defineComponent({
       myForm.value.validate().then((success: any) => {
         if (success) {
           loadingStatus.value = true;
-          // showLoading($q);
           // the same for online & offline
           const routeParams = {
             scanned: 0,
@@ -377,7 +342,6 @@ const LpSearchView = defineComponent({
           composeRouteParam(routeParams, pageViews.value);
           if (mode == "online") {
             bridge.call("fetchLp", apiParams, (res: string) => {
-              // closeLoading($q);
               loadingStatus.value = false;
               const androidResponse = JSON.parse(res) as AndroidResponse<any>;
               if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
@@ -388,21 +352,9 @@ const LpSearchView = defineComponent({
                 type.value = "success";
                 popupVisible.value = true;
                 msg.value = i18n.t("messageCode.E93-05-0005");
-                // const message = i18n.t("messageCode.E93-05-0005");
-                // popupSuccessMsg($q, message);
                 canJumpNextPage.value = true;
                 nextPageParam.value = routeParams;
-                // setTimeout(() => {
-                //   router.push({
-                //     name: "scan",
-                //     params: routeParams,
-                //   });
-                // }, 2000);
               } else if (androidResponse.status == AndroidResponseStatus.INFO) {
-                // const message = i18n.t(
-                //   "messageCode." + androidResponse.messageCode
-                // );
-                // popupInfoMsg($q, message);
                 type.value = "info";
                 popupVisible.value = true;
                 msg.value = i18n.t(
@@ -411,10 +363,6 @@ const LpSearchView = defineComponent({
               } else if (
                 androidResponse.status == AndroidResponseStatus.ERROR
               ) {
-                // const message = i18n.t(
-                //   "messageCode." + androidResponse.messageCode
-                // );
-                // popupErrorMsg($q, message);
                 type.value = "error";
                 popupVisible.value = true;
                 msg.value = i18n.t(
@@ -424,7 +372,6 @@ const LpSearchView = defineComponent({
             });
           } else {
             bridge.call("createTask", apiParams);
-            // closeLoading($q);
             loadingStatus.value = false;
             pageViews.value.forEach((t) => {
               t.model = "";

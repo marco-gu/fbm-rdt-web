@@ -32,10 +32,10 @@
 
 .field:focus-within {
     border: 1px solid #64b2d4;
-    .btn-img {
-        transform: translateX(-1000px);
-        filter: drop-shadow(#64b2d4 1000px 0);
-    }
+    // .btn-img {
+    //     transform: translateX(-1000px);
+    //     filter: drop-shadow(#64b2d4 1000px 0);
+    // }
 }
 
 .q-field {

@@ -51,8 +51,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { onMounted, ref, version } from "vue";
 import { VersionInfo } from "@/models/profile";
-import { popupErrorMsg } from "@/plugin/popupPlugins";
-import { showLoading, closeLoading } from "@/plugin/loadingPlugins";
+// import { popupErrorMsg } from "@/plugin/popupPlugins";
 import {
   AndroidResponse,
   AndroidResponseStatus,
@@ -96,7 +95,7 @@ export default {
           latestVersionDetail.value = versionInfo.detail;
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          // popupErrorMsg($q, message);
         }
         // closeLoading($q);
       });
@@ -109,7 +108,7 @@ export default {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          // popupErrorMsg($q, message);
         }
         // closeLoading($q);
         loadingStatus.value = false;

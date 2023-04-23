@@ -114,7 +114,6 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import { defineComponent, onMounted, Ref, ref } from "vue";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import {
   ViewDisplayAttribute,
   composeViewElement,
@@ -282,10 +281,10 @@ const DataManagementMixCartonView = defineComponent({
             (res: string) => {
               const androidResponse = JSON.parse(res) as AndroidResponse<any>;
               if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-                popupSuccessMsg(
-                  $q,
-                  i18n.t("dataManagement.successfully_saved")
-                );
+                // popupSuccessMsg(
+                //   $q,
+                //   i18n.t("dataManagement.successfully_saved")
+                // );
                 router.push({
                   path: "/dataManagementMixCartonList",
                   query: {
@@ -297,7 +296,7 @@ const DataManagementMixCartonView = defineComponent({
                 androidResponse.status == AndroidResponseStatus.ERROR
               ) {
                 const message = i18n.t(androidResponse.messageCode);
-                popupErrorMsg($q, message);
+                // popupErrorMsg($q, message);
               }
             }
           );
@@ -319,7 +318,7 @@ const DataManagementMixCartonView = defineComponent({
       bridge.call("deleteCartonProduct", args, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
+          // popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
           router.push({
             path: "/dataManagementMixCartonList",
             query: {
@@ -329,7 +328,7 @@ const DataManagementMixCartonView = defineComponent({
           });
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t(androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          // popupErrorMsg($q, message);
         }
       });
     };

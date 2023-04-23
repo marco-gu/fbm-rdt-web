@@ -1,11 +1,17 @@
 <template>
   <div class="wrapper">
-    <header-component
+    <!-- <header-component
       :titleParam="titleParam"
       :backFunctionParam="closeMixCarton"
       :homeVisibleParam="false"
     >
-    </header-component>
+    </header-component> -->
+    <common-header-component
+      :titles="[titleParam]"
+      :icons="['home', 'clear']"
+      @onHome="() => router.push('/home')"
+      @onClear="onClear()"
+    />
     <div class="page-content">
       <div class="sub-title-card">
         <div>{{ cartonID }}</div>
@@ -13,9 +19,40 @@
       </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
-          <div v-for="(item, i) in pageViews" :key="i">
+          <div v-for="(item, i) in pageViews" :key="i" class="container">
             <div v-if="item.display == 1">
-              <div class="card-item-input">
+              <div class="field">
+                <div class="input-title">
+                  <span class="text">{{ item.displayFieldName }}</span>
+                </div>
+                <q-input
+                  class="input-field"
+                  input-class="text-left"
+                  ref="inputRef"
+                  v-model="item.model"
+                  @paste="validPaste($event, i)"
+                  :maxlength="item.length"
+                  lazy-rules
+                  :rules="[item.valid]"
+                  borderless
+                >
+                  <template v-if="item.scan == 1" v-slot:append>
+                    <q-avatar
+                      class="btn-img"
+                      @click="scan(item.fieldName, $event)"
+                    >
+                      <q-img
+                        :color="secondary"
+                        no-transition
+                        no-spinner
+                        :src="inputScanIcon"
+                        width="12px"
+                      />
+                    </q-avatar>
+                  </template>
+                </q-input>
+              </div>
+              <!-- <div class="card-item-input">
                 <div>
                   {{ item.displayFieldName }}
                 </div>
@@ -46,7 +83,7 @@
                     </q-avatar>
                   </template>
                 </q-input>
-              </div>
+              </div> -->
             </div>
           </div>
         </q-form>
@@ -95,7 +132,7 @@
   </div>
 </template>
 <script lang="ts">
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import {
   ProfileDisplayAttribute,
@@ -112,11 +149,11 @@ import bridge from "dsbridge";
 import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
-import inputScan from "../assets/images/input_scan.svg";
+import inputScan from "../assets/icon/compress-solid.svg";
 const MixCartonView = defineComponent({
   components: {
-    HeaderComponent,
     PopupComponent,
+    CommonHeaderComponent,
   },
   setup() {
     const i18n = useI18n();
@@ -251,33 +288,35 @@ const MixCartonView = defineComponent({
       });
     };
     const closeMixCarton = () => {
-      // Step 1: Check is include mandatory field
-      let isIncludeMandatory = false;
-      pageViews.value.forEach((view) => {
-        if (view.mandatory == 1) {
-          isIncludeMandatory = true;
+      if (itemCount.value == 0) {
+        // Step 1: Check is include mandatory field
+        let isIncludeMandatory = false;
+        pageViews.value.forEach((view) => {
+          if (view.mandatory == 1) {
+            isIncludeMandatory = true;
+          }
+        });
+        if (!isIncludeMandatory) {
+          bridge.call("completeMixCarton", null, () => {
+            reset();
+          });
+        } else {
+          // Step 2: Check input all required field
+          myForm.value.validate().then((success: any) => {
+            if (success) {
+              type.value = "error";
+              popupVisible.value = true;
+              msg.value = i18n.t("messageCode.E93-07-0001");
+            } else {
+              type.value = "error";
+              popupVisible.value = true;
+              msg.value = i18n.t("messageCode.E93-07-0002");
+            }
+          });
         }
-      });
-      if (!isIncludeMandatory) {
+      } else {
         bridge.call("completeMixCarton", null, () => {
           reset();
-        });
-      } else {
-        // Step 2: Check input all required field
-        myForm.value.validate().then((success: any) => {
-          if (success) {
-            // const message = i18n.t("messageCode.E93-07-0001");
-            // popupErrorMsg($q, message);
-            type.value = "error";
-            popupVisible.value = true;
-            msg.value = i18n.t("messageCode.E93-07-0001");
-          } else {
-            // const message = i18n.t("messageCode.E93-07-0002");
-            // popupErrorMsg($q, message);
-            type.value = "error";
-            popupVisible.value = true;
-            msg.value = i18n.t("messageCode.E93-07-0002");
-          }
         });
       }
     };
@@ -325,5 +364,16 @@ export default MixCartonView;
 <style lang="scss" scoped>
 .sub-title-card {
   flex-direction: column;
+}
+.container {
+  margin: 0 auto 10px;
+  width: calc(100% - 46px);
+}
+.field {
+  margin: 20px 0px;
+}
+.q-field {
+  height: 40px;
+  padding: 0px;
 }
 </style>

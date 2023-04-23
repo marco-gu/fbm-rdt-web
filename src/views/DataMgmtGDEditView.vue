@@ -143,7 +143,7 @@ import {
   ProfileElementLevel,
   toUpperCaseElementInput,
 } from "@/utils/profile.render";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
+// import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import {
   AndroidResponse,
   AndroidResponseStatus,
@@ -424,10 +424,10 @@ const DataManagementDetailView = defineComponent({
                 if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
                   taskId.value = androidResponse.data;
                   back();
-                  popupSuccessMsg(
-                    $q,
-                    i18n.t("dataManagement.successfully_saved")
-                  );
+                  // popupSuccessMsg(
+                  //   $q,
+                  //   i18n.t("dataManagement.successfully_saved")
+                  // );
                 }
               }
             );
@@ -451,17 +451,17 @@ const DataManagementDetailView = defineComponent({
                 if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
                   taskId.value = androidResponse.data;
                   back();
-                  popupSuccessMsg(
-                    $q,
-                    i18n.t("dataManagement.successfully_saved")
-                  );
+                  // popupSuccessMsg(
+                  //   $q,
+                  //   i18n.t("dataManagement.successfully_saved")
+                  // );
                 } else if (
                   androidResponse.status == AndroidResponseStatus.ERROR
                 ) {
                   const message = i18n.t(
                     "messageCode." + androidResponse.messageCode
                   );
-                  popupErrorMsg($q, message);
+                  // popupErrorMsg($q, message);
                 }
               }
             );
@@ -480,7 +480,7 @@ const DataManagementDetailView = defineComponent({
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
 
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
+            // popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
             router.push({
               path: "/dataManagement",
             });
@@ -488,7 +488,7 @@ const DataManagementDetailView = defineComponent({
             const message = i18n.t(
               "messageCode." + androidResponse.messageCode
             );
-            popupErrorMsg($q, message);
+            // popupErrorMsg($q, message);
           }
         });
       } else if (pageType.value === "Detail") {
@@ -498,13 +498,13 @@ const DataManagementDetailView = defineComponent({
         bridge.call("deleteCartonForDataManagement", args, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
+            // popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
             back();
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
             const message = i18n.t(
               "messageCode." + androidResponse.messageCode
             );
-            popupErrorMsg($q, message);
+            // popupErrorMsg($q, message);
           }
         });
       }

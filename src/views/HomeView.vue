@@ -153,7 +153,6 @@ import setting from "../assets/icon/setting.svg";
 import userManual from "../assets/icon/user-manual.svg";
 import logOut from "../assets/icon/logout.svg";
 import logo from "../assets/images/Maersk_Logo_Neg.svg";
-import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { useI18n } from "vue-i18n";
 import menu from "../assets/images/bars-solid.svg";
 import gear from "../assets/images/gear-solid.svg";
@@ -217,26 +216,23 @@ export default {
 
     const logout = () => {
       showLogoutDialog.value = false;
-      // showLoading($q);
-      bridge.call("logout", null, (data: string) => {
-        // closeLoading($q);
-        const androidResponse = JSON.parse(
-          data
-        ) as AndroidResponse<LogoutResponse>;
-        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          // const msg = i18n.t("messageCode.E93-06-0001");
-          // router.push("/");
-          // popupSuccessMsg($q, msg);
-          bridge.call("goFirstPage");
-          router.push("/");
-        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          type.value = "error";
-          popupVisible.value = true;
-          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
-          // const message = i18n.t("messageCode." + androidResponse.messageCode);
-          // popupErrorMsg($q, message);
-        }
+      bridge.call("logout");
+      bridge.call("goFirstPage", null, () => {
+        router.push("/");
       });
+      // bridge.call("logout", null, (data: string) => {
+      //   const androidResponse = JSON.parse(
+      //     data
+      //   ) as AndroidResponse<LogoutResponse>;
+      //   if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+      //     bridge.call("goFirstPage");
+      //     router.push("/");
+      //   } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+      //     type.value = "error";
+      //     popupVisible.value = true;
+      //     msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+      //   }
+      // });
     };
     const goSetting = () => {
       router.push("/setting");

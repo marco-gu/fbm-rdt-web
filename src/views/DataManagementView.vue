@@ -287,7 +287,6 @@ import { defineComponent, onBeforeMount, onMounted } from "@vue/runtime-core";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import { ScanDataManagement } from "../models/profile";
 import { ref, watch } from "vue";
 import finishedUrl from "../assets/icon/finished.svg";
@@ -485,7 +484,7 @@ const DataManagementView = defineComponent({
           )} ${i18n.t("dataManagement.upload_dialog_message")}`;
         }
       } else {
-        popupErrorMsg($q, i18n.t("dataManagement.no_record_selected"));
+        // popupErrorMsg($q, i18n.t("dataManagement.no_record_selected"));
       }
     };
     const uploadScanData = () => {
@@ -497,10 +496,10 @@ const DataManagementView = defineComponent({
         closeLoading($q);
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          popupSuccessMsg($q, i18n.t("dataManagement.successfully_uploaded"));
+          // popupSuccessMsg($q, i18n.t("dataManagement.successfully_uploaded"));
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t(androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          // popupErrorMsg($q, message);
         }
         isEditMode.value = false;
         getScanDataList();
@@ -511,7 +510,7 @@ const DataManagementView = defineComponent({
       if (getSelectedTaskIdList().length > 0) {
         showDeleteDialog.value = true;
       } else {
-        popupErrorMsg($q, i18n.t("dataManagement.no_record_selected"));
+        // popupErrorMsg($q, i18n.t("dataManagement.no_record_selected"));
       }
     };
     const deleteScanData = () => {
@@ -521,12 +520,12 @@ const DataManagementView = defineComponent({
       bridge.call("deleteTaskForDataManagement", args, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
+          // popupSuccessMsg($q, i18n.t("dataManagement.successfully_deleted"));
           isEditMode.value = false;
           getScanDataList();
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t(androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          // popupErrorMsg($q, message);
         }
         showDeleteDialog.value = false;
       });

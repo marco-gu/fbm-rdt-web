@@ -5,114 +5,45 @@
     transition-show="scale"
     transition-hide="scale"
   >
-    <template v-if="msgType == 'error'">
-      <div class="dialog-container">
-        <div
-          style="
-            padding: 15px 18px 0px 11px;
-            font-size: 17px;
-            font-weight: bold;
-          "
-        >
-          <q-icon
-            name="error_outline"
-            size="18px"
-            color="red"
-            style="padding-bottom: 2px"
-          />
-
-          {{ $t("common.error") }}
-        </div>
-        <div class="dialog-container__content">
-          {{ msg }}
-        </div>
-        <div class="dialog-container__button">
-          <button class="dialog-button confirm" @click="cancel">
-            {{ $t("common.cancel") }}
-          </button>
-        </div>
+    <div class="dialog-container">
+      <div class="dialog-container__title">
+        <q-icon :name="iconName" :color="iconColor" />
+        {{ title }}
       </div>
-    </template>
-    <template v-if="msgType == 'success'">
-      <div class="dialog-container">
-        <div
-          style="
-            padding: 15px 18px 0px 11px;
-            font-size: 17px;
-            font-weight: bold;
-          "
-        >
-          <q-icon
-            name="check_circle"
-            size="18px"
-            color="green"
-            style="padding-bottom: 2px"
-          />
-
-          {{ $t("common.success") }}
-        </div>
-        <div class="dialog-container__content">
-          {{ msg }}
-        </div>
-        <div class="dialog-container__button">
-          <button class="dialog-button confirm" @click="cancel">
-            {{ $t("common.ok") }}
-          </button>
-        </div>
+      <div class="dialog-container__content">
+        {{ prompt }}
       </div>
-    </template>
-    <template v-if="msgType == 'info'">
-      <div class="dialog-container">
-        <div
-          style="
-            padding: 15px 18px 0px 11px;
-            font-size: 17px;
-            font-weight: bold;
-          "
-        >
-          <q-icon
-            name="info"
-            size="18px"
-            color="green"
-            style="padding-bottom: 2px"
-          />
-
-          {{ $t("common.info") }}
-        </div>
-        <div class="dialog-container__content">
-          {{ msg }}
-        </div>
-        <div class="dialog-container__button">
-          <button class="dialog-button confirm" @click="cancel">
-            {{ $t("common.ok") }}
-          </button>
-        </div>
+      <div class="dialog-container__button">
+        <button class="dialog-button confirm" @click="close">
+          {{ buttonLabel }}
+        </button>
       </div>
-      <!-- <q-card style="min-width: 250px; background-color: #42a5f5">
-        <div style="display: flex; padding: 10px; justify-content: center">
-          <div>
-            <q-icon
-              name="info"
-              size="18px"
-              color="white"
-              style="padding-bottom: 1px"
-            />
-          </div>
-          <div style="margin-left: 10px; color: white">
-            <div class="text-h7">{{ msg }}</div>
-          </div>
-        </div>
-      </q-card> -->
-    </template>
+    </div>
   </q-dialog>
 </template>
 <script lang="ts">
 import { defineComponent, ref, toRefs, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
+enum DialogType {
+  INFO = "info",
+  ERROR = "error",
+  SUCCESS = "success",
+  ALERT = "alert",
+}
+enum DialogIconColor {
+  GREEN = "green",
+  RED = "red",
+}
 const PopupComponent = defineComponent({
   props: {
     visible: {
       type: Boolean,
       default: false,
+    },
+    messageCode: {
+      type: String,
+      default: "",
     },
     message: {
       type: String,
@@ -123,39 +54,70 @@ const PopupComponent = defineComponent({
   },
   emits: ["close"],
   setup(props, context) {
+    const router = useRouter();
+    const { visible, message, messageCode, type } = toRefs(props);
+    const buttonLabel = ref("");
+    const prompt = ref("");
+    const i18n = useI18n();
+    const iconName = ref("");
+    const iconColor = ref("");
+    const title = ref("");
+    const returnHome = ref(false);
     const persistent = ref(false);
-    const msg = ref("");
-    const msgType = ref("");
-    const { visible, message, type } = toRefs(props);
-    const cancel = () => {
-      context.emit("close");
+    const close = () => {
+      persistent.value = false;
+      if (returnHome.value) {
+        router.push("/");
+      } else {
+        context.emit("close");
+      }
     };
-    watch(
-      type,
-      (newValue) => {
-        msgType.value = newValue as string;
-      },
-      { immediate: true }
-    );
-    watch(
-      message,
-      (newValue) => {
-        msg.value = newValue as string;
-      },
-      { immediate: true }
-    );
     watch(
       visible,
       (newValue) => {
         persistent.value = newValue;
+        if (persistent.value) {
+          prompt.value = message.value as string;
+          switch (type.value) {
+            case DialogType.SUCCESS:
+              iconName.value = "check_circle";
+              iconColor.value = DialogIconColor.GREEN;
+              title.value = i18n.t("common.success");
+              buttonLabel.value = i18n.t("common.ok");
+              break;
+            case DialogType.INFO:
+              iconName.value = "info";
+              iconColor.value = DialogIconColor.GREEN;
+              title.value = i18n.t("common.info");
+              buttonLabel.value = i18n.t("common.ok");
+              break;
+            case DialogType.ERROR:
+              iconName.value = "error_outline";
+              iconColor.value = DialogIconColor.RED;
+              title.value = i18n.t("common.error");
+              if (
+                messageCode.value == "E92-99-0003" ||
+                messageCode.value == "E92-99-0004"
+              ) {
+                returnHome.value = true;
+                buttonLabel.value = i18n.t("common.ok");
+              } else {
+                buttonLabel.value = i18n.t("common.cancel");
+              }
+              break;
+          }
+        }
       },
       { immediate: true }
     );
     return {
-      msg,
+      prompt,
       persistent,
-      msgType,
-      cancel,
+      buttonLabel,
+      iconName,
+      title,
+      close,
+      iconColor,
     };
   },
 });

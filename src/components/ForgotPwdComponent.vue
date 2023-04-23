@@ -55,7 +55,6 @@ import {
 } from "@/models/android.response";
 
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
-import { popupErrorMsg, popupSuccessMsg } from "@/plugin/popupPlugins";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, ref, toRefs, watch } from "vue";
@@ -74,7 +73,6 @@ const ForgotPwdComponent = defineComponent({
     const $q = useQuasar();
     const mail = ref("");
     const visible = ref(false);
-
     const onClose = () => {
       mail.value = "";
       context.emit("close");
@@ -90,10 +88,10 @@ const ForgotPwdComponent = defineComponent({
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           context.emit("confirm");
           const message = i18n.t("messageCode.E93-03-0001");
-          popupSuccessMsg($q, message);
+          // popupSuccessMsg($q, message);
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
-          popupErrorMsg($q, message);
+          // popupErrorMsg($q, message);
         }
       });
     };
