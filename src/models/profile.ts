@@ -216,8 +216,14 @@ export interface VersionInfo {
 
 export interface TaskLPList {
   taskId: string;
-  updateDatetime: string;
+  createDatetime: string;
   allCartonNumber: number;
+  profileName: string;
+  scanType: string;
+  validationType: string;
+  po?: string;
+  so: string;
+  sku?: string;
 }
 
 export interface LPDetailList {

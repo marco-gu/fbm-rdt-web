@@ -1,11 +1,17 @@
 <template>
   <div class="wrapper">
-    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component>
+    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component> -->
+    <common-header-component
+      :titles="[$t('lp.lp_list')]"
+      :icons="['home', 'sync']"
+      @onHome="() => router.push('/home')"
+      @onSync="refresh(void 0)"
+    />
     <div class="page-content">
-      <div class="sub-title-card">
+      <!-- <div class="sub-title-card">
         <span> {{ taskId }}</span>
-      </div>
+      </div> -->
       <q-scroll-area
         ref="myScrollArea"
         id="scroll-area"
@@ -20,13 +26,15 @@
           </div>
         </template>
         <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
-          <div
-            class="card-item"
-            v-for="(item, index) in lpDetailListDisplay"
-            :key="index"
-          >
-            <div>CID: {{ item.cartonID }}</div>
+          <div v-for="(item, index) in lpDetailListDisplay" :key="index">
+            <div class="common-card-2">
+              <div class="label mb-lg">
+                {{ item.cartonID }}
+              </div>
+              <div>{{ item.createDateTime }}</div>
+            </div>
           </div>
+
           <template v-slot:loading>
             <div class="row justify-center q-my-md">
               <q-spinner-dots color="primary" size="40px" />
@@ -40,15 +48,17 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { onBeforeMount, defineComponent, onMounted, Ref, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { LPDetailList } from "../models/profile";
 import { useI18n } from "vue-i18n";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 const LPDetailListView = defineComponent({
   components: {
-    HeaderComponent,
+    CommonHeaderComponent,
   },
   setup() {
+    const router = useRouter();
     const route = useRoute();
     const taskId = ref(route.query.taskId);
     const i18n = useI18n();
@@ -63,6 +73,14 @@ const LPDetailListView = defineComponent({
     const retrieveIndex = ref(0);
     const pageSlice = 15;
     onBeforeMount(() => {
+      refresh(0);
+    });
+    onMounted(() => {
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+    });
+    const refresh = (done: any) => {
       loading.value = true;
       const args = {
         taskID: taskId.value,
@@ -71,12 +89,7 @@ const LPDetailListView = defineComponent({
         loading.value = false;
         composeLpDetailListDisplay(res);
       });
-    });
-    onMounted(() => {
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
-    });
+    };
     const composeLpDetailListDisplay = (res: string) => {
       lpDetailListInitResult.value = JSON.parse(res) as LPDetailList[];
       if (lpDetailListInitResult.value.length == 0) {
@@ -116,6 +129,7 @@ const LPDetailListView = defineComponent({
       }, 200);
     };
     return {
+      refresh,
       backUrlParam,
       loading,
       lpDetailListDisplay,
@@ -125,6 +139,7 @@ const LPDetailListView = defineComponent({
       onLoad,
       taskId,
       titleParam,
+      router,
     };
   },
 });
