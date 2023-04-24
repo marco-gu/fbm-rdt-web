@@ -252,6 +252,7 @@ const LPListView = defineComponent({
         path: "/lpDetailList",
         query: {
           taskId: item.taskId,
+          profileName: item.profileName,
         },
       });
     };

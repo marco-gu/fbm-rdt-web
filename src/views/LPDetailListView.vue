@@ -1,17 +1,13 @@
 <template>
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component> -->
     <common-header-component
-      :titles="[$t('lp.lp_list')]"
+      :titles="[$t('lp.lp_list'), profileName]"
       :icons="['home', 'sync']"
       @onHome="() => router.push('/home')"
       @onSync="refresh(void 0)"
     />
     <div class="page-content">
-      <!-- <div class="sub-title-card">
-        <span> {{ taskId }}</span>
-      </div> -->
       <q-scroll-area
         ref="myScrollArea"
         id="scroll-area"
@@ -19,11 +15,6 @@
       >
         <template v-if="noRecord">
           <div class="no-record">{{ $t("common.no_record") }}</div>
-        </template>
-        <template v-if="loading">
-          <div class="row justify-center q-my-md">
-            <q-spinner-dots color="primary" size="40px" />
-          </div>
         </template>
         <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
           <div v-for="(item, index) in lpDetailListDisplay" :key="index">
@@ -51,16 +42,18 @@ import { onBeforeMount, defineComponent, onMounted, Ref, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { LPDetailList } from "../models/profile";
 import { useI18n } from "vue-i18n";
-import HeaderComponent from "@/components/HeaderComponent.vue";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 const LPDetailListView = defineComponent({
   components: {
     CommonHeaderComponent,
+    LoadingComponent,
   },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const taskId = ref(route.query.taskId);
+    const profileName = ref(route.query.profileName);
     const i18n = useI18n();
     const titleParam = i18n.t("lp.lp_detail_list");
     const backUrlParam = "/lpList";
@@ -68,7 +61,7 @@ const LPDetailListView = defineComponent({
     const lpDetailListInitResult = ref([] as LPDetailList[]);
     const myInfiniteScroll = ref();
     const myScrollArea = ref();
-    const loading = ref(false);
+    const loadingStatus = ref(false);
     const noRecord = ref(false);
     const retrieveIndex = ref(0);
     const pageSlice = 15;
@@ -81,12 +74,12 @@ const LPDetailListView = defineComponent({
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
     });
     const refresh = (done: any) => {
-      loading.value = true;
+      loadingStatus.value = true;
       const args = {
         taskID: taskId.value,
       };
       bridge.call("fetchCartonForLPDetailList", args, (res: string) => {
-        loading.value = false;
+        loadingStatus.value = false;
         composeLpDetailListDisplay(res);
       });
     };
@@ -131,13 +124,14 @@ const LPDetailListView = defineComponent({
     return {
       refresh,
       backUrlParam,
-      loading,
+      loadingStatus,
       lpDetailListDisplay,
       myInfiniteScroll,
       myScrollArea,
       noRecord,
       onLoad,
       taskId,
+      profileName,
       titleParam,
       router,
     };
