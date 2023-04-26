@@ -1,8 +1,8 @@
 <template>
-  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
+  <!-- <LoadingComponent :visible="loadingStatus"> </LoadingComponent> -->
   <div class="wrapper">
     <common-header-component
-      :titles="[$t('lp.lp_list'), profileName]"
+      :titles="[profileName, so]"
       :icons="['home', 'sync']"
       @onHome="() => router.push('/home')"
       @onSync="refresh(void 0)"
@@ -47,13 +47,14 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 const LPDetailListView = defineComponent({
   components: {
     CommonHeaderComponent,
-    LoadingComponent,
+    //LoadingComponent,
   },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const taskId = ref(route.query.taskId);
     const profileName = ref(route.query.profileName);
+    const so = ref(route.query.so);
     const i18n = useI18n();
     const titleParam = i18n.t("lp.lp_detail_list");
     const backUrlParam = "/lpList";
@@ -131,6 +132,7 @@ const LPDetailListView = defineComponent({
       noRecord,
       onLoad,
       taskId,
+      so,
       profileName,
       titleParam,
       router,

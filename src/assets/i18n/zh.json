@@ -122,6 +122,7 @@
     "total": "总数",
     "start_scan": "开始扫描",
     "lp_list": "LP列表",
+    "lp_files": "LP文件",
     "lp_detail_list": "LP列表详情"
   },
   "continue": {

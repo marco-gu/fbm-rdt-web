@@ -122,6 +122,7 @@
     "total": "Total",
     "start_scan": "Start Scan Carton ID",
     "lp_list": "LP List",
+    "lp_files": "LP Files",
     "lp_detail_list": "LP Detail List"
   },
   "continue": {

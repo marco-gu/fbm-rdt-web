@@ -119,6 +119,7 @@
     "total": "Total",
     "start_scan": "Start scanning af karton-id",
     "lp_list": "LP Liste",
+    "lp_files": "LP Files",
     "lp_detail_list": "LP DetaljeListet"
   },
   "continue": {

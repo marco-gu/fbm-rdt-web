@@ -1,8 +1,8 @@
 <template>
-  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
+  <!-- <LoadingComponent :visible="loadingStatus"> </LoadingComponent> -->
   <div class="wrapper">
     <common-header-component
-      :titles="[$t('lp.lp_list')]"
+      :titles="[$t('lp.lp_files')]"
       :icons="['home', 'search', 'sync']"
       @onHome="() => router.push('/home')"
       @onSync="refresh(void 0)"
@@ -17,35 +17,38 @@
         <template v-if="noRecord">
           <div class="no-record">{{ $t("common.no_record") }}</div>
         </template>
+
         <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
-          <div
-            v-for="(item, index) in taskListDisplay"
-            :key="index"
-            @click="onClickItem(item)"
-          >
-            <div class="common-card-2">
-              <div class="label mb-lg">
-                {{ item.profileName
-                }}<span class="separator">&nbsp;|&nbsp;</span>{{ item.so }}
-              </div>
-              <div class="value">
-                {{ item.po
-                }}<span
-                  v-show="item.po != '' && item.po != null"
-                  class="separator"
-                  >&nbsp;|&nbsp;</span
-                >{{ item.sku
-                }}<span
-                  v-show="item.sku != '' && item.sku != null"
-                  class="separator"
-                  >&nbsp;|&nbsp;</span
-                >{{ $t("lp.total") }}: {{ item.allCartonNumber }}
-              </div>
-              <div class="value mt-sm mb-lg">
-                {{ item.createDatetime }}
+          <q-pull-to-refresh @refresh="refresh">
+            <div
+              v-for="(item, index) in taskListDisplay"
+              :key="index"
+              @click="onClickItem(item)"
+            >
+              <div class="common-card-2">
+                <div class="label mb-lg">
+                  {{ item.profileName
+                  }}<span class="separator">&nbsp;|&nbsp;</span>{{ item.so }}
+                </div>
+                <div class="value">
+                  {{ item.po
+                  }}<span
+                    v-show="item.po != '' && item.po != null"
+                    class="separator"
+                    >&nbsp;|&nbsp;</span
+                  >{{ item.sku
+                  }}<span
+                    v-show="item.sku != '' && item.sku != null"
+                    class="separator"
+                    >&nbsp;|&nbsp;</span
+                  >{{ $t("lp.total") }}: {{ item.allCartonNumber }}
+                </div>
+                <div class="value mt-sm mb-lg">
+                  {{ item.createDatetime }}
+                </div>
               </div>
             </div>
-          </div>
+          </q-pull-to-refresh>
           <template v-slot:loading>
             <div class="row justify-center q-my-md">
               <q-spinner-dots color="primary" size="40px" />
@@ -67,7 +70,7 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 const LPListView = defineComponent({
   components: {
     CommonHeaderComponent,
-    LoadingComponent,
+    // LoadingComponent,
   },
   setup() {
     const router = useRouter();
@@ -253,6 +256,7 @@ const LPListView = defineComponent({
         query: {
           taskId: item.taskId,
           profileName: item.profileName,
+          so: item.so,
         },
       });
     };
