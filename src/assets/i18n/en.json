@@ -67,8 +67,7 @@
     "finished": "Finished",
     "success": "Success",
     "info": "Info",
-    "error": "Error",
-    "delete_dialog_message": "Are you sure to delete it?"
+    "error": "Error"
   },
   "login": {
     "login": "Continue",
@@ -111,7 +110,9 @@
     "sync_complete": "Synchronize completed!",
     "sync_profile": "Sync Profile",
     "sync_latest": "Please synchronize the latest profiles",
-    "profile_text": "Profile"
+    "profile_text": "Profile",
+    "delete_dialog_message": "Delete the selected profiles?",
+    "home_dialog_message":"Return to Home page?"
   },
   "lp": {
     "lp_search": "LP Search",

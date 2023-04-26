@@ -67,8 +67,7 @@
     "finished": "已扫完",
     "success": "成功",
     "info": "信息",
-    "error": "错误",
-    "delete_dialog_message": "确定要删除吗?"
+    "error": "错误"
   },
   "login": {
     "login": "登录",
@@ -111,7 +110,9 @@
     "sync_complete": "同步完成!",
     "sync_profile": "同步Profile",
     "sync_latest": "请同步最新的profile",
-    "profile_text": "Profile"
+    "profile_text": "Profile",
+    "delete_dialog_message": "确定要删除这些Profiles吗?",
+    "home_dialog_message":"返回主页?"
   },
   "lp": {
     "lp_search": "搜索LP",

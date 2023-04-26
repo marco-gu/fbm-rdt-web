@@ -64,8 +64,7 @@
     "ok": "نعم",
     "no_record": "لا يوجد سجلات!",
     "uploaded": "تم الرفع",
-    "finished": "انتهى",
-    "delete_dialog_message": "هل أنت متأكد من حذف ذلك؟"
+    "finished": "انتهى"
   },
   "login": {
     "login": "يكمل",
@@ -108,7 +107,9 @@
     "sync_complete": "مزامنة الانتهاء!",
     "sync_profile": "المزامنة",
     "sync_latest": "يرجى مزامنة أحدث الملفات الشخصية",
-    "profile_text": "حساب تعريفي"
+    "profile_text": "حساب تعريفي",
+    "delete_dialog_message": "Delete the selected profiles?",
+    "home_dialog_message":"Return to Home page?"
   },
   "lp": {
     "lp_search": "بحث LP",
