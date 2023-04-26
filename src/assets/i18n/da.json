@@ -64,7 +64,8 @@
     "ok": "Okay",
     "no_record": "Ingen rekord fundet!",
     "uploaded": "Uploadet",
-    "finished": "Færdig"
+    "finished": "Færdig",
+    "delete_dialog_message": "Er du sikker på at slette det?"
   },
   "login": {
     "login": "Blive ved",
@@ -102,6 +103,7 @@
     "logout_promot": "Er du sikker på at logge ud?"
   },
   "profile": {
+    "profiles": "Profiles",
     "profile": "Klientprofil",
     "sync_complete": "Synkroniser afsluttet!",
     "sync_profile": "Synkroniseringsprofil",

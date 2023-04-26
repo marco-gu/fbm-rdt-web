@@ -3,9 +3,10 @@
   <div class="wrapper">
     <common-header-component
       :titles="[profileName, so]"
-      :icons="['home', 'sync']"
+      :icons="['back', 'home']"
       @onHome="() => router.push('/home')"
       @onSync="refresh(void 0)"
+      @onBack="back"
     />
     <div class="page-content">
       <q-scroll-area
@@ -74,6 +75,11 @@ const LPDetailListView = defineComponent({
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
     });
+    const back = () => {
+      router.push({
+        path: backUrlParam,
+      });
+    };
     const refresh = (done: any) => {
       loadingStatus.value = true;
       const args = {
@@ -136,6 +142,7 @@ const LPDetailListView = defineComponent({
       profileName,
       titleParam,
       router,
+      back,
     };
   },
 });

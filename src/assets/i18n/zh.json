@@ -67,7 +67,8 @@
     "finished": "已扫完",
     "success": "成功",
     "info": "信息",
-    "error": "错误"
+    "error": "错误",
+    "delete_dialog_message": "确定要删除吗?"
   },
   "login": {
     "login": "登录",
@@ -105,6 +106,7 @@
     "logout_promot": "确认登出吗?"
   },
   "profile": {
+    "profiles": "Profiles",
     "profile": "用户Profile",
     "sync_complete": "同步完成!",
     "sync_profile": "同步Profile",

@@ -64,7 +64,8 @@
     "ok": "نعم",
     "no_record": "لا يوجد سجلات!",
     "uploaded": "تم الرفع",
-    "finished": "انتهى"
+    "finished": "انتهى",
+    "delete_dialog_message": "هل أنت متأكد من حذف ذلك؟"
   },
   "login": {
     "login": "يكمل",
@@ -102,6 +103,7 @@
     "logout_promot": "هل أنت متأكد من تسجيل الخروج؟"
   },
   "profile": {
+    "profiles": "Profiles",
     "profile": "صفحة الزبون الشخصية",
     "sync_complete": "مزامنة الانتهاء!",
     "sync_profile": "المزامنة",

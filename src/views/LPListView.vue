@@ -3,10 +3,11 @@
   <div class="wrapper">
     <common-header-component
       :titles="[$t('lp.lp_files')]"
-      :icons="['home', 'search', 'sync']"
+      :icons="['back', 'search', 'home']"
       @onHome="() => router.push('/home')"
       @onSync="refresh(void 0)"
       v-model:searchValue="search"
+      @onBack="back"
     />
     <div class="page-content">
       <q-scroll-area

@@ -67,7 +67,8 @@
     "finished": "Finished",
     "success": "Success",
     "info": "Info",
-    "error": "Error"
+    "error": "Error",
+    "delete_dialog_message": "Are you sure to delete it?"
   },
   "login": {
     "login": "Continue",
@@ -105,6 +106,7 @@
     "logout_promot": "Are you sure to logout?"
   },
   "profile": {
+    "profiles": "Profiles",
     "profile": "Client Profile",
     "sync_complete": "Synchronize completed!",
     "sync_profile": "Sync Profile",
