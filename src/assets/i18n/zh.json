@@ -107,11 +107,14 @@
     "logout_promot": "确认登出吗?"
   },
   "profile": {
+    "profiles": "Profiles",
     "profile": "用户Profile",
     "sync_complete": "同步完成!",
     "sync_profile": "同步Profile",
     "sync_latest": "请同步最新的profile",
-    "profile_text": "Profile"
+    "profile_text": "Profile",
+    "delete_dialog_message": "确定要删除这些Profiles吗?",
+    "home_dialog_message":"返回主页?"
   },
   "lp": {
     "lp_search": "搜索LP",
@@ -124,6 +127,7 @@
     "total": "总数",
     "start_scan": "开始扫描",
     "lp_list": "LP列表",
+    "lp_files": "LP文件",
     "lp_detail_list": "LP列表详情"
   },
   "continue": {

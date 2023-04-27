@@ -102,11 +102,14 @@
     "logout_promot": "هل أنت متأكد من تسجيل الخروج؟"
   },
   "profile": {
+    "profiles": "مظهر",
     "profile": "صفحة الزبون الشخصية",
     "sync_complete": "مزامنة الانتهاء!",
     "sync_profile": "المزامنة",
     "sync_latest": "يرجى مزامنة أحدث الملفات الشخصية",
-    "profile_text": "حساب تعريفي"
+    "profile_text": "حساب تعريفي",
+    "delete_dialog_message": "حذف ملفات التعريف المحددة?",
+    "home_dialog_message":"العوده للصفحة الرئيسية؟?"
   },
   "lp": {
     "lp_search": "بحث LP",
@@ -119,6 +122,7 @@
     "total": "المجموع",
     "start_scan": "ابدأ فحص معرف الكرتون",
     "lp_list": "LP قائمة",
+    "lp_files": "LP Files",
     "lp_detail_list": "قائمة التفاصيل LP"
   },
   "continue": {

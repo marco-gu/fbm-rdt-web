@@ -107,11 +107,14 @@
     "logout_promot": "Are you sure to logout?"
   },
   "profile": {
+    "profiles": "Profiles",
     "profile": "Client Profile",
     "sync_complete": "Synchronize completed!",
     "sync_profile": "Sync Profile",
     "sync_latest": "Please synchronize the latest profiles",
-    "profile_text": "Profile"
+    "profile_text": "Profile",
+    "delete_dialog_message": "Delete the selected profiles?",
+    "home_dialog_message":"Return to Home page?"
   },
   "lp": {
     "lp_search": "LP Search",
@@ -124,6 +127,7 @@
     "total": "Total",
     "start_scan": "Start Scan Carton ID",
     "lp_list": "LP List",
+    "lp_files": "LP Files",
     "lp_detail_list": "LP Detail List"
   },
   "continue": {

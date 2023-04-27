@@ -6,6 +6,7 @@
       @onHome="() => router.push('/home')"
       @onExpand="onExpand()"
       v-model:searchValue="search"
+      @onSearch="onSearch"
     />
     <div class="page-content">
       <!-- <div class="search">
@@ -257,6 +258,7 @@ const MyJobsView = defineComponent({
     };
     watch(search, () => {
       if (search.value) {
+        console.log(search.value);
         if (search.value.length >= 4) {
           input.value.blur();
           onSearch();

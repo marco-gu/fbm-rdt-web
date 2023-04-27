@@ -4,11 +4,11 @@
     <!-- <header-component :titleParam="titleParam" :backFunctionParam="back">
     </header-component> -->
     <common-header-component
-      :titles="[$t('profile.profile')]"
-      :icons="!isEditMode ? ['home', 'search', 'sync'] : ['home', 'sync']"
-      @onHome="() => router.push('/home')"
-      @onSync="!isEditMode ? refresh(void 0) : (isEditMode = false)"
+      :titles="[$t('profile.profiles')]"
+      :icons="!isEditMode ? ['back', 'search', 'home'] : ['back', 'home']"
+      @onHome="home"
       v-model:searchValue="search"
+      @onBack="back"
     />
     <div class="page-content">
       <!-- <div class="search" v-show="!isEditMode">
@@ -78,22 +78,23 @@
       </q-scroll-area>
     </div>
     <div class="bottom-coherent-button" id="bottom-button" v-show="isEditMode">
-      <q-btn
+      <!-- <q-btn
         no-caps
         class="full-width"
         flat
         push
         :label="$t('common.cancel')"
         @click="cancelEditMode"
-      />
-      <q-separator vertical inset color="white" />
+      /> -->
+      <!-- <q-separator vertical inset color="white" /> -->
       <q-btn
         no-caps
         class="full-width"
         flat
         push
         :label="$t('common.delete')"
-        @click="deleteProfile"
+        :disable="isDeleteButtonDisabled"
+        @click="showDeleteDialog = true"
       />
     </div>
     <PopupComponent
@@ -117,6 +118,44 @@
         </div>
       </div>
     </q-dialog>
+    <q-dialog v-model="showHomeDialog" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("common.confirm") }}
+          <q-icon name="close" v-close-popup />
+        </div>
+        <div class="dialog-container__content">
+          {{ $t("profile.home_dialog_message") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button cancel" v-close-popup>
+            {{ $t("common.cancel") }}
+          </button>
+          <button class="dialog-button confirm" @click="home">
+            {{ $t("common.confirm") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
+    <q-dialog v-model="showDeleteDialog" persistent>
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("common.confirm") }}
+          <q-icon name="close" v-close-popup />
+        </div>
+        <div class="dialog-container__content">
+          {{ $t("profile.delete_dialog_message") }}
+        </div>
+        <div class="dialog-container__button">
+          <button class="dialog-button cancel" v-close-popup>
+            {{ $t("common.cancel") }}
+          </button>
+          <button class="dialog-button confirm" @click="deleteProfile">
+            {{ $t("common.delete") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -125,7 +164,7 @@ import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { ProfileMaster } from "../models/profile";
-import { defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref, watch } from "vue";
 import {
   AndroidResponse,
   AndroidResponseStatus,
@@ -142,6 +181,7 @@ const ProfileManagementView = defineComponent({
   },
   setup() {
     // const $q = useQuasar();
+
     const router = useRouter();
     const i18n = useI18n();
     const search = ref("");
@@ -155,6 +195,8 @@ const ProfileManagementView = defineComponent({
     const msg = ref("");
     const popupVisible = ref(false);
     const loadingStatus = ref(false);
+    const showDeleteDialog = ref(false);
+    const showHomeDialog = ref(false);
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -188,13 +230,26 @@ const ProfileManagementView = defineComponent({
         }
       });
     };
+    const home = () => {
+      if (isEditMode.value && !showHomeDialog.value) {
+        showHomeDialog.value = true;
+      } else {
+        router.push({
+          path: "/home",
+        });
+      }
+    };
     const back = () => {
-      router.push({
-        path: "/home",
-        query: {
-          leftDrawerOpen: "true",
-        },
-      });
+      if (isEditMode.value) {
+        isEditMode.value = false;
+      } else {
+        router.push({
+          path: "/home",
+          query: {
+            leftDrawerOpen: "true",
+          },
+        });
+      }
     };
     const refresh = (done: any) => {
       loadingStatus.value = true;
@@ -271,6 +326,7 @@ const ProfileManagementView = defineComponent({
             popupVisible.value = true;
             msg.value = i18n.t("messageCode." + androidResponse.messageCode);
           }
+          showDeleteDialog.value = false;
         });
       } else {
         type.value = "error";
@@ -283,9 +339,14 @@ const ProfileManagementView = defineComponent({
     const cancelEditMode = () => {
       isEditMode.value = false;
     };
+    const isDeleteButtonDisabled = computed(() => {
+      return !profileListDisplay.value.some((item: any) => item["isSelected"]);
+    });
     return {
       cancelEditMode,
+      showDeleteDialog,
       back,
+      home,
       deleteProfile,
       dialogVisible,
       formatDate,
@@ -301,6 +362,8 @@ const ProfileManagementView = defineComponent({
       msg,
       loadingStatus,
       router,
+      isDeleteButtonDisabled,
+      showHomeDialog,
     };
   },
 });

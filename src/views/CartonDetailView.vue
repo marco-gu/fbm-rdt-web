@@ -1,42 +1,44 @@
 <template>
   <div class="wrapper">
-    <header-component
-      :titleParam="titleParam"
-      :backFunctionParam="closeCartonDetail"
-      :homeVisibleParam="false"
-    >
-    </header-component>
+    <common-header-component
+      :titles="[titleParam]"
+      :icons="['back', 'home']"
+      @onHome="() => (backHomeDialogVisible = true)"
+      @onBack="closeCartonDetail"
+    />
     <div class="page-content">
-      <div class="sub-title-card">
-        {{ cartonID }}
-      </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
           <div v-for="(item, i) in pageViews" :key="i">
             <div v-if="item.display == 1">
-              <div class="card-item-input">
-                <div>
-                  {{ item.displayFieldName }}
+              <div class="field">
+                <div class="input-title">
+                  <span class="text">{{ item.displayFieldName }}</span>
                 </div>
                 <q-input
-                  class="card-item-input-field no-shadow"
-                  :input-style="{ fontSize: '15px' }"
-                  input-class="text-right"
+                  class="input-field"
+                  input-class="text-left"
                   ref="inputRef"
                   v-model="item.model"
+                  @keyup.enter="onInputKeyUp($event, i)"
                   @paste="validPaste($event, i)"
                   :maxlength="item.length"
                   lazy-rules
                   :rules="[item.valid]"
                   borderless
-                  dense
                 >
-                  <template v-slot:append>
+                  <template v-if="item.scan == 1" v-slot:append>
                     <q-avatar
-                      v-if="item.scan == 1"
+                      class="btn-img"
                       @click="scan(item.fieldName, $event)"
                     >
-                      <q-img no-transition :src="inputScanIcon" width="16px" />
+                      <q-img
+                        :color="secondary"
+                        no-transition
+                        no-spinner
+                        :src="inputScanIcon"
+                        width="12px"
+                      />
                     </q-avatar>
                   </template>
                 </q-input>
@@ -52,15 +54,6 @@
         class="full-width"
         flat
         push
-        :label="$t('carton.carton_detail_cancel')"
-        @click="back"
-      />
-      <q-separator vertical inset color="white" />
-      <q-btn
-        no-caps
-        class="full-width"
-        flat
-        push
         :label="$t('carton.carton_detail_save')"
         @click="onSubmit"
       />
@@ -71,10 +64,35 @@
       :type="type"
       @close="popupVisible = false"
     ></PopupComponent>
+    <q-dialog
+      class="back-home-dialog"
+      v-model="backHomeDialogVisible"
+      persistent
+    >
+      <div class="dialog-container">
+        <div class="dialog-container__content">
+          {{ $t("common.return_home_dialog") }}
+        </div>
+        <div class="dialog-container__button">
+          <button
+            class="dialog-button cancel"
+            @click="() => (backHomeDialogVisible = false)"
+          >
+            {{ $t("common.cancel") }}
+          </button>
+          <button
+            class="dialog-button confirm"
+            @click="() => router.push('/home')"
+          >
+            {{ $t("common.confirm") }}
+          </button>
+        </div>
+      </div>
+    </q-dialog>
   </div>
 </template>
 <script lang="ts">
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import {
   ProfileCartonIndividualLevel,
@@ -90,32 +108,35 @@ import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
 import bridge from "dsbridge";
 import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import inputScan from "../assets/images/input_scan.svg";
 const CartonDetailView = defineComponent({
   components: {
-    HeaderComponent,
+    CommonHeaderComponent,
     PopupComponent,
   },
   setup() {
-    const i18n = useI18n();
-    const pageViews = ref([] as ViewDisplayAttribute[]);
+    const backHomeDialogVisible = ref(false);
     const cartonID = ref("99999999999999999999");
+    const i18n = useI18n();
     const inputRef = ref(null);
-    const myForm = ref();
-    let isCamera = true;
-    const titleParam = i18n.t("carton.carton_detail_header");
-    const route = useRoute();
     const inputScanIcon = inputScan;
-    const taskID = ref("");
-    const type = ref("");
-    const msg = ref("");
-    const popupVisible = ref(false);
     const inputScanType = ref("CartonDetail");
+    let isCamera = true;
+    const msg = ref("");
+    const myForm = ref();
+    const pageViews = ref([] as ViewDisplayAttribute[]);
+    const popupVisible = ref(false);
+    const taskID = ref("");
+    const titleParam = ref("");
+    const type = ref("");
+    const route = useRoute();
+    const router = useRouter();
     bridge.register("getCartonDetailParam", (res: string) => {
       const param = JSON.parse(res);
       cartonID.value = param.cartonID;
       taskID.value = param.taskID;
+      titleParam.value = `${param.cartonID}: Detail`;
     });
     bridge.register("closeCartonDetail", () => {
       closeCartonDetail();
@@ -144,7 +165,6 @@ const CartonDetailView = defineComponent({
         profileName: profileName,
         scanType: scanType,
       };
-
       bridge.call("getCartonDetailProfile", args, (res: any) => {
         const cartonDetailProfiles = JSON.parse(
           res
@@ -200,14 +220,10 @@ const CartonDetailView = defineComponent({
         // Step 2: Check input all required field
         myForm.value.validate().then((success: any) => {
           if (success) {
-            // const message = i18n.t("messageCode.E93-08-0001");
-            // popupErrorMsg($q, message);
             type.value = "error";
             popupVisible.value = true;
             msg.value = i18n.t("messageCode.E93-08-0001");
           } else {
-            // const message = i18n.t("messageCode.E93-08-0002");
-            // popupErrorMsg($q, message);
             type.value = "error";
             popupVisible.value = true;
             msg.value = i18n.t("messageCode.E93-08-0002");
@@ -245,20 +261,38 @@ const CartonDetailView = defineComponent({
         event.stopPropagation();
       }
     };
+    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
+      if (event.code === "Enter" || event.which === 13) {
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (i === index) {
+            const inputText = t.$props.modelValue;
+            t.validate(inputText).then(() => {
+              if (param.length > index + 1) {
+                param[index + 1].focus();
+              }
+            });
+          }
+        });
+      }
+    };
     return {
+      backHomeDialogVisible,
       cartonID,
-      pageViews,
       closeCartonDetail,
-      onSubmit,
       inputRef,
-      validPaste,
-      scan,
-      myForm,
-      titleParam,
       inputScanIcon,
-      type,
-      popupVisible,
       msg,
+      myForm,
+      onInputKeyUp,
+      onSubmit,
+      pageViews,
+      popupVisible,
+      router,
+      scan,
+      titleParam,
+      type,
+      validPaste,
     };
   },
 });

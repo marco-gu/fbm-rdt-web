@@ -1,55 +1,26 @@
 <template>
+  <!-- <LoadingComponent :visible="loadingStatus"> </LoadingComponent> -->
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backFunctionParam="back">
-    </header-component> -->
     <common-header-component
-      :titles="[$t('lp.lp_list')]"
-      :icons="['home', 'search', 'sync']"
+      :titles="[$t('lp.lp_files')]"
+      :icons="['back', 'search', 'home']"
       @onHome="() => router.push('/home')"
       @onSync="refresh(void 0)"
       v-model:searchValue="search"
+      @onBack="back"
     />
     <div class="page-content">
-      <!-- <div class="search" id="search">
-        <q-input
-          ref="input"
-          v-model="search"
-          outlined
-          dense
-          :placeholder="$t('common.search')"
-        >
-          <template v-slot:prepend>
-            <q-icon name="search" @click="onSearch" />
-          </template>
-          <template v-slot:append>
-            <q-icon name="close" @click="onClear" class="cursor-pointer" />
-          </template>
-        </q-input>
-      </div> -->
-      <template v-if="loading">
-        <!-- <div class="row justify-center q-my-md"> -->
-        <div
-          style="
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-          "
-        >
-          <q-spinner-dots color="primary" size="40px" />
-        </div>
-      </template>
       <q-scroll-area
         ref="myScrollArea"
         id="scroll-area"
         :thumb-style="{ width: '0px' }"
       >
-        <q-pull-to-refresh @refresh="refresh">
-          <template v-if="noRecord">
-            <div class="no-record">{{ $t("common.no_record") }}</div>
-          </template>
-          <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+        <template v-if="noRecord">
+          <div class="no-record">{{ $t("common.no_record") }}</div>
+        </template>
+
+        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+          <q-pull-to-refresh @refresh="refresh">
             <div
               v-for="(item, index) in taskListDisplay"
               :key="index"
@@ -77,34 +48,14 @@
                   {{ item.createDatetime }}
                 </div>
               </div>
-
-              <!-- <q-item class="card-item">
-                <div class="card-item-content">
-                  <q-item-section class="card-item-labels">
-                    <div class="card-item-label-content">
-                      <q-item-label>{{ item.taskId }}</q-item-label>
-                      <q-item-label
-                        >{{ $t("lp.total") }}:
-                        {{ item.allCartonNumber }}</q-item-label
-                      >
-                      <q-item-label class="card-item-date-text">{{
-                        item.updateDatetime
-                      }}</q-item-label>
-                    </div>
-                  </q-item-section>
-                </div>
-                <q-item-section side>
-                  <q-icon name="chevron_right" color="black" />
-                </q-item-section>
-              </q-item> -->
             </div>
-            <template v-slot:loading>
-              <div class="row justify-center q-my-md">
-                <q-spinner-dots color="primary" size="40px" />
-              </div>
-            </template>
-          </q-infinite-scroll>
-        </q-pull-to-refresh>
+          </q-pull-to-refresh>
+          <template v-slot:loading>
+            <div class="row justify-center q-my-md">
+              <q-spinner-dots color="primary" size="40px" />
+            </div>
+          </template>
+        </q-infinite-scroll>
       </q-scroll-area>
     </div>
   </div>
@@ -116,9 +67,11 @@ import { useRouter } from "vue-router";
 import { TaskLPList } from "../models/profile";
 import { useI18n } from "vue-i18n";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 const LPListView = defineComponent({
   components: {
     CommonHeaderComponent,
+    // LoadingComponent,
   },
   setup() {
     const router = useRouter();
@@ -131,17 +84,17 @@ const LPListView = defineComponent({
     const taskListInitResult = ref([] as TaskLPList[]);
     const myInfiniteScroll = ref();
     const myScrollArea = ref();
-    const loading = ref(false);
+
     const noRecord = ref(false);
     const retrieveIndex = ref(0);
     const searchIndex = ref(0);
     const onSearchMode = ref(false);
     const pageSlice = 10;
-    const isRefresh = ref(false);
+    const loadingStatus = ref(false);
     onBeforeMount(() => {
-      // loading.value = true;
+      loadingStatus.value = true;
       bridge.call("fetchTaskForLPList", null, (res: string) => {
-        loading.value = false;
+        loadingStatus.value = false;
         composeTaskListResult(res);
       });
     });
@@ -152,7 +105,7 @@ const LPListView = defineComponent({
     });
     const composeTaskListResult = (res: string) => {
       taskListInitResult.value = JSON.parse(res) as TaskLPList[];
-      sortTaskList(taskListInitResult.value);
+      //sortTaskList(taskListInitResult.value);
       if (taskListInitResult.value.length == 0) {
         noRecord.value = true;
       } else {
@@ -168,7 +121,7 @@ const LPListView = defineComponent({
     };
     const composeTaskListSearchResult = (res: string) => {
       taskListSearchResult.value = JSON.parse(res) as TaskLPList[];
-      sortTaskList(taskListSearchResult.value);
+      //sortTaskList(taskListSearchResult.value);
       if (taskListSearchResult.value.length == 0) {
         noRecord.value = true;
       } else {
@@ -187,7 +140,7 @@ const LPListView = defineComponent({
       }
     };
     const refresh = (done: any) => {
-      isRefresh.value = true;
+      loadingStatus.value = true;
       myInfiniteScroll.value.resume();
       if (onSearchMode.value) {
         searchIndex.value = 0;
@@ -196,20 +149,20 @@ const LPListView = defineComponent({
         };
         bridge.call("searchTaskForLPList", args, (res: string) => {
           composeTaskListSearchResult(res);
-          isRefresh.value = false;
+          loadingStatus.value = false;
           done();
         });
       } else {
         retrieveIndex.value = 0;
         bridge.call("fetchTaskForLPList", null, (res: string) => {
           composeTaskListResult(res);
-          isRefresh.value = false;
+          loadingStatus.value = false;
           done();
         });
       }
     };
     const onLoad = (index: any, done: any) => {
-      if (!isRefresh.value) {
+      if (!loadingStatus.value) {
         if (onSearchMode.value) {
           const start = searchIndex.value * pageSlice;
           const end = (searchIndex.value + 1) * pageSlice;
@@ -293,16 +246,18 @@ const LPListView = defineComponent({
       }
       myScrollArea.value.setScrollPosition("vertical", 0);
     };
-    const sortTaskList = (taskList: any[]) => {
-      taskList.sort((a: any, b: any) => {
-        return b.updateDatetime.localeCompare(a.updateDatetime);
-      });
-    };
+    // const sortTaskList = (taskList: any[]) => {
+    //   taskList.sort((a: any, b: any) => {
+    //     return b.updateDatetime.localeCompare(a.updateDatetime);
+    //   });
+    // };
     const onClickItem = (item: any) => {
       router.push({
         path: "/lpDetailList",
         query: {
           taskId: item.taskId,
+          profileName: item.profileName,
+          so: item.so,
         },
       });
     };
@@ -317,7 +272,6 @@ const LPListView = defineComponent({
     return {
       back,
       input,
-      loading,
       myInfiniteScroll,
       myScrollArea,
       noRecord,
@@ -329,6 +283,7 @@ const LPListView = defineComponent({
       onClickItem,
       onLoad,
       onSearch,
+      loadingStatus,
       router,
     };
   },
