@@ -102,14 +102,14 @@
     "logout_promot": "Er du sikker på at logge ud?"
   },
   "profile": {
-    "profiles": "Profiles",
+    "profiles": "Profiler",
     "profile": "Klientprofil",
     "sync_complete": "Synkroniser afsluttet!",
     "sync_profile": "Synkroniseringsprofil",
     "sync_latest": "Synkroniser de nyeste profiler",
     "profile_text": "Profil",
-    "delete_dialog_message": "Delete the selected profiles?",
-    "home_dialog_message":"Return to Home page?"
+    "delete_dialog_message": "Slet de valgte profiler?",
+    "home_dialog_message":"Vend tilbage til startsiden?"
   },
   "lp": {
     "lp_search": "LP -søgning",

@@ -102,14 +102,14 @@
     "logout_promot": "هل أنت متأكد من تسجيل الخروج؟"
   },
   "profile": {
-    "profiles": "Profiles",
+    "profiles": "مظهر",
     "profile": "صفحة الزبون الشخصية",
     "sync_complete": "مزامنة الانتهاء!",
     "sync_profile": "المزامنة",
     "sync_latest": "يرجى مزامنة أحدث الملفات الشخصية",
     "profile_text": "حساب تعريفي",
-    "delete_dialog_message": "Delete the selected profiles?",
-    "home_dialog_message":"Return to Home page?"
+    "delete_dialog_message": "حذف ملفات التعريف المحددة?",
+    "home_dialog_message":"العوده للصفحة الرئيسية؟?"
   },
   "lp": {
     "lp_search": "بحث LP",
