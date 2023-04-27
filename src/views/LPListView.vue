@@ -105,7 +105,7 @@ const LPListView = defineComponent({
     });
     const composeTaskListResult = (res: string) => {
       taskListInitResult.value = JSON.parse(res) as TaskLPList[];
-      sortTaskList(taskListInitResult.value);
+      //sortTaskList(taskListInitResult.value);
       if (taskListInitResult.value.length == 0) {
         noRecord.value = true;
       } else {
@@ -121,7 +121,7 @@ const LPListView = defineComponent({
     };
     const composeTaskListSearchResult = (res: string) => {
       taskListSearchResult.value = JSON.parse(res) as TaskLPList[];
-      sortTaskList(taskListSearchResult.value);
+      //sortTaskList(taskListSearchResult.value);
       if (taskListSearchResult.value.length == 0) {
         noRecord.value = true;
       } else {
@@ -246,11 +246,11 @@ const LPListView = defineComponent({
       }
       myScrollArea.value.setScrollPosition("vertical", 0);
     };
-    const sortTaskList = (taskList: any[]) => {
-      taskList.sort((a: any, b: any) => {
-        return b.updateDatetime.localeCompare(a.updateDatetime);
-      });
-    };
+    // const sortTaskList = (taskList: any[]) => {
+    //   taskList.sort((a: any, b: any) => {
+    //     return b.updateDatetime.localeCompare(a.updateDatetime);
+    //   });
+    // };
     const onClickItem = (item: any) => {
       router.push({
         path: "/lpDetailList",
