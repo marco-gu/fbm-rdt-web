@@ -1,4 +1,5 @@
 import { CommonState } from "./module/common.module";
+import { DataMgmtState } from "./module/dataMgmt.module";
 import { LanguageState } from "./module/language.module";
 import { ProfileState } from "./module/profile.module";
 import { ScreenState } from "./module/screen.module";
@@ -12,4 +13,5 @@ export interface State extends RootState {
   languageModule: LanguageState;
   screenModule: ScreenState;
   commonModule: CommonState;
+  dataMgmtModule: DataMgmtState;
 }

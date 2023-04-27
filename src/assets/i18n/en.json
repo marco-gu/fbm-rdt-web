@@ -66,8 +66,10 @@
     "unfinished": "Unfinished",
     "finished": "Finished",
     "success": "Success",
-    "info": "Info",
-    "error": "Error"
+    "info": "Information",
+    "error": "Error",
+    "return_home": "Return to Home page",
+    "edit": "Edit"
   },
   "login": {
     "login": "Continue",
@@ -155,7 +157,8 @@
     "no_record_selected": "No record selected!",
     "upload_dialog_message": "Are you sure to upload?",
     "upload_carton_matched": "Scanned CartonIDs are all matched!",
-    "upload_carton_partially": "Scanned CartonIDs are partially matched!"
+    "upload_carton_partially": "Scanned CartonIDs are partially matched!",
+    "add": "Add"
   },
   "setting": {
     "setting_header": "Settings",

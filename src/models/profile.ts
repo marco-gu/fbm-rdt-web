@@ -181,6 +181,7 @@ export type Carton = {
   updateUser: string;
   updateDatetime: string;
   expected: boolean;
+  scanDate: string;
 };
 
 export interface ScanDataManagement {

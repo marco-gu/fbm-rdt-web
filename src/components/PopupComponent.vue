@@ -14,8 +14,17 @@
         {{ prompt }}
       </div>
       <div class="dialog-container__button">
-        <button class="dialog-button confirm" @click="close">
-          {{ buttonLabel }}
+        <template v-if="dialogType == 'action'">
+          <button
+            class="dialog-button cancel"
+            style="margin-right: 10px"
+            @click="cancel"
+          >
+            {{ $t("common.cancel") }}
+          </button>
+        </template>
+        <button class="dialog-button confirm" @click="confirm">
+          {{ label }}
         </button>
       </div>
     </div>
@@ -30,10 +39,12 @@ enum DialogType {
   ERROR = "error",
   SUCCESS = "success",
   ALERT = "alert",
+  ACTION = "action",
 }
 enum DialogIconColor {
   GREEN = "green",
   RED = "red",
+  BLUE = "secondary",
 }
 const PopupComponent = defineComponent({
   props: {
@@ -52,11 +63,11 @@ const PopupComponent = defineComponent({
       type: String,
     },
   },
-  emits: ["close"],
+  emits: ["cancel", "close"],
   setup(props, context) {
     const router = useRouter();
     const { visible, message, messageCode, type } = toRefs(props);
-    const buttonLabel = ref("");
+    const label = ref("");
     const prompt = ref("");
     const i18n = useI18n();
     const iconName = ref("");
@@ -64,7 +75,12 @@ const PopupComponent = defineComponent({
     const title = ref("");
     const returnHome = ref(false);
     const persistent = ref(false);
-    const close = () => {
+    const dialogType = ref("");
+    const cancel = () => {
+      persistent.value = false;
+      context.emit("cancel");
+    };
+    const confirm = () => {
       persistent.value = false;
       if (returnHome.value) {
         router.push("/");
@@ -83,13 +99,20 @@ const PopupComponent = defineComponent({
               iconName.value = "check_circle";
               iconColor.value = DialogIconColor.GREEN;
               title.value = i18n.t("common.success");
-              buttonLabel.value = i18n.t("common.ok");
+              label.value = i18n.t("common.ok");
               break;
             case DialogType.INFO:
               iconName.value = "info";
               iconColor.value = DialogIconColor.GREEN;
               title.value = i18n.t("common.info");
-              buttonLabel.value = i18n.t("common.ok");
+              label.value = i18n.t("common.ok");
+              break;
+            case DialogType.ACTION:
+              iconName.value = "info";
+              iconColor.value = DialogIconColor.BLUE;
+              title.value = i18n.t("common.info");
+              label.value = i18n.t("common.ok");
+              dialogType.value = DialogType.ACTION;
               break;
             case DialogType.ERROR:
               iconName.value = "error_outline";
@@ -100,9 +123,9 @@ const PopupComponent = defineComponent({
                 messageCode.value == "E92-99-0004"
               ) {
                 returnHome.value = true;
-                buttonLabel.value = i18n.t("common.ok");
+                label.value = i18n.t("common.ok");
               } else {
-                buttonLabel.value = i18n.t("common.cancel");
+                label.value = i18n.t("common.cancel");
               }
               break;
           }
@@ -113,11 +136,13 @@ const PopupComponent = defineComponent({
     return {
       prompt,
       persistent,
-      buttonLabel,
+      label,
       iconName,
       title,
-      close,
+      confirm,
       iconColor,
+      dialogType,
+      cancel,
     };
   },
 });

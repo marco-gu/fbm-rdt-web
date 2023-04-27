@@ -78,36 +78,6 @@
                   </template>
                 </q-input>
               </div>
-              <!-- <div class="card-item-input">
-                <div>
-                  {{ item.displayFieldName }}
-                </div>
-                <q-input
-                  class="card-item-input-field no-shadow"
-                  :input-style="{ fontSize: '15px' }"
-                  input-class="text-right"
-                  ref="inputRef"
-                  :maxlength="item.length"
-                  lazy-rules
-                  :rules="[item.valid]"
-                  borderless
-                  dense
-                >
-                  <template v-slot:append>
-                    <q-avatar
-                      v-if="item.scan == 1"
-                      @click="scan(item.fieldName, $event)"
-                    >
-                      <q-img
-                        no-transition
-                        no-spinner
-                        :src="inputScanIcon"
-                        width="16px"
-                      />
-                    </q-avatar>
-                  </template>
-                </q-input>
-              </div> -->
             </div>
           </div>
         </q-form>

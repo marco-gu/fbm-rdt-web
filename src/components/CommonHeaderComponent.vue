@@ -13,9 +13,6 @@
       </template>
     </header>
     <div class="button-container">
-      <a v-if="icons.indexOf('home') > -1" class="icon" @click="onHomeClick"
-        ><i class="fa-solid fa-house"></i
-      ></a>
       <a v-if="icons.indexOf('back') > -1" class="icon" @click="onBackEmit"
         ><i class="fa-solid fa-arrow-left"></i>
       </a>
@@ -27,15 +24,24 @@
       ></a>
       <a v-if="icons.indexOf('empty') > -1" class="icon"> </a>
       <a v-if="icons.indexOf('empty-2') > -1" class="icon"> </a>
-      <a v-if="icons.indexOf('expand') > -1" class="icon" @click="onExpandClick"
+      <!-- <a v-if="icons.indexOf('expand') > -1" class="icon" @click="onExpandClick"
         ><i class="fa-solid fa-percent"></i
-      ></a>
+      ></a> -->
       <a v-if="icons.indexOf('sync') > -1" class="icon" @click="onSyncEmit"
         ><i class="fa-solid fa-rotate-right"></i>
       </a>
       <a v-if="icons.indexOf('clear') > -1" class="icon" @click="onClearEmit"
         ><i class="fa-solid fa-rotate-left"></i>
       </a>
+      <a v-if="icons.indexOf('detail') > -1" class="icon" @click="onDetailEmit"
+        ><i class="fa-solid fa-circle-info"></i
+      ></a>
+      <a v-if="icons.indexOf('mixed') > -1" class="icon" @click="onMixedEmit"
+        ><i class="fa-solid fa-circle-info"></i
+      ></a>
+      <a v-if="icons.indexOf('home') > -1" class="icon" @click="onHomeClick"
+        ><i class="fa-solid fa-house"></i
+      ></a>
     </div>
   </div>
   <div v-if="searchVisible" class="common-header--search-container">
@@ -72,6 +78,8 @@ const CommonHeaderComponent = defineComponent({
     "onSync",
     "onBack",
     "onClear",
+    "onDetail",
+    "onMixed",
   ],
   setup(props, context) {
     const searchVisible = ref(false);
@@ -94,6 +102,12 @@ const CommonHeaderComponent = defineComponent({
     const onClearEmit = () => {
       context.emit("onClear");
     };
+    const onDetailEmit = () => {
+      context.emit("onDetail");
+    };
+    const onMixedEmit = () => {
+      context.emit("onMixed");
+    };
     return {
       onHomeClick,
       onSearchEmit,
@@ -102,6 +116,8 @@ const CommonHeaderComponent = defineComponent({
       onSyncEmit,
       onBackEmit,
       onClearEmit,
+      onDetailEmit,
+      onMixedEmit,
     };
   },
 });

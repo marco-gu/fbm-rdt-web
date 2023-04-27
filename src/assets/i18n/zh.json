@@ -67,7 +67,9 @@
     "finished": "已扫完",
     "success": "成功",
     "info": "信息",
-    "error": "错误"
+    "error": "错误",
+    "return_home": "返回首页",
+    "edit": "编辑"
   },
   "login": {
     "login": "登录",
@@ -155,7 +157,8 @@
     "no_record_selected": "没有选择数据!",
     "upload_dialog_message": "确定要上传吗?",
     "upload_carton_matched": "CID全部匹配!",
-    "upload_carton_partially": "CID部分匹配!"
+    "upload_carton_partially": "CID部分匹配!",
+    "add": "增加"
   },
   "setting": {
     "setting_header": "设置",

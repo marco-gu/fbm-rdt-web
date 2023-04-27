@@ -211,7 +211,7 @@ export default {
       router.push("/profileManagement");
     };
     const goDataManagement = () => {
-      router.push("/dataManagement");
+      router.push("/dataMgmtList");
     };
 
     const logout = () => {

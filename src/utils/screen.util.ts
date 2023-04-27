@@ -4,6 +4,7 @@ export function softKeyPopUp(
   endEL: string
 ) {
   window.onresize = () => {
+    alert("onresize");
     const resizeHeight = window.innerHeight;
     const scrollArea = document.getElementById(startEL) as any;
     scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";

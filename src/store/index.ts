@@ -11,6 +11,7 @@ import languageModule from "./module/language.module";
 import RootState, { State } from "./state";
 import screenModule from "./module/screen.module";
 import commonModule from "./module/common.module";
+import dataMgmtModule from "./module/dataMgmt.module";
 
 const debug = process.env.NODE_ENV !== "product";
 export default createStore({
@@ -22,6 +23,7 @@ export default createStore({
     languageModule,
     screenModule,
     commonModule,
+    dataMgmtModule,
   },
   strict: debug,
   plugins: debug ? [createLogger()] : [],

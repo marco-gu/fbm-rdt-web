@@ -16,11 +16,12 @@ import CartonDetailView from "../views/CartonDetailView.vue";
 import ProfileManagementView from "../views/ProfileManagementView.vue";
 import LPListView from "../views/LPListView.vue";
 import LPDetailListView from "../views/LPDetailListView.vue";
-import DataManagementView from "../views/DataManagementView.vue";
-import DataMgmtGDView from "../views/DataMgmtGDView.vue";
-import DataMgmtGDEditView from "../views/DataMgmtGDEditView.vue";
-import DataManagementMixCartonView from "../views/DataManagementMixCartonView.vue";
-import DataManagementMixCartonListView from "../views/DataManagementMixCartonListView.vue";
+import DataMgmtListView from "../views/data-management/DataMgmtListView.vue";
+import DataMgmtDetail from "../views/data-management/DataMgmtDetail.vue";
+import DataMgmtCartonDetail from "../views/data-management/DataMgmtCartonDetail.vue";
+import DataMgmtSummary from "../views/data-management/DataMgmtSummary.vue";
+import DataMgmtCartonMixed from "../views/data-management/DataMgmtCartonMixed.vue";
+import DataMgmtCartonMixedDetail from "../views/data-management/DataMgmtCartonMixedDetail.vue";
 import MyJobsView from "../views/MyJobsView.vue";
 import ImageAccessView from "../views/ImageAccessView.vue";
 import CargoImageView from "../views/CargoImageView.vue";
@@ -122,29 +123,34 @@ const routes: Array<RouteRecordRaw> = [
     component: LPDetailListView,
   },
   {
-    path: "/dataManagement",
-    name: "dataManagement",
-    component: DataManagementView,
+    path: "/dataMgmtList",
+    name: "dataMgmtList",
+    component: DataMgmtListView,
   },
   {
-    path: "/dataMgmtGD",
-    name: "dataMgmtGD",
-    component: DataMgmtGDView,
+    path: "/dataManagementSummary",
+    name: "dataManagementSummary",
+    component: DataMgmtSummary,
   },
   {
-    path: "/dataMgmtGDEdit",
-    name: "dataMgmtGDEdit",
-    component: DataMgmtGDEditView,
+    path: "/dataMgmtDetail",
+    name: "dataMgmtDetail",
+    component: DataMgmtDetail,
   },
   {
-    path: "/dataManagementMixCarton",
-    name: "dataManagementMixCarton",
-    component: DataManagementMixCartonView,
+    path: "/dataMgmtCartonDetail",
+    name: "dataMgmtCartonDetail",
+    component: DataMgmtCartonDetail,
   },
   {
-    path: "/dataManagementMixCartonList",
-    name: "dataManagementMixCartonList",
-    component: DataManagementMixCartonListView,
+    path: "/dataMgmtCartonMixed",
+    name: "dataMgmtCartonMixed",
+    component: DataMgmtCartonMixed,
+  },
+  {
+    path: "/dataMgmtCartonMixedDetail",
+    name: "dataMgmtCartonMixedDetail",
+    component: DataMgmtCartonMixedDetail,
   },
   {
     path: "/continueJobs",
