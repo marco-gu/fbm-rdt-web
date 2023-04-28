@@ -1,22 +1,12 @@
 <template>
   <div class="wrapper">
-    <!-- <header-component
-      :titleParam="titleParam"
-      :backFunctionParam="closeMixCarton"
-      :homeVisibleParam="false"
-    >
-    </header-component> -->
     <common-header-component
-      :titles="[titleParam]"
-      :icons="['home', 'clear']"
-      @onHome="() => router.push('/home')"
-      @onClear="onClear()"
+      :titles="[`${cartonID}: ${$t('carton.item')}${itemCount}`]"
+      :icons="['back', 'home']"
+      @onHome="onHome"
+      @onBack="onBack"
     />
     <div class="page-content">
-      <div class="sub-title-card">
-        <div>{{ cartonID }}</div>
-        <div>{{ $t("carton.item_count") }}: {{ itemCount }}</div>
-      </div>
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
           <div v-for="(item, i) in pageViews" :key="i" class="container">
@@ -42,7 +32,7 @@
                       @click="scan(item.fieldName, $event)"
                     >
                       <q-img
-                        :color="secondary"
+                        color="secondary"
                         no-transition
                         no-spinner
                         :src="inputScanIcon"
@@ -52,38 +42,6 @@
                   </template>
                 </q-input>
               </div>
-              <!-- <div class="card-item-input">
-                <div>
-                  {{ item.displayFieldName }}
-                </div>
-                <q-input
-                  class="card-item-input-field no-shadow"
-                  :input-style="{ fontSize: '15px' }"
-                  input-class="text-right"
-                  ref="inputRef"
-                  v-model="item.model"
-                  @paste="validPaste($event, i)"
-                  :maxlength="item.length"
-                  lazy-rules
-                  :rules="[item.valid]"
-                  borderless
-                  dense
-                >
-                  <template v-slot:append>
-                    <q-avatar
-                      v-if="item.scan == 1"
-                      @click="scan(item.fieldName, $event)"
-                    >
-                      <q-img
-                        no-transition
-                        no-spinner
-                        :src="inputScanIcon"
-                        width="16px"
-                      />
-                    </q-avatar>
-                  </template>
-                </q-input>
-              </div> -->
             </div>
           </div>
         </q-form>
@@ -112,23 +70,9 @@
       :visible="popupVisible"
       :message="msg"
       :type="type"
-      @close="popupVisible = false"
+      @close="OnClose"
+      @cancel="popupVisible = false"
     ></PopupComponent>
-    <q-dialog v-model="dialogVisible" persistent>
-      <div class="dialog-container">
-        <div class="dialog-container__content">
-          {{ $t("carton.add_mix_carton") }}
-        </div>
-        <div class="dialog-container__button">
-          <button class="dialog-button cancel" @click="onClose">
-            {{ $t("carton.mix_carton_complete") }}
-          </button>
-          <button class="dialog-button confirm" @click="onConfirm">
-            {{ $t("carton.mix_carton_add") }}
-          </button>
-        </div>
-      </div>
-    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -148,7 +92,7 @@ import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
 import bridge from "dsbridge";
 import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import inputScan from "../assets/icon/compress-solid.svg";
 const MixCartonView = defineComponent({
   components: {
@@ -156,34 +100,63 @@ const MixCartonView = defineComponent({
     CommonHeaderComponent,
   },
   setup() {
-    const i18n = useI18n();
-    const pageViews = ref([] as ViewDisplayAttribute[]);
     const cartonID = ref("99999999999999999999");
-    const lastCartonID = ref("99999999999999999999");
-    const itemCount = ref(0);
-    const inputRef = ref(null);
-    const dialogVisible = ref(false);
-    const scanType = ref("");
     const completeMixCarton = ref(false);
-    const taskID = ref("");
-    const myForm = ref();
-    const titleParam = i18n.t("carton.mix_carton_header");
-    const route = useRoute();
-    let isCamera = true;
+    const i18n = useI18n();
+    const inputRef = ref(null);
     const inputScanIcon = inputScan;
-    const type = ref("");
-    const msg = ref("");
-    const popupVisible = ref(false);
     const inputScanType = ref("MixCarton");
+    const itemCount = ref(1);
+    const msg = ref("");
+    const myForm = ref();
+    const pageViews = ref([] as ViewDisplayAttribute[]);
+    const popupVisible = ref(false);
+    const pressHome = ref(false);
+    const route = useRoute();
+    const router = useRouter();
+    const scanType = ref("");
+    const taskID = ref("");
+    const type = ref("");
+    let isCamera = true;
     bridge.register("getMixCartonParam", (res: string) => {
       const mixCartonParam = JSON.parse(res);
       cartonID.value = mixCartonParam.cartonID;
       scanType.value = mixCartonParam.scanType;
       taskID.value = mixCartonParam.taskID;
-      if (lastCartonID.value != cartonID.value) {
-        itemCount.value = 0;
-        lastCartonID.value = cartonID.value;
-      }
+      bridge.call(
+        "fetchCartonProducts",
+        {
+          cartonId: cartonID.value,
+          taskId: taskID.value,
+          scanType: scanType.value,
+        },
+        (res) => {
+          const mixCartonItems = JSON.parse(res) as any[];
+          if (mixCartonItems.length > 0) {
+            router.push({
+              name: "mixCartonSummary",
+              params: {
+                id: route.params.id,
+                cartonID: cartonID.value,
+                taskID: taskID.value,
+                scanType: scanType.value,
+              },
+            });
+          } else {
+            router.push({
+              name: "mixCarton",
+              params: {
+                id: route.params.id,
+                from: "mixCartonSummary",
+                cartonID: cartonID.value,
+                taskID: taskID.value,
+                scanType: scanType.value,
+                itemCount: 1,
+              },
+            });
+          }
+        }
+      );
     });
     bridge.register("getScanResult", (res: string) => {
       const param = inputRef.value as any;
@@ -201,9 +174,9 @@ const MixCartonView = defineComponent({
         }
       });
     });
-    bridge.register("closeMixCarton", () => {
-      closeMixCarton();
-    });
+    // bridge.register("closeMixCarton", () => {
+    //   closeMixCarton();
+    // });
     onBeforeMount(() => {
       const param = route.params.id as any;
       const profileName = param.substring(0, param.indexOf("&"));
@@ -224,11 +197,24 @@ const MixCartonView = defineComponent({
       });
     });
     onMounted(() => {
-      // calculate scroll area height
       calScrollAreaWithBottom("scroll-area", "bottom-button");
-      // hide bottom button if soft key up
       softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
+      arrangeRouteParams();
     });
+    const arrangeRouteParams = () => {
+      if (route.params.cartonID) {
+        cartonID.value = route.params.cartonID as string;
+      }
+      if (route.params.taskID) {
+        taskID.value = route.params.taskID as string;
+      }
+      if (route.params.scanType) {
+        scanType.value = route.params.scanType as string;
+      }
+      if (route.params.itemCount) {
+        itemCount.value = parseInt(route.params.itemCount as string);
+      }
+    };
     const complete = () => {
       completeMixCarton.value = true;
       onSubmit();
@@ -276,12 +262,18 @@ const MixCartonView = defineComponent({
           bridge.call("addMixCarton", apiParams, () => {
             if (completeMixCarton.value) {
               completeMixCarton.value = false;
-              bridge.call("completeMixCarton", null, () => {
-                itemCount.value++;
-                reset();
+              router.push({
+                name: "mixCartonSummary",
+                params: {
+                  id: route.params.id,
+                  cartonID: cartonID.value,
+                  taskID: taskID.value,
+                  scanType: scanType.value,
+                },
               });
             } else {
-              dialogVisible.value = true;
+              itemCount.value++;
+              reset();
             }
           });
         }
@@ -297,9 +289,9 @@ const MixCartonView = defineComponent({
           }
         });
         if (!isIncludeMandatory) {
-          bridge.call("completeMixCarton", null, () => {
-            reset();
-          });
+          // bridge.call("completeMixCarton", null, () => {
+          //   reset();
+          // });
         } else {
           // Step 2: Check input all required field
           myForm.value.validate().then((success: any) => {
@@ -315,9 +307,9 @@ const MixCartonView = defineComponent({
           });
         }
       } else {
-        bridge.call("completeMixCarton", null, () => {
-          reset();
-        });
+        // bridge.call("completeMixCarton", null, () => {
+        //   reset();
+        // });
       }
     };
     const validPaste = (event: any, index: number) => {
@@ -325,46 +317,52 @@ const MixCartonView = defineComponent({
     };
     const multiWatchSources = [pageViews.value];
     toUpperCaseElementInput(multiWatchSources);
-    const onConfirm = () => {
-      dialogVisible.value = false;
-      itemCount.value++;
-      reset();
-    };
-    const onClose = () => {
-      dialogVisible.value = false;
-      bridge.call("completeMixCarton", null, () => {
-        itemCount.value++;
-        reset();
+    const onBack = () => {
+      router.push({
+        name: "mixCartonSummary",
+        params: {
+          id: route.params.id,
+          cartonID: cartonID.value,
+          taskID: taskID.value,
+          scanType: scanType.value,
+        },
       });
     };
+    const OnClose = () => {
+      popupVisible.value = false;
+      if (pressHome.value) {
+        router.push("/home");
+      }
+    };
+    const onHome = () => {
+      pressHome.value = true;
+      popupVisible.value = true;
+      type.value = "action";
+      msg.value = i18n.t("common.return_home");
+    };
     return {
-      onClose,
-      onConfirm,
-      onSubmit,
-      complete,
-      pageViews,
-      itemCount,
       cartonID,
+      complete,
       inputRef,
-      closeMixCarton,
-      validPaste,
-      scan,
-      dialogVisible,
-      myForm,
-      titleParam,
       inputScanIcon,
-      type,
-      popupVisible,
+      itemCount,
       msg,
+      myForm,
+      onBack,
+      OnClose,
+      onSubmit,
+      onHome,
+      pageViews,
+      popupVisible,
+      scan,
+      type,
+      validPaste,
     };
   },
 });
 export default MixCartonView;
 </script>
 <style lang="scss" scoped>
-.sub-title-card {
-  flex-direction: column;
-}
 .container {
   margin: 0 auto 10px;
   width: calc(100% - 46px);

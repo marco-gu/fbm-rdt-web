@@ -69,7 +69,9 @@
     "info": "信息",
     "error": "错误",
     "return_home": "返回首页",
-    "edit": "编辑"
+    "edit": "编辑",
+    "add": "添加",
+    "detail": "细节"
   },
   "login": {
     "login": "登录",
@@ -194,6 +196,7 @@
     "mix_carton_add": "添加",
     "mix_carton_complete": "完成",
     "item_count": "箱子数量",
+    "item": "箱子",
     "add_mix_carton": "你想再添加另一个箱子信息吗?"
   },
   "main": {
