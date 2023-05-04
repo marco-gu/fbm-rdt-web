@@ -10,9 +10,10 @@
           ? $t('lp.lp_search')
           : $t('lp.offline_scan'),
       ]"
-      :icons="['home', 'clear']"
-      @onHome="() => router.push('/home')"
+      :icons="['back', 'clear', 'home']"
+      @onHome="homePopup = true"
       @onClear="onClear()"
+      @onBack="() => router.push(backUrlParam)"
     />
     <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
@@ -94,6 +95,18 @@
       :type="type"
       @close="OnClosePopUp"
     ></PopupComponent>
+    <PopupComponent
+      :visible="homePopup"
+      :message="$t('common.return_home')"
+      :type="'action'"
+      @close="
+        () => {
+          homePopup = false;
+          router.push('/home');
+        }
+      "
+      @cancel="homePopup = false"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -174,6 +187,8 @@ const LpSearchView = defineComponent({
     const nextPageParam = ref();
     const loadingStatus = ref(false);
     const options = ref([]);
+    const homePopup = ref(false);
+
     // const options = [i18n.t("common.receiving"), i18n.t("common.stuffing")];
     onMounted(() => {
       // calculate scroll area height
@@ -476,6 +491,7 @@ const LpSearchView = defineComponent({
       model: ref(null),
       options,
       onClear,
+      homePopup,
     };
   },
 });
