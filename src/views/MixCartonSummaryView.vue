@@ -16,14 +16,14 @@
         <template v-else>
           <div class="scroll-area">
             <div v-for="(item, index) in mixCartonListDisplay" :key="index">
-              <q-checkbox
-                class="checkbox"
-                v-model="item.isSelected"
-                checked-icon="app:checkboxOn"
-                unchecked-icon="app:checkboxOff"
-                v-show="isEditMode"
-              />
               <div class="common-card-2" v-touch-hold:1800="handleHold">
+                <q-checkbox
+                  class="checkbox"
+                  v-model="item.isSelected"
+                  checked-icon="app:checkboxOn"
+                  unchecked-icon="app:checkboxOff"
+                  v-show="isEditMode"
+                />
                 <div class="label mb-lg">
                   Item {{ index + 1 }}: {{ item.upc }}
                 </div>
@@ -36,15 +36,6 @@
     </div>
     <div class="bottom-coherent-button" id="bottom-button">
       <template v-if="isEditMode">
-        <q-btn
-          no-caps
-          class="full-width"
-          flat
-          push
-          :label="$t('common.cancel')"
-          @click="cancelEditMode"
-        />
-        <q-separator vertical inset color="white" />
         <q-btn
           no-caps
           class="full-width"
@@ -69,7 +60,8 @@
       :visible="popupVisible"
       :message="msg"
       :type="type"
-      @close="popupVisible = false"
+      @close="OnClose"
+      @cancel="popupVisible = false"
     ></PopupComponent>
   </div>
 </template>
@@ -115,8 +107,10 @@ const MixCartonSummaryView = defineComponent({
     watch(
       route,
       () => {
-        arrangeRouteParams();
-        fetchCartonProducts();
+        if (route.name === "mixCartonSummary") {
+          arrangeRouteParams();
+          fetchCartonProducts();
+        }
       },
       { deep: true }
     );
@@ -145,24 +139,36 @@ const MixCartonSummaryView = defineComponent({
         }
       );
     };
-    const cancelEditMode = () => {
-      isEditMode.value = false;
-    };
     const deleteMixCarton = () => {
       // TODO: deleteMixCarton
       console.log("MixCarton Summary deleteMixCarton");
+      let mixCartonList: any = [];
+      mixCartonListDisplay.value.forEach((item: any) => {
+        if (item["isSelected"]) {
+          mixCartonList.push(item.id);
+        }
+      });
+      if (mixCartonList.length > 0) {
+        // TODO: call JSApi to add delete function
+        alert(JSON.stringify(mixCartonList));
+      } else {
+        type.value = "error";
+        popupVisible.value = true;
+        msg.value = i18n.t("dataManagement.no_record_selected");
+      }
     };
     const handleHold = () => {
-      // TODO: edit mode
-      console.log("MixCarton Summary handleHold");
       mixCartonListDisplay.value.forEach((item: any) => {
         item["isSelected"] = false;
       });
       isEditMode.value = true;
     };
     const onBack = () => {
-      // TODO: back to scan page, bug check
-      bridge.call("completeMixCarton", null);
+      if (isEditMode.value) {
+        isEditMode.value = false;
+      } else {
+        bridge.call("completeMixCarton", null);
+      }
     };
     const onClickAdd = () => {
       router.push({
@@ -190,7 +196,6 @@ const MixCartonSummaryView = defineComponent({
       msg.value = i18n.t("common.return_home");
     };
     return {
-      cancelEditMode,
       cartonID,
       deleteMixCarton,
       handleHold,
