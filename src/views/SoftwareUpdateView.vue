@@ -11,14 +11,15 @@
       @onBack="back"
     />
     <div class="page-content" v-if="currentVersionCode < latestVersionCode">
-      <div class="setting-card-item">
+      <div class="setting-item">
         <div class="label">
           {{ $t("setting.latest_version_label") }}
         </div>
         <div class="item-value">Ver {{ latestVersionName }}</div>
         <div class="spacer"></div>
       </div>
-      <div class="setting-card-item">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item">
         <div class="label" style="text-align: left; white-space: pre-wrap">
           {{ latestVersionDetail }}
         </div>
@@ -26,7 +27,7 @@
       </div>
     </div>
     <div class="page-content" v-else>
-      <div class="setting-card-item">
+      <div class="setting-item">
         <div class="label">
           {{ $t("setting.already_latest_version_label") }}
         </div>
@@ -34,6 +35,7 @@
         <div class="spacer"></div>
       </div>
     </div>
+    <q-separator inset color="grey-3" />
     <div
       class="bottom-button"
       id="bottom-button"
