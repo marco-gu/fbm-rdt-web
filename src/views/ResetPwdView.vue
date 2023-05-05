@@ -1,7 +1,13 @@
 <template>
   <div class="wrapper">
-    <header-component :titleParam="titleParam" :backFunctionParam="back">
-    </header-component>
+    <!-- <header-component :titleParam="titleParam" :backFunctionParam="back">
+    </header-component> -->
+    <common-header-component
+      :titles="[$t('login.change_password')]"
+      :icons="['back', 'home']"
+      @onHome="home"
+      @onBack="back"
+    />
     <div class="setting-page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form @submit="onSubmit" ref="myForm">
@@ -121,10 +127,12 @@ import md5 from "md5";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { useI18n } from "vue-i18n";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 const ResetPwdView = defineComponent({
   components: {
-    HeaderComponent,
+    // HeaderComponent,
+    CommonHeaderComponent,
     PopupComponent,
   },
   setup() {

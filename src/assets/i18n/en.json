@@ -69,7 +69,9 @@
     "info": "Information",
     "error": "Error",
     "return_home": "Return to Home page",
-    "edit": "Edit"
+    "edit": "Edit",
+    "add": "Add",
+    "detail": "Detail"
   },
   "login": {
     "login": "Continue",
@@ -194,6 +196,7 @@
     "mix_carton_add": "Add",
     "mix_carton_complete": "Complete",
     "item_count": "Item count",
+    "item": "Item",
     "add_mix_carton": "Are you sure to add another Mix Item?"
   },
   "main": {

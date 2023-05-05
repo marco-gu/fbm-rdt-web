@@ -4,8 +4,9 @@
     </header-component> -->
     <common-header-component
       :titles="[profileName, $t('lp.scan')]"
-      :icons="['home', 'empty', 'empty-2']"
-      @onHome="() => router.push('/home')"
+      :icons="['back', 'home']"
+      @onBack="() => router.push(backUrlParam)"
+      @onHome="homePopup = true"
     />
     <div class="page-content">
       <div class="sub-title-card">
@@ -74,6 +75,18 @@
       /> -->
     </div>
   </div>
+  <PopupComponent
+    :visible="homePopup"
+    :message="$t('common.return_home')"
+    :type="'action'"
+    @close="
+      () => {
+        homePopup = false;
+        router.push('/home');
+      }
+    "
+    @cancel="homePopup = false"
+  />
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, Ref, ref } from "vue";
@@ -81,6 +94,7 @@ import { useRoute, useRouter } from "vue-router";
 import bridge from "dsbridge";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { useI18n } from "vue-i18n";
+import PopupComponent from "@/components/PopupComponent.vue";
 type ViewElement = {
   key: string;
   value: string;
@@ -88,6 +102,7 @@ type ViewElement = {
 const ScanView = defineComponent({
   components: {
     CommonHeaderComponent,
+    PopupComponent,
   },
   setup() {
     const router = useRouter();
@@ -104,6 +119,8 @@ const ScanView = defineComponent({
     const titleParam = i18n.t("lp.scan");
     const backUrlParam = "/lpSearch/online";
     const navTitleList: Ref<string[]> = ref([]);
+    const homePopup = ref(false);
+
     onMounted(() => {
       // calculate scroll area height if bottom button exist
       const bottom = document.getElementById("bottom-button") as any;
@@ -194,6 +211,7 @@ const ScanView = defineComponent({
       router,
       navTitleList,
       profileName,
+      homePopup,
     };
   },
 });

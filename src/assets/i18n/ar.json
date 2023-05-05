@@ -64,7 +64,14 @@
     "ok": "نعم",
     "no_record": "لا يوجد سجلات!",
     "uploaded": "تم الرفع",
-    "finished": "انتهى"
+    "finished": "انتهى",
+    "success": "نجاح",
+    "info": "معلومات",
+    "error": "خطأ",
+    "return_home": "العودة إلى الصفحة الرئيسية",
+    "edit": "تحرير",
+    "add": "إضافة",
+    "detail": "التفاصيل"
   },
   "login": {
     "login": "يكمل",
@@ -188,6 +195,7 @@
     "mix_carton_add": "يضيف",
     "mix_carton_complete": "مكتمل",
     "item_count": "عدد الأصناف",
+    "item": "بند",
     "add_mix_carton": "هل أنت متأكد من إضافة عنصر مزيج آخر؟"
   },
   "main": {

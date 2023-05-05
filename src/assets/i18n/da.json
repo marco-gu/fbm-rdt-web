@@ -64,7 +64,14 @@
     "ok": "Okay",
     "no_record": "Ingen rekord fundet!",
     "uploaded": "Uploadet",
-    "finished": "Færdig"
+    "finished": "Færdig",
+    "success": "Succes",
+    "info": "Information",
+    "error": "Fejl",
+    "return_home": "Vend tilbage til startsiden",
+    "edit": "Rediger",
+    "add": "Tilføj",
+    "detail": "Detalje"
   },
   "login": {
     "login": "Blive ved",
@@ -188,6 +195,7 @@
     "mix_carton_add": "Tilføje",
     "mix_carton_complete": "Komplet",
     "item_count": "Vareoptælling",
+    "item": "Vare",
     "add_mix_carton": "Er du sikker på at tilføje en anden mix -vare?"
   },
   "main": {

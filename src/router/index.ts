@@ -7,6 +7,7 @@ import LpSearchView from "../views/LpSearchView.vue";
 import ScanView from "../views/ScanView.vue";
 import ResetPwdView from "../views/ResetPwdView.vue";
 import MixCartonView from "../views/MixCartonView.vue";
+import MixCartonSummaryView from "../views/MixCartonSummaryView.vue";
 import bridge from "dsbridge";
 import SettingView from "../views/SettingView.vue";
 import SettingLanguageView from "../views/SettingLanguageView.vue";
@@ -81,6 +82,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/mixCarton/:id",
     name: "mixCarton",
     component: MixCartonView,
+  },
+  {
+    path: "/mixCartonSummary",
+    name: "mixCartonSummary",
+    component: MixCartonSummaryView,
   },
   {
     path: "/cartonDetail/:id",

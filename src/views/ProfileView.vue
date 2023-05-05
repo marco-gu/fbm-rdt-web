@@ -5,9 +5,9 @@
     </header-component> -->
     <common-header-component
       :titles="[$t('profile.profile')]"
-      :icons="['home', 'search', 'sync']"
-      @onHome="() => router.push('/home')"
-      @onSync="refresh(void 0)"
+      :icons="['back', 'search', 'home']"
+      @onHome="homePopup = true"
+      @onBack="() => router.push('/home')"
       v-model:searchValue="search"
     />
     <div class="page-content">
@@ -24,26 +24,26 @@
         </q-input>
       </div> -->
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <!-- <q-pull-to-refresh @refresh="refresh"> -->
-        <template v-if="profileListDisplay.length === 0 && !isFirstSync">
-          <!-- <div class="no-data">
+        <q-pull-to-refresh @refresh="refresh">
+          <template v-if="profileListDisplay.length === 0 && !isFirstSync">
+            <!-- <div class="no-data">
               {{ $t("common.no_record") }}
             </div> -->
-        </template>
-        <template v-else>
-          <div class="scroll-area">
-            <div
-              class="common-card-2"
-              v-for="(item, index) in profileListDisplay"
-              :key="index"
-              @click="onClickProfile(item)"
-            >
-              <div class="label mb-lg">{{ item.profileCode }}</div>
-              <div class="value">
-                {{ formatDate(new Date(item.updateDatetime)) }}
+          </template>
+          <template v-else>
+            <div class="scroll-area">
+              <div
+                class="common-card-2"
+                v-for="(item, index) in profileListDisplay"
+                :key="index"
+                @click="onClickProfile(item)"
+              >
+                <div class="label mb-lg">{{ item.profileCode }}</div>
+                <div class="value">
+                  {{ formatDate(new Date(item.updateDatetime)) }}
+                </div>
               </div>
-            </div>
-            <!-- <q-item class="card-item" clickable @click="onClickProfile(item)">
+              <!-- <q-item class="card-item" clickable @click="onClickProfile(item)">
                 <q-item-section class="card-item-labels">
                   <q-item-label>{{ item.profileCode }}</q-item-label>
                   <q-item-label class="card-item-date-text">
@@ -54,9 +54,9 @@
                   <q-icon name="chevron_right" color="black" />
                 </q-item-section>
               </q-item> -->
-          </div>
-        </template>
-        <!-- </q-pull-to-refresh> -->
+            </div>
+          </template>
+        </q-pull-to-refresh>
       </q-scroll-area>
     </div>
     <PopupComponent
@@ -82,6 +82,18 @@
       </div>
     </q-dialog>
   </div>
+  <PopupComponent
+    :visible="homePopup"
+    :message="$t('common.return_home')"
+    :type="'action'"
+    @close="
+      () => {
+        homePopup = false;
+        router.push('/home');
+      }
+    "
+    @cancel="homePopup = false"
+  />
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
@@ -122,6 +134,7 @@ const ProfileView = defineComponent({
     const msgCode = ref("");
     const popupVisible = ref(false);
     const loadingStatus = ref(false);
+    const homePopup = ref(false);
     const refresh = (done: any) => {
       loadingStatus.value = true;
       bridge.call("refreshProfile", null, (res: string) => {
@@ -201,12 +214,6 @@ const ProfileView = defineComponent({
         profileListDisplay.value = result;
       }
     });
-    // const onClose = () => {
-    //   popupVisible.value = false;
-    //   if (msgCode.value == "E92-99-0003" || msgCode.value == "E92-99-0004") {
-    //     router.push("/");
-    //   }
-    // };
     return {
       formatDate,
       isFirstSync,
@@ -223,7 +230,7 @@ const ProfileView = defineComponent({
       msg,
       loadingStatus,
       msgCode,
-      // onClose,
+      homePopup,
     };
   },
 });

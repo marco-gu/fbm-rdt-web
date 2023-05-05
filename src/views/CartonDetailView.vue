@@ -3,7 +3,7 @@
     <common-header-component
       :titles="[titleParam]"
       :icons="['back', 'home']"
-      @onHome="() => (backHomeDialogVisible = true)"
+      @onHome="onHome"
       @onBack="closeCartonDetail"
     />
     <div class="page-content">
@@ -20,7 +20,6 @@
                   input-class="text-left"
                   ref="inputRef"
                   v-model="item.model"
-                  @keyup.enter="onInputKeyUp($event, i)"
                   @paste="validPaste($event, i)"
                   :maxlength="item.length"
                   lazy-rules
@@ -33,7 +32,7 @@
                       @click="scan(item.fieldName, $event)"
                     >
                       <q-img
-                        :color="secondary"
+                        color="secondary"
                         no-transition
                         no-spinner
                         :src="inputScanIcon"
@@ -62,33 +61,9 @@
       :visible="popupVisible"
       :message="msg"
       :type="type"
-      @close="popupVisible = false"
+      @close="OnClose"
+      @cancel="popupVisible = false"
     ></PopupComponent>
-    <q-dialog
-      class="back-home-dialog"
-      v-model="backHomeDialogVisible"
-      persistent
-    >
-      <div class="dialog-container">
-        <div class="dialog-container__content">
-          {{ $t("common.return_home_dialog") }}
-        </div>
-        <div class="dialog-container__button">
-          <button
-            class="dialog-button cancel"
-            @click="() => (backHomeDialogVisible = false)"
-          >
-            {{ $t("common.cancel") }}
-          </button>
-          <button
-            class="dialog-button confirm"
-            @click="() => router.push('/home')"
-          >
-            {{ $t("common.confirm") }}
-          </button>
-        </div>
-      </div>
-    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -116,7 +91,6 @@ const CartonDetailView = defineComponent({
     PopupComponent,
   },
   setup() {
-    const backHomeDialogVisible = ref(false);
     const cartonID = ref("99999999999999999999");
     const i18n = useI18n();
     const inputRef = ref(null);
@@ -127,6 +101,7 @@ const CartonDetailView = defineComponent({
     const myForm = ref();
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const popupVisible = ref(false);
+    const pressHome = ref(false);
     const taskID = ref("");
     const titleParam = ref("");
     const type = ref("");
@@ -136,7 +111,7 @@ const CartonDetailView = defineComponent({
       const param = JSON.parse(res);
       cartonID.value = param.cartonID;
       taskID.value = param.taskID;
-      titleParam.value = `${param.cartonID}: Detail`;
+      titleParam.value = `${param.cartonID}: ${i18n.t("common.detail")}`;
     });
     bridge.register("closeCartonDetail", () => {
       closeCartonDetail();
@@ -261,30 +236,26 @@ const CartonDetailView = defineComponent({
         event.stopPropagation();
       }
     };
-    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
-      if (event.code === "Enter" || event.which === 13) {
-        const param = inputRef.value as any;
-        param.forEach((t: any, i: number) => {
-          if (i === index) {
-            const inputText = t.$props.modelValue;
-            t.validate(inputText).then(() => {
-              if (param.length > index + 1) {
-                param[index + 1].focus();
-              }
-            });
-          }
-        });
+    const OnClose = () => {
+      popupVisible.value = false;
+      if (pressHome.value) {
+        router.push("/home");
       }
     };
+    const onHome = () => {
+      pressHome.value = true;
+      popupVisible.value = true;
+      type.value = "action";
+      msg.value = i18n.t("common.return_home");
+    };
     return {
-      backHomeDialogVisible,
-      cartonID,
       closeCartonDetail,
       inputRef,
       inputScanIcon,
       msg,
       myForm,
-      onInputKeyUp,
+      OnClose,
+      onHome,
       onSubmit,
       pageViews,
       popupVisible,
