@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <common-header-component
-      :titles="[`${poNumber} | ${cartonID}`]"
+      :titles="[`${soNumber} | ${cartonID}`]"
       :icons="['back', 'home']"
       @onHome="onHome"
       @onBack="onBack"
@@ -101,12 +101,12 @@ const MixCartonSummaryView = defineComponent({
     const mixCartonListDisplay: Ref<MixCartonProduct[]> = ref([]);
     const msg = ref("");
     const pageViews = ref([] as ViewDisplayAttribute[]);
-    const poNumber = ref("");
     const popupVisible = ref(false);
     const pressDelete = ref(false);
     const pressHome = ref(false);
     const router = useRouter();
     const scanType = ref("");
+    const soNumber = ref("");
     const taskID = ref("");
     const type = ref("");
     onMounted(() => {
@@ -114,6 +114,7 @@ const MixCartonSummaryView = defineComponent({
       softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
       arrangeRouteParams();
       fetchCartonProducts();
+      fetchSoNumberForMixCartonSummary();
     });
     watch(
       route,
@@ -168,7 +169,7 @@ const MixCartonSummaryView = defineComponent({
         "fetchSoNumberForMixCartonSummary",
         { taskID: taskID.value },
         (res: string) => {
-          poNumber.value = res;
+          soNumber.value = res;
         }
       );
     };
@@ -240,7 +241,7 @@ const MixCartonSummaryView = defineComponent({
       OnClose,
       onHome,
       pageViews,
-      poNumber,
+      soNumber,
       popupVisible,
       router,
       type,
