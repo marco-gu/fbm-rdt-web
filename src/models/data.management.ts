@@ -14,4 +14,5 @@ export interface DataMgmt {
   totalWeight: string;
   taskID: string;
   containerNumber: string;
+  lpID: string;
 }

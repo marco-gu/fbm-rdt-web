@@ -184,6 +184,40 @@ export type Carton = {
   scanDate: string;
 };
 
+export type SelectedCarton = {
+  client: string;
+  so: string;
+  po: string;
+  sku: string;
+  operation: string;
+  cartonID: string;
+  scanDate: string;
+  hub: string;
+  quantity: string;
+  style: string;
+  lpID: string;
+  // id: number;
+  // taskId: string;
+  // so: string;
+  // po: string;
+  // sku: string;
+  // containerNumber: string;
+  // style: string;
+  // quantity: string;
+  // hub: string;
+  // lpId: string;
+  // cartonID: string;
+  // scanStatus: number;
+  // createUser: string;
+  // createDatetime: string;
+  // updateUser: string;
+  // updateDatetime: string;
+  // expected: boolean;
+  // scanDate: string;
+  // client: string;
+  // operation: string;
+};
+
 export interface ScanDataManagement {
   taskId: string;
   scanType: string;

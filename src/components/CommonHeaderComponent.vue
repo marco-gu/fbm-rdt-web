@@ -22,6 +22,9 @@
         @click="searchVisible = !searchVisible"
         ><i class="fa-solid fa-magnifying-glass"></i
       ></a>
+      <a v-if="icons.indexOf('clear') > -1" class="icon" @click="onClearEmit"
+        ><i class="fa-solid fa-rotate-left"></i>
+      </a>
       <a v-if="icons.indexOf('empty') > -1" class="icon"> </a>
       <a v-if="icons.indexOf('empty-2') > -1" class="icon"> </a>
       <!-- <a v-if="icons.indexOf('expand') > -1" class="icon" @click="onExpandClick"
@@ -30,14 +33,14 @@
       <a v-if="icons.indexOf('sync') > -1" class="icon" @click="onSyncEmit"
         ><i class="fa-solid fa-rotate-right"></i>
       </a>
-      <a v-if="icons.indexOf('clear') > -1" class="icon" @click="onClearEmit"
+      <!-- <a v-if="icons.indexOf('clear') > -1" class="icon" @click="onClearEmit"
         ><i class="fa-solid fa-rotate-left"></i>
-      </a>
+      </a> -->
       <a v-if="icons.indexOf('detail') > -1" class="icon" @click="onDetailEmit"
-        ><i class="fa-solid fa-circle-info"></i
+        ><i class="fa-solid fa-list"></i
       ></a>
       <a v-if="icons.indexOf('mixed') > -1" class="icon" @click="onMixedEmit"
-        ><i class="fa-solid fa-circle-info"></i
+        ><i class="fa-solid fa-list"></i
       ></a>
       <a v-if="icons.indexOf('home') > -1" class="icon" @click="onHomeClick"
         ><i class="fa-solid fa-house"></i

@@ -1,5 +1,5 @@
 import { DataMgmt } from "@/models/data.management";
-import { ProfileDisplayAttribute } from "@/models/profile";
+import { ProfileDisplayAttribute, SelectedCarton } from "@/models/profile";
 import { Module } from "vuex";
 import RootState from "../state";
 
@@ -8,7 +8,7 @@ export interface DataMgmtState {
   profile: ProfileDisplayAttribute[];
   mixcartonItem: any;
   selectedCartonHeader: any;
-  selectedCartonDetail: any;
+  selectedCartonDetail: SelectedCarton;
 }
 
 const dataMgmtModule: Module<DataMgmtState, RootState> = {
@@ -29,6 +29,7 @@ const dataMgmtModule: Module<DataMgmtState, RootState> = {
       totalWeight: "",
       taskID: "",
       containerNumber: "",
+      lpID: "",
     },
     profile: [],
     mixcartonItem: {},
@@ -44,6 +45,10 @@ const dataMgmtModule: Module<DataMgmtState, RootState> = {
       operation: "",
       cartonID: "",
       scanDate: "",
+      hub: "",
+      quantity: "",
+      style: "",
+      lpID: "",
     },
   },
   actions: {

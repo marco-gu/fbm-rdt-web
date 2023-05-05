@@ -2,8 +2,8 @@
   <div class="wrapper">
     <common-header-component
       :titles="titles"
-      :icons="['back', 'home']"
-      @onHome="() => router.push('/home')"
+      :icons="['back', 'home', 'empty']"
+      @onHome="home"
       @onBack="() => router.push('/dataMgmtCartonMixed')"
     />
     <div class="page-content">
@@ -18,6 +18,8 @@
                 class="input-field"
                 input-class="text-left"
                 v-model="item.model"
+                lazy-rules
+                :rules="[item.valid]"
                 borderless
                 :readonly="!isEditMode || !item.editable"
                 :disable="!isEditMode || !item.editable"
@@ -44,12 +46,35 @@
         </q-form>
       </q-scroll-area>
     </div>
-    <div class="bottom-button" id="bottom-button">
-      <q-btn no-caps unelevated class="full-width" @click="onSubmit">
+    <div class="bottom-coherent-button" id="bottom-button">
+      <q-btn
+        v-show="isEditMode"
+        no-caps
+        unelevated
+        :ripple="false"
+        class="full-width"
+        @click="cancelEditMode"
+        :label="$t('common.cancel')"
+      />
+      <q-separator v-show="isEditMode" vertical inset color="white" />
+      <q-btn
+        no-caps
+        unelevated
+        class="full-width"
+        :ripple="false"
+        @click="onSubmit"
+      >
         {{ label }}
       </q-btn>
     </div>
   </div>
+  <PopupComponent
+    :visible="dialogVisible"
+    :message="msg"
+    :type="type"
+    @close="onConfirmDialog"
+    @cancel="dialogVisible = false"
+  ></PopupComponent>
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
@@ -59,14 +84,21 @@ import {
   composeViewElement,
   ProfileElementLevel,
 } from "@/utils/profile.render";
-import bridge from "dsbridge";
 import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "@/store";
 import { useI18n } from "vue-i18n";
+import inputScan from "../../assets/icon/compress-solid.svg";
+import PopupComponent from "@/components/PopupComponent.vue";
+import bridge from "dsbridge";
+import {
+  AndroidResponse,
+  AndroidResponseStatus,
+} from "@/models/android.response";
 const DataMgmtCartonMixedDetail = defineComponent({
   components: {
     CommonHeaderComponent,
+    PopupComponent,
   },
   setup() {
     const store = useStore();
@@ -75,10 +107,20 @@ const DataMgmtCartonMixedDetail = defineComponent({
       route.params.cartonID,
       store.state.dataMgmtModule.mixcartonItem.displayName,
     ];
-    const pageView: [] = [];
+    const myForm = ref();
+    const pageView = ref([] as any[]);
     const isEditMode = ref(false);
     const i18n = useI18n();
-    const label = ref(i18n.t("dataManagement.edit"));
+    const label = ref(i18n.t("common.edit"));
+    const type = ref("");
+    const msg = ref("");
+    const dialogVisible = ref(false);
+    const inputScanIcon = inputScan;
+    const pressHome = ref(false);
+    const pressSave = ref(false);
+    const obj = JSON.parse(
+      JSON.stringify(store.state.dataMgmtModule.mixcartonItem.attribute)
+    );
     onBeforeMount(() => {
       store.state.dataMgmtModule.profile.forEach(
         (item: ProfileDisplayAttribute) => {
@@ -86,37 +128,26 @@ const DataMgmtCartonMixedDetail = defineComponent({
             if (item.level == ProfileElementLevel.CARTON_UPC) {
               const element = composeViewElement(item);
               element.editable = true;
-              const fieldName = item.displayDataFieldName;
-              switch (fieldName) {
+              switch (item.displayDataFieldName) {
                 case "UPC":
-                  element.model = ref(
-                    store.state.dataMgmtModule.mixcartonItem.attribute.upc
-                  );
+                  element.model = ref(obj.upc);
                   break;
                 case "Color":
-                  element.model = ref(
-                    store.state.dataMgmtModule.mixcartonItem.attribute.color
-                  );
+                  element.model = ref(obj.color);
                   break;
                 case "Style":
-                  element.model = ref(
-                    store.state.dataMgmtModule.mixcartonItem.attribute.style
-                  );
+                  element.model = ref(obj.style);
                   break;
                 case "Size":
-                  element.model = ref(
-                    store.state.dataMgmtModule.mixcartonItem.attribute.size
-                  );
+                  element.model = ref(obj.size);
                   break;
                 case "Quantity":
-                  element.model = ref(
-                    store.state.dataMgmtModule.mixcartonItem.attribute.quantity
-                  );
+                  element.model = ref(obj.value.quantity);
                   break;
                 default:
                   break;
               }
-              pageView.push(element as never);
+              pageView.value.push(element as never);
             }
           }
         }
@@ -125,9 +156,94 @@ const DataMgmtCartonMixedDetail = defineComponent({
     onMounted(() => {
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 1 + "px";
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
     });
-    return { titles, router, pageView, isEditMode, label };
+    const onSubmit = () => {
+      if (isEditMode.value) {
+        myForm.value.validate().then((success: any) => {
+          if (success) {
+            type.value = "action";
+            dialogVisible.value = true;
+            pressSave.value = true;
+            msg.value = i18n.t("dataManagement.update_dialog_message");
+          }
+        });
+      } else {
+        isEditMode.value = true;
+        label.value = i18n.t("common.save");
+      }
+    };
+    const cancelEditMode = () => {
+      isEditMode.value = false;
+      label.value = i18n.t("common.edit");
+    };
+    const onConfirmDialog = () => {
+      if (pressHome.value) {
+        router.push("/home");
+      } else if (pressSave.value) {
+        const apiParams = {
+          id: store.state.dataMgmtModule.mixcartonItem.id,
+          lpId: store.state.dataMgmtModule.mixcartonItem.lpId,
+          UPC: "",
+          Color: "",
+          Size: "",
+          Quantity: "",
+          Style: "",
+          taskId: store.state.dataMgmtModule.dataMgmt.taskID,
+        };
+        pageView.value.forEach((item: any) => {
+          switch (item.displayFieldName) {
+            case "UPC":
+              apiParams.UPC = item.model;
+              break;
+            case "Color":
+              apiParams.Color = item.model;
+              break;
+            case "Style":
+              apiParams.Style = item.model;
+              break;
+            case "Size":
+              apiParams.Size = item.model;
+              break;
+            case "Quantity":
+              apiParams.Quantity = item.model;
+              break;
+          }
+        });
+        bridge.call(
+          "updateCartonProductForDataManagement",
+          apiParams,
+          (res: string) => {
+            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+              router.push("/dataMgmtCartonMixed");
+            }
+          }
+        );
+      }
+    };
+    const home = () => {
+      pressHome.value = true;
+      dialogVisible.value = true;
+      type.value = "action";
+      msg.value = i18n.t("common.return_home");
+    };
+    return {
+      titles,
+      router,
+      pageView,
+      isEditMode,
+      label,
+      myForm,
+      onSubmit,
+      cancelEditMode,
+      inputScanIcon,
+      type,
+      dialogVisible,
+      msg,
+      onConfirmDialog,
+      home,
+    };
   },
 });
 export default DataMgmtCartonMixedDetail;

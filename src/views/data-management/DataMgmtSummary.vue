@@ -2,7 +2,7 @@
   <div class="wrapper">
     <common-header-component
       :titles="titles"
-      :icons="['back', 'home', 'detail']"
+      :icons="icons"
       @onHome="home"
       @onBack="() => router.push('/dataMgmtList')"
       @onDetail="() => router.push('/dataMgmtDetail')"
@@ -48,23 +48,43 @@
         </q-form>
       </q-scroll-area>
     </div>
-    <div class="bottom-button" id="bottom-button">
-      <q-btn no-caps unelevated class="full-width" @click="onSubmit">
+    <div class="bottom-coherent-button" id="bottom-button">
+      <q-btn
+        v-show="isEditMode"
+        no-caps
+        unelevated
+        :ripple="false"
+        class="full-width"
+        @click="cancelEditMode"
+        :label="$t('common.cancel')"
+      />
+      <q-separator v-show="isEditMode" vertical inset color="white" />
+      <q-btn
+        no-caps
+        unelevated
+        :ripple="false"
+        class="full-width"
+        @click="onSubmit"
+      >
         {{ label }}
       </q-btn>
     </div>
   </div>
   <PopupComponent
-    :visible="popupVisible"
+    :visible="dialogVisible"
     :message="msg"
     :type="type"
-    @close="OnClose"
-    @cancel="popupVisible = false"
+    @close="onConfirmDialog"
+    @cancel="dialogVisible = false"
   ></PopupComponent>
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
+import {
+  AndroidResponse,
+  AndroidResponseStatus,
+} from "@/models/android.response";
 import { DataMgmt } from "@/models/data.management";
 import { ProfileDisplayAttribute } from "@/models/profile";
 import router from "@/router";
@@ -94,8 +114,10 @@ const DataMgmtSummary = defineComponent({
     const isEditMode = ref(false);
     const type = ref("");
     const msg = ref("");
-    const popupVisible = ref(false);
+    const dialogVisible = ref(false);
     const pressHome = ref(false);
+    const pressSave = ref(false);
+    const icons = ref(["back", "home", "detail"]);
     onBeforeMount(() => {
       composeView(dataMgmtView.value);
     });
@@ -108,13 +130,15 @@ const DataMgmtSummary = defineComponent({
       if (isEditMode.value) {
         myForm.value.validate().then((success: any) => {
           if (success) {
-            type.value = "info";
-            popupVisible.value = true;
+            type.value = "action";
+            pressSave.value = true;
+            dialogVisible.value = true;
             msg.value = i18n.t("dataManagement.update_dialog_message");
           }
         });
       } else {
         isEditMode.value = true;
+        icons.value = ["back", "home", "empty"];
         label.value = i18n.t("common.save");
       }
     };
@@ -181,19 +205,62 @@ const DataMgmtSummary = defineComponent({
         }
       );
     };
-    const OnClose = () => {
-      popupVisible.value = false;
+    const onConfirmDialog = () => {
+      dialogVisible.value = false;
       if (pressHome.value) {
         router.push("/home");
-      } else {
-        router.push("/dataMgmtList");
+      } else if (pressSave.value) {
+        const apiParams = {
+          taskId: dataMgmtView.value.taskID,
+          SO: "",
+          PO: "",
+          SKU: "",
+          ContainerNumber: "",
+          TotalCBM: "",
+          TotalWeight: "",
+        };
+        pageView.value.forEach((item) => {
+          switch (item.fieldName) {
+            case "PO":
+              apiParams.PO = item.model;
+              break;
+            case "SO":
+              apiParams.SO = item.model;
+              break;
+            case "SKU":
+              apiParams.SKU = item.model;
+              break;
+            case "ContainerNumber":
+              apiParams.ContainerNumber = item.model;
+              break;
+            case "TotalCBM":
+              apiParams.TotalCBM = item.model;
+              break;
+            case "TotalWeight":
+              apiParams.TotalWeight = item.model;
+              break;
+            default:
+              break;
+          }
+        });
+        bridge.call("updateTaskForDataManagement", apiParams, (res: string) => {
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            router.push("/dataMgmtList");
+          }
+        });
       }
     };
     const home = () => {
       pressHome.value = true;
-      popupVisible.value = true;
+      dialogVisible.value = true;
       type.value = "action";
-      msg.value = msg.value = i18n.t("common.return_home");
+      msg.value = i18n.t("common.return_home");
+    };
+    const cancelEditMode = () => {
+      isEditMode.value = false;
+      label.value = i18n.t("common.edit");
+      icons.value = ["back", "home", "detail"];
     };
     return {
       titles,
@@ -205,13 +272,14 @@ const DataMgmtSummary = defineComponent({
       inputScanIcon,
       myForm,
       type,
-      popupVisible,
+      dialogVisible,
       msg,
-      OnClose,
+      onConfirmDialog,
       home,
+      icons,
+      cancelEditMode,
     };
   },
 });
 export default DataMgmtSummary;
 </script>
-<style scoped lang="scss"></style>

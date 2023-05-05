@@ -10,7 +10,7 @@
           ? $t('lp.lp_search')
           : $t('lp.offline_scan'),
       ]"
-      :icons="['home', 'clear']"
+      :icons="['clear', 'home', 'empty']"
       @onHome="() => router.push('/home')"
       @onClear="onClear()"
     />
