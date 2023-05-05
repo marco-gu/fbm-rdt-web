@@ -121,6 +121,7 @@ const MixCartonSummaryView = defineComponent({
         if (route.name === "mixCartonSummary") {
           arrangeRouteParams();
           fetchCartonProducts();
+          fetchSoNumberForMixCartonSummary();
         }
       },
       { deep: true }
@@ -129,13 +130,25 @@ const MixCartonSummaryView = defineComponent({
       cartonID.value = route.params.cartonID as string;
       taskID.value = route.params.taskID as string;
       scanType.value = route.params.scanType as string;
-      bridge.call(
-        "fetchSoNumberForMixCartonSummary",
-        { taskID: taskID.value },
-        (res: string) => {
-          poNumber.value = res;
+    };
+    const deleteCartonProducts = () => {
+      let idList: any = [];
+      mixCartonListDisplay.value.forEach((item: any) => {
+        if (item["isSelected"]) {
+          idList.push(item.id);
         }
-      );
+      });
+      bridge.call("deleteCartonProducts", { idList: idList }, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          isEditMode.value = false;
+          fetchCartonProducts();
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          type.value = "error";
+          popupVisible.value = true;
+          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+        }
+      });
     };
     const fetchCartonProducts = () => {
       bridge.call(
@@ -150,34 +163,14 @@ const MixCartonSummaryView = defineComponent({
         }
       );
     };
-    const deleteMixCarton = () => {
-      let idList: any = [];
-      mixCartonListDisplay.value.forEach((item: any) => {
-        if (item["isSelected"]) {
-          idList.push(item.id);
+    const fetchSoNumberForMixCartonSummary = () => {
+      bridge.call(
+        "fetchSoNumberForMixCartonSummary",
+        { taskID: taskID.value },
+        (res: string) => {
+          poNumber.value = res;
         }
-      });
-      if (idList.length > 0) {
-        bridge.call(
-          "deleteCartonProducts",
-          { idList: idList },
-          (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              isEditMode.value = false;
-              fetchCartonProducts();
-            } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-              type.value = "error";
-              popupVisible.value = true;
-              msg.value = i18n.t("messageCode." + androidResponse.messageCode);
-            }
-          }
-        );
-      } else {
-        type.value = "error";
-        popupVisible.value = true;
-        msg.value = i18n.t("dataManagement.no_record_selected");
-      }
+      );
     };
     const handleHold = () => {
       mixCartonListDisplay.value.forEach((item: any) => {
@@ -222,7 +215,7 @@ const MixCartonSummaryView = defineComponent({
       if (pressHome.value) {
         router.push("/home");
       } else if (pressDelete.value) {
-        deleteMixCarton();
+        deleteCartonProducts();
       }
       pressHome.value = false;
       pressDelete.value = false;
