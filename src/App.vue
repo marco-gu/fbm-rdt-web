@@ -30,7 +30,9 @@ const App = defineComponent({
     bridge.register("onKeyCodeClick", (keycode: string) => {
       console.log("CUSTOM_KEY_CODE_WEBVIEW ===> " + keycode);
     });
-
+    bridge.register("backHome", () => {
+      router.push("/home");
+    });
     onMounted(() => {
       bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.locale.value = res;

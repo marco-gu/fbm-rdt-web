@@ -13,8 +13,9 @@
       </template>
     </header>
     <div class="button-container">
-      <a v-if="icons.indexOf('back') > -1" class="icon" @click="onBackEmit"
-        ><i class="fa-solid fa-arrow-left"></i>
+      <a v-if="icons.indexOf('back') > -1" class="icon" @click="onBackEmit">
+        <img :src="backIcon" />
+        <!-- <i class="fa-solid fa-arrow-left"></i> -->
       </a>
       <a
         v-if="icons.indexOf('search') > -1"
@@ -58,6 +59,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import backIcon from "../assets/icon/icon_header_back.png";
 const CommonHeaderComponent = defineComponent({
   props: {
     titles: {
@@ -121,6 +123,7 @@ const CommonHeaderComponent = defineComponent({
       onClearEmit,
       onDetailEmit,
       onMixedEmit,
+      backIcon,
     };
   },
 });
@@ -164,6 +167,9 @@ export default CommonHeaderComponent;
         display: inline-block;
         flex: 1;
         text-align: center;
+      }
+      img {
+        width: 15px;
       }
     }
   }
