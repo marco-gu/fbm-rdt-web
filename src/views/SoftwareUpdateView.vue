@@ -1,9 +1,15 @@
 <template>
   <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component>
-    {{ currentVersionCode < latestVersionCode }}
+    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
+    </header-component> -->
+    <common-header-component
+      :titles="[$t('setting.software_update')]"
+      :icons="['back', 'home']"
+      @onHome="home"
+      v-model:searchValue="search"
+      @onBack="back"
+    />
     <div class="page-content" v-if="currentVersionCode < latestVersionCode">
       <div class="setting-card-item">
         <div class="label">
@@ -51,6 +57,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { onMounted, ref, version } from "vue";
 import { VersionInfo } from "@/models/profile";
+import { useRouter } from "vue-router";
 // import { popupErrorMsg } from "@/plugin/popupPlugins";
 import {
   AndroidResponse,
@@ -58,14 +65,16 @@ import {
 } from "@/models/android.response";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 export default {
   name: "SoftwareUpdateView",
   components: {
-    HeaderComponent,
+    CommonHeaderComponent,
     LoadingComponent,
   },
   setup() {
     const $q = useQuasar();
+    const router = useRouter();
     const i18n = useI18n();
     const currentVersionCode = ref();
     const currentVersionName = ref("");
@@ -115,7 +124,19 @@ export default {
         downloadPending.value = false;
       });
     };
+    const back = () => {
+      router.push({
+        path: "/setting",
+      });
+    };
+    const home = () => {
+      router.push({
+        path: "/home",
+      });
+    };
     return {
+      back,
+      home,
       currentVersionCode,
       currentVersionName,
       downloadPending,
