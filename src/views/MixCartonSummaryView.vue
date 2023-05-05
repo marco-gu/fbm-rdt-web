@@ -24,10 +24,16 @@
                   unchecked-icon="app:checkboxOff"
                   v-show="isEditMode"
                 />
-                <div class="label mb-lg">
-                  Item {{ index + 1 }}: {{ item.upc }}
+                <div class="label mb-lg">Item {{ index + 1 }}</div>
+                <div class="value">
+                  {{ item.upc }}
                 </div>
-                <div class="label">Quantity: {{ item.quantity }}</div>
+                <div item="label">
+                  {{ item.style }}<span class="separator">&nbsp;&nbsp;</span
+                  >{{ item.color }}<span class="separator">&nbsp;|&nbsp;</span
+                  >{{ item.size }} <span class="separator">&nbsp;|&nbsp;</span
+                  >{{ item.quantity }}
+                </div>
               </div>
             </div>
           </div>
@@ -42,7 +48,7 @@
           flat
           push
           :label="$t('common.delete')"
-          @click="deleteMixCarton"
+          @click="onClickDelete"
         />
       </template>
       <template v-else>
@@ -68,6 +74,10 @@
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
+import {
+  AndroidResponse,
+  AndroidResponseStatus,
+} from "@/models/android.response";
 import { MixCartonProduct } from "@/models/profile";
 import { ViewDisplayAttribute } from "@/utils/profile.render";
 import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
@@ -93,6 +103,7 @@ const MixCartonSummaryView = defineComponent({
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const poNumber = ref("");
     const popupVisible = ref(false);
+    const pressDelete = ref(false);
     const pressHome = ref(false);
     const router = useRouter();
     const scanType = ref("");
@@ -140,17 +151,28 @@ const MixCartonSummaryView = defineComponent({
       );
     };
     const deleteMixCarton = () => {
-      // TODO: deleteMixCarton
-      console.log("MixCarton Summary deleteMixCarton");
-      let mixCartonList: any = [];
+      let idList: any = [];
       mixCartonListDisplay.value.forEach((item: any) => {
         if (item["isSelected"]) {
-          mixCartonList.push(item.id);
+          idList.push(item.id);
         }
       });
-      if (mixCartonList.length > 0) {
-        // TODO: call JSApi to add delete function
-        alert(JSON.stringify(mixCartonList));
+      if (idList.length > 0) {
+        bridge.call(
+          "deleteCartonProducts",
+          { idList: idList },
+          (res: string) => {
+            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+              isEditMode.value = false;
+              fetchCartonProducts();
+            } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+              type.value = "error";
+              popupVisible.value = true;
+              msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            }
+          }
+        );
       } else {
         type.value = "error";
         popupVisible.value = true;
@@ -183,11 +205,27 @@ const MixCartonSummaryView = defineComponent({
         },
       });
     };
+    const onClickDelete = () => {
+      if (mixCartonListDisplay.value.some((item: any) => item["isSelected"])) {
+        type.value = "action";
+        pressDelete.value = true;
+        popupVisible.value = true;
+        msg.value = i18n.t("dataManagement.delete_dialog_message");
+      } else {
+        type.value = "error";
+        popupVisible.value = true;
+        msg.value = i18n.t("dataManagement.no_record_selected");
+      }
+    };
     const OnClose = () => {
       popupVisible.value = false;
       if (pressHome.value) {
         router.push("/home");
+      } else if (pressDelete.value) {
+        deleteMixCarton();
       }
+      pressHome.value = false;
+      pressDelete.value = false;
     };
     const onHome = () => {
       pressHome.value = true;
@@ -197,7 +235,6 @@ const MixCartonSummaryView = defineComponent({
     };
     return {
       cartonID,
-      deleteMixCarton,
       handleHold,
       inputRef,
       inputScanIcon,
@@ -206,6 +243,7 @@ const MixCartonSummaryView = defineComponent({
       msg,
       onBack,
       onClickAdd,
+      onClickDelete,
       OnClose,
       onHome,
       pageViews,

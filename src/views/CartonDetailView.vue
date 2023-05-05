@@ -241,6 +241,7 @@ const CartonDetailView = defineComponent({
       if (pressHome.value) {
         router.push("/home");
       }
+      pressHome.value = false;
     };
     const onHome = () => {
       pressHome.value = true;
