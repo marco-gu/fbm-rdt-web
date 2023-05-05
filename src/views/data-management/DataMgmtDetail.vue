@@ -32,10 +32,11 @@
               </div>
               <div class="value">
                 {{ item.so }}<span class="separator">&nbsp;|&nbsp;</span
-                >{{ item.po }}<span class="separator">&nbsp;|&nbsp;</span
+                >{{ item.po
+                }}<span class="separator" v-if="item.sku">&nbsp;|&nbsp;</span
                 >{{ item.sku }}
               </div>
-              <div class="value mt-sm mb-lg">
+              <div class="value mt-sm">
                 {{ item.scanDate }}
               </div>
             </div>

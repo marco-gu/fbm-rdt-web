@@ -7,38 +7,45 @@
       @onBack="() => router.push('/dataMgmtCartonDetail')"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-        <div v-for="(item, index) in pageView" :key="index">
-          <div
-            class="common-card-2"
-            @click="onDetail(item)"
-            v-touch-hold:1800="handleHold"
-          >
-            <q-checkbox
-              class="checkbox"
-              v-model="item.isSelected"
-              v-if="isEditMode"
-              checked-icon="app:checkboxOn"
-              unchecked-icon="app:checkboxOff"
-            />
-            <div class="label mb-lg">
-              {{ item.displayName }}
-            </div>
-            <div class="value">
-              {{ item.attribute.upc }}
-            </div>
-            <div item="label">
-              {{ item.attribute.style
-              }}<span class="separator">&nbsp;&nbsp;</span
-              >{{ item.attribute.color
-              }}<span class="separator">&nbsp;|&nbsp;</span
-              >{{ item.attribute.size }}
-              <span class="separator">&nbsp;|&nbsp;</span
-              >{{ item.attribute.quantity }}
+      <template v-if="noRecord">
+        <div class="no-record">{{ $t("common.no_record") }}</div>
+      </template>
+      <template v-else>
+        <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+          <div v-for="(item, index) in pageView" :key="index">
+            <div
+              class="common-card-2"
+              @click="onDetail(item)"
+              v-touch-hold:1800="handleHold"
+            >
+              <q-checkbox
+                class="checkbox"
+                v-model="item.isSelected"
+                v-if="isEditMode"
+                checked-icon="app:checkboxOn"
+                unchecked-icon="app:checkboxOff"
+              />
+              <div class="label mb-lg">
+                {{ item.displayName }}
+              </div>
+              <div class="value">
+                {{ item.attribute.upc }}
+              </div>
+              <div class="value mt-sm">
+                {{ item.attribute.style
+                }}<span class="separator">&nbsp;&nbsp;</span
+                >{{ item.attribute.color
+                }}<span class="separator" v-if="item.attribute.size"
+                  >&nbsp;|&nbsp;</span
+                >{{ item.attribute.size }}
+                <span class="separator" v-if="item.attribute.quantity"
+                  >&nbsp;|&nbsp;</span
+                >{{ item.attribute.quantity }}
+              </div>
             </div>
           </div>
-        </div>
-      </q-scroll-area>
+        </q-scroll-area>
+      </template>
     </div>
     <div class="bottom-coherent-button" id="bottom-button">
       <q-btn
@@ -82,6 +89,10 @@ import { computed, defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import { useStore } from "@/store";
 import { useI18n } from "vue-i18n";
 import PopupComponent from "@/components/PopupComponent.vue";
+import {
+  AndroidResponse,
+  AndroidResponseStatus,
+} from "@/models/android.response";
 const DataMgmtCartonMixed = defineComponent({
   components: {
     CommonHeaderComponent,
@@ -102,61 +113,9 @@ const DataMgmtCartonMixed = defineComponent({
     const isEditMode = ref(false);
     const pressDelete = ref(false);
     const pressHome = ref(false);
+    const noRecord = ref(false);
     onBeforeMount(() => {
-      bridge.call(
-        "fetchMixCartonItemsForDM",
-        {
-          cartonID: store.state.dataMgmtModule.selectedCartonHeader.cartonID,
-          taskID: store.state.dataMgmtModule.selectedCartonHeader.taskID,
-        },
-        (res) => {
-          const mixCartonItems = JSON.parse(res) as any[];
-          mixCartonItems.forEach((mixItem: any, index: number) => {
-            let number = index + 1;
-            const viewElement = {
-              displayName: "item" + number,
-              id: mixItem.id,
-              lpId: mixItem.lpId,
-              attribute: {
-                upc: "",
-                color: "",
-                style: "",
-                size: "",
-                quantity: "",
-              },
-            };
-            store.state.dataMgmtModule.profile.forEach(
-              (item: ProfileDisplayAttribute) => {
-                if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
-                  if (item.level == ProfileElementLevel.CARTON_UPC) {
-                    const fieldName = item.displayDataFieldName;
-                    switch (fieldName) {
-                      case "UPC":
-                        viewElement.attribute.upc = ref(mixItem.upc);
-                        break;
-                      case "Color":
-                        viewElement.attribute.color = ref(mixItem.color);
-                        break;
-                      case "Style":
-                        viewElement.attribute.style = ref(mixItem.style);
-                        break;
-                      case "Size":
-                        viewElement.attribute.size = ref(mixItem.size);
-                        break;
-                      case "Quantity":
-                        viewElement.attribute.quantity = ref(mixItem.quantity);
-                        break;
-                      default:
-                        break;
-                    }
-                  }
-                }
-              }
-            );
-            pageView.value.push(viewElement);
-          });
-        }
-      );
+      initData();
     });
     onMounted(() => {
       const deviceHeight = window.innerHeight;
@@ -202,9 +161,18 @@ const DataMgmtCartonMixed = defineComponent({
         type.value = "action";
         pressDelete.value = true;
         msg.value = i18n.t("dataManagement.delete_dialog_message");
-      }
-      {
-        // add
+      } else {
+        // router.push({
+        //   name: "mixCarton",
+        //   params: {
+        //     id: route.params.id,
+        //     from: "mixCartonSummary",
+        //     cartonID: store.state.dataMgmtModule.selectedCartonHeader.cartonID,
+        //     taskID: store.state.dataMgmtModule.dataMgmt.taskID,
+        //     scanType: store.state.dataMgmtModule.dataMgmt.scanType,
+        //     itemCount: pageView.value.length + 1,
+        //   },
+        // });
       }
     };
     const onConfirmDialog = () => {
@@ -212,8 +180,26 @@ const DataMgmtCartonMixed = defineComponent({
       if (pressHome.value) {
         router.push("/home");
       } else if (pressDelete.value) {
+        let cartonProducts = "";
+        pageView.value.forEach((item: any) => {
+          if (item["isSelected"] == true) {
+            if (cartonProducts.length == 0) {
+              cartonProducts = item.id;
+            } else {
+              cartonProducts += "@" + item.id;
+            }
+          }
+        });
+        const apiParams = {
+          idList: cartonProducts,
+        };
+        bridge.call("deleteCartonProducts", apiParams, (res: string) => {
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            initData();
+          }
+        });
         cancelEditMode();
-        // todo detele
       }
     };
     const home = () => {
@@ -221,6 +207,65 @@ const DataMgmtCartonMixed = defineComponent({
       dialogVisible.value = true;
       type.value = "action";
       msg.value = i18n.t("common.return_home");
+    };
+    const initData = () => {
+      pageView.value = [];
+      bridge.call(
+        "fetchMixCartonItemsForDM",
+        {
+          cartonID: store.state.dataMgmtModule.selectedCartonHeader.cartonID,
+          taskID: store.state.dataMgmtModule.selectedCartonHeader.taskID,
+        },
+        (res) => {
+          const mixCartonItems = JSON.parse(res) as any[];
+          mixCartonItems.forEach((mixItem: any, index: number) => {
+            let number = index + 1;
+            const viewElement = {
+              displayName: "item" + number,
+              id: mixItem.id,
+              lpId: mixItem.lpId,
+              attribute: {
+                upc: "",
+                color: "",
+                style: "",
+                size: "",
+                quantity: "",
+              },
+            };
+            store.state.dataMgmtModule.profile.forEach(
+              (item: ProfileDisplayAttribute) => {
+                if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
+                  if (item.level == ProfileElementLevel.CARTON_UPC) {
+                    switch (item.displayDataFieldName) {
+                      case "UPC":
+                        viewElement.attribute.upc = ref(mixItem.upc);
+                        break;
+                      case "Color":
+                        viewElement.attribute.color = ref(mixItem.color);
+                        break;
+                      case "Style":
+                        viewElement.attribute.style = ref(mixItem.style);
+                        break;
+                      case "Size":
+                        viewElement.attribute.size = ref(mixItem.size);
+                        break;
+                      case "Quantity":
+                        viewElement.attribute.quantity = ref(mixItem.quantity);
+                        break;
+                      default:
+                        break;
+                    }
+                  }
+                }
+              }
+            );
+            pageView.value.push(viewElement);
+          });
+          if (pageView.value.length == 0) {
+            noRecord.value = true;
+          }
+        }
+      );
     };
     return {
       titles,
@@ -238,6 +283,7 @@ const DataMgmtCartonMixed = defineComponent({
       onSubmit,
       onConfirmDialog,
       home,
+      noRecord,
     };
   },
 });
