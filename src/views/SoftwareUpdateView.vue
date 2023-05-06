@@ -4,8 +4,8 @@
     <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component> -->
     <common-header-component
-      :titles="[$t('setting.software_update')]"
-      :icons="['back', 'home', 'empty']"
+      :titles="[$t('setting.setting_header'), $t('setting.software_update')]"
+      :icons="['back', 'home']"
       @onHome="home"
       v-model:searchValue="search"
       @onBack="back"

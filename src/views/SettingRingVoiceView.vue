@@ -3,8 +3,8 @@
     <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component> -->
     <common-header-component
-      :titles="[$t('setting.ring_voice')]"
-      :icons="['back', 'home', 'empty']"
+      :titles="[$t('setting.setting_header'), $t('setting.ring_voice')]"
+      :icons="['back', 'home']"
       @onHome="home"
       @onBack="back"
     />

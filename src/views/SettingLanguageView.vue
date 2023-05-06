@@ -3,8 +3,8 @@
     <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component> -->
     <common-header-component
-      :titles="[$t('setting.setting_language')]"
-      :icons="['back', 'home', 'empty']"
+      :titles="[$t('setting.setting_header'), $t('setting.setting_language')]"
+      :icons="['back', 'home']"
       @onHome="home"
       v-model:searchValue="search"
       @onBack="back"

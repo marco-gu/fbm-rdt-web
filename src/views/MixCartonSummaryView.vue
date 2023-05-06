@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <common-header-component
-      :titles="[`${poNumber} | ${cartonID}`]"
+      :titles="[`${soNumber} | ${cartonID}`]"
       :icons="['back', 'home']"
       @onHome="onHome"
       @onBack="onBack"
@@ -53,6 +53,7 @@
           flat
           push
           :label="$t('common.delete')"
+          :disable="isDeleteButtonDisabled"
           @click="onClickDelete"
         />
       </template>
@@ -87,7 +88,7 @@ import { MixCartonProduct } from "@/models/profile";
 import { ViewDisplayAttribute } from "@/utils/profile.render";
 import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
 import bridge from "dsbridge";
-import { defineComponent, ref, onMounted, Ref, watch } from "vue";
+import { computed, defineComponent, ref, onMounted, Ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import inputScan from "../assets/icon/compress-solid.svg";
@@ -106,12 +107,12 @@ const MixCartonSummaryView = defineComponent({
     const mixCartonListDisplay: Ref<MixCartonProduct[]> = ref([]);
     const msg = ref("");
     const pageViews = ref([] as ViewDisplayAttribute[]);
-    const poNumber = ref("");
     const popupVisible = ref(false);
     const pressDelete = ref(false);
     const pressHome = ref(false);
     const router = useRouter();
     const scanType = ref("");
+    const soNumber = ref("");
     const taskID = ref("");
     const type = ref("");
     onMounted(() => {
@@ -119,6 +120,7 @@ const MixCartonSummaryView = defineComponent({
       softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
       arrangeRouteParams();
       fetchCartonProducts();
+      fetchSoNumberForMixCartonSummary();
     });
     watch(
       route,
@@ -126,6 +128,7 @@ const MixCartonSummaryView = defineComponent({
         if (route.name === "mixCartonSummary") {
           arrangeRouteParams();
           fetchCartonProducts();
+          fetchSoNumberForMixCartonSummary();
         }
       },
       { deep: true }
@@ -134,13 +137,25 @@ const MixCartonSummaryView = defineComponent({
       cartonID.value = route.params.cartonID as string;
       taskID.value = route.params.taskID as string;
       scanType.value = route.params.scanType as string;
-      bridge.call(
-        "fetchSoNumberForMixCartonSummary",
-        { taskID: taskID.value },
-        (res: string) => {
-          poNumber.value = res;
+    };
+    const deleteCartonProducts = () => {
+      let idList: any = [];
+      mixCartonListDisplay.value.forEach((item: any) => {
+        if (item["isSelected"]) {
+          idList.push(item.id);
         }
-      );
+      });
+      bridge.call("deleteCartonProducts", { idList: idList }, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          isEditMode.value = false;
+          fetchCartonProducts();
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          type.value = "error";
+          popupVisible.value = true;
+          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+        }
+      });
     };
     const fetchCartonProducts = () => {
       bridge.call(
@@ -155,34 +170,14 @@ const MixCartonSummaryView = defineComponent({
         }
       );
     };
-    const deleteMixCarton = () => {
-      let idList: any = [];
-      mixCartonListDisplay.value.forEach((item: any) => {
-        if (item["isSelected"]) {
-          idList.push(item.id);
+    const fetchSoNumberForMixCartonSummary = () => {
+      bridge.call(
+        "fetchSoNumberForMixCartonSummary",
+        { taskID: taskID.value },
+        (res: string) => {
+          soNumber.value = res;
         }
-      });
-      if (idList.length > 0) {
-        bridge.call(
-          "deleteCartonProducts",
-          { idList: idList },
-          (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              isEditMode.value = false;
-              fetchCartonProducts();
-            } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-              type.value = "error";
-              popupVisible.value = true;
-              msg.value = i18n.t("messageCode." + androidResponse.messageCode);
-            }
-          }
-        );
-      } else {
-        type.value = "error";
-        popupVisible.value = true;
-        msg.value = i18n.t("dataManagement.no_record_selected");
-      }
+      );
     };
     const handleHold = () => {
       mixCartonListDisplay.value.forEach((item: any) => {
@@ -190,6 +185,11 @@ const MixCartonSummaryView = defineComponent({
       });
       isEditMode.value = true;
     };
+    const isDeleteButtonDisabled = computed(() => {
+      return !mixCartonListDisplay.value.some(
+        (item: any) => item["isSelected"]
+      );
+    });
     const onBack = () => {
       if (isEditMode.value) {
         isEditMode.value = false;
@@ -211,23 +211,17 @@ const MixCartonSummaryView = defineComponent({
       });
     };
     const onClickDelete = () => {
-      if (mixCartonListDisplay.value.some((item: any) => item["isSelected"])) {
-        type.value = "action";
-        pressDelete.value = true;
-        popupVisible.value = true;
-        msg.value = i18n.t("dataManagement.delete_dialog_message");
-      } else {
-        type.value = "error";
-        popupVisible.value = true;
-        msg.value = i18n.t("dataManagement.no_record_selected");
-      }
+      type.value = "action";
+      pressDelete.value = true;
+      popupVisible.value = true;
+      msg.value = i18n.t("dataManagement.delete_dialog_message");
     };
     const OnClose = () => {
       popupVisible.value = false;
       if (pressHome.value) {
         router.push("/home");
       } else if (pressDelete.value) {
-        deleteMixCarton();
+        deleteCartonProducts();
       }
       pressHome.value = false;
       pressDelete.value = false;
@@ -243,6 +237,7 @@ const MixCartonSummaryView = defineComponent({
       handleHold,
       inputRef,
       inputScanIcon,
+      isDeleteButtonDisabled,
       isEditMode,
       mixCartonListDisplay,
       msg,
@@ -252,7 +247,7 @@ const MixCartonSummaryView = defineComponent({
       OnClose,
       onHome,
       pageViews,
-      poNumber,
+      soNumber,
       popupVisible,
       router,
       type,

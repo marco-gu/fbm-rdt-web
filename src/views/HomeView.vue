@@ -52,7 +52,7 @@
           <q-list>
             <q-item clickable @click="goMyProfile()" v-ripple>
               <q-item-section>
-                <q-item-label>{{ $t("home.profile") }}</q-item-label>
+                <q-item-label>{{ $t("profile.profiles") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-separator inset color="grey-3" />
@@ -64,7 +64,7 @@
             <q-separator inset color="grey-3" />
             <q-item clickable @click="goLPList" v-ripple>
               <q-item-section>
-                <q-item-label>{{ $t("home.lp_list") }}</q-item-label>
+                <q-item-label>{{ $t("lp.lp_files") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-separator inset color="grey-3" />
