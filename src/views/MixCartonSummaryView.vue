@@ -48,6 +48,7 @@
           flat
           push
           :label="$t('common.delete')"
+          :disable="isDeleteButtonDisabled"
           @click="onClickDelete"
         />
       </template>
@@ -82,7 +83,7 @@ import { MixCartonProduct } from "@/models/profile";
 import { ViewDisplayAttribute } from "@/utils/profile.render";
 import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
 import bridge from "dsbridge";
-import { defineComponent, ref, onMounted, Ref, watch } from "vue";
+import { computed, defineComponent, ref, onMounted, Ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import inputScan from "../assets/icon/compress-solid.svg";
@@ -179,6 +180,11 @@ const MixCartonSummaryView = defineComponent({
       });
       isEditMode.value = true;
     };
+    const isDeleteButtonDisabled = computed(() => {
+      return !mixCartonListDisplay.value.some(
+        (item: any) => item["isSelected"]
+      );
+    });
     const onBack = () => {
       if (isEditMode.value) {
         isEditMode.value = false;
@@ -200,16 +206,10 @@ const MixCartonSummaryView = defineComponent({
       });
     };
     const onClickDelete = () => {
-      if (mixCartonListDisplay.value.some((item: any) => item["isSelected"])) {
-        type.value = "action";
-        pressDelete.value = true;
-        popupVisible.value = true;
-        msg.value = i18n.t("dataManagement.delete_dialog_message");
-      } else {
-        type.value = "error";
-        popupVisible.value = true;
-        msg.value = i18n.t("dataManagement.no_record_selected");
-      }
+      type.value = "action";
+      pressDelete.value = true;
+      popupVisible.value = true;
+      msg.value = i18n.t("dataManagement.delete_dialog_message");
     };
     const OnClose = () => {
       popupVisible.value = false;
@@ -232,6 +232,7 @@ const MixCartonSummaryView = defineComponent({
       handleHold,
       inputRef,
       inputScanIcon,
+      isDeleteButtonDisabled,
       isEditMode,
       mixCartonListDisplay,
       msg,
