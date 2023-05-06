@@ -99,19 +99,19 @@ const PopupComponent = defineComponent({
               iconName.value = "check_circle";
               iconColor.value = DialogIconColor.GREEN;
               title.value = i18n.t("common.success");
-              label.value = i18n.t("common.ok");
+              label.value = i18n.t("common.confirm");
               break;
             case DialogType.INFO:
               iconName.value = "info";
               iconColor.value = DialogIconColor.GREEN;
               title.value = i18n.t("common.info");
-              label.value = i18n.t("common.ok");
+              label.value = i18n.t("common.confirm");
               break;
             case DialogType.ACTION:
               iconName.value = "info";
               iconColor.value = DialogIconColor.BLUE;
               title.value = i18n.t("common.info");
-              label.value = i18n.t("common.ok");
+              label.value = i18n.t("common.confirm");
               dialogType.value = DialogType.ACTION;
               break;
             case DialogType.ERROR:
