@@ -2,9 +2,9 @@
   <div class="wrapper">
     <common-header-component
       :titles="[$t('continue.job_list')]"
-      :icons="['home', 'search', 'expand']"
+      :icons="['home', 'search', 'back']"
       @onHome="() => router.push('/home')"
-      @onExpand="onExpand()"
+      @onBack="() => router.push('/home')"
       v-model:searchValue="search"
       @onSearch="onSearch"
     />
@@ -38,10 +38,12 @@
           <q-spinner-dots color="primary" size="40px" />
         </div>
       </template>
+      <!-- <q-scroll-area ref="myScrollArea" id="scroll-area"> -->
       <q-scroll-area
         ref="myScrollArea"
         id="scroll-area"
-        :thumb-style="{ width: '0px' }"
+        :thumb-style="thumbStyle"
+        :bar-style="barStyle"
       >
         <template v-if="noRecord">
           <div class="no-record">{{ $t("common.no_record") }}</div>
@@ -120,7 +122,7 @@
         </q-infinite-scroll>
       </q-scroll-area>
 
-      <div class="footer-message">{{ $t("continue.instruction") }}</div>
+      <!-- <div class="footer-message">{{ $t("continue.instruction") }}</div> -->
     </div>
   </div>
 </template>
@@ -217,7 +219,8 @@ const MyJobsView = defineComponent({
       done();
     };
     const getScanDataList = () => {
-      bridge.call("fetchTaskForDataManagement", {}, (data: any) => {
+      bridge.call("fetchDataMgmt", {}, (data: any) => {
+        // bridge.call("fetchTaskForDataManagement", {}, (data: any) => {
         refreshloading.value = false;
         apiResult.value = JSON.parse(data) as ScanDataManagement[];
 
@@ -303,11 +306,6 @@ const MyJobsView = defineComponent({
       };
       bridge.call("continueJobScan", args);
     };
-
-    const onExpand = () => {
-      alert(111);
-    };
-
     return {
       onClear,
       onClickScanTask,
@@ -322,7 +320,21 @@ const MyJobsView = defineComponent({
       defaultDisplay,
       refresh,
       router,
-      onExpand,
+      thumbStyle: {
+        right: "4px",
+        borderRadius: "5px",
+        backgroundColor: "black",
+        width: "5px",
+        opacity: 0.75,
+      },
+
+      barStyle: {
+        right: "4px",
+        borderRadius: "9px",
+        backgroundColor: "black",
+        width: "5px",
+        opacity: 0.2,
+      },
     };
   },
 });

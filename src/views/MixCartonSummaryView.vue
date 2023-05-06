@@ -29,9 +29,14 @@
                   {{ item.upc }}
                 </div>
                 <div item="label">
-                  {{ item.style }}<span class="separator">&nbsp;&nbsp;</span
-                  >{{ item.color }}<span class="separator">&nbsp;|&nbsp;</span
-                  >{{ item.size }} <span class="separator">&nbsp;|&nbsp;</span
+                  {{ item.style
+                  }}<span class="separator" v-if="item.color"
+                    >&nbsp;|&nbsp;</span
+                  >{{ item.color
+                  }}<span class="separator" v-if="item.size">&nbsp;|&nbsp;</span
+                  >{{ item.size }}
+                  <span class="separator" v-if="item.quantity"
+                    >&nbsp;|&nbsp;</span
                   >{{ item.quantity }}
                 </div>
               </div>

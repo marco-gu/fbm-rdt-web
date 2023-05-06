@@ -33,7 +33,8 @@
               </div>
               <div class="value mt-sm">
                 {{ item.attribute.style
-                }}<span class="separator">&nbsp;&nbsp;</span
+                }}<span class="separator" v-if="item.attribute.color"
+                  >&nbsp;|&nbsp;</span
                 >{{ item.attribute.color
                 }}<span class="separator" v-if="item.attribute.size"
                   >&nbsp;|&nbsp;</span

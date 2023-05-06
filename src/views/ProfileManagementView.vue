@@ -5,7 +5,9 @@
     </header-component> -->
     <common-header-component
       :titles="[$t('profile.profiles')]"
-      :icons="!isEditMode ? ['back', 'search', 'home'] : ['back', 'home']"
+      :icons="
+        !isEditMode ? ['back', 'search', 'home'] : ['back', 'home', 'empty']
+      "
       @onHome="home"
       v-model:searchValue="search"
       @onBack="back"
@@ -26,7 +28,8 @@
       <q-scroll-area
         class="scroll-area"
         id="scroll-area"
-        :thumb-style="{ width: '0px' }"
+        :thumb-style="thumbStyle"
+        :bar-style="barStyle"
       >
         <template v-if="isEditMode">
           <div class="edit-container">
@@ -78,15 +81,15 @@
       </q-scroll-area>
     </div>
     <div class="bottom-coherent-button" id="bottom-button" v-show="isEditMode">
-      <!-- <q-btn
+      <q-btn
         no-caps
         class="full-width"
         flat
         push
         :label="$t('common.cancel')"
         @click="cancelEditMode"
-      /> -->
-      <!-- <q-separator vertical inset color="white" /> -->
+      />
+      <q-separator vertical inset color="white" />
       <q-btn
         no-caps
         class="full-width"
@@ -201,7 +204,7 @@ const ProfileManagementView = defineComponent({
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 55 + "px";
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 20 + "px";
       getProfileList("onMounted");
     });
     const sortProfileList = (profileListDisplay: any[]) => {
@@ -299,6 +302,9 @@ const ProfileManagementView = defineComponent({
     const handleHold = () => {
       updateProfileListDisplay();
       isEditMode.value = true;
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 70 + "px";
     };
     const deleteProfile = () => {
       // profileName is business primary key
@@ -338,6 +344,9 @@ const ProfileManagementView = defineComponent({
     };
     const cancelEditMode = () => {
       isEditMode.value = false;
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 10 + "px";
     };
     const isDeleteButtonDisabled = computed(() => {
       return !profileListDisplay.value.some((item: any) => item["isSelected"]);
@@ -364,6 +373,21 @@ const ProfileManagementView = defineComponent({
       router,
       isDeleteButtonDisabled,
       showHomeDialog,
+      thumbStyle: {
+        right: "4px",
+        borderRadius: "5px",
+        backgroundColor: "black",
+        width: "5px",
+        opacity: 0.75,
+      },
+
+      barStyle: {
+        right: "4px",
+        borderRadius: "9px",
+        backgroundColor: "black",
+        width: "5px",
+        opacity: 0.2,
+      },
     };
   },
 });

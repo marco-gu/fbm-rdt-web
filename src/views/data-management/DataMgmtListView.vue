@@ -3,7 +3,7 @@
     <common-header-component
       :titles="[$t('dataManagement.data_management_header')]"
       :icons="['back', 'home', 'search']"
-      @onBack="home"
+      @onBack="back"
       @onHome="home"
       @onSearch="onSearch($event)"
     />
@@ -11,7 +11,8 @@
       <q-scroll-area
         ref="myScrollArea"
         id="scroll-area"
-        :thumb-style="{ width: '0px' }"
+        :thumb-style="thumbStyle"
+        :bar-style="barStyle"
       >
         <template v-if="noRecord">
           <div class="no-record">{{ $t("common.no_record") }}</div>
@@ -288,6 +289,14 @@ const DataMgmtListView = defineComponent({
         }
       });
     };
+    const back = () => {
+      router.push({
+        path: "/home",
+        query: {
+          leftDrawerOpen: "true",
+        },
+      });
+    };
     return {
       onSearch,
       myInfiniteScroll,
@@ -305,6 +314,22 @@ const DataMgmtListView = defineComponent({
       showDeleteDialog,
       onConfirmDialog,
       onLoad,
+      back,
+      thumbStyle: {
+        right: "4px",
+        borderRadius: "5px",
+        backgroundColor: "black",
+        width: "5px",
+        opacity: 0.75,
+      },
+
+      barStyle: {
+        right: "4px",
+        borderRadius: "9px",
+        backgroundColor: "black",
+        width: "5px",
+        opacity: 0.2,
+      },
     };
   },
 });

@@ -23,7 +23,11 @@
           </template>
         </q-input>
       </div> -->
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="thumbStyle"
+        :bar-style="barStyle"
+      >
         <q-pull-to-refresh @refresh="refresh">
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
             <!-- <div class="no-data">
@@ -197,7 +201,7 @@ const ProfileView = defineComponent({
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 55 + "px";
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
       // Initialize
       getProfileList();
     });
@@ -231,6 +235,21 @@ const ProfileView = defineComponent({
       loadingStatus,
       msgCode,
       homePopup,
+      thumbStyle: {
+        right: "4px",
+        borderRadius: "5px",
+        backgroundColor: "black",
+        width: "5px",
+        opacity: 0.75,
+      },
+
+      barStyle: {
+        right: "4px",
+        borderRadius: "9px",
+        backgroundColor: "black",
+        width: "5px",
+        opacity: 0.2,
+      },
     };
   },
 });

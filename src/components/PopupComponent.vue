@@ -7,14 +7,24 @@
   >
     <div class="dialog-container">
       <div class="dialog-container__title">
-        <q-icon :name="iconName" :color="iconColor" />
+        <!-- <q-icon :name="iconName" :color="iconColor" /> -->
+        <!-- <a class="icon"><i class="fa-solid fa-circle-xmark"></i> </a> -->
+        <a class="icon" v-if="dialogType == 'error'"
+          ><i class="fa-solid fa-circle-xmark" style="color: #ea1010"></i>
+        </a>
+        <a class="icon" v-if="dialogType == 'info'"
+          ><i class="fa-solid fa-circle-info" style="color: #64b2d4"></i>
+        </a>
+        <a class="icon" v-if="dialogType == 'success'"
+          ><i class="fa-solid fa-circle-check" style="color: #16c52a"></i>
+        </a>
         {{ title }}
       </div>
       <div class="dialog-container__content">
         {{ prompt }}
       </div>
       <div class="dialog-container__button">
-        <template v-if="dialogType == 'action'">
+        <template v-if="dialogType == 'info'">
           <button
             class="dialog-button cancel"
             style="margin-right: 10px"
@@ -34,6 +44,7 @@
 import { defineComponent, ref, toRefs, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import barWhite from "../assets/icon/icon_popup_info.png";
 enum DialogType {
   INFO = "info",
   ERROR = "error",
@@ -76,6 +87,7 @@ const PopupComponent = defineComponent({
     const returnHome = ref(false);
     const persistent = ref(false);
     const dialogType = ref("");
+    const barWhiteIcon = barWhite;
     const cancel = () => {
       persistent.value = false;
       context.emit("cancel");
@@ -96,28 +108,31 @@ const PopupComponent = defineComponent({
           prompt.value = message.value as string;
           switch (type.value) {
             case DialogType.SUCCESS:
-              iconName.value = "check_circle";
-              iconColor.value = DialogIconColor.GREEN;
+              // iconName.value = "check_circle";
+              // iconColor.value = DialogIconColor.GREEN;
               title.value = i18n.t("common.success");
               label.value = i18n.t("common.ok");
+              dialogType.value = DialogType.SUCCESS;
               break;
             case DialogType.INFO:
-              iconName.value = "info";
-              iconColor.value = DialogIconColor.GREEN;
+              // iconName.value = "info";
+              // iconColor.value = DialogIconColor.GREEN;
               title.value = i18n.t("common.info");
               label.value = i18n.t("common.ok");
+              dialogType.value = DialogType.INFO;
               break;
             case DialogType.ACTION:
-              iconName.value = "info";
-              iconColor.value = DialogIconColor.BLUE;
+              // iconName.value = "info";
+              // iconColor.value = DialogIconColor.BLUE;
               title.value = i18n.t("common.info");
               label.value = i18n.t("common.ok");
-              dialogType.value = DialogType.ACTION;
+              dialogType.value = DialogType.INFO;
               break;
             case DialogType.ERROR:
-              iconName.value = "error_outline";
-              iconColor.value = DialogIconColor.RED;
+              // iconName.value = "fa-solid fa-circle-xmark";
+              // iconColor.value = DialogIconColor.RED;
               title.value = i18n.t("common.error");
+              dialogType.value = DialogType.ERROR;
               if (
                 messageCode.value == "E92-99-0003" ||
                 messageCode.value == "E92-99-0004"
@@ -137,12 +152,13 @@ const PopupComponent = defineComponent({
       prompt,
       persistent,
       label,
-      iconName,
+      // iconName,
       title,
       confirm,
-      iconColor,
+      // iconColor,
       dialogType,
       cancel,
+      barWhiteIcon,
     };
   },
 });

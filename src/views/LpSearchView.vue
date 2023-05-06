@@ -194,7 +194,7 @@ const LpSearchView = defineComponent({
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
       const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
       // softkey popup
       softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
       const initData = JSON.parse(
