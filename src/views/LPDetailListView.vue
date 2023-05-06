@@ -3,7 +3,7 @@
   <div class="wrapper">
     <common-header-component
       :titles="[profileName, so]"
-      :icons="['back', 'home']"
+      :icons="['back', 'home', 'empty']"
       @onHome="() => router.push('/home')"
       @onSync="refresh(void 0)"
       @onBack="back"

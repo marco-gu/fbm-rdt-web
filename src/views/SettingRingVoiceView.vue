@@ -4,7 +4,7 @@
     </header-component> -->
     <common-header-component
       :titles="[$t('setting.setting_header'), $t('setting.ring_voice')]"
-      :icons="['back', 'home']"
+      :icons="['back', 'home', 'empty']"
       @onHome="home"
       @onBack="back"
     />
