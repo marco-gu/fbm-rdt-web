@@ -4,7 +4,7 @@
     </header-component> -->
     <common-header-component
       :titles="[$t('login.change_password')]"
-      :icons="['back', 'home']"
+      :icons="['back', 'home', 'empty']"
       @onHome="home"
       @onBack="back"
     />

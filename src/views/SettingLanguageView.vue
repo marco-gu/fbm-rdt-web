@@ -4,7 +4,7 @@
     </header-component> -->
     <common-header-component
       :titles="[$t('setting.setting_language')]"
-      :icons="['back', 'home']"
+      :icons="['back', 'home', 'empty']"
       @onHome="home"
       v-model:searchValue="search"
       @onBack="back"

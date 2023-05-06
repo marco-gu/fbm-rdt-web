@@ -58,7 +58,7 @@
     "delete": "Delete",
     "download": "Download",
     "upload": "Upload",
-    "ok": "OK",
+    "ok": "Confirm",
     "no_record": "No record found!",
     "uploaded": "Uploaded",
     "not_upload": "Not uploaded",
@@ -116,7 +116,7 @@
     "sync_latest": "Please synchronize the latest profiles",
     "profile_text": "Profile",
     "delete_dialog_message": "Delete the selected profiles?",
-    "home_dialog_message":"Return to Home page?"
+    "home_dialog_message": "Return to Home page?"
   },
   "lp": {
     "lp_search": "LP Search",

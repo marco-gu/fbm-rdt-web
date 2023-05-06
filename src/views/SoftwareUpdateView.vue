@@ -5,7 +5,7 @@
     </header-component> -->
     <common-header-component
       :titles="[$t('setting.software_update')]"
-      :icons="['back', 'home']"
+      :icons="['back', 'home', 'empty']"
       @onHome="home"
       v-model:searchValue="search"
       @onBack="back"

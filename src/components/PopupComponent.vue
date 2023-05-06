@@ -44,7 +44,6 @@
 import { defineComponent, ref, toRefs, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import barWhite from "../assets/icon/icon_popup_info.png";
 enum DialogType {
   INFO = "info",
   ERROR = "error",
@@ -87,7 +86,6 @@ const PopupComponent = defineComponent({
     const returnHome = ref(false);
     const persistent = ref(false);
     const dialogType = ref("");
-    const barWhiteIcon = barWhite;
     const cancel = () => {
       persistent.value = false;
       context.emit("cancel");
@@ -158,7 +156,6 @@ const PopupComponent = defineComponent({
       // iconColor,
       dialogType,
       cancel,
-      barWhiteIcon,
     };
   },
 });
