@@ -110,7 +110,6 @@
   },
   "profile": {
     "profiles": "Profiles",
-    "profile": "Client Profile",
     "sync_complete": "Synchronize completed!",
     "sync_profile": "Sync Profile",
     "sync_latest": "Please synchronize the latest profiles",

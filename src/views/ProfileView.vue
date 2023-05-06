@@ -4,7 +4,7 @@
     <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component> -->
     <common-header-component
-      :titles="[$t('profile.profile')]"
+      :titles="[$t('profile.profiles')]"
       :icons="['back', 'search', 'home']"
       @onHome="homePopup = true"
       @onBack="() => router.push('/home')"
