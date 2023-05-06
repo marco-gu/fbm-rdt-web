@@ -123,6 +123,9 @@ const MixCartonView = defineComponent({
       cartonID.value = mixCartonParam.cartonID;
       scanType.value = mixCartonParam.scanType;
       taskID.value = mixCartonParam.taskID;
+      fetchCartonProducts();
+    });
+    const fetchCartonProducts = () => {
       bridge.call(
         "fetchCartonProducts",
         {
@@ -133,31 +136,14 @@ const MixCartonView = defineComponent({
         (res) => {
           const mixCartonItems = JSON.parse(res) as any[];
           if (mixCartonItems.length > 0) {
-            router.push({
-              name: "mixCartonSummary",
-              params: {
-                id: route.params.id,
-                cartonID: cartonID.value,
-                taskID: taskID.value,
-                scanType: scanType.value,
-              },
-            });
+            navigateToSummaryPage();
           } else {
-            router.push({
-              name: "mixCarton",
-              params: {
-                id: route.params.id,
-                from: "mixCartonSummary",
-                cartonID: cartonID.value,
-                taskID: taskID.value,
-                scanType: scanType.value,
-                itemCount: 1,
-              },
-            });
+            // if scan a new carton (0 carton product) for the 2nd time, will still in mixCartonSummary page, should be in mixCarton page
+            navigateToMixCartonPage();
           }
         }
       );
-    });
+    };
     bridge.register("getScanResult", (res: string) => {
       const param = inputRef.value as any;
       let scanFieldName = "";
@@ -179,11 +165,9 @@ const MixCartonView = defineComponent({
     // });
     onBeforeMount(() => {
       const param = route.params.id as any;
-      const profileName = param.substring(0, param.indexOf("&"));
-      const scanType = param.substring(param.indexOf("&") + 1, param.length);
       const args = {
-        profileName: profileName,
-        scanType: scanType,
+        profileName: param.substring(0, param.indexOf("&")),
+        scanType: param.substring(param.indexOf("&") + 1, param.length),
       };
       bridge.call("getMixCartonProfile", args, (res: any) => {
         const mixProfiles = JSON.parse(res) as ProfileDisplayAttribute[];
@@ -202,16 +186,13 @@ const MixCartonView = defineComponent({
       arrangeRouteParams();
     });
     const arrangeRouteParams = () => {
-      if (route.params.cartonID) {
+      if (
+        route.params.from === "mixCartonSummary" ||
+        route.params.from === "mixCarton"
+      ) {
         cartonID.value = route.params.cartonID as string;
-      }
-      if (route.params.taskID) {
         taskID.value = route.params.taskID as string;
-      }
-      if (route.params.scanType) {
         scanType.value = route.params.scanType as string;
-      }
-      if (route.params.itemCount) {
         itemCount.value = parseInt(route.params.itemCount as string);
       }
     };
@@ -262,15 +243,7 @@ const MixCartonView = defineComponent({
           bridge.call("addMixCarton", apiParams, () => {
             if (completeMixCarton.value) {
               completeMixCarton.value = false;
-              router.push({
-                name: "mixCartonSummary",
-                params: {
-                  id: route.params.id,
-                  cartonID: cartonID.value,
-                  taskID: taskID.value,
-                  scanType: scanType.value,
-                },
-              });
+              navigateToSummaryPage();
             } else {
               itemCount.value++;
               reset();
@@ -317,7 +290,7 @@ const MixCartonView = defineComponent({
     };
     const multiWatchSources = [pageViews.value];
     toUpperCaseElementInput(multiWatchSources);
-    const onBack = () => {
+    const navigateToSummaryPage = () => {
       router.push({
         name: "mixCartonSummary",
         params: {
@@ -327,6 +300,22 @@ const MixCartonView = defineComponent({
           scanType: scanType.value,
         },
       });
+    };
+    const navigateToMixCartonPage = () => {
+      router.push({
+        name: "mixCarton",
+        params: {
+          id: route.params.id,
+          from: "mixCarton",
+          cartonID: cartonID.value,
+          taskID: taskID.value,
+          scanType: scanType.value,
+          itemCount: 1,
+        },
+      });
+    };
+    const onBack = () => {
+      navigateToSummaryPage();
     };
     const OnClose = () => {
       popupVisible.value = false;
