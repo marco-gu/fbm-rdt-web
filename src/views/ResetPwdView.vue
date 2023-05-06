@@ -3,7 +3,7 @@
     <!-- <header-component :titleParam="titleParam" :backFunctionParam="back">
     </header-component> -->
     <common-header-component
-      :titles="[$t('login.change_password')]"
+      :titles="titleParam"
       :icons="['back', 'home']"
       @onHome="home"
       @onBack="back"
@@ -109,7 +109,7 @@
       :visible="popupVisible"
       :message="msg"
       :type="type"
-      @close="popupVisible = false"
+      @close="popupConfirm"
     ></PopupComponent>
   </div>
 </template>
@@ -121,7 +121,7 @@ import {
 import { UpdateLoginUser } from "@/models/login.response";
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import md5 from "md5";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
@@ -150,7 +150,7 @@ const ResetPwdView = defineComponent({
     const isNewPwd = ref(true);
     const isNewRePwd = ref(true);
     const myForm = ref();
-    const titleParam = i18n.t("login.change_password");
+    var titleParam: Ref<string[]> = ref([i18n.t("setting.reset_password")]);
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
@@ -177,6 +177,11 @@ const ResetPwdView = defineComponent({
       initPwd.value = route.params.password as string;
       if (from.value == "LoginView") {
         currentPwd.value = initPwd.value;
+      } else if (from.value == "SettingView") {
+        titleParam.value = [
+          i18n.t("setting.setting_header"),
+          i18n.t("setting.reset_password"),
+        ];
       }
     });
     const onSubmit = () => {
@@ -195,15 +200,15 @@ const ResetPwdView = defineComponent({
               type.value = "success";
               popupVisible.value = true;
               msg.value = i18n.t("messageCode.E93-02-0001");
-              if (from.value == "LoginView") {
-                setTimeout(() => {
-                  router.push("/home");
-                }, 1800);
-              } else if (from.value == "SettingView") {
-                setTimeout(() => {
-                  router.push("/setting");
-                }, 1800);
-              }
+              // if (from.value == "LoginView") {
+              //   setTimeout(() => {
+              //     router.push("/home");
+              //   }, 1800);
+              // } else if (from.value == "SettingView") {
+              //   setTimeout(() => {
+              //     router.push("/setting");
+              //   }, 1800);
+              // }
               // popupSuccessMsg($q, message);
             } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
               // const message = i18n.t(
@@ -299,7 +304,15 @@ const ResetPwdView = defineComponent({
     };
     const back = () => {
       if (from.value == "LoginView") {
-        cancel();
+        router.push("/home");
+      } else if (from.value == "SettingView") {
+        router.push("/setting");
+      }
+    };
+    const popupConfirm = () => {
+      popupVisible.value = false;
+      if (from.value == "LoginView") {
+        router.push("/home");
       } else if (from.value == "SettingView") {
         router.push("/setting");
       }
@@ -309,6 +322,7 @@ const ResetPwdView = defineComponent({
       isPwd,
       onSubmit,
       cancel,
+      close,
       back,
       currentPwd,
       newPwd,
@@ -322,6 +336,7 @@ const ResetPwdView = defineComponent({
       msg,
       isNewPwd,
       isNewRePwd,
+      popupConfirm,
     };
   },
 });

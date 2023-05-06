@@ -3,7 +3,7 @@
     <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
     </header-component> -->
     <common-header-component
-      :titles="[$t('setting.scanning_device')]"
+      :titles="[$t('setting.setting_header'), $t('setting.scanning_device')]"
       :icons="['back', 'home']"
       @onHome="home"
       @onBack="back"
