@@ -4,7 +4,7 @@
     </header-component> -->
     <common-header-component
       :titles="[profileName, $t('lp.scan')]"
-      :icons="['back', 'home']"
+      :icons="['back', 'home', 'empty']"
       @onBack="() => router.push(backUrlParam)"
       @onHome="homePopup = true"
     />
