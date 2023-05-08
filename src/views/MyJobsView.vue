@@ -305,6 +305,7 @@ const MyJobsView = defineComponent({
         fromPageName: "continueJob",
       };
       bridge.call("continueJobScan", args);
+      router.push("/nativeBridge");
     };
     return {
       onClear,
