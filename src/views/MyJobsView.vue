@@ -203,9 +203,9 @@ const MyJobsView = defineComponent({
       const scrollArea = document.getElementById("scroll-area") as any;
       scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 40 + "px";
     });
-    bridge.register("refreshJobs", () => {
-      getScanDataList();
-    });
+    // bridge.register("refreshJobs", () => {
+    //   getScanDataList();
+    // });
     const refresh = (done: any) => {
       if (search.value && search.value.length > 0) {
         onSearch();

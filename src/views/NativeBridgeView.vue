@@ -16,6 +16,11 @@ export default defineComponent({
         path: "/imageAccess",
       });
     });
+    bridge.register("refreshJobs", () => {
+      router.push({
+        path: "/continueJobs",
+      });
+    });
   },
 });
 </script>
