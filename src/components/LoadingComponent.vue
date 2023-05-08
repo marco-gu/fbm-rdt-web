@@ -7,7 +7,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, nextTick, ref, toRefs, watch } from "vue";
+import { defineComponent, ref, toRefs, watch } from "vue";
 const LoadingComponent = defineComponent({
   props: {
     visible: {

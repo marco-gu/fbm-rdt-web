@@ -69,7 +69,6 @@
                       @click="scan(item.fieldName, $event)"
                     >
                       <q-img
-                        :color="secondary"
                         no-transition
                         no-spinner
                         :src="inputScanIcon"

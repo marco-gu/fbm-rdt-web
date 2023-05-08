@@ -297,7 +297,7 @@ const MyJobsView = defineComponent({
     };
     const onClickScanTask = (scanTask: any) => {
       const args = {
-        taskID: scanTask.taskId,
+        taskID: scanTask.taskID,
         type: scanTask.scanType,
         profileName: scanTask.profileName,
         pageType:

@@ -1,4 +1,5 @@
 <template>
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <common-header-component
       :titles="[$t('dataManagement.data_management_header')]"
@@ -63,7 +64,7 @@
                 </div>
               </div>
             </div>
-            <template v-if="apiIndex > 0" v-slot:loading>
+            <template v-slot:loading>
               <div class="row justify-center q-my-md">
                 <q-spinner-dots color="primary" size="40px" />
               </div>
@@ -116,6 +117,7 @@
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import {
   AndroidResponse,
@@ -128,17 +130,19 @@ import bridge from "dsbridge";
 
 import { computed, defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { pageSize } from "../../models/constant";
 const DataMgmtListView = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
+    LoadingComponent,
   },
   setup() {
     const i18n = useI18n();
     const pageView = ref([] as DataMgmt[]);
     const apiResult = ref([] as DataMgmt[]);
     const noRecord = ref(false);
-    const apiIndex = ref(0);
+    const pageNumber = ref(0);
     const myInfiniteScroll = ref();
     const store = useStore();
     const isEditMode = ref(false);
@@ -148,23 +152,17 @@ const DataMgmtListView = defineComponent({
     const pressUpload = ref(false);
     const pressDelete = ref(false);
     const isSearchMode = ref(false);
+    const loadingStatus = ref(true);
     onBeforeMount(() => {
-      initData();
+      getData();
     });
     onMounted(() => {
-      // TODO First time calculate scroll areea
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
+      initScreenSize();
     });
-    // TODO calculate scroll area
     const handleHold = () => {
       clearCheckbox();
       isEditMode.value = true;
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height =
-        deviceHeight - scrollArea.offsetTop - 100 + "px";
+      selectionModeScreenSize();
     };
     const onDetail = (item: DataMgmt) => {
       if (!isEditMode.value) {
@@ -179,16 +177,10 @@ const DataMgmtListView = defineComponent({
     const onSearch = (e: string) => {
       console.log(e);
     };
-    const home = () => {
-      router.push("/home");
-    };
-    // TODO calculate scroll area after cancel
     const cancelEditMode = () => {
       clearCheckbox();
       isEditMode.value = false;
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
+      initScreenSize();
     };
     const showUploadDialog = () => {
       dialogVisible.value = true;
@@ -208,26 +200,31 @@ const DataMgmtListView = defineComponent({
       });
     };
     const onConfirmDialog = () => {
+      const taskList: string[] = [];
+      pageView.value.forEach((item: any) => {
+        if (item["isSelected"] == true) {
+          taskList.push(item.taskID);
+        }
+      });
+      const args = {
+        taskIdList: taskList,
+      };
       if (pressUpload.value) {
         dialogVisible.value = false;
-        // todo upload
-        cancelEditMode();
-      } else if (pressDelete.value) {
-        dialogVisible.value = false;
-        const taskList: string[] = [];
-        pageView.value.forEach((item: any) => {
-          if (item["isSelected"] == true) {
-            taskList.push(item.taskID);
+        bridge.call("uploadScanData", args, (res: string) => {
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            cancelEditMode();
+            getData();
           }
         });
-        const args = {
-          taskIdList: taskList,
-        };
+      } else if (pressDelete.value) {
+        dialogVisible.value = false;
         bridge.call("deleteTaskForDataManagement", args, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             cancelEditMode();
-            initData();
+            getData();
           }
         });
       }
@@ -253,9 +250,9 @@ const DataMgmtListView = defineComponent({
         //   done();
         // }, 200);
       } else {
-        const start = apiIndex.value * 10;
-        const end = (apiIndex.value + 1) * 10;
-        setTimeout(() => {
+        if (pageNumber.value > 0) {
+          const start = pageNumber.value * pageSize;
+          const end = (pageNumber.value + 1) * pageSize;
           for (let i = start; i < end; i++) {
             if (
               apiResult.value[i] &&
@@ -264,24 +261,25 @@ const DataMgmtListView = defineComponent({
               pageView.value.push(apiResult.value[i]);
             }
           }
-          if (pageView.value.length == (apiIndex.value + 1) * 10) {
-            apiIndex.value++;
+          if (pageView.value.length == (pageNumber.value + 1) * pageSize) {
+            pageNumber.value++;
           } else {
             myInfiniteScroll.value.stop();
           }
           done();
-        }, 200);
+        }
       }
     };
-    const initData = () => {
+    const getData = () => {
       bridge.call("fetchDataMgmt", {}, (data: any) => {
+        loadingStatus.value = false;
         apiResult.value = JSON.parse(data) as any[];
         if (apiResult.value.length == 0) {
           noRecord.value = true;
         } else {
-          if (apiResult.value.length == 10) {
-            pageView.value = apiResult.value;
-            apiIndex.value++;
+          if (apiResult.value.length > pageSize) {
+            pageView.value = apiResult.value.slice(0, pageSize);
+            pageNumber.value++;
           } else {
             pageView.value = apiResult.value;
             myInfiniteScroll.value.stop();
@@ -297,6 +295,21 @@ const DataMgmtListView = defineComponent({
         },
       });
     };
+    const home = () => {
+      router.push("/home");
+    };
+    const initScreenSize = () => {
+      // TODO First time calculate scroll areea
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
+    };
+    const selectionModeScreenSize = () => {
+      const deviceHeight = window.innerHeight;
+      const scrollArea = document.getElementById("scroll-area") as any;
+      scrollArea.style.height =
+        deviceHeight - scrollArea.offsetTop - 100 + "px";
+    };
     return {
       onSearch,
       myInfiniteScroll,
@@ -305,7 +318,6 @@ const DataMgmtListView = defineComponent({
       handleHold,
       isEditMode,
       isButtonDisabled,
-      home,
       cancelEditMode,
       showUploadDialog,
       type,
@@ -314,7 +326,9 @@ const DataMgmtListView = defineComponent({
       showDeleteDialog,
       onConfirmDialog,
       onLoad,
+      loadingStatus,
       back,
+      home,
       thumbStyle: {
         right: "4px",
         borderRadius: "5px",

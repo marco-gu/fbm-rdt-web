@@ -51,11 +51,11 @@ enum DialogType {
   ALERT = "alert",
   ACTION = "action",
 }
-enum DialogIconColor {
-  GREEN = "green",
-  RED = "red",
-  BLUE = "secondary",
-}
+// enum DialogIconColor {
+//   GREEN = "green",
+//   RED = "red",
+//   BLUE = "secondary",
+// }
 const PopupComponent = defineComponent({
   props: {
     visible: {
@@ -80,8 +80,8 @@ const PopupComponent = defineComponent({
     const label = ref("");
     const prompt = ref("");
     const i18n = useI18n();
-    const iconName = ref("");
-    const iconColor = ref("");
+    // const iconName = ref("");
+    // const iconColor = ref("");
     const title = ref("");
     const returnHome = ref(false);
     const persistent = ref(false);
