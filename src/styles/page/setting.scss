@@ -2,8 +2,9 @@
     text-align: left;
     font-size: $--card-font-size;
     border-radius: $--card-radius;
-    box-shadow: $--card-box-shadow;
-    margin-bottom: $--card-space-between;
+    border: 1px solid #e5e2dc;
+    // box-shadow: $--card-box-shadow;
+    // margin-bottom: $--card-space-between;
     padding: $--card-padding;
     background-color: #fff;
     margin: 0px 23px 20px 23px;

@@ -9,7 +9,7 @@
       @onBack="back"
     />
     <div class="page-content">
-      <div class="setting-item" @click="onChangeDevice('camera')">
+      <div class="setting-card-item" @click="onChangeDevice('camera')">
         <div class="label">{{ $t("setting.camera") }}</div>
         <div v-if="selectedDevice == 'camera'" class="right-icon">
           <q-icon name="check" />
@@ -17,7 +17,7 @@
         <div class="spacer"></div>
       </div>
       <q-separator inset color="grey-3" />
-      <div class="setting-item" @click="onChangeDevice('bluetooth')">
+      <div class="setting-card-item" @click="onChangeDevice('bluetooth')">
         <div class="label">{{ $t("setting.bluetooth") }}</div>
         <div v-if="selectedDevice == 'bluetooth'" class="right-icon">
           <q-icon name="check" />
@@ -25,7 +25,7 @@
         <div class="spacer"></div>
       </div>
       <q-separator inset color="grey-3" />
-      <div class="setting-item" @click="onChangeDevice('scanner')">
+      <div class="setting-card-item" @click="onChangeDevice('scanner')">
         <div class="label">{{ $t("setting.scanner") }}</div>
         <div v-if="selectedDevice == 'scanner'" class="right-icon">
           <q-icon name="check" />
