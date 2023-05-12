@@ -1,19 +1,19 @@
 import { ProfileDisplayAttribute } from "@/models/profile";
 import { ref, Ref, watch } from "vue";
 
-export type ViewDisplayAttribute = {
+export interface ViewDisplayAttribute {
   displayFieldName: string;
   fieldName: string;
-  level: string;
-  mandatory: number;
+  level?: string;
+  mandatory?: number;
   model: Ref<any>;
   reg: RegExp;
-  display: number;
-  scan: number;
-  length: number;
+  display?: number;
+  scan?: number;
+  length?: number;
   valid: (val: string) => Promise<any>;
-  editable: boolean; //data mgmt
-};
+  editable?: boolean; //data mgmt
+}
 
 export enum ProfileElementLevel {
   ORDER = "order",

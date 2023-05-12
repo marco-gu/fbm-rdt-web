@@ -21,9 +21,7 @@ const LoadingComponent = defineComponent({
     watch(
       visible,
       (newValue) => {
-        setTimeout(() => {
-          persistent.value = newValue;
-        }, 300);
+        persistent.value = newValue;
       },
       { immediate: true }
     );

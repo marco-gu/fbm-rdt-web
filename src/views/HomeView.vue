@@ -68,7 +68,7 @@
               </q-item-section>
             </q-item>
             <q-separator inset color="grey-3" />
-            <q-item clickable @click="goImageAccess" v-ripple>
+            <q-item clickable @click="gocargoImageList" v-ripple>
               <q-item-section>
                 <q-item-label>{{ $t("home.cargo_image") }}</q-item-label>
               </q-item-section>
@@ -240,8 +240,8 @@ export default {
     const goLPList = () => {
       router.push("/lpList");
     };
-    const goImageAccess = () => {
-      router.push("/imageAccess");
+    const gocargoImageList = () => {
+      router.push("/cargoImageList");
     };
     return {
       leftDrawerOpen,
@@ -259,7 +259,7 @@ export default {
       logoIcon,
       goSetting,
       goLPList,
-      goImageAccess,
+      gocargoImageList,
       showLogoutDialog,
       menuIcon,
       gearIcon,

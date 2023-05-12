@@ -5,6 +5,7 @@ export class ImageModel {
   po: string;
   reason: string;
   clientCode: string;
+  createDatetime: string;
   constructor() {
     this.cid = "";
     this.taskID = "";
@@ -12,5 +13,6 @@ export class ImageModel {
     this.po = "";
     this.reason = "";
     this.clientCode = "";
+    this.createDatetime = "";
   }
 }

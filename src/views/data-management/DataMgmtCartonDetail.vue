@@ -4,8 +4,8 @@
       :titles="titles"
       :icons="icons"
       @onHome="home"
-      @onBack="() => router.push('/dataMgmtDetail')"
-      @onMixed="onMixed"
+      @onBack="back"
+      @onMixed="onDetail"
     />
     <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
@@ -82,19 +82,25 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { ProfileDisplayAttribute } from "@/models/profile";
+import {
+  ProfileCartonDetailLevel,
+  ProfileDisplayAttribute,
+} from "@/models/profile";
 import router from "@/router";
 import { useStore } from "@/store";
 import {
   composeViewElement,
   ProfileElementLevel,
+  ViewDisplayAttribute,
 } from "@/utils/profile.render";
+import { setContentHeightWithBtn } from "@/utils/screen.util";
 import bridge from "dsbridge";
 import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import inputScan from "../../assets/icon/compress-solid.svg";
 type ViewElement = {
   displayFieldName: string;
+  fieldName: string;
   model: string;
   scan: number;
   editable: boolean;
@@ -106,24 +112,30 @@ const DataMgmtCartonDetail = defineComponent({
   },
   setup() {
     const store = useStore();
-    // const pageView: ViewElement[] = [];
-    const pageView = ref([] as ViewElement[]);
-    const inputScanIcon = inputScan;
-    const titles = [
-      store.state.dataMgmtModule.selectedCartonDetail.so,
-      store.state.dataMgmtModule.selectedCartonDetail.cartonID,
-    ];
-    const isEditMode = ref(false);
     const i18n = useI18n();
-    const label = ref(i18n.t("common.edit"));
+    const pageView = ref([] as ViewElement[]);
+    const titles = [
+      store.state.dataMgmtModule.cartonItem.so,
+      store.state.dataMgmtModule.cartonItem.cartonID,
+    ];
+    const icons = ref(["back", "home", "mixed"]);
     const myForm = ref();
+    const inputScanIcon = inputScan;
+    const isEditMode = ref(false);
+    const label = ref(i18n.t("common.edit"));
     const type = ref("");
     const msg = ref("");
     const dialogVisible = ref(false);
-    const icons = ref(["back", "home", "mixed"]);
     const pressHome = ref(false);
     const pressSave = ref(false);
+    const editDialogSuccess = ref(false);
     onBeforeMount(() => {
+      composeView();
+    });
+    onMounted(() => {
+      setContentHeightWithBtn("scroll-area");
+    });
+    const composeView = () => {
       store.state.dataMgmtModule.profile.forEach(
         (item: ProfileDisplayAttribute) => {
           if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
@@ -135,25 +147,25 @@ const DataMgmtCartonDetail = defineComponent({
               switch (fieldName) {
                 case "Quantity":
                   element.model = ref(
-                    store.state.dataMgmtModule.selectedCartonDetail.quantity
+                    store.state.dataMgmtModule.cartonItem.quantity
                   );
                   canAdd = true;
                   break;
                 case "Style":
                   element.model = ref(
-                    store.state.dataMgmtModule.selectedCartonDetail.style
+                    store.state.dataMgmtModule.cartonItem.style
                   );
                   canAdd = true;
                   break;
                 case "HUB":
                   element.model = ref(
-                    store.state.dataMgmtModule.selectedCartonDetail.hub
+                    store.state.dataMgmtModule.cartonItem.hub
                   );
                   canAdd = true;
                   break;
                 case "SKU":
                   element.model = ref(
-                    store.state.dataMgmtModule.selectedCartonDetail.sku
+                    store.state.dataMgmtModule.cartonItem.sku
                   );
                   canAdd = true;
                   break;
@@ -168,85 +180,46 @@ const DataMgmtCartonDetail = defineComponent({
       );
       pageView.value.push({
         displayFieldName: "Client",
-        model: store.state.dataMgmtModule.selectedCartonDetail.client,
+        fieldName: "Client",
+        model: store.state.dataMgmtModule.cartonItem.client,
         scan: 0,
         editable: false,
       });
       pageView.value.push({
         displayFieldName: "Operation",
-        model: store.state.dataMgmtModule.selectedCartonDetail.operation,
+        fieldName: "Operation",
+        model: store.state.dataMgmtModule.cartonItem.operation,
         scan: 0,
         editable: false,
       });
       pageView.value.push({
         displayFieldName: "Shipping Order",
-        model: store.state.dataMgmtModule.selectedCartonDetail.so,
+        fieldName: "SO",
+        model: store.state.dataMgmtModule.cartonItem.so,
         scan: 0,
         editable: false,
       });
       pageView.value.push({
         displayFieldName: "Purchase Order",
-        model: store.state.dataMgmtModule.selectedCartonDetail.po,
+        fieldName: "PO",
+        model: store.state.dataMgmtModule.cartonItem.po,
         scan: 0,
         editable: false,
       });
       pageView.value.push({
         displayFieldName: "Carton ID",
-        model: store.state.dataMgmtModule.selectedCartonDetail.cartonID,
+        fieldName: "CartonID",
+        model: store.state.dataMgmtModule.cartonItem.cartonID,
         scan: 1,
         editable: true,
       });
       pageView.value.push({
         displayFieldName: "Scan Date",
-        model: store.state.dataMgmtModule.selectedCartonDetail.scanDate,
+        fieldName: "ScanDate",
+        model: store.state.dataMgmtModule.cartonItem.scanDate,
         scan: 0,
         editable: false,
       });
-    });
-    onMounted(() => {
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
-    });
-    const onConfirmDialog = () => {
-      dialogVisible.value = false;
-      if (pressHome.value) {
-        router.push("/home");
-      } else if (pressSave.value) {
-        const apiParams = {
-          LPID: store.state.dataMgmtModule.selectedCartonDetail.lpID,
-          CartonID: "",
-          Style: "",
-          Quantity: "",
-          HUB: "",
-        };
-        pageView.value.forEach((item) => {
-          switch (item.displayFieldName) {
-            case "Quantity":
-              apiParams.Quantity = item.model;
-              break;
-            case "Style":
-              apiParams.Style = item.model;
-              break;
-            case "HUB":
-              apiParams.HUB = item.model;
-              break;
-            case "Carton ID":
-              apiParams.CartonID = item.model;
-              break;
-          }
-        });
-        bridge.call(
-          "updateCartonForDataManagement",
-          apiParams,
-          (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              router.push("/dataMgmtDetail");
-            }
-          }
-        );
-      }
     };
     const onSubmit = () => {
       if (isEditMode.value) {
@@ -264,27 +237,79 @@ const DataMgmtCartonDetail = defineComponent({
         label.value = i18n.t("common.save");
       }
     };
-    const onMixed = () => {
-      const item = {
-        taskID: store.state.dataMgmtModule.dataMgmt.taskID,
-        cartonID: store.state.dataMgmtModule.selectedCartonDetail.cartonID,
-      };
-      store
-        .dispatch("dataMgmtModule/saveSelectedCartonHeader", item)
-        .then(() => {
-          router.push("/dataMgmtCartonMixed");
-        });
+    const showEditSuccessDialog = () => {
+      editDialogSuccess.value = true;
+      dialogVisible.value = true;
+      type.value = "success";
+      msg.value = i18n.t("common.edit_success");
+    };
+    const onConfirmDialog = () => {
+      if (editDialogSuccess.value) {
+        dialogVisible.value = false;
+        router.push("/dataMgmtCartonList");
+      } else {
+        dialogVisible.value = false;
+        if (pressHome.value) {
+          router.push("/home");
+        } else if (pressSave.value) {
+          const apiParams = {
+            LPID: store.state.dataMgmtModule.cartonItem.lpID,
+            CartonID: "",
+            Style: "",
+            Quantity: "",
+            HUB: "",
+          };
+          composeApiParam(apiParams, pageView.value);
+          bridge.call("updateCarton", apiParams, (res: string) => {
+            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+              showEditSuccessDialog();
+            }
+          });
+        }
+      }
+    };
+    const composeApiParam = (apiParams: any, source: any[]) => {
+      let j: keyof ProfileCartonDetailLevel;
+      source.forEach((view: ViewDisplayAttribute) => {
+        const profileCartonDetailLevel = new ProfileCartonDetailLevel();
+        for (j in profileCartonDetailLevel) {
+          if (j == view.fieldName) {
+            apiParams[j] = view.model;
+          }
+        }
+      });
     };
     const cancelEditMode = () => {
       isEditMode.value = false;
       icons.value = ["back", "home", "mixed"];
       label.value = i18n.t("common.edit");
     };
+    const onDetail = () => {
+      router.push("/dataMgmtMixCartonList");
+      // const item = {
+      //   taskID: store.state.dataMgmtModule.dataMgmt.taskID,
+      //   cartonID: store.state.dataMgmtModule.cartonItem.cartonID,
+      // };
+      // store
+      //   .dispatch("dataMgmtModule/saveSelectedCartonHeader", item)
+      //   .then(() => {
+      //     router.push("/dataMgmtCartonMixed");
+      //   });
+    };
     const home = () => {
       pressHome.value = true;
       dialogVisible.value = true;
       type.value = "action";
       msg.value = i18n.t("common.return_home");
+    };
+    const back = () => {
+      router.push({
+        name: "dataMgmtCartonList",
+        params: {
+          from: "true",
+        },
+      });
     };
     return {
       pageView,
@@ -299,10 +324,11 @@ const DataMgmtCartonDetail = defineComponent({
       msg,
       dialogVisible,
       onConfirmDialog,
-      onMixed,
+      onDetail,
       icons,
       cancelEditMode,
       home,
+      back,
     };
   },
 });

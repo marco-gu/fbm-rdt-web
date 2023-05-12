@@ -58,7 +58,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import backIcon from "../assets/icon/icon_header_back.png";
 const CommonHeaderComponent = defineComponent({
   props: {
@@ -85,9 +85,18 @@ const CommonHeaderComponent = defineComponent({
     "onClear",
     "onDetail",
     "onMixed",
+    "onOpenSearch",
+    "onCloseSearch",
   ],
   setup(props, context) {
     const searchVisible = ref(false);
+    watch(searchVisible, () => {
+      if (searchVisible.value) {
+        context.emit("onOpenSearch");
+      } else {
+        context.emit("onCloseSearch");
+      }
+    });
 
     const onHomeClick = () => {
       context.emit("onHome");

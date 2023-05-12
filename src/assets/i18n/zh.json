@@ -71,7 +71,13 @@
     "return_home": "返回首页",
     "edit": "编辑",
     "add": "添加",
-    "detail": "细节"
+    "detail": "细节",
+    "delete_dialog_message": "确定要删除吗?",
+    "upload_dialog_message": "定要上传吗?",
+    "upload_success": "上传成功",
+    "delete_success": "删除成功",
+    "edit_success": "修改成功",
+    "add_success": "增加成功"
   },
   "login": {
     "login": "登录",
@@ -116,7 +122,7 @@
     "sync_latest": "请同步最新的profile",
     "profile_text": "Profile",
     "delete_dialog_message": "确定要删除这些Profiles吗?",
-    "home_dialog_message":"返回主页?"
+    "home_dialog_message": "返回主页?"
   },
   "lp": {
     "lp_search": "搜索LP",
@@ -138,6 +144,7 @@
   },
   "image": {
     "access_image_header": "货物图片",
+    "access_image_detail": "货物详情",
     "access_image_button": "增加",
     "add_image": "增加图片",
     "add_image_reason": "原因",
@@ -197,7 +204,8 @@
     "mix_carton_complete": "完成",
     "item_count": "箱子数量",
     "item": "箱子",
-    "add_mix_carton": "你想再添加另一个箱子信息吗?"
+    "add_mix_carton": "你想再添加另一个箱子信息吗?",
+    "complete_mix_carton": "你想完成输入箱子信息吗?"
   },
   "main": {
     "onlineTitle": "在线扫码",

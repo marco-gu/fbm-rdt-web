@@ -96,7 +96,7 @@ const routeTableLoggedIn = [
         children: [{ path: "/lpDetailList", children: [] }],
       },
       {
-        path: "/imageAccess",
+        path: "/cargoImageList",
         children: [
           {
             path: "/cargoImage",

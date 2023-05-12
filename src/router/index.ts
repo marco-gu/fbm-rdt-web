@@ -17,19 +17,20 @@ import CartonDetailView from "../views/CartonDetailView.vue";
 import ProfileManagementView from "../views/ProfileManagementView.vue";
 import LPListView from "../views/LPListView.vue";
 import LPDetailListView from "../views/LPDetailListView.vue";
-import DataMgmtListView from "../views/data-management/DataMgmtListView.vue";
-import DataMgmtDetail from "../views/data-management/DataMgmtDetail.vue";
+import DataMgmtList from "../views/data-management/DataMgmtList.vue";
+import DataMgmtCartonList from "../views/data-management/DataMgmtCartonList.vue";
 import DataMgmtCartonDetail from "../views/data-management/DataMgmtCartonDetail.vue";
-import DataMgmtSummary from "../views/data-management/DataMgmtSummary.vue";
-import DataMgmtCartonMixed from "../views/data-management/DataMgmtCartonMixed.vue";
-import DataMgmtCartonMixedDetail from "../views/data-management/DataMgmtCartonMixedDetail.vue";
+import DataMgmtDetail from "../views/data-management/DataMgmtDetail.vue";
+import DataMgmtMixCartonList from "../views/data-management/DataMgmtMixCartonList.vue";
+import DataMgmtMixCartonDetail from "../views/data-management/DataMgmtMixCartonDetail.vue";
 import MyJobsView from "../views/MyJobsView.vue";
-import ImageAccessView from "../views/ImageAccessView.vue";
-import CargoImageView from "../views/CargoImageView.vue";
+import CargoImageList from "../views/cargo-image/CargoImageList.vue";
+import CargoImageView from "../views/cargo-image/CargoImage.vue";
 import SoftwareUpdateView from "../views/SoftwareUpdateView.vue";
 import NativeBridgeView from "../views/NativeBridgeView.vue";
 import NewLoginView from "../views/NewLoginView.vue";
 import NewMainView from "../views/NewMainView.vue";
+import DataMgmtMixCarton from "../views/data-management/DataMgmtMixCarton.vue";
 const routes: Array<RouteRecordRaw> = [
   // {
   //   path: "/",
@@ -131,12 +132,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/dataMgmtList",
     name: "dataMgmtList",
-    component: DataMgmtListView,
-  },
-  {
-    path: "/dataManagementSummary",
-    name: "dataManagementSummary",
-    component: DataMgmtSummary,
+    component: DataMgmtList,
   },
   {
     path: "/dataMgmtDetail",
@@ -144,19 +140,29 @@ const routes: Array<RouteRecordRaw> = [
     component: DataMgmtDetail,
   },
   {
+    path: "/dataMgmtCartonList",
+    name: "dataMgmtCartonList",
+    component: DataMgmtCartonList,
+  },
+  {
     path: "/dataMgmtCartonDetail",
     name: "dataMgmtCartonDetail",
     component: DataMgmtCartonDetail,
   },
   {
-    path: "/dataMgmtCartonMixed",
-    name: "dataMgmtCartonMixed",
-    component: DataMgmtCartonMixed,
+    path: "/dataMgmtMixCartonList",
+    name: "dataMgmtMixCartonList",
+    component: DataMgmtMixCartonList,
   },
   {
-    path: "/dataMgmtCartonMixedDetail",
-    name: "dataMgmtCartonMixedDetail",
-    component: DataMgmtCartonMixedDetail,
+    path: "/dataMgmtMixCartonDetail",
+    name: "dataMgmtMixCartonDetail",
+    component: DataMgmtMixCartonDetail,
+  },
+  {
+    path: "/nativeBridge",
+    name: "NativeBridgeView",
+    component: NativeBridgeView,
   },
   {
     path: "/continueJobs",
@@ -164,9 +170,9 @@ const routes: Array<RouteRecordRaw> = [
     component: MyJobsView,
   },
   {
-    path: "/imageAccess",
-    name: "imageAccess",
-    component: ImageAccessView,
+    path: "/cargoImageList",
+    name: "cargoImageList",
+    component: CargoImageList,
   },
   {
     path: "/cargoImage",
@@ -179,9 +185,9 @@ const routes: Array<RouteRecordRaw> = [
     component: SoftwareUpdateView,
   },
   {
-    path: "/nativeBridge",
-    name: "NativeBridgeView",
-    component: NativeBridgeView,
+    path: "/dataMgmtMixCarton",
+    name: "dataMgmtMixCarton",
+    component: DataMgmtMixCarton,
   },
 ];
 

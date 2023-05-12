@@ -12,6 +12,7 @@ import RootState, { State } from "./state";
 import screenModule from "./module/screen.module";
 import commonModule from "./module/common.module";
 import dataMgmtModule from "./module/dataMgmt.module";
+import cargoImageModule from "./module/cargoImage.module";
 
 const debug = process.env.NODE_ENV !== "product";
 export default createStore({
@@ -24,6 +25,7 @@ export default createStore({
     screenModule,
     commonModule,
     dataMgmtModule,
+    cargoImageModule,
   },
   strict: debug,
   plugins: debug ? [createLogger()] : [],

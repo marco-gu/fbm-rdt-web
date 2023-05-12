@@ -1,14 +1,15 @@
 import { DataMgmt } from "@/models/data.management";
-import { ProfileDisplayAttribute, SelectedCarton } from "@/models/profile";
+import { Carton, ProfileDisplayAttribute, CartonItem } from "@/models/profile";
 import { Module } from "vuex";
 import RootState from "../state";
 
 export interface DataMgmtState {
   dataMgmt: DataMgmt;
+  dataMgmtList: DataMgmt[];
+  cartonList: Carton[];
   profile: ProfileDisplayAttribute[];
-  mixcartonItem: any;
-  selectedCartonHeader: any;
-  selectedCartonDetail: SelectedCarton;
+  cartonMixItem: any;
+  cartonItem: CartonItem;
 }
 
 const dataMgmtModule: Module<DataMgmtState, RootState> = {
@@ -31,13 +32,11 @@ const dataMgmtModule: Module<DataMgmtState, RootState> = {
       containerNumber: "",
       lpID: "",
     },
+    dataMgmtList: [],
+    cartonList: [],
     profile: [],
-    mixcartonItem: {},
-    selectedCartonHeader: {
-      taskID: "",
-      cartonID: "",
-    },
-    selectedCartonDetail: {
+    cartonMixItem: {},
+    cartonItem: {
       client: "",
       so: "",
       po: "",
@@ -52,37 +51,43 @@ const dataMgmtModule: Module<DataMgmtState, RootState> = {
     },
   },
   actions: {
-    saveDataMgmt(context: any, payload: DataMgmt) {
+    saveDataMgmt(context: any, payload: DataMgmt[]) {
       context.commit("setDataMgmt", payload);
+    },
+    saveDataMgmtItem(context: any, payload: DataMgmt) {
+      context.commit("setDataMgmtItem", payload);
     },
     saveProfile(context: any, payload: ProfileDisplayAttribute[]) {
       context.commit("setProfile", payload);
     },
-    saveSelectedCartonHeader(context: any, payload: any) {
-      context.commit("setSelectedCartonHeader", payload);
+    saveCartonList(context: any, payload: Carton[]) {
+      context.commit("setCartonList", payload);
     },
-    saveSelectedCartonDetail(context: any, payload: any) {
-      context.commit("setSelectedCartonDetail", payload);
+    saveCartonItem(context: any, payload: any) {
+      context.commit("setCartonItem", payload);
     },
     saveMixCartonItem(context: any, payload: any) {
       context.commit("setMixCartonItem", payload);
     },
   },
   mutations: {
-    setDataMgmt(state: DataMgmtState, payload: DataMgmt) {
+    setDataMgmt(state: DataMgmtState, payload: DataMgmt[]) {
+      state.dataMgmtList = payload;
+    },
+    setDataMgmtItem(state: DataMgmtState, payload: DataMgmt) {
       state.dataMgmt = payload;
     },
     setProfile(state: DataMgmtState, payload: ProfileDisplayAttribute[]) {
       state.profile = payload;
     },
-    setSelectedCartonHeader(state: DataMgmtState, payload: any) {
-      state.selectedCartonHeader = payload;
+    setCartonList(state: DataMgmtState, payload: any) {
+      state.cartonList = payload;
     },
-    setSelectedCartonDetail(state: DataMgmtState, payload: any) {
-      state.selectedCartonDetail = payload;
+    setCartonItem(state: DataMgmtState, payload: any) {
+      state.cartonItem = payload;
     },
     setMixCartonItem(state: DataMgmtState, payload: any) {
-      state.mixcartonItem = payload;
+      state.cartonMixItem = payload;
     },
   },
   namespaced: true,

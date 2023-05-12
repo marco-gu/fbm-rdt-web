@@ -71,7 +71,13 @@
     "return_home": "Return to Home page",
     "edit": "Edit",
     "add": "Add",
-    "detail": "Detail"
+    "detail": "Detail",
+    "delete_dialog_message": "Are you sure to delete it?",
+    "upload_dialog_message": "Are you sure to upload?",
+    "upload_success": "Upload Success",
+    "delete_success": "Delete Success",
+    "edit_success": "Edit Success",
+    "add_success": "Add Success"
   },
   "login": {
     "login": "Continue",
@@ -137,6 +143,7 @@
   },
   "image": {
     "access_image_header": "Cargo Images",
+    "access_image_detail": "Cargo Detail",
     "access_image_button": "Add",
     "add_image": "Add Image",
     "add_image_reason": "Reason",
@@ -196,7 +203,8 @@
     "mix_carton_complete": "Complete",
     "item_count": "Item count",
     "item": "Item",
-    "add_mix_carton": "Are you sure to add another Mix Item?"
+    "add_mix_carton": "Are you sure to add another Mix Item?",
+    "complete_mix_carton": "Are you sure to complete Mix Item?"
   },
   "main": {
     "onlineTitle": "New Scan",

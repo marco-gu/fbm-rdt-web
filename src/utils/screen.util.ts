@@ -4,7 +4,6 @@ export function softKeyPopUp(
   endEL: string
 ) {
   window.onresize = () => {
-    alert("onresize");
     const resizeHeight = window.innerHeight;
     const scrollArea = document.getElementById(startEL) as any;
     scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
@@ -41,4 +40,41 @@ export function calScrollAreaWithBottom(startEL: string, endEL: string) {
   const scrollArea = document.getElementById(startEL) as any;
   const bottom = document.getElementById(endEL) as any;
   scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop - 20 + "px";
+}
+
+/****************TODO Confirm 50/100/141 */
+/**
+ * Initial screen scroll area height in full screen mode
+ * @param scrollAreaID
+ */
+export function setContentHeight(scrollAreaID: string) {
+  const deviceHeight = window.innerHeight;
+  const scrollArea = document.getElementById(scrollAreaID) as any;
+  scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
+}
+
+/**
+ * Initial screen scroll area height in full screen mode
+ * @param scrollAreaID
+ */
+export function setContentHeightWithBtn(scrollAreaID: string) {
+  const deviceHeight = window.innerHeight;
+  const scrollArea = document.getElementById(scrollAreaID) as any;
+  scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 100 + "px";
+}
+
+/**
+ * Initial screen scroll area height in full screen mode
+ * @param scrollAreaID
+ */
+export function setContentHeightInSearch(scrollAreaID: string) {
+  const deviceHeight = window.innerHeight;
+  const scrollArea = document.getElementById(scrollAreaID) as any;
+  scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 105 + "px";
+}
+
+export function setContentHeightOutSearch(scrollAreaID: string) {
+  const deviceHeight = window.innerHeight;
+  const scrollArea = document.getElementById(scrollAreaID) as any;
+  scrollArea.style.height = deviceHeight - scrollArea.offsetTop + 5 + "px";
 }

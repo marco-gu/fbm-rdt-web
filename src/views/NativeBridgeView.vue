@@ -13,7 +13,7 @@ export default defineComponent({
     });
     bridge.register("refreshCargoImages", () => {
       router.push({
-        path: "/imageAccess",
+        path: "/cargoImageList",
       });
     });
   },

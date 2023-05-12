@@ -2,75 +2,69 @@
   <div class="wrapper">
     <common-header-component
       :titles="titles"
-      :icons="['back', 'home', 'search']"
-      @onBack="() => router.push('/dataManagementSummary')"
+      :icons="icons"
       @onHome="home"
-      @onSearch="onSearch($event)"
+      @onBack="back"
+      @onDetail="onDetail"
     />
     <div class="page-content">
-      <template v-if="noRecord">
-        <div class="no-record">{{ $t("common.no_record") }}</div>
-      </template>
-      <template v-else>
-        <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
-          <!-- <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll"> -->
-          <div v-for="(item, index) in pageView" :key="index">
-            <div
-              class="common-card-2"
-              v-touch-hold:1800="handleHold"
-              @click="onCarton(item)"
-            >
-              <q-checkbox
-                class="checkbox"
-                v-model="item.isSelected"
-                v-if="isEditMode"
-                checked-icon="app:checkboxOn"
-                unchecked-icon="app:checkboxOff"
-              />
-              <div class="label mb-lg">
-                {{ item.cartonId }}
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+        <q-form @submit="onSubmit" ref="myForm">
+          <div v-for="(item, i) in pageView" :key="i">
+            <div class="field">
+              <div class="input-title">
+                <span class="text"> {{ item.displayFieldName }}</span>
               </div>
-              <div class="value">
-                {{ item.so }}<span class="separator">&nbsp;|&nbsp;</span
-                >{{ item.po
-                }}<span class="separator" v-if="item.sku">&nbsp;|&nbsp;</span
-                >{{ item.sku }}
-              </div>
-              <div class="value mt-sm">
-                {{ item.scanDate }}
-              </div>
+              <q-input
+                class="input-field"
+                input-class="text-left"
+                v-model="item.model"
+                lazy-rules
+                :rules="[item.valid]"
+                :maxlength="item.length"
+                borderless
+                :readonly="!isEditMode || !item.editable"
+                :disable="!isEditMode || !item.editable"
+              >
+                <template v-if="item.scan == 1 && isEditMode" v-slot:append>
+                  <q-avatar
+                    class="btn-img"
+                    @click="scan(item.fieldName, $event)"
+                  >
+                    <q-img
+                      no-transition
+                      no-spinner
+                      :src="inputScanIcon"
+                      width="12px"
+                    />
+                  </q-avatar>
+                </template>
+              </q-input>
             </div>
           </div>
-          <template v-slot:loading>
-            <div class="row justify-center q-my-md">
-              <q-spinner-dots color="primary" size="40px" />
-            </div>
-          </template>
-          <!-- </q-infinite-scroll> -->
-        </q-scroll-area>
-      </template>
+        </q-form>
+      </q-scroll-area>
     </div>
-    <div class="bottom-coherent-button" id="bottom-button" v-show="isEditMode">
+    <div class="bottom-coherent-button" id="bottom-button">
       <q-btn
-        :ripple="false"
+        v-show="isEditMode"
         no-caps
+        unelevated
+        :ripple="false"
         class="full-width"
-        flat
-        push
-        :label="$t('common.cancel')"
         @click="cancelEditMode"
+        :label="$t('common.cancel')"
       />
-      <q-separator vertical inset color="white" />
+      <q-separator v-show="isEditMode" vertical inset color="white" />
       <q-btn
-        :ripple="false"
         no-caps
+        unelevated
+        :ripple="false"
         class="full-width"
-        flat
-        push
-        :label="$t('common.delete')"
-        :disable="isButtonDisabled"
-        @click="showDeleteDialog"
-      />
+        @click="onSubmit"
+      >
+        {{ label }}
+      </q-btn>
     </div>
   </div>
   <PopupComponent
@@ -83,17 +77,26 @@
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
-import { Carton, SelectedCarton } from "@/models/profile";
-import { useStore } from "@/store";
-import bridge from "dsbridge";
-import { computed, defineComponent, onBeforeMount, onMounted, ref } from "vue";
-import router from "@/router";
-import { useI18n } from "vue-i18n";
 import PopupComponent from "@/components/PopupComponent.vue";
 import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
+import { DataMgmt } from "@/models/data.management";
+import { ProfileCartonLevel, ProfileDisplayAttribute } from "@/models/profile";
+import router from "@/router";
+import { useStore } from "@/store";
+import {
+  composeViewElement,
+  ProfileElementLevel,
+  toUpperCaseElementInput,
+  ViewDisplayAttribute,
+} from "@/utils/profile.render";
+import bridge from "dsbridge";
+import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import inputScan from "../../assets/icon/compress-solid.svg";
+import { setContentHeightWithBtn } from "../../utils/screen.util";
 const DataMgmtDetail = defineComponent({
   components: {
     CommonHeaderComponent,
@@ -102,98 +105,161 @@ const DataMgmtDetail = defineComponent({
   setup() {
     const store = useStore();
     const i18n = useI18n();
-    const pageView = ref([] as Carton[]);
-    const dataMgmt = ref(store.state.dataMgmtModule.dataMgmt);
-    const titles = [dataMgmt.value.so, "Detail"];
-    const noRecord = ref(false);
+    const pageView = ref([] as any[]);
+    const dataMgmtView = ref(store.state.dataMgmtModule.dataMgmt);
+    const titles = [dataMgmtView.value.client, dataMgmtView.value.so];
+    const icons = ref(["back", "home", "detail"]);
+    const myForm = ref();
+    const inputScanIcon = inputScan;
     const isEditMode = ref(false);
-    const dialogVisible = ref(false);
+    const label = ref(i18n.t("common.edit"));
     const type = ref("");
     const msg = ref("");
+    const dialogVisible = ref(false);
     const pressHome = ref(false);
+    const pressSave = ref(false);
+    const editDialogSuccess = ref(false);
     onBeforeMount(() => {
-      initData();
+      composeView(dataMgmtView.value);
     });
     onMounted(() => {
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
+      setContentHeightWithBtn("scroll-area");
     });
-    const handleHold = () => {
-      isEditMode.value = true;
-      clearCheckbox();
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height =
-        deviceHeight - scrollArea.offsetTop - 100 + "px";
-    };
-    const isButtonDisabled = computed(() => {
-      return !pageView.value.some((item: any) => item["isSelected"]);
-    });
-    const onCarton = (item: Carton) => {
-      if (!isEditMode.value) {
-        const selectedCarton = {} as SelectedCarton;
-        selectedCarton.client = dataMgmt.value.client;
-        selectedCarton.so = dataMgmt.value.so;
-        selectedCarton.po = dataMgmt.value.po;
-        selectedCarton.sku = dataMgmt.value.sku || "";
-        selectedCarton.operation = dataMgmt.value.scanType;
-        selectedCarton.cartonID = item.cartonId;
-        selectedCarton.scanDate = item.scanDate;
-        selectedCarton.hub = item.hub;
-        selectedCarton.quantity = item.quantity;
-        selectedCarton.style = item.style;
-        selectedCarton.lpID = item.lpId;
-        store
-          .dispatch("dataMgmtModule/saveSelectedCartonDetail", selectedCarton)
-          .then(() => {
-            router.push("/dataMgmtCartonDetail");
+    const composeView = (obj: DataMgmt) => {
+      bridge.call(
+        "fetchProfileByProfileCode",
+        { taskId: obj.taskID },
+        (res: any) => {
+          const profile = JSON.parse(res) as ProfileDisplayAttribute[];
+          store.dispatch("dataMgmtModule/saveProfile", profile);
+          pageView.value.push({
+            displayFieldName: "Client",
+            model: dataMgmtView.value.client,
           });
+          pageView.value.push({
+            displayFieldName: "Operation",
+            model: dataMgmtView.value.scanType,
+          });
+          profile.forEach((item: ProfileDisplayAttribute) => {
+            if (item.type == obj.scanType) {
+              if (
+                item.level == ProfileElementLevel.CARTON_COMMON ||
+                item.level == ProfileElementLevel.ORDER
+              ) {
+                const element = composeViewElement(item);
+                element.editable = true;
+                switch (element.fieldName) {
+                  case "PO":
+                    element.model = ref(obj.po);
+                    break;
+                  case "SO":
+                    element.model = ref(obj.so);
+                    break;
+                  case "SKU":
+                    element.model = ref(obj.sku);
+                    break;
+                  case "ContainerNumber":
+                    element.model = ref(obj.containerNumber);
+                    break;
+                  case "TotalCBM":
+                    element.model = ref(obj.totalCBM);
+                    break;
+                  case "TotalWeight":
+                    element.model = ref(obj.totalWeight);
+                    break;
+                  default:
+                    break;
+                }
+                pageView.value.push(element);
+              }
+            }
+          });
+          pageView.value.push({
+            displayFieldName: "Scanned Carton",
+            model:
+              dataMgmtView.value.scannedCartonNumber +
+              "/" +
+              dataMgmtView.value.allCartonNumber,
+          });
+          pageView.value.push({
+            displayFieldName: "Updated Date",
+            model: dataMgmtView.value.updateDatetime,
+          });
+        }
+      );
+    };
+    const onSubmit = () => {
+      if (isEditMode.value) {
+        myForm.value.validate().then((success: any) => {
+          if (success) {
+            pressSave.value = true;
+            type.value = "action";
+            dialogVisible.value = true;
+            msg.value = i18n.t("dataManagement.update_dialog_message");
+          }
+        });
+      } else {
+        isEditMode.value = true;
+        icons.value = ["back", "home", "empty"];
+        label.value = i18n.t("common.save");
       }
     };
-    const cancelEditMode = () => {
-      clearCheckbox();
-      isEditMode.value = false;
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
-    };
-    const clearCheckbox = () => {
-      pageView.value.forEach((item: any) => {
-        item["isSelected"] = false;
-      });
-    };
-    const showDeleteDialog = () => {
+    const showEditSuccessDialog = () => {
+      editDialogSuccess.value = true;
       dialogVisible.value = true;
-      type.value = "action";
-      msg.value = i18n.t("dataManagement.delete_dialog_message");
+      type.value = "success";
+      msg.value = i18n.t("common.edit_success");
     };
     const onConfirmDialog = () => {
-      dialogVisible.value = false;
-      if (pressHome.value) {
-        router.push("/home");
+      if (editDialogSuccess.value) {
+        dialogVisible.value = false;
+        router.push("/dataMgmtList");
       } else {
-        let lpList = "";
-        pageView.value.forEach((item: any) => {
-          if (item["isSelected"] == true) {
-            if (lpList.length == 0) {
-              lpList = item.lpId;
-            } else {
-              lpList += "@" + item.lpId;
+        dialogVisible.value = false;
+        if (pressHome.value) {
+          router.push("/home");
+        } else if (pressSave.value) {
+          const apiParams = {
+            taskId: dataMgmtView.value.taskID,
+            SO: "",
+            PO: "",
+            SKU: "",
+            ContainerNumber: "",
+            TotalCBM: "",
+            TotalWeight: "",
+          };
+          composeApiParam(apiParams, pageView.value);
+          bridge.call(
+            "updateTaskForDataManagement",
+            apiParams,
+            (res: string) => {
+              const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+              if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+                showEditSuccessDialog();
+              }
             }
-          }
-        });
-        const apiParams = {
-          lps: lpList,
-        };
-        bridge.call("deleteDataMgmtCartons", apiParams, (res: string) => {
-          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            initData();
-          }
-        });
-        cancelEditMode();
+          );
+        }
       }
+    };
+    const composeApiParam = (apiParams: any, source: any[]) => {
+      let j: keyof ProfileCartonLevel;
+      source.forEach((view: ViewDisplayAttribute) => {
+        const profileCartonLevel = new ProfileCartonLevel();
+        for (j in profileCartonLevel) {
+          if (j == view.fieldName) {
+            apiParams[j] = view.model;
+          }
+        }
+      });
+    };
+    const cancelEditMode = () => {
+      isEditMode.value = false;
+      label.value = i18n.t("common.edit");
+      icons.value = ["back", "home", "detail"];
+    };
+    const onDetail = () => {
+      router.push("/dataMgmtCartonList");
     };
     const home = () => {
       pressHome.value = true;
@@ -201,35 +267,34 @@ const DataMgmtDetail = defineComponent({
       type.value = "action";
       msg.value = i18n.t("common.return_home");
     };
-    const initData = () => {
-      const args = {
-        taskId: dataMgmt.value.taskID,
-      };
-      bridge.call("fetchLPByTaskIdForDataManagement", args, (res: string) => {
-        const cartons = JSON.parse(res) as Carton[];
-        if (cartons.length > 0) {
-          pageView.value = cartons;
-        } else {
-          noRecord.value = true;
-        }
+    const back = () => {
+      router.push({
+        name: "dataMgmtList",
+        params: {
+          from: "true",
+        },
       });
     };
+    const multiWatchSources = [pageView.value];
+    toUpperCaseElementInput(multiWatchSources);
     return {
       titles,
       pageView,
-      onCarton,
       router,
-      noRecord,
-      handleHold,
+      onSubmit,
+      label,
       isEditMode,
-      isButtonDisabled,
-      showDeleteDialog,
-      onConfirmDialog,
-      cancelEditMode,
-      dialogVisible,
+      inputScanIcon,
+      myForm,
       type,
+      dialogVisible,
       msg,
+      onConfirmDialog,
       home,
+      icons,
+      cancelEditMode,
+      back,
+      onDetail,
     };
   },
 });

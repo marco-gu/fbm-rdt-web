@@ -4,7 +4,7 @@
       :titles="titles"
       :icons="['back', 'home', 'empty']"
       @onHome="home"
-      @onBack="() => router.push('/dataMgmtCartonMixed')"
+      @onBack="back"
     />
     <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
@@ -95,6 +95,7 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
+import { setContentHeightWithBtn } from "@/utils/screen.util";
 const DataMgmtCartonMixedDetail = defineComponent({
   components: {
     CommonHeaderComponent,
@@ -105,7 +106,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
     const route = useRoute();
     const titles = [
       route.params.cartonID,
-      store.state.dataMgmtModule.mixcartonItem.displayName,
+      store.state.dataMgmtModule.cartonMixItem.displayName,
     ];
     const myForm = ref();
     const pageView = ref([] as any[]);
@@ -118,10 +119,17 @@ const DataMgmtCartonMixedDetail = defineComponent({
     const inputScanIcon = inputScan;
     const pressHome = ref(false);
     const pressSave = ref(false);
+    const editDialogSuccess = ref(false);
     const obj = JSON.parse(
-      JSON.stringify(store.state.dataMgmtModule.mixcartonItem.attribute)
+      JSON.stringify(store.state.dataMgmtModule.cartonMixItem.attribute)
     );
     onBeforeMount(() => {
+      composeView();
+    });
+    onMounted(() => {
+      setContentHeightWithBtn("scroll-area");
+    });
+    const composeView = () => {
       store.state.dataMgmtModule.profile.forEach(
         (item: ProfileDisplayAttribute) => {
           if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
@@ -152,12 +160,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
           }
         }
       );
-    });
-    onMounted(() => {
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
-    });
+    };
     const onSubmit = () => {
       if (isEditMode.value) {
         myForm.value.validate().then((success: any) => {
@@ -173,60 +176,75 @@ const DataMgmtCartonMixedDetail = defineComponent({
         label.value = i18n.t("common.save");
       }
     };
+    const showEditSuccessDialog = () => {
+      editDialogSuccess.value = true;
+      dialogVisible.value = true;
+      type.value = "success";
+      msg.value = i18n.t("common.edit_success");
+    };
+    const onConfirmDialog = () => {
+      if (editDialogSuccess.value) {
+        dialogVisible.value = false;
+        router.push("/dataMgmtMixCartonList");
+      } else {
+        dialogVisible.value = false;
+        if (pressHome.value) {
+          router.push("/home");
+        } else if (pressSave.value) {
+          const apiParams = {
+            id: store.state.dataMgmtModule.cartonMixItem.id,
+            lpId: store.state.dataMgmtModule.cartonMixItem.lpId,
+            UPC: "",
+            Color: "",
+            Size: "",
+            Quantity: "",
+            Style: "",
+            taskId: store.state.dataMgmtModule.dataMgmt.taskID,
+          };
+          pageView.value.forEach((item: any) => {
+            switch (item.displayFieldName) {
+              case "UPC":
+                apiParams.UPC = item.model;
+                break;
+              case "Color":
+                apiParams.Color = item.model;
+                break;
+              case "Style":
+                apiParams.Style = item.model;
+                break;
+              case "Size":
+                apiParams.Size = item.model;
+                break;
+              case "Quantity":
+                apiParams.Quantity = item.model;
+                break;
+            }
+          });
+          bridge.call(
+            "updateCartonProductForDataManagement",
+            apiParams,
+            (res: string) => {
+              const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+              if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+                showEditSuccessDialog();
+              }
+            }
+          );
+        }
+      }
+    };
     const cancelEditMode = () => {
       isEditMode.value = false;
       label.value = i18n.t("common.edit");
-    };
-    const onConfirmDialog = () => {
-      if (pressHome.value) {
-        router.push("/home");
-      } else if (pressSave.value) {
-        const apiParams = {
-          id: store.state.dataMgmtModule.mixcartonItem.id,
-          lpId: store.state.dataMgmtModule.mixcartonItem.lpId,
-          UPC: "",
-          Color: "",
-          Size: "",
-          Quantity: "",
-          Style: "",
-          taskId: store.state.dataMgmtModule.dataMgmt.taskID,
-        };
-        pageView.value.forEach((item: any) => {
-          switch (item.displayFieldName) {
-            case "UPC":
-              apiParams.UPC = item.model;
-              break;
-            case "Color":
-              apiParams.Color = item.model;
-              break;
-            case "Style":
-              apiParams.Style = item.model;
-              break;
-            case "Size":
-              apiParams.Size = item.model;
-              break;
-            case "Quantity":
-              apiParams.Quantity = item.model;
-              break;
-          }
-        });
-        bridge.call(
-          "updateCartonProductForDataManagement",
-          apiParams,
-          (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              router.push("/dataMgmtCartonMixed");
-            }
-          }
-        );
-      }
     };
     const home = () => {
       pressHome.value = true;
       dialogVisible.value = true;
       type.value = "action";
       msg.value = i18n.t("common.return_home");
+    };
+    const back = () => {
+      router.push("/dataMgmtMixCartonList");
     };
     return {
       titles,
@@ -243,6 +261,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
       msg,
       onConfirmDialog,
       home,
+      back,
     };
   },
 });

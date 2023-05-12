@@ -112,6 +112,44 @@ export class ProfileCartonCommonLevel {
   }
 }
 
+/**
+ * Profile carton level insert & modify field
+ * @author Marco
+ */
+export class ProfileCartonLevel {
+  SO: string;
+  PO: string;
+  SKU: string;
+  ContainerNumber: string;
+  TotalCBM: string;
+  TotalWeight: string;
+  constructor() {
+    this.SO = "";
+    this.PO = "";
+    this.SKU = "";
+    this.ContainerNumber = "";
+    this.TotalCBM = "";
+    this.TotalWeight = "";
+  }
+}
+
+/**
+ * Profile carton detail level insert & modify field
+ * @author Marco
+ */
+export class ProfileCartonDetailLevel {
+  CartonID: string;
+  Style: string;
+  HUB: string;
+  Quantity: string;
+  constructor() {
+    this.CartonID = "";
+    this.Style = "";
+    this.HUB = "";
+    this.Quantity = "";
+  }
+}
+
 export class ProfileCartonIndividualLevel {
   Style: string;
   HUB: string;
@@ -184,7 +222,7 @@ export type Carton = {
   scanDate: string;
 };
 
-export type SelectedCarton = {
+export type CartonItem = {
   client: string;
   so: string;
   po: string;
