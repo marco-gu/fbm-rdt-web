@@ -16,6 +16,11 @@ export default defineComponent({
         path: "/cargoImageList",
       });
     });
+    bridge.register("refreshJobs", () => {
+      router.push({
+        path: "/continueJobs",
+      });
+    });
   },
 });
 </script>
