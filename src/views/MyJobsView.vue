@@ -2,7 +2,7 @@
   <div class="wrapper">
     <common-header-component
       :titles="[$t('continue.job_list')]"
-      :icons="['home', 'search', 'back']"
+      :icons="['search', 'back', 'home']"
       @onHome="() => router.push('/home')"
       @onBack="() => router.push('/home')"
       v-model:searchValue="search"
@@ -260,10 +260,10 @@ const MyJobsView = defineComponent({
       myScrollArea.value.setScrollPosition("vertical", 0);
     };
     watch(search, () => {
+      console.log(search.value);
       if (search.value) {
         console.log(search.value);
         if (search.value.length >= 4) {
-          input.value.blur();
           onSearch();
         }
       } else if (search.value.length == 0) {
@@ -280,6 +280,7 @@ const MyJobsView = defineComponent({
       searchResult.value = [];
       bridge.call("searchTaskForDataManagement", args, (data: any) => {
         searchResult.value = JSON.parse(data) as ScanDataManagement[];
+        console.log(searchResult.value);
         if (searchResult.value.length == 0) {
           noRecord.value = true;
         } else {
