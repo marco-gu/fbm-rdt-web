@@ -2,7 +2,7 @@
   <div class="wrapper">
     <common-header-component
       :titles="[`${soNumber} | ${cartonID}`]"
-      :icons="['back', 'home']"
+      :icons="['back', 'home', 'empty']"
       @onHome="onHome"
       @onBack="onBack"
     />

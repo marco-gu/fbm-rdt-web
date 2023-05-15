@@ -18,7 +18,13 @@
               <q-input
                 class="input-field"
                 input-class="text-left"
+                ref="inputRef"
                 v-model="item.model"
+                @keyup.enter="onInputKeyUp($event, i)"
+                @paste="validPaste($event, i)"
+                lazy-rules
+                :rules="[item.valid]"
+                :maxlength="item.length"
                 borderless
                 :readonly="!isEditMode || !item.editable"
                 :disable="!isEditMode || !item.editable"
@@ -91,6 +97,7 @@ import { useStore } from "@/store";
 import {
   composeViewElement,
   ProfileElementLevel,
+  validPasteInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
 import { setContentHeightWithBtn } from "@/utils/screen.util";
@@ -113,6 +120,7 @@ const DataMgmtCartonDetail = defineComponent({
   setup() {
     const store = useStore();
     const i18n = useI18n();
+    const inputRef = ref();
     const pageView = ref([] as ViewElement[]);
     const titles = [
       store.state.dataMgmtModule.cartonItem.so,
@@ -136,15 +144,51 @@ const DataMgmtCartonDetail = defineComponent({
       setContentHeightWithBtn("scroll-area");
     });
     const composeView = () => {
+      pageView.value.push({
+        displayFieldName: "Client",
+        fieldName: "Client",
+        model: store.state.dataMgmtModule.cartonItem.client,
+        scan: 0,
+        editable: false,
+      });
+      pageView.value.push({
+        displayFieldName: "Operation",
+        fieldName: "Operation",
+        model: store.state.dataMgmtModule.cartonItem.operation,
+        scan: 0,
+        editable: false,
+      });
+      pageView.value.push({
+        displayFieldName: "Shipping Order",
+        fieldName: "SO",
+        model: store.state.dataMgmtModule.cartonItem.so,
+        scan: 0,
+        editable: false,
+      });
+      pageView.value.push({
+        displayFieldName: "Purchase Order",
+        fieldName: "PO",
+        model: store.state.dataMgmtModule.cartonItem.po,
+        scan: 0,
+        editable: false,
+      });
       store.state.dataMgmtModule.profile.forEach(
         (item: ProfileDisplayAttribute) => {
           if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
             if (item.level == ProfileElementLevel.CARTON_INDIVIDUAL) {
               const element = composeViewElement(item);
-              element.editable = false;
-              const fieldName = item.displayDataFieldName;
               let canAdd = false;
-              switch (fieldName) {
+              element.editable = true;
+              // fieldName from Profile
+              switch (item.displayDataFieldName) {
+                case "CID":
+                  element.model = ref(
+                    store.state.dataMgmtModule.cartonItem.cartonID
+                  );
+                  element.displayFieldName = "Carton ID";
+                  element.scan = 1;
+                  canAdd = true;
+                  break;
                 case "Quantity":
                   element.model = ref(
                     store.state.dataMgmtModule.cartonItem.quantity
@@ -179,41 +223,6 @@ const DataMgmtCartonDetail = defineComponent({
         }
       );
       pageView.value.push({
-        displayFieldName: "Client",
-        fieldName: "Client",
-        model: store.state.dataMgmtModule.cartonItem.client,
-        scan: 0,
-        editable: false,
-      });
-      pageView.value.push({
-        displayFieldName: "Operation",
-        fieldName: "Operation",
-        model: store.state.dataMgmtModule.cartonItem.operation,
-        scan: 0,
-        editable: false,
-      });
-      pageView.value.push({
-        displayFieldName: "Shipping Order",
-        fieldName: "SO",
-        model: store.state.dataMgmtModule.cartonItem.so,
-        scan: 0,
-        editable: false,
-      });
-      pageView.value.push({
-        displayFieldName: "Purchase Order",
-        fieldName: "PO",
-        model: store.state.dataMgmtModule.cartonItem.po,
-        scan: 0,
-        editable: false,
-      });
-      pageView.value.push({
-        displayFieldName: "Carton ID",
-        fieldName: "CartonID",
-        model: store.state.dataMgmtModule.cartonItem.cartonID,
-        scan: 1,
-        editable: true,
-      });
-      pageView.value.push({
         displayFieldName: "Scan Date",
         fieldName: "ScanDate",
         model: store.state.dataMgmtModule.cartonItem.scanDate,
@@ -237,11 +246,11 @@ const DataMgmtCartonDetail = defineComponent({
         label.value = i18n.t("common.save");
       }
     };
-    const showEditSuccessDialog = () => {
+    const showSuccessDialog = () => {
       editDialogSuccess.value = true;
       dialogVisible.value = true;
       type.value = "success";
-      msg.value = i18n.t("common.edit_success");
+      msg.value = i18n.t("common.modify_success");
     };
     const onConfirmDialog = () => {
       if (editDialogSuccess.value) {
@@ -263,7 +272,7 @@ const DataMgmtCartonDetail = defineComponent({
           bridge.call("updateCarton", apiParams, (res: string) => {
             const androidResponse = JSON.parse(res) as AndroidResponse<any>;
             if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              showEditSuccessDialog();
+              showSuccessDialog();
             }
           });
         }
@@ -281,6 +290,27 @@ const DataMgmtCartonDetail = defineComponent({
       });
     };
     const cancelEditMode = () => {
+      pageView.value.forEach((t) => {
+        switch (t.fieldName) {
+          case "CartonID":
+            t.model = store.state.dataMgmtModule.cartonItem.cartonID;
+            break;
+          case "Quantity":
+            t.model = store.state.dataMgmtModule.cartonItem.quantity;
+            break;
+          case "Style":
+            t.model = store.state.dataMgmtModule.cartonItem.style;
+            break;
+          case "HUB":
+            t.model = store.state.dataMgmtModule.cartonItem.hub;
+            break;
+          case "SKU":
+            t.model = store.state.dataMgmtModule.cartonItem.sku;
+            break;
+          default:
+            break;
+        }
+      });
       isEditMode.value = false;
       icons.value = ["back", "home", "mixed"];
       label.value = i18n.t("common.edit");
@@ -311,6 +341,52 @@ const DataMgmtCartonDetail = defineComponent({
         },
       });
     };
+    const scan = (fieldName: string, event: Event) => {
+      const isCamera = store.state.commonModule.scanDevice === "camera";
+      if (isCamera) {
+        const reqParams = {
+          scanType: "DM",
+          fieldName: fieldName,
+        };
+        bridge.call("scanForInput", reqParams);
+      } else {
+        event.stopPropagation();
+      }
+    };
+    bridge.register("getScanResult", (res: string) => {
+      const param = inputRef.value as any;
+      let scanFieldName = "";
+      pageView.value.forEach((view: any) => {
+        const key = "DM_" + view.fieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          view.model = res.substring(res.lastIndexOf("_") + 1);
+          scanFieldName = view.fieldName;
+        }
+      });
+      param.forEach((t: any, i: number) => {
+        if (pageView.value[i].fieldName == scanFieldName) {
+          t.validate(pageView.value[i].model);
+        }
+      });
+    });
+    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
+      if (event.code === "Enter" || event.which === 13) {
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (i === index) {
+            const inputText = t.$props.modelValue;
+            t.validate(inputText).then(() => {
+              if (param.length > index + 1) {
+                param[index + 1].focus();
+              }
+            });
+          }
+        });
+      }
+    };
+    const validPaste = (event: any, index: number) => {
+      validPasteInput(inputRef, event, index);
+    };
     return {
       pageView,
       titles,
@@ -329,6 +405,10 @@ const DataMgmtCartonDetail = defineComponent({
       cancelEditMode,
       home,
       back,
+      inputRef,
+      onInputKeyUp,
+      validPaste,
+      scan,
     };
   },
 });

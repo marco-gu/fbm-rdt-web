@@ -150,53 +150,6 @@ const cargoImageView = defineComponent({
         },
       };
       pageView.value.push(cartonID);
-      // pageView.value = [
-      //   {
-      //     displayFieldName: "Shipping order",
-      //     fieldName: "so",
-      //     model: ref(""),
-      //     reg: new RegExp(""),
-      //     valid: (val: string) => {
-      //       return new Promise((resolve) => {
-      //         if (!val) {
-      //           resolve(`Please input Shipping order`);
-      //         } else {
-      //           resolve(true);
-      //         }
-      //       });
-      //     },
-      //   },
-      //   {
-      //     displayFieldName: "Purchase Order",
-      //     fieldName: "po",
-      //     model: ref(""),
-      //     reg: new RegExp(""),
-      //     valid: (val: string) => {
-      //       return new Promise((resolve) => {
-      //         if (!val) {
-      //           resolve(`Please input Purchase Order`);
-      //         } else {
-      //           resolve(true);
-      //         }
-      //       });
-      //     },
-      //   },
-      //   {
-      //     displayFieldName: "Carton ID",
-      //     fieldName: "cartonID",
-      //     model: ref(""),
-      //     reg: new RegExp(""),
-      //     valid: (val: string) => {
-      //       return new Promise((resolve) => {
-      //         if (!val) {
-      //           resolve(`Please input CartonID`);
-      //         } else {
-      //           resolve(true);
-      //         }
-      //       });
-      //     },
-      //   },
-      // ];
     };
     const onSubmit = () => {
       myForm.value.validate().then((success: any) => {

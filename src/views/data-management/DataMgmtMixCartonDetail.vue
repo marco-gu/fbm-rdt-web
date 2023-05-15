@@ -17,9 +17,13 @@
               <q-input
                 class="input-field"
                 input-class="text-left"
+                ref="inputRef"
                 v-model="item.model"
+                @keyup.enter="onInputKeyUp($event, i)"
+                @paste="validPaste($event, i)"
                 lazy-rules
                 :rules="[item.valid]"
+                :maxlength="item.length"
                 borderless
                 :readonly="!isEditMode || !item.editable"
                 :disable="!isEditMode || !item.editable"
@@ -83,6 +87,7 @@ import router from "@/router";
 import {
   composeViewElement,
   ProfileElementLevel,
+  validPasteInput,
 } from "@/utils/profile.render";
 import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -109,6 +114,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
       store.state.dataMgmtModule.cartonMixItem.displayName,
     ];
     const myForm = ref();
+    const inputRef = ref();
     const pageView = ref([] as any[]);
     const isEditMode = ref(false);
     const i18n = useI18n();
@@ -139,6 +145,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
               switch (item.displayDataFieldName) {
                 case "UPC":
                   element.model = ref(obj.upc);
+                  element.scan = 1;
                   break;
                 case "Color":
                   element.model = ref(obj.color);
@@ -246,6 +253,52 @@ const DataMgmtCartonMixedDetail = defineComponent({
     const back = () => {
       router.push("/dataMgmtMixCartonList");
     };
+    const scan = (fieldName: string, event: Event) => {
+      const isCamera = store.state.commonModule.scanDevice === "camera";
+      if (isCamera) {
+        const reqParams = {
+          scanType: "DM",
+          fieldName: fieldName,
+        };
+        bridge.call("scanForInput", reqParams);
+      } else {
+        event.stopPropagation();
+      }
+    };
+    bridge.register("getScanResult", (res: string) => {
+      const param = inputRef.value as any;
+      let scanFieldName = "";
+      pageView.value.forEach((view: any) => {
+        const key = "DM_" + view.fieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          view.model = res.substring(res.lastIndexOf("_") + 1);
+          scanFieldName = view.fieldName;
+        }
+      });
+      param.forEach((t: any, i: number) => {
+        if (pageView.value[i].fieldName == scanFieldName) {
+          t.validate(pageView.value[i].model);
+        }
+      });
+    });
+    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
+      if (event.code === "Enter" || event.which === 13) {
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (i === index) {
+            const inputText = t.$props.modelValue;
+            t.validate(inputText).then(() => {
+              if (param.length > index + 1) {
+                param[index + 1].focus();
+              }
+            });
+          }
+        });
+      }
+    };
+    const validPaste = (event: any, index: number) => {
+      validPasteInput(inputRef, event, index);
+    };
     return {
       titles,
       router,
@@ -262,6 +315,10 @@ const DataMgmtCartonMixedDetail = defineComponent({
       onConfirmDialog,
       home,
       back,
+      inputRef,
+      scan,
+      validPaste,
+      onInputKeyUp,
     };
   },
 });

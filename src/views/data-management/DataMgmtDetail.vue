@@ -18,7 +18,10 @@
               <q-input
                 class="input-field"
                 input-class="text-left"
+                ref="inputRef"
                 v-model="item.model"
+                @keyup.enter="onInputKeyUp($event, i)"
+                @paste="validPaste($event, i)"
                 lazy-rules
                 :rules="[item.valid]"
                 :maxlength="item.length"
@@ -90,6 +93,7 @@ import {
   composeViewElement,
   ProfileElementLevel,
   toUpperCaseElementInput,
+  validPasteInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
@@ -105,6 +109,7 @@ const DataMgmtDetail = defineComponent({
   setup() {
     const store = useStore();
     const i18n = useI18n();
+    const inputRef = ref();
     const pageView = ref([] as any[]);
     const dataMgmtView = ref(store.state.dataMgmtModule.dataMgmt);
     const titles = [dataMgmtView.value.client, dataMgmtView.value.so];
@@ -148,12 +153,13 @@ const DataMgmtDetail = defineComponent({
               ) {
                 const element = composeViewElement(item);
                 element.editable = true;
+                // fieldName from Profile
                 switch (element.fieldName) {
-                  case "PO":
-                    element.model = ref(obj.po);
-                    break;
                   case "SO":
                     element.model = ref(obj.so);
+                    break;
+                  case "PO":
+                    element.model = ref(obj.po);
                     break;
                   case "SKU":
                     element.model = ref(obj.sku);
@@ -204,11 +210,11 @@ const DataMgmtDetail = defineComponent({
         label.value = i18n.t("common.save");
       }
     };
-    const showEditSuccessDialog = () => {
+    const showSuccessDialog = () => {
       editDialogSuccess.value = true;
       dialogVisible.value = true;
       type.value = "success";
-      msg.value = i18n.t("common.edit_success");
+      msg.value = i18n.t("common.modify_success");
     };
     const onConfirmDialog = () => {
       if (editDialogSuccess.value) {
@@ -235,7 +241,7 @@ const DataMgmtDetail = defineComponent({
             (res: string) => {
               const androidResponse = JSON.parse(res) as AndroidResponse<any>;
               if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-                showEditSuccessDialog();
+                showSuccessDialog();
               }
             }
           );
@@ -254,6 +260,30 @@ const DataMgmtDetail = defineComponent({
       });
     };
     const cancelEditMode = () => {
+      pageView.value.forEach((t) => {
+        switch (t.fieldName) {
+          case "PO":
+            t.model = store.state.dataMgmtModule.dataMgmt.po;
+            break;
+          case "SO":
+            t.model = store.state.dataMgmtModule.dataMgmt.so;
+            break;
+          case "SKU":
+            t.model = store.state.dataMgmtModule.dataMgmt.sku;
+            break;
+          case "ContainerNumber":
+            t.model = store.state.dataMgmtModule.dataMgmt.containerNumber;
+            break;
+          case "TotalCBM":
+            t.model = store.state.dataMgmtModule.dataMgmt.totalCBM;
+            break;
+          case "TotalWeight":
+            t.model = store.state.dataMgmtModule.dataMgmt.totalWeight;
+            break;
+          default:
+            break;
+        }
+      });
       isEditMode.value = false;
       label.value = i18n.t("common.edit");
       icons.value = ["back", "home", "detail"];
@@ -277,6 +307,52 @@ const DataMgmtDetail = defineComponent({
     };
     const multiWatchSources = [pageView.value];
     toUpperCaseElementInput(multiWatchSources);
+    const scan = (fieldName: string, event: Event) => {
+      const isCamera = store.state.commonModule.scanDevice === "camera";
+      if (isCamera) {
+        const reqParams = {
+          scanType: "DM",
+          fieldName: fieldName,
+        };
+        bridge.call("scanForInput", reqParams);
+      } else {
+        event.stopPropagation();
+      }
+    };
+    bridge.register("getScanResult", (res: string) => {
+      const param = inputRef.value as any;
+      let scanFieldName = "";
+      pageView.value.forEach((view: any) => {
+        const key = "DM_" + view.fieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          view.model = res.substring(res.lastIndexOf("_") + 1);
+          scanFieldName = view.fieldName;
+        }
+      });
+      param.forEach((t: any, i: number) => {
+        if (pageView.value[i].fieldName == scanFieldName) {
+          t.validate(pageView.value[i].model);
+        }
+      });
+    });
+    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
+      if (event.code === "Enter" || event.which === 13) {
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (i === index) {
+            const inputText = t.$props.modelValue;
+            t.validate(inputText).then(() => {
+              if (param.length > index + 1) {
+                param[index + 1].focus();
+              }
+            });
+          }
+        });
+      }
+    };
+    const validPaste = (event: any, index: number) => {
+      validPasteInput(inputRef, event, index);
+    };
     return {
       titles,
       pageView,
@@ -295,6 +371,10 @@ const DataMgmtDetail = defineComponent({
       cancelEditMode,
       back,
       onDetail,
+      scan,
+      inputRef,
+      onInputKeyUp,
+      validPaste,
     };
   },
 });

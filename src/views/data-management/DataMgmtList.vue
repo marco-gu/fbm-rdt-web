@@ -276,10 +276,8 @@ const DataMgmtList = defineComponent({
           searchResult.value.length >
           (searchPageNumber.value + 1) * PAGESIZE
         ) {
-          pageView.value = searchResult.value.slice(
-            searchPageNumber.value * PAGESIZE,
-            (searchPageNumber.value + 1) * PAGESIZE
-          );
+          const index = apiPageNumber.value + 1;
+          pageView.value = searchResult.value.slice(0, index * PAGESIZE);
           searchPageNumber.value++;
         } else {
           pageView.value = searchResult.value.slice(
@@ -292,10 +290,8 @@ const DataMgmtList = defineComponent({
       } else {
         // setTimeout for more friendly UIUX?
         if (apiResult.value.length > (apiPageNumber.value + 1) * PAGESIZE) {
-          pageView.value = apiResult.value.slice(
-            apiPageNumber.value * PAGESIZE,
-            (apiPageNumber.value + 1) * PAGESIZE
-          );
+          const index = apiPageNumber.value + 1;
+          pageView.value = apiResult.value.slice(0, index * PAGESIZE);
           apiPageNumber.value++;
         } else {
           pageView.value = apiResult.value.slice(0, apiResult.value.length);

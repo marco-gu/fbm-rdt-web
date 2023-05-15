@@ -76,8 +76,9 @@
     "upload_dialog_message": "定要上传吗?",
     "upload_success": "上传成功",
     "delete_success": "删除成功",
-    "edit_success": "修改成功",
-    "add_success": "增加成功"
+    "edit_success": "编辑成功",
+    "add_success": "增加成功",
+    "modify_success": "修改成功"
   },
   "login": {
     "login": "登录",

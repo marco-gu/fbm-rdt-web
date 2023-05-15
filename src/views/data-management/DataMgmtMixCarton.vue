@@ -4,7 +4,7 @@
       :titles="[`${cartonID}: ${$t('carton.item')}${itemCount}`]"
       :icons="['back', 'home', 'empty']"
       @onHome="home"
-      @onBack="() => router.push('/dataMgmtCartonMixed')"
+      @onBack="() => router.push('/dataMgmtMixCartonList')"
     />
     <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
