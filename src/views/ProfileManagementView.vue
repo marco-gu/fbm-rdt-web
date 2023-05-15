@@ -1,8 +1,6 @@
 <template>
   <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backFunctionParam="back">
-    </header-component> -->
     <common-header-component
       :titles="[$t('profile.profiles')]"
       :icons="
@@ -11,26 +9,11 @@
       @onHome="home"
       v-model:searchValue="search"
       @onBack="back"
+      @onOpenSearch="openSearch"
+      @onCloseSearch="closeSearch"
     />
     <div class="page-content">
-      <!-- <div class="search" v-show="!isEditMode">
-        <q-input
-          v-model="search"
-          outlined
-          dense
-          :placeholder="$t('common.search')"
-        >
-          <template v-slot:prepend>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </div> -->
-      <q-scroll-area
-        class="scroll-area"
-        id="scroll-area"
-        :thumb-style="thumbStyle"
-        :bar-style="barStyle"
-      >
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <template v-if="isEditMode">
           <div class="edit-container">
             <div
@@ -164,7 +147,6 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { useI18n } from "vue-i18n";
-import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { ProfileMaster } from "../models/profile";
 import { computed, defineComponent, onMounted, Ref, ref, watch } from "vue";
@@ -176,6 +158,12 @@ import formatDate from "../utils/formatDate";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import {
+  setContentHeight,
+  setContentHeightInSearch,
+  setContentHeightOutSearch,
+  setContentHeightWithBtn,
+} from "@/utils/screen.util";
 const ProfileManagementView = defineComponent({
   components: {
     CommonHeaderComponent,
@@ -183,8 +171,6 @@ const ProfileManagementView = defineComponent({
     LoadingComponent,
   },
   setup() {
-    // const $q = useQuasar();
-
     const router = useRouter();
     const i18n = useI18n();
     const search = ref("");
@@ -202,9 +188,10 @@ const ProfileManagementView = defineComponent({
     const showHomeDialog = ref(false);
     onMounted(() => {
       // calculate scroll area height
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 20 + "px";
+      // const deviceHeight = window.innerHeight;
+      // const scrollArea = document.getElementById("scroll-area") as any;
+      // scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 20 + "px";
+      setContentHeight("scroll-area");
       getProfileList("onMounted");
     });
     const sortProfileList = (profileListDisplay: any[]) => {
@@ -302,9 +289,7 @@ const ProfileManagementView = defineComponent({
     const handleHold = () => {
       updateProfileListDisplay();
       isEditMode.value = true;
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 70 + "px";
+      setContentHeightWithBtn("scroll-area");
     };
     const deleteProfile = () => {
       // profileName is business primary key
@@ -344,13 +329,17 @@ const ProfileManagementView = defineComponent({
     };
     const cancelEditMode = () => {
       isEditMode.value = false;
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 10 + "px";
+      setContentHeight("scroll-area");
     };
     const isDeleteButtonDisabled = computed(() => {
       return !profileListDisplay.value.some((item: any) => item["isSelected"]);
     });
+    const openSearch = () => {
+      setContentHeightInSearch("scroll-area");
+    };
+    const closeSearch = () => {
+      setContentHeightOutSearch("scroll-area");
+    };
     return {
       cancelEditMode,
       showDeleteDialog,
@@ -373,21 +362,8 @@ const ProfileManagementView = defineComponent({
       router,
       isDeleteButtonDisabled,
       showHomeDialog,
-      thumbStyle: {
-        right: "4px",
-        borderRadius: "5px",
-        backgroundColor: "black",
-        width: "5px",
-        opacity: 0.75,
-      },
-
-      barStyle: {
-        right: "4px",
-        borderRadius: "9px",
-        backgroundColor: "black",
-        width: "5px",
-        opacity: 0.2,
-      },
+      openSearch,
+      closeSearch,
     };
   },
 });

@@ -78,7 +78,8 @@
     "delete_success": "删除成功",
     "edit_success": "编辑成功",
     "add_success": "增加成功",
-    "modify_success": "修改成功"
+    "modify_success": "修改成功!",
+    "complete_success": "成功完成!"
   },
   "login": {
     "login": "登录",

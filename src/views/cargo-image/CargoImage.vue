@@ -18,7 +18,10 @@
               <q-input
                 class="input-field"
                 input-class="text-left"
+                ref="inputRef"
                 v-model="item.model"
+                @keyup.enter="onInputKeyUp($event, i)"
+                @paste="validPaste($event, i)"
                 lazy-rules
                 :rules="[item.valid]"
                 borderless
@@ -37,6 +40,19 @@
                   </q-avatar>
                 </template>
               </q-input>
+            </div>
+          </div>
+          <div class="field">
+            <div>
+              <div class="input-title">
+                <span class="text">{{ $t("image.add_image_reason") }}</span>
+              </div>
+              <q-select
+                behavior="menu"
+                borderless
+                class="select-field"
+                v-model="reason"
+              />
             </div>
           </div>
         </q-form>
@@ -66,7 +82,7 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import bridge from "dsbridge";
-import { defineComponent, onBeforeMount, onMounted, ref, watch } from "vue";
+import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -76,6 +92,7 @@ import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { setContentHeightWithBtn } from "@/utils/screen.util";
 import {
   toUpperCaseElementInput,
+  validPasteInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
 const cargoImageView = defineComponent({
@@ -89,12 +106,12 @@ const cargoImageView = defineComponent({
     const router = useRouter();
     const reason = ref(i18n.t("image.damage"));
     const pageView = ref([] as ViewDisplayAttribute[]);
-    const scanType = ref("CargoImage");
     const myForm = ref();
     const inputScanIcon = inputScan;
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
+    const inputRef = ref();
     onBeforeMount(() => {
       composeView();
     });
@@ -202,7 +219,7 @@ const cargoImageView = defineComponent({
       const isCamera = store.state.commonModule.scanDevice === "camera";
       if (isCamera) {
         const reqParams = {
-          scanType: scanType.value,
+          scanType: "images",
           fieldName: fieldName,
         };
         bridge.call("scanForInput", reqParams);
@@ -212,12 +229,30 @@ const cargoImageView = defineComponent({
     };
     bridge.register("getScanResult", (res: string) => {
       pageView.value.forEach((view: any) => {
-        const key = scanType.value + "_" + view.displayFieldName;
+        const key = "images_" + view.fieldName;
         if (key == res.substring(0, res.lastIndexOf("_"))) {
-          view.value = res.substring(res.lastIndexOf("_") + 1);
+          view.model = res.substring(res.lastIndexOf("_") + 1);
         }
       });
     });
+    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
+      if (event.code === "Enter" || event.which === 13) {
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (i === index) {
+            const inputText = t.$props.modelValue;
+            t.validate(inputText).then(() => {
+              if (param.length > index + 1) {
+                param[index + 1].focus();
+              }
+            });
+          }
+        });
+      }
+    };
+    const validPaste = (event: any, index: number) => {
+      validPasteInput(inputRef, event, index);
+    };
     const back = () => {
       router.push({
         name: "cargoImageList",
@@ -239,6 +274,9 @@ const cargoImageView = defineComponent({
       type,
       popupVisible,
       msg,
+      onInputKeyUp,
+      validPaste,
+      inputRef,
     };
   },
 });

@@ -2,7 +2,7 @@ export interface DataMgmt {
   client: string;
   profileName: string;
   so: string;
-  po: string;
+  po?: string;
   sku?: string;
   scanType: string;
   updateDatetime: string;

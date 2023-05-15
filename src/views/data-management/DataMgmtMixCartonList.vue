@@ -82,6 +82,12 @@
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
+  <NotifyComponent
+    :visible="notifyVisible"
+    :message="msg"
+    @close="onCloseNotify"
+  >
+  </NotifyComponent>
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
@@ -89,7 +95,7 @@ import { ProfileDisplayAttribute } from "@/models/profile";
 import router from "@/router";
 import { ProfileElementLevel } from "@/utils/profile.render";
 import bridge from "dsbridge";
-import { computed, defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { useStore } from "@/store";
 import { useI18n } from "vue-i18n";
 import PopupComponent from "@/components/PopupComponent.vue";
@@ -99,11 +105,14 @@ import {
 } from "@/models/android.response";
 import { setContentHeightWithBtn } from "@/utils/screen.util";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
+import { useRoute } from "vue-router";
 const DataMgmtMixCartonList = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
     LoadingComponent,
+    NotifyComponent,
   },
   setup() {
     const store = useStore();
@@ -118,17 +127,20 @@ const DataMgmtMixCartonList = defineComponent({
     const pressDelete = ref(false);
     const pressHome = ref(false);
     const noRecord = ref(false);
-    const deleteDialogSuccess = ref(false);
     const scrollArea = ref();
     const loadingStatus = ref(false);
-    onBeforeMount(() => {
-      loadingStatus.value = true;
-      setTimeout(() => {
-        getData();
-      }, 200);
-    });
+    const notifyVisible = ref(false);
+    const route = useRoute();
     onMounted(() => {
       setContentHeightWithBtn("scroll-area");
+      if (route.query.from) {
+        getData();
+      } else {
+        loadingStatus.value = true;
+        setTimeout(() => {
+          getData();
+        }, 200);
+      }
     });
     const onSubmit = () => {
       if (isEditMode.value) {
@@ -186,40 +198,31 @@ const DataMgmtMixCartonList = defineComponent({
       type.value = "action";
       msg.value = i18n.t("common.delete_dialog_message");
     };
-    const showDeleteSuccessDialog = () => {
-      deleteDialogSuccess.value = true;
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.delete_success");
-    };
     const onConfirmDialog = () => {
-      if (deleteDialogSuccess.value) {
+      if (pressHome.value) {
         dialogVisible.value = false;
-      } else {
-        if (pressHome.value) {
-          dialogVisible.value = false;
-          router.push("/home");
-        } else if (pressDelete.value) {
-          dialogVisible.value = false;
-          let idList: any = [];
-          pageView.value.forEach((item: any) => {
-            if (item["isSelected"] == true) {
-              idList.push(item.id);
-            }
-          });
-          const apiParams = {
-            idList: idList,
-          };
-          bridge.call("deleteCartonProducts", apiParams, (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              showDeleteSuccessDialog();
-              scrollArea.value.setScrollPosition("vertical", 0);
-              cancelEditMode();
-              getData();
-            }
-          });
-        }
+        router.push("/home");
+      } else if (pressDelete.value) {
+        dialogVisible.value = false;
+        let idList: any = [];
+        pageView.value.forEach((item: any) => {
+          if (item["isSelected"] == true) {
+            idList.push(item.id);
+          }
+        });
+        const apiParams = {
+          idList: idList,
+        };
+        bridge.call("deleteCartonProducts", apiParams, (res: string) => {
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            notifyVisible.value = true;
+            msg.value = i18n.t("common.delete_success");
+            scrollArea.value.setScrollPosition("vertical", 0);
+            cancelEditMode();
+            getData();
+          }
+        });
       }
     };
     const getData = () => {
@@ -288,6 +291,9 @@ const DataMgmtMixCartonList = defineComponent({
       type.value = "action";
       msg.value = i18n.t("common.return_home");
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+    };
     return {
       titles,
       router,
@@ -307,6 +313,8 @@ const DataMgmtMixCartonList = defineComponent({
       noRecord,
       scrollArea,
       loadingStatus,
+      notifyVisible,
+      onCloseNotify,
     };
   },
 });

@@ -1,4 +1,5 @@
 <template>
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <common-header-component
       :titles="[$t('continue.job_list')]"
@@ -9,50 +10,19 @@
       @onSearch="onSearch"
     />
     <div class="page-content">
-      <!-- <div class="search">
-        <q-input
-          ref="input"
-          v-model="search"
-          outlined
-          dense
-          :placeholder="$t('common.search')"
-        >
-          <template v-slot:prepend>
-            <q-icon name="search" @click="onSearch" />
-          </template>
-          <template v-slot:append>
-            <q-icon name="close" @click="onClear" class="cursor-pointer" />
-          </template>
-        </q-input>
-      </div> -->
-      <template v-if="refreshloading">
-        <div
-          style="
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-          "
-        >
-          <q-spinner-dots color="primary" size="40px" />
-        </div>
-      </template>
-      <!-- <q-scroll-area ref="myScrollArea" id="scroll-area"> -->
       <q-scroll-area
-        ref="myScrollArea"
+        ref="scrollArea"
         id="scroll-area"
-        :thumb-style="thumbStyle"
-        :bar-style="barStyle"
+        :thumb-style="{ width: '0px' }"
       >
-        <template v-if="noRecord">
+        <div v-if="noRecord">
           <div class="no-record">{{ $t("common.no_record") }}</div>
-        </template>
-        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
+        </div>
+        <q-infinite-scroll @load="onLoad" :offset="20" ref="infiniteScroll">
           <div
-            v-for="(item, index) in defaultDisplay"
+            v-for="(item, index) in pageView"
             :key="index"
-            @click="onClickScanTask(item)"
+            @click="onDetail(item)"
           >
             <div class="common-card-2">
               <div class="label mb-lg">
@@ -85,34 +55,6 @@
                 }}
               </div>
             </div>
-            <!-- <q-item class="card-item">
-              <div class="card-item-content">
-                <div class="card-item-left">
-                  <q-item-section>
-                    <div style="width: 80%">
-                      <q-item-label>{{ item.taskId }}</q-item-label>
-                      <q-item-label class="card-item-date-text">{{
-                        item.updateDatetime
-                      }}</q-item-label>
-                    </div>
-                  </q-item-section>
-                </div>
-                <div class="card-item-right">
-                  <CircularProgressComponent
-                    :value="
-                      (item.scannedCartonNumber / item.allCartonNumber) * 100
-                    "
-                  >
-                    <div class="card-item-sub-text">
-                      {{ item.scannedCartonNumber }}/{{ item.allCartonNumber }}
-                    </div>
-                  </CircularProgressComponent>
-                </div>
-              </div>
-              <q-item-section side>
-                <q-icon name="chevron_right" color="black" />
-              </q-item-section>
-            </q-item> -->
           </div>
           <template v-slot:loading>
             <div class="row justify-center q-my-md">
@@ -121,182 +63,47 @@
           </template>
         </q-infinite-scroll>
       </q-scroll-area>
-
-      <!-- <div class="footer-message">{{ $t("continue.instruction") }}</div> -->
     </div>
   </div>
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { defineComponent, onBeforeMount, onMounted } from "@vue/runtime-core";
-import { ScanDataManagement } from "../models/profile";
+import { defineComponent, onMounted } from "@vue/runtime-core";
 import { ref, watch } from "vue";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
-import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import { setContentHeight } from "@/utils/screen.util";
+import { DataMgmt } from "@/models/data.management";
+import { PAGESIZE } from "@/models/constant";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 const MyJobsView = defineComponent({
   components: {
     CommonHeaderComponent,
+    LoadingComponent,
   },
   setup() {
-    const refreshloading = ref(false);
     const search = ref();
-    const i18n = useI18n();
-    const defaultDisplay = ref([] as ScanDataManagement[]);
-    const onSearchMode = ref(false);
-    const apiIndex = ref(0);
-    const searchIndex = ref(0);
-    const searchResult = ref([] as ScanDataManagement[]);
-    const apiResult = ref([] as ScanDataManagement[]);
+    const pageView = ref([] as DataMgmt[]);
+    const apiResult = ref([] as DataMgmt[]);
+    const searchResult = ref([] as DataMgmt[]);
     const router = useRouter();
-    const myInfiniteScroll = ref();
-    const myScrollArea = ref();
     const noRecord = ref(false);
     const input = ref();
-    onBeforeMount(() => {
-      // refreshloading.value = true;
-      getScanDataList();
-    });
-    const onLoad = (index: any, done: any) => {
-      if (onSearchMode.value) {
-        const start = searchIndex.value * 10;
-        const end = (searchIndex.value + 1) * 10;
-        setTimeout(() => {
-          for (let i = start; i < end; i++) {
-            if (
-              searchResult.value[i] &&
-              defaultDisplay.value.length < searchResult.value.length
-            ) {
-              defaultDisplay.value.push(searchResult.value[i]);
-            }
-          }
-          if (defaultDisplay.value.length == (searchIndex.value + 1) * 10) {
-            searchIndex.value++;
-          } else {
-            myInfiniteScroll.value.stop();
-          }
-          done();
-        }, 200);
-      } else {
-        const start = apiIndex.value * 10;
-        const end = (apiIndex.value + 1) * 10;
-        setTimeout(() => {
-          for (let i = start; i < end; i++) {
-            if (
-              apiResult.value[i] &&
-              defaultDisplay.value.length < apiResult.value.length
-            ) {
-              defaultDisplay.value.push(apiResult.value[i]);
-            }
-          }
-          if (defaultDisplay.value.length == (apiIndex.value + 1) * 10) {
-            apiIndex.value++;
-          } else {
-            myInfiniteScroll.value.stop();
-          }
-          done();
-        }, 200);
-      }
-    };
+    const loadingStatus = ref(false);
+    const apiPageNumber = ref(0);
+    const searchPageNumber = ref(0);
+    const infiniteScroll = ref();
+    const scrollArea = ref();
+    const searchMode = ref(false);
+    const pageInit = ref(false);
     onMounted(() => {
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 40 + "px";
+      setContentHeight("scroll-area");
+      loadingStatus.value = true;
+      setTimeout(() => {
+        getData();
+      }, 200);
     });
-    // bridge.register("refreshJobs", () => {
-    //   getScanDataList();
-    // });
-    const refresh = (done: any) => {
-      if (search.value && search.value.length > 0) {
-        onSearch();
-      } else {
-        apiIndex.value = 0;
-        defaultDisplay.value = [];
-        searchResult.value = [];
-        getScanDataList();
-        // myInfiniteScroll.value.resume();
-      }
-      done();
-    };
-    const getScanDataList = () => {
-      bridge.call("fetchDataMgmt", {}, (data: any) => {
-        // bridge.call("fetchTaskForDataManagement", {}, (data: any) => {
-        refreshloading.value = false;
-        apiResult.value = JSON.parse(data) as ScanDataManagement[];
-
-        const deepCopyRef = ref(apiResult.value.map((item) => item));
-
-        if (apiResult.value.length == 0) {
-          noRecord.value = true;
-        } else {
-          noRecord.value = false;
-          if (apiResult.value.length > 10) {
-            defaultDisplay.value = deepCopyRef.value.slice(0, 10);
-            apiIndex.value++;
-          } else {
-            defaultDisplay.value = deepCopyRef.value;
-            myInfiniteScroll.value.stop();
-          }
-        }
-      });
-    };
-    const onClear = () => {
-      search.value = "";
-      onSearchMode.value = false;
-      if (apiResult.value.length > 0) {
-        noRecord.value = false;
-        if (apiResult.value.length > 10) {
-          defaultDisplay.value = apiResult.value.slice(0, 10);
-          apiIndex.value = 1;
-          myInfiniteScroll.value.resume();
-        } else {
-          defaultDisplay.value = apiResult.value;
-          myInfiniteScroll.value.stop();
-        }
-      } else {
-        noRecord.value = true;
-      }
-      searchIndex.value = 0;
-      myScrollArea.value.setScrollPosition("vertical", 0);
-    };
-    watch(search, () => {
-      console.log(search.value);
-      if (search.value) {
-        console.log(search.value);
-        if (search.value.length >= 4) {
-          onSearch();
-        }
-      } else if (search.value.length == 0) {
-        onClear();
-      }
-    });
-    const onSearch = () => {
-      const args = {
-        condition: search.value.toUpperCase(),
-      };
-      myScrollArea.value.setScrollPosition("vertical", 0);
-      onSearchMode.value = true;
-      defaultDisplay.value = [];
-      searchResult.value = [];
-      bridge.call("searchTaskForDataManagement", args, (data: any) => {
-        searchResult.value = JSON.parse(data) as ScanDataManagement[];
-        console.log(searchResult.value);
-        if (searchResult.value.length == 0) {
-          noRecord.value = true;
-        } else {
-          noRecord.value = false;
-          if (searchResult.value.length > 10) {
-            defaultDisplay.value = searchResult.value.slice(0, 10);
-            searchIndex.value++;
-            myInfiniteScroll.value.resume();
-          } else {
-            defaultDisplay.value = searchResult.value;
-            myInfiniteScroll.value.stop();
-          }
-        }
-      });
-    };
-    const onClickScanTask = (scanTask: any) => {
+    const onDetail = (scanTask: any) => {
       const args = {
         taskID: scanTask.taskID,
         type: scanTask.scanType,
@@ -308,35 +115,125 @@ const MyJobsView = defineComponent({
       bridge.call("continueJobScan", args);
       router.push("/nativeBridge");
     };
+    const onLoad = (index: any, done: any) => {
+      if (searchMode.value) {
+        if (
+          searchResult.value.length >
+          (searchPageNumber.value + 1) * PAGESIZE
+        ) {
+          const index = apiPageNumber.value + 1;
+          pageView.value = searchResult.value.slice(0, index * PAGESIZE);
+          searchPageNumber.value++;
+        } else {
+          pageView.value = searchResult.value.slice(
+            0,
+            searchResult.value.length
+          );
+          infiniteScroll.value.stop();
+        }
+        done();
+      } else {
+        if (!pageInit.value) {
+          if (apiResult.value.length > (apiPageNumber.value + 1) * PAGESIZE) {
+            const index = apiPageNumber.value + 1;
+            pageView.value = apiResult.value.slice(0, index * PAGESIZE);
+            apiPageNumber.value++;
+          } else {
+            pageView.value = apiResult.value.slice(0, apiResult.value.length);
+            infiniteScroll.value.stop();
+          }
+          done();
+        } else {
+          pageInit.value = false;
+        }
+        done();
+      }
+    };
+    watch(search, () => {
+      if (search.value.length > 0) {
+        onSearch();
+      } else {
+        onClear();
+      }
+    });
+    const onClear = () => {
+      search.value = "";
+      searchMode.value = false;
+      scrollArea.value.setScrollPosition("vertical", 0);
+      processData();
+    };
+    const onSearch = () => {
+      searchMode.value = true;
+      searchPageNumber.value = 0;
+      if (apiResult.value.length > 0) {
+        scrollArea.value.setScrollPosition("vertical", 0);
+        searchResult.value = apiResult.value.filter((item) => {
+          if (item.po) {
+            return (
+              item.so.toLowerCase().indexOf(search.value.toLowerCase()) > -1 ||
+              item.po.toLowerCase().indexOf(search.value.toLowerCase()) > -1
+            );
+          } else {
+            return (
+              item.so.toLowerCase().indexOf(search.value.toLowerCase()) > -1
+            );
+          }
+        });
+        if (searchResult.value.length > 0) {
+          noRecord.value = false;
+          if (searchResult.value.length > PAGESIZE) {
+            pageView.value = searchResult.value.slice(0, PAGESIZE);
+            searchPageNumber.value++;
+            infiniteScroll.value.resume();
+          } else {
+            pageView.value = searchResult.value;
+            infiniteScroll.value.stop();
+          }
+        } else {
+          noRecord.value = true;
+          pageView.value = [];
+        }
+      } else {
+        noRecord.value = true;
+        pageView.value = [];
+      }
+    };
+    const getData = () => {
+      bridge.call("fetchDataMgmt", {}, (data: any) => {
+        loadingStatus.value = false;
+        apiResult.value = JSON.parse(data) as DataMgmt[];
+        processData();
+      });
+    };
+    const processData = () => {
+      if (apiResult.value.length == 0) {
+        noRecord.value = true;
+        pageView.value = [];
+      } else {
+        pageInit.value = true;
+        if (apiResult.value.length > PAGESIZE) {
+          pageView.value = apiResult.value.slice(0, PAGESIZE);
+          apiPageNumber.value++;
+          infiniteScroll.value.resume();
+        } else {
+          pageView.value = apiResult.value;
+          infiniteScroll.value.stop();
+        }
+      }
+    };
     return {
       onClear,
-      onClickScanTask,
+      onDetail,
       search,
       onSearch,
       onLoad,
-      myInfiniteScroll,
+      infiniteScroll,
       noRecord,
       input,
-      myScrollArea,
-      refreshloading,
-      defaultDisplay,
-      refresh,
+      scrollArea,
       router,
-      thumbStyle: {
-        right: "4px",
-        borderRadius: "5px",
-        backgroundColor: "black",
-        width: "5px",
-        opacity: 0.75,
-      },
-
-      barStyle: {
-        right: "4px",
-        borderRadius: "9px",
-        backgroundColor: "black",
-        width: "5px",
-        opacity: 0.2,
-      },
+      loadingStatus,
+      pageView,
     };
   },
 });

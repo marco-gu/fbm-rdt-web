@@ -74,11 +74,12 @@
     "detail": "Detail",
     "delete_dialog_message": "Are you sure to delete it?",
     "upload_dialog_message": "Are you sure to upload?",
-    "upload_success": "Upload Success",
-    "delete_success": "Delete Success",
+    "upload_success": "Upload Success!",
+    "delete_success": "Delete Success!",
     "edit_success": "Edit Success",
     "add_success": "Add Success",
-    "modify_success": "Modify Success"
+    "modify_success": "Modify Success!",
+    "complete_success": "Complete Success!"
   },
   "login": {
     "login": "Continue",

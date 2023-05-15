@@ -1,7 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component> -->
     <common-header-component
       :titles="[profileName, $t('lp.scan')]"
       :icons="['back', 'home', 'empty']"
@@ -39,20 +37,6 @@
                 readonly
               />
             </div>
-            <!-- <div class="card-item-input">
-              <div>
-                {{ item.key }}
-              </div>
-              <q-input
-                class="card-item-input-field no-shadow"
-                :input-style="{ fontSize: '15px' }"
-                input-class="text-right"
-                v-model="item.value"
-                borderless
-                dense
-              >
-              </q-input>
-            </div> -->
           </div>
         </q-form>
       </q-scroll-area>
@@ -65,14 +49,6 @@
         :label="$t('lp.start_scan')"
         @click="onSubmit"
       />
-      <!-- <q-btn
-        no-caps
-        unelevated
-        @click="onSubmit"
-        class="full-width"
-        :label="$t('lp.start_scan')"
-        color="secondary"
-      /> -->
     </div>
   </div>
   <PopupComponent
@@ -95,6 +71,7 @@ import bridge from "dsbridge";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { useI18n } from "vue-i18n";
 import PopupComponent from "@/components/PopupComponent.vue";
+import { setContentHeightWithBtn } from "@/utils/screen.util";
 type ViewElement = {
   key: string;
   value: string;
@@ -122,10 +99,7 @@ const ScanView = defineComponent({
     const homePopup = ref(false);
 
     onMounted(() => {
-      // calculate scroll area height if bottom button exist
-      const bottom = document.getElementById("bottom-button") as any;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = bottom.offsetTop - scrollArea.offsetTop + "px";
+      setContentHeightWithBtn("scroll-area");
       data.value = route.params as any;
       for (const key in data.value) {
         switch (key) {
@@ -182,21 +156,8 @@ const ScanView = defineComponent({
         type: type.value,
         profileName: profileName.value,
         pageType: route.params.id,
-        // expectedCartonQuantity: 0,
-        // expectedScanCartonQuantity: 0,
       };
       bridge.call("scan", args);
-      // query count of expected carton quantity for pre-validation
-      // bridge.call(
-      //   "retrieveOnlineCartonQuantity",
-      //   { taskID: taskID.value },
-      //   (res) => {
-      //     alert(res.expectedCartonQuantity);
-      //     args.expectedCartonQuantity = res.expectedCartonQuantity;
-      //     args.expectedScanCartonQuantity = res.expectedScanCartonQuantity;
-      //     bridge.call("scan", args);
-      //   }
-      // );
     };
     bridge.register("returnOnlineLpSearch", () => {
       router.push(backUrlParam);

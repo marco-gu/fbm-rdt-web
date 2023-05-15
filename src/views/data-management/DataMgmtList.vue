@@ -113,10 +113,17 @@
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
+  <NotifyComponent
+    :visible="notifyVisible"
+    :message="msg"
+    @close="onCloseNotify"
+  >
+  </NotifyComponent>
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import {
   AndroidResponse,
@@ -142,6 +149,7 @@ const DataMgmtList = defineComponent({
     CommonHeaderComponent,
     PopupComponent,
     LoadingComponent,
+    NotifyComponent,
   },
   setup() {
     const i18n = useI18n();
@@ -164,11 +172,16 @@ const DataMgmtList = defineComponent({
     const search = ref("");
     const scrollArea = ref();
     const searchMode = ref(false);
-    const deleteDialogSuccess = ref(false);
-    const uploadDialogSuccess = ref(false);
+    // const deleteDialogSuccess = ref(false);
+    // const uploadDialogSuccess = ref(false);
+    const pageInit = ref(false);
+    const notifyVisible = ref(false);
     onMounted(() => {
       setContentHeight("scroll-area");
       if (route.params.from) {
+        apiResult.value = store.state.dataMgmtModule.dataMgmtList;
+        processData();
+      } else if (route.query.from) {
         apiResult.value = store.state.dataMgmtModule.dataMgmtList;
         processData();
       } else {
@@ -211,66 +224,53 @@ const DataMgmtList = defineComponent({
       type.value = "action";
       msg.value = i18n.t("common.upload_dialog_message");
     };
-    const showUploaSuccessdDialog = () => {
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.upload_success");
-    };
     const showDeleteDialog = () => {
       dialogVisible.value = true;
       type.value = "action";
       pressDelete.value = true;
       msg.value = i18n.t("common.delete_dialog_message");
     };
-    const showDeleteSuccessDialog = () => {
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.delete_success");
-    };
     const onConfirmDialog = () => {
-      if (deleteDialogSuccess.value || uploadDialogSuccess.value) {
+      const taskList: string[] = [];
+      pageView.value.forEach((item: any) => {
+        if (item["isSelected"] == true) {
+          taskList.push(item.taskID);
+        }
+      });
+      const args = {
+        taskIdList: taskList,
+      };
+      if (pressUpload.value) {
         dialogVisible.value = false;
-      } else {
-        const taskList: string[] = [];
-        pageView.value.forEach((item: any) => {
-          if (item["isSelected"] == true) {
-            taskList.push(item.taskID);
+        bridge.call("uploadScanData", args, (res: string) => {
+          pressUpload.value = false;
+          // uploadDialogSuccess.value = true;
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            notifyVisible.value = true;
+            msg.value = i18n.t("common.upload_success");
+            scrollArea.value.setScrollPosition("vertical", 0);
+            cancelEditMode();
+            getData();
           }
         });
-        const args = {
-          taskIdList: taskList,
-        };
-        if (pressUpload.value) {
-          dialogVisible.value = false;
-          bridge.call("uploadScanData", args, (res: string) => {
-            pressUpload.value = false;
-            uploadDialogSuccess.value = true;
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              showUploaSuccessdDialog();
-              scrollArea.value.setScrollPosition("vertical", 0);
-              cancelEditMode();
-              getData();
-            }
-          });
-        } else if (pressDelete.value) {
-          dialogVisible.value = false;
-          bridge.call("deleteTaskForDataManagement", args, (res: string) => {
-            pressDelete.value = false;
-            deleteDialogSuccess.value = true;
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              showDeleteSuccessDialog();
-              scrollArea.value.setScrollPosition("vertical", 0);
-              cancelEditMode();
-              getData();
-            }
-          });
-        }
+      } else if (pressDelete.value) {
+        dialogVisible.value = false;
+        bridge.call("deleteTaskForDataManagement", args, (res: string) => {
+          pressDelete.value = false;
+          // deleteDialogSuccess.value = true;
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            notifyVisible.value = true;
+            msg.value = i18n.t("common.delete_success");
+            scrollArea.value.setScrollPosition("vertical", 0);
+            cancelEditMode();
+            getData();
+          }
+        });
       }
     };
     const onLoad = (index: any, done: any) => {
-      // setTimeout for more friendly UIUX?
       if (searchMode.value) {
         if (
           searchResult.value.length >
@@ -288,17 +288,21 @@ const DataMgmtList = defineComponent({
         }
         done();
       } else {
-        // setTimeout for more friendly UIUX?
-        if (apiResult.value.length > (apiPageNumber.value + 1) * PAGESIZE) {
-          const index = apiPageNumber.value + 1;
-          pageView.value = apiResult.value.slice(0, index * PAGESIZE);
-          apiPageNumber.value++;
+        if (!pageInit.value) {
+          if (apiResult.value.length > (apiPageNumber.value + 1) * PAGESIZE) {
+            const index = apiPageNumber.value + 1;
+            pageView.value = apiResult.value.slice(0, index * PAGESIZE);
+            apiPageNumber.value++;
+          } else {
+            pageView.value = apiResult.value.slice(0, apiResult.value.length);
+            infiniteScroll.value.stop();
+          }
+          if (isEditMode.value) {
+            clearCheckbox();
+          }
+          done();
         } else {
-          pageView.value = apiResult.value.slice(0, apiResult.value.length);
-          infiniteScroll.value.stop();
-        }
-        if (isEditMode.value) {
-          clearCheckbox();
+          pageInit.value = false;
         }
         done();
       }
@@ -315,6 +319,7 @@ const DataMgmtList = defineComponent({
         noRecord.value = true;
         pageView.value = [];
       } else {
+        pageInit.value = true;
         if (apiResult.value.length > PAGESIZE) {
           pageView.value = apiResult.value.slice(0, PAGESIZE);
           apiPageNumber.value++;
@@ -340,13 +345,21 @@ const DataMgmtList = defineComponent({
     };
     const onSearch = () => {
       searchMode.value = true;
+      searchPageNumber.value = 0;
       if (apiResult.value.length > 0) {
         scrollArea.value.setScrollPosition("vertical", 0);
-        searchResult.value = apiResult.value.filter(
-          (item) =>
-            item.so.toLowerCase().indexOf(search.value.toLowerCase()) > -1 ||
-            item.po.toLowerCase().indexOf(search.value.toLowerCase()) > -1
-        );
+        searchResult.value = apiResult.value.filter((item) => {
+          if (item.po) {
+            return (
+              item.so.toLowerCase().indexOf(search.value.toLowerCase()) > -1 ||
+              item.po.toLowerCase().indexOf(search.value.toLowerCase()) > -1
+            );
+          } else {
+            return (
+              item.so.toLowerCase().indexOf(search.value.toLowerCase()) > -1
+            );
+          }
+        });
         if (searchResult.value.length > 0) {
           noRecord.value = false;
           if (searchResult.value.length > PAGESIZE) {
@@ -383,6 +396,9 @@ const DataMgmtList = defineComponent({
     const closeSearch = () => {
       setContentHeightOutSearch("scroll-area");
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+    };
     return {
       infiniteScroll,
       pageView,
@@ -406,6 +422,8 @@ const DataMgmtList = defineComponent({
       openSearch,
       closeSearch,
       noRecord,
+      notifyVisible,
+      onCloseNotify,
     };
   },
 });

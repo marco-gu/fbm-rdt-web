@@ -18,11 +18,12 @@ import ProfileManagementView from "../views/ProfileManagementView.vue";
 import LPListView from "../views/LPListView.vue";
 import LPDetailListView from "../views/LPDetailListView.vue";
 import DataMgmtList from "../views/data-management/DataMgmtList.vue";
+import DataMgmtDetail from "../views/data-management/DataMgmtDetail.vue";
 import DataMgmtCartonList from "../views/data-management/DataMgmtCartonList.vue";
 import DataMgmtCartonDetail from "../views/data-management/DataMgmtCartonDetail.vue";
-import DataMgmtDetail from "../views/data-management/DataMgmtDetail.vue";
 import DataMgmtMixCartonList from "../views/data-management/DataMgmtMixCartonList.vue";
 import DataMgmtMixCartonDetail from "../views/data-management/DataMgmtMixCartonDetail.vue";
+import DataMgmtMixCarton from "../views/data-management/DataMgmtMixCarton.vue";
 import MyJobsView from "../views/MyJobsView.vue";
 import CargoImageList from "../views/cargo-image/CargoImageList.vue";
 import CargoImageView from "../views/cargo-image/CargoImage.vue";
@@ -30,7 +31,6 @@ import SoftwareUpdateView from "../views/SoftwareUpdateView.vue";
 import NativeBridgeView from "../views/NativeBridgeView.vue";
 import NewLoginView from "../views/NewLoginView.vue";
 import NewMainView from "../views/NewMainView.vue";
-import DataMgmtMixCarton from "../views/data-management/DataMgmtMixCarton.vue";
 const routes: Array<RouteRecordRaw> = [
   // {
   //   path: "/",

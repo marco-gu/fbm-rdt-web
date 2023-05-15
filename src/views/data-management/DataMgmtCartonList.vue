@@ -85,6 +85,12 @@
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
+  <NotifyComponent
+    :visible="notifyVisible"
+    :message="msg"
+    @close="onCloseNotify"
+  >
+  </NotifyComponent>
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
@@ -108,11 +114,13 @@ import {
 import { useRoute } from "vue-router";
 import { PAGESIZE } from "@/models/constant";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 const DataMgmtCartonList = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
     LoadingComponent,
+    NotifyComponent,
   },
   setup() {
     const store = useStore();
@@ -135,11 +143,15 @@ const DataMgmtCartonList = defineComponent({
     const loadingStatus = ref(false);
     const route = useRoute();
     const searchMode = ref(false);
-    const deleteDialogSuccess = ref(false);
     const search = ref("");
+    const pageInit = ref(false);
+    const notifyVisible = ref(false);
     onMounted(() => {
       setContentHeight("scroll-area");
       if (route.params.from) {
+        apiResult.value = store.state.dataMgmtModule.cartonList;
+        processData();
+      } else if (route.query.from) {
         apiResult.value = store.state.dataMgmtModule.cartonList;
         processData();
       } else {
@@ -160,7 +172,7 @@ const DataMgmtCartonList = defineComponent({
         const carton = {} as CartonItem;
         carton.client = dataMgmt.value.client;
         carton.so = dataMgmt.value.so;
-        carton.po = dataMgmt.value.po;
+        carton.po = dataMgmt.value.po ? dataMgmt.value.po : "";
         carton.sku = dataMgmt.value.sku || "";
         carton.operation = dataMgmt.value.scanType;
         carton.cartonID = item.cartonId;
@@ -191,47 +203,36 @@ const DataMgmtCartonList = defineComponent({
     };
     const showDeleteDialog = () => {
       dialogVisible.value = true;
-      deleteDialogSuccess.value = true;
       type.value = "action";
       msg.value = i18n.t("common.delete_dialog_message");
     };
-    const showDeleteSuccessDialog = () => {
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.delete_success");
-    };
     const onConfirmDialog = () => {
-      if (deleteDialogSuccess.value) {
-        alert(dialogVisible.value);
-        dialogVisible.value = false;
+      if (pressHome.value) {
+        router.push("/home");
       } else {
-        if (pressHome.value) {
-          router.push("/home");
-        } else {
-          dialogVisible.value = false;
-          let idList: any = [];
-          pageView.value.forEach((item: any) => {
-            if (item["isSelected"] == true) {
-              idList.push(item.lpId);
-            }
-          });
-          const apiParams = {
-            idList: idList,
-          };
-          bridge.call("deleteCartons", apiParams, (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              showDeleteSuccessDialog();
-              scrollArea.value.setScrollPosition("vertical", 0);
-              cancelEditMode();
-              getData();
-            }
-          });
-        }
+        dialogVisible.value = false;
+        let idList: any = [];
+        pageView.value.forEach((item: any) => {
+          if (item["isSelected"] == true) {
+            idList.push(item.lpId);
+          }
+        });
+        const apiParams = {
+          idList: idList,
+        };
+        bridge.call("deleteCartons", apiParams, (res: string) => {
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            notifyVisible.value = true;
+            msg.value = i18n.t("common.delete_success");
+            scrollArea.value.setScrollPosition("vertical", 0);
+            cancelEditMode();
+            getData();
+          }
+        });
       }
     };
     const onLoad = (index: any, done: any) => {
-      // setTimeout for more friendly UIUX?
       if (searchMode.value) {
         if (
           searchResult.value.length >
@@ -249,17 +250,21 @@ const DataMgmtCartonList = defineComponent({
         }
         done();
       } else {
-        // setTimeout for more friendly UIUX?
-        if (apiResult.value.length > (apiPageNumber.value + 1) * PAGESIZE) {
-          const index = apiPageNumber.value + 1;
-          pageView.value = apiResult.value.slice(0, index * PAGESIZE);
-          apiPageNumber.value++;
+        if (!pageInit.value) {
+          if (apiResult.value.length > (apiPageNumber.value + 1) * PAGESIZE) {
+            const index = apiPageNumber.value + 1;
+            pageView.value = apiResult.value.slice(0, index * PAGESIZE);
+            apiPageNumber.value++;
+          } else {
+            pageView.value = apiResult.value.slice(0, apiResult.value.length);
+            infiniteScroll.value.stop();
+          }
+          if (isEditMode.value) {
+            clearCheckbox();
+          }
+          done();
         } else {
-          pageView.value = apiResult.value.slice(0, apiResult.value.length);
-          infiniteScroll.value.stop();
-        }
-        if (isEditMode.value) {
-          clearCheckbox();
+          pageInit.value = false;
         }
         done();
       }
@@ -279,6 +284,7 @@ const DataMgmtCartonList = defineComponent({
         noRecord.value = true;
         pageView.value = [];
       } else {
+        pageInit.value = true;
         if (apiResult.value.length > PAGESIZE) {
           pageView.value = apiResult.value.slice(0, PAGESIZE);
           apiPageNumber.value++;
@@ -304,6 +310,7 @@ const DataMgmtCartonList = defineComponent({
     };
     const onSearch = () => {
       searchMode.value = true;
+      searchPageNumber.value = 0;
       if (apiResult.value.length > 0) {
         scrollArea.value.setScrollPosition("vertical", 0);
         searchResult.value = apiResult.value.filter(
@@ -341,6 +348,9 @@ const DataMgmtCartonList = defineComponent({
     const closeSearch = () => {
       setContentHeightOutSearch("scroll-area");
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+    };
     return {
       titles,
       pageView,
@@ -364,6 +374,8 @@ const DataMgmtCartonList = defineComponent({
       closeSearch,
       infiniteScroll,
       loadingStatus,
+      notifyVisible,
+      onCloseNotify,
     };
   },
 });

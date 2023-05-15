@@ -79,6 +79,12 @@
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
+  <NotifyComponent
+    :visible="notifyVisible"
+    :message="msg"
+    @close="onCloseNotify"
+  >
+  </NotifyComponent>
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
@@ -125,10 +131,8 @@ const DataMgmtCartonMixedDetail = defineComponent({
     const inputScanIcon = inputScan;
     const pressHome = ref(false);
     const pressSave = ref(false);
-    const editDialogSuccess = ref(false);
-    const obj = JSON.parse(
-      JSON.stringify(store.state.dataMgmtModule.cartonMixItem.attribute)
-    );
+    const notifyVisible = ref(false);
+    const obj = store.state.dataMgmtModule.cartonMixItem.attribute;
     onBeforeMount(() => {
       composeView();
     });
@@ -183,61 +187,51 @@ const DataMgmtCartonMixedDetail = defineComponent({
         label.value = i18n.t("common.save");
       }
     };
-    const showEditSuccessDialog = () => {
-      editDialogSuccess.value = true;
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.edit_success");
-    };
     const onConfirmDialog = () => {
-      if (editDialogSuccess.value) {
-        dialogVisible.value = false;
-        router.push("/dataMgmtMixCartonList");
-      } else {
-        dialogVisible.value = false;
-        if (pressHome.value) {
-          router.push("/home");
-        } else if (pressSave.value) {
-          const apiParams = {
-            id: store.state.dataMgmtModule.cartonMixItem.id,
-            lpId: store.state.dataMgmtModule.cartonMixItem.lpId,
-            UPC: "",
-            Color: "",
-            Size: "",
-            Quantity: "",
-            Style: "",
-            taskId: store.state.dataMgmtModule.dataMgmt.taskID,
-          };
-          pageView.value.forEach((item: any) => {
-            switch (item.displayFieldName) {
-              case "UPC":
-                apiParams.UPC = item.model;
-                break;
-              case "Color":
-                apiParams.Color = item.model;
-                break;
-              case "Style":
-                apiParams.Style = item.model;
-                break;
-              case "Size":
-                apiParams.Size = item.model;
-                break;
-              case "Quantity":
-                apiParams.Quantity = item.model;
-                break;
+      dialogVisible.value = false;
+      if (pressHome.value) {
+        router.push("/home");
+      } else if (pressSave.value) {
+        const apiParams = {
+          id: store.state.dataMgmtModule.cartonMixItem.id,
+          lpId: store.state.dataMgmtModule.cartonMixItem.lpId,
+          UPC: "",
+          Color: "",
+          Size: "",
+          Quantity: "",
+          Style: "",
+          taskId: store.state.dataMgmtModule.dataMgmt.taskID,
+        };
+        pageView.value.forEach((item: any) => {
+          switch (item.displayFieldName) {
+            case "UPC":
+              apiParams.UPC = item.model;
+              break;
+            case "Color":
+              apiParams.Color = item.model;
+              break;
+            case "Style":
+              apiParams.Style = item.model;
+              break;
+            case "Size":
+              apiParams.Size = item.model;
+              break;
+            case "Quantity":
+              apiParams.Quantity = item.model;
+              break;
+          }
+        });
+        bridge.call(
+          "updateCartonProductForDataManagement",
+          apiParams,
+          (res: string) => {
+            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+              notifyVisible.value = true;
+              msg.value = i18n.t("common.modify_success");
             }
-          });
-          bridge.call(
-            "updateCartonProductForDataManagement",
-            apiParams,
-            (res: string) => {
-              const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-              if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-                showEditSuccessDialog();
-              }
-            }
-          );
-        }
+          }
+        );
       }
     };
     const cancelEditMode = () => {
@@ -251,7 +245,12 @@ const DataMgmtCartonMixedDetail = defineComponent({
       msg.value = i18n.t("common.return_home");
     };
     const back = () => {
-      router.push("/dataMgmtMixCartonList");
+      router.push({
+        path: "/dataMgmtMixCartonList",
+        query: {
+          from: "true",
+        },
+      });
     };
     const scan = (fieldName: string, event: Event) => {
       const isCamera = store.state.commonModule.scanDevice === "camera";
@@ -299,6 +298,10 @@ const DataMgmtCartonMixedDetail = defineComponent({
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+      router.push("/dataMgmtMixCartonList");
+    };
     return {
       titles,
       router,
@@ -319,6 +322,8 @@ const DataMgmtCartonMixedDetail = defineComponent({
       scan,
       validPaste,
       onInputKeyUp,
+      notifyVisible,
+      onCloseNotify,
     };
   },
 });

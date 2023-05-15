@@ -9,6 +9,8 @@
       @onHome="homePopup = true"
       @onBack="() => router.push('/home')"
       v-model:searchValue="search"
+      @onOpenSearch="openSearch"
+      @onCloseSearch="closeSearch"
     />
     <div class="page-content">
       <!-- <div class="search">
@@ -23,11 +25,7 @@
           </template>
         </q-input>
       </div> -->
-      <q-scroll-area
-        id="scroll-area"
-        :thumb-style="thumbStyle"
-        :bar-style="barStyle"
-      >
+      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-pull-to-refresh @refresh="refresh">
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
             <!-- <div class="no-data">
@@ -115,6 +113,11 @@ import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import rotate from "../assets/icon/rotate-solid.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import {
+  setContentHeight,
+  setContentHeightInSearch,
+  setContentHeightOutSearch,
+} from "@/utils/screen.util";
 const ProfileView = defineComponent({
   components: {
     CommonHeaderComponent,
@@ -192,16 +195,12 @@ const ProfileView = defineComponent({
             type.value = "success";
             popupVisible.value = true;
             msg.value = i18n.t("profile.sync_complete");
-            // popupSuccessMsg($q, i18n.t("profile.sync_complete"));
           }
         }
       });
     };
     onMounted(() => {
-      // calculate scroll area height
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
+      setContentHeight("scroll-area");
       // Initialize
       getProfileList();
     });
@@ -218,6 +217,12 @@ const ProfileView = defineComponent({
         profileListDisplay.value = result;
       }
     });
+    const openSearch = () => {
+      setContentHeightInSearch("scroll-area");
+    };
+    const closeSearch = () => {
+      setContentHeightOutSearch("scroll-area");
+    };
     return {
       formatDate,
       isFirstSync,
@@ -235,21 +240,8 @@ const ProfileView = defineComponent({
       loadingStatus,
       msgCode,
       homePopup,
-      thumbStyle: {
-        right: "4px",
-        borderRadius: "5px",
-        backgroundColor: "black",
-        width: "5px",
-        opacity: 0.75,
-      },
-
-      barStyle: {
-        right: "4px",
-        borderRadius: "9px",
-        backgroundColor: "black",
-        width: "5px",
-        opacity: 0.2,
-      },
+      openSearch,
+      closeSearch,
     };
   },
 });

@@ -42,19 +42,62 @@ const routeTableLoggedIn = [
         children: [],
       },
       // TODO data management query info need to be updated
+      // {
+      //   path: "/DataMgmtList",
+      //   children: [
+      //     {
+      //       path: "/dataMgmtGD",
+      //       children: [
+      //         {
+      //           path: "/dataMgmtGDEdit",
+      //           children: [
+      //             {
+      //               path: "/dataManagementMixCartonList",
+      //               children: [
+      //                 { path: "/dataManagementMixCarton", children: [] },
+      //               ],
+      //             },
+      //           ],
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
       {
-        path: "/dataManagement",
+        path: "/dataMgmtList",
         children: [
           {
-            path: "/dataMgmtGD",
+            path: "/dataMgmtDetail",
+            query: {
+              from: "true",
+            },
             children: [
               {
-                path: "/dataMgmtGDEdit",
+                path: "/dataMgmtCartonList",
                 children: [
                   {
-                    path: "/dataManagementMixCartonList",
+                    path: "/dataMgmtCartonDetail",
+                    query: {
+                      from: "true",
+                    },
                     children: [
-                      { path: "/dataManagementMixCarton", children: [] },
+                      {
+                        path: "/dataMgmtMixCartonList",
+                        children: [
+                          {
+                            path: "/dataMgmtMixCartonDetail",
+                            query: {
+                              from: "true",
+                            },
+                          },
+                          {
+                            path: "/dataMgmtMixCarton",
+                            query: {
+                              from: "true",
+                            },
+                          },
+                        ],
+                      },
                     ],
                   },
                 ],

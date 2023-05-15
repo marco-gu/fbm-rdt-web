@@ -86,6 +86,12 @@
       @close="onConfirmDialog"
       @cancel="dialogVisible = false"
     ></PopupComponent>
+    <NotifyComponent
+      :visible="notifyVisible"
+      :message="msg"
+      @close="onCloseNotify"
+    >
+    </NotifyComponent>
   </div>
 </template>
 <script lang="ts">
@@ -121,7 +127,6 @@ const CargoImageList = defineComponent({
     const router = useRouter();
     const store = useStore();
     const pageView = ref([] as ImageModel[]);
-    const onSearchMode = ref(false);
     const apiPageNumber = ref(0);
     const searchPageNumber = ref(0);
     const searchResult = ref([] as ImageModel[]);
@@ -139,8 +144,8 @@ const CargoImageList = defineComponent({
     const label = ref(i18n.t("image.access_image_button"));
     const pressDelete = ref(false);
     const route = useRoute();
-    const deleteDialogSuccess = ref(false);
     const isEditMode = ref(false);
+    const notifyVisible = ref(false);
     onMounted(() => {
       setContentHeightWithBtn("scroll-area");
       if (route.params.from) {
@@ -148,7 +153,6 @@ const CargoImageList = defineComponent({
         processData();
       } else {
         loadingStatus.value = true;
-        // First time initial data, setTimeout for more friendly UIUX?
         setTimeout(() => {
           getData();
         }, 200);
@@ -204,36 +208,28 @@ const CargoImageList = defineComponent({
       pressDelete.value = true;
       msg.value = i18n.t("common.delete_dialog_message");
     };
-    const showDeleteSuccessDialog = () => {
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.delete_success");
-    };
     const onConfirmDialog = () => {
-      if (deleteDialogSuccess.value) {
+      if (pressDelete.value) {
         dialogVisible.value = false;
-      } else {
-        if (pressDelete.value) {
-          dialogVisible.value = false;
-          let idList: any = [];
-          pageView.value.forEach((item: any) => {
-            if (item["isSelected"] == true) {
-              idList.push(item.cartonID);
-            }
-          });
-          const apiParams = {
-            idList: idList,
-          };
-          bridge.call("deleteCartonProducts", apiParams, (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              showDeleteSuccessDialog();
-              scrollArea.value.setScrollPosition("vertical", 0);
-              cancelEditMode();
-              getData();
-            }
-          });
-        }
+        let idList: any = [];
+        pageView.value.forEach((item: any) => {
+          if (item["isSelected"] == true) {
+            idList.push(item.cartonID);
+          }
+        });
+        const apiParams = {
+          idList: idList,
+        };
+        bridge.call("deleteCartonProducts", apiParams, (res: string) => {
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            notifyVisible.value = true;
+            msg.value = i18n.t("common.delete_success");
+            scrollArea.value.setScrollPosition("vertical", 0);
+            cancelEditMode();
+            getData();
+          }
+        });
       }
     };
     const onLoad = (index: any, done: any) => {
@@ -358,6 +354,9 @@ const CargoImageList = defineComponent({
     const closeSearch = () => {
       setContentHeightOutSearch("scroll-area");
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+    };
     return {
       onClear,
       back,
@@ -384,6 +383,8 @@ const CargoImageList = defineComponent({
       onConfirmDialog,
       openSearch,
       closeSearch,
+      notifyVisible,
+      onCloseNotify,
     };
   },
 });

@@ -1,24 +1,23 @@
 <template>
-  <!-- <LoadingComponent :visible="loadingStatus"> </LoadingComponent> -->
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <common-header-component
       :titles="[profileName, so]"
       :icons="['back', 'home', 'empty']"
       @onHome="() => router.push('/home')"
-      @onSync="refresh(void 0)"
       @onBack="back"
     />
     <div class="page-content">
       <q-scroll-area
-        ref="myScrollArea"
+        ref="scrollArea"
         id="scroll-area"
         :thumb-style="{ width: '0px' }"
       >
-        <template v-if="noRecord">
+        <div v-if="noRecord">
           <div class="no-record">{{ $t("common.no_record") }}</div>
-        </template>
-        <q-infinite-scroll @load="onLoad" :offset="20" ref="myInfiniteScroll">
-          <div v-for="(item, index) in lpDetailListDisplay" :key="index">
+        </div>
+        <q-infinite-scroll @load="onLoad" :offset="20" ref="infiniteScroll">
+          <div v-for="(item, index) in pageView" :key="index">
             <div class="common-card-2">
               <div class="label mb-lg">
                 {{ item.cartonID }}
@@ -39,16 +38,18 @@
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
-import { onBeforeMount, defineComponent, onMounted, Ref, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { LPDetailList } from "../models/profile";
 import { useI18n } from "vue-i18n";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import { setContentHeight } from "@/utils/screen.util";
+import { PAGESIZE } from "@/models/constant";
 const LPDetailListView = defineComponent({
   components: {
     CommonHeaderComponent,
-    //LoadingComponent,
+    LoadingComponent,
   },
   setup() {
     const router = useRouter();
@@ -58,83 +59,134 @@ const LPDetailListView = defineComponent({
     const so = ref(route.query.so);
     const i18n = useI18n();
     const titleParam = i18n.t("lp.lp_detail_list");
-    const backUrlParam = "/lpList";
-    const lpDetailListDisplay = ref([] as LPDetailList[]);
-    const lpDetailListInitResult = ref([] as LPDetailList[]);
-    const myInfiniteScroll = ref();
-    const myScrollArea = ref();
+    // const lpDetailListDisplay = ref([] as LPDetailList[]);
+    // const lpDetailListInitResult = ref([] as LPDetailList[]);
+    const pageView = ref([] as LPDetailList[]);
+    const apiResult = ref([] as LPDetailList[]);
+    const infiniteScroll = ref();
+    const scrollArea = ref();
     const loadingStatus = ref(false);
     const noRecord = ref(false);
-    const retrieveIndex = ref(0);
-    const pageSlice = 15;
-    onBeforeMount(() => {
-      refresh(0);
-    });
+    // const retrieveIndex = ref(0);
+    // const pageSlice = 15;
+    const pageInit = ref(false);
+    const apiPageNumber = ref(0);
     onMounted(() => {
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
+      setContentHeight("scroll-area");
+      loadingStatus.value = true;
+      setTimeout(() => {
+        getData();
+      }, 200);
+      // const deviceHeight = window.innerHeight;
+      // const scrollArea = document.getElementById("scroll-area") as any;
+      // scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
     });
+    const onLoad = (index: any, done: any) => {
+      if (!pageInit.value) {
+        if (apiResult.value.length > (apiPageNumber.value + 1) * PAGESIZE) {
+          const index = apiPageNumber.value + 1;
+          pageView.value = apiResult.value.slice(0, index * PAGESIZE);
+          apiPageNumber.value++;
+        } else {
+          pageView.value = apiResult.value.slice(0, apiResult.value.length);
+          infiniteScroll.value.stop();
+        }
+        done();
+      } else {
+        pageInit.value = false;
+      }
+      done();
+    };
     const back = () => {
+      // router.push({
+      //   path: backUrlParam,
+      // });
       router.push({
-        path: backUrlParam,
+        name: "lpList",
+        params: {
+          from: "true",
+        },
       });
     };
-    const refresh = (done: any) => {
-      loadingStatus.value = true;
+    // const refresh = (done: any) => {
+    //   loadingStatus.value = true;
+    //   const args = {
+    //     taskID: taskId.value,
+    //   };
+    //   bridge.call("fetchCartonForLPDetailList", args, (res: string) => {
+    //     loadingStatus.value = false;
+    //     composeLpDetailListDisplay(res);
+    //   });
+    // };
+    // const composeLpDetailListDisplay = (res: string) => {
+    //   lpDetailListInitResult.value = JSON.parse(res) as LPDetailList[];
+    //   if (lpDetailListInitResult.value.length == 0) {
+    //     noRecord.value = true;
+    //   } else {
+    //     noRecord.value = false;
+    //     if (lpDetailListInitResult.value.length > pageSlice) {
+    //       lpDetailListDisplay.value = lpDetailListInitResult.value.slice(
+    //         0,
+    //         pageSlice
+    //       );
+    //       retrieveIndex.value++;
+    //     } else {
+    //       lpDetailListDisplay.value = lpDetailListInitResult.value;
+    //       myInfiniteScroll.value.stop();
+    //     }
+    //   }
+    // };
+    // const onLoad = (index: any, done: any) => {
+    //   const start = retrieveIndex.value * pageSlice;
+    //   const end = (retrieveIndex.value + 1) * pageSlice;
+    //   setTimeout(() => {
+    //     for (let i = start; i < end; i++) {
+    //       if (lpDetailListInitResult.value[i]) {
+    //         lpDetailListDisplay.value.push(lpDetailListInitResult.value[i]);
+    //       }
+    //     }
+    //     if (
+    //       lpDetailListDisplay.value.length ==
+    //       (retrieveIndex.value + 1) * pageSlice
+    //     ) {
+    //       retrieveIndex.value++;
+    //     } else {
+    //       myInfiniteScroll.value.stop();
+    //     }
+    //     done();
+    //   }, 200);
+    // };
+    const getData = () => {
       const args = {
         taskID: taskId.value,
       };
-      bridge.call("fetchCartonForLPDetailList", args, (res: string) => {
+      bridge.call("fetchCartonForLPDetailList", args, (data: any) => {
         loadingStatus.value = false;
-        composeLpDetailListDisplay(res);
+        apiResult.value = JSON.parse(data) as LPDetailList[];
+        processData();
       });
     };
-    const composeLpDetailListDisplay = (res: string) => {
-      lpDetailListInitResult.value = JSON.parse(res) as LPDetailList[];
-      if (lpDetailListInitResult.value.length == 0) {
+    const processData = () => {
+      if (apiResult.value.length == 0) {
         noRecord.value = true;
+        pageView.value = [];
       } else {
-        noRecord.value = false;
-        if (lpDetailListInitResult.value.length > pageSlice) {
-          lpDetailListDisplay.value = lpDetailListInitResult.value.slice(
-            0,
-            pageSlice
-          );
-          retrieveIndex.value++;
+        pageInit.value = true;
+        if (apiResult.value.length > PAGESIZE) {
+          pageView.value = apiResult.value.slice(0, PAGESIZE);
+          apiPageNumber.value++;
+          infiniteScroll.value.resume();
         } else {
-          lpDetailListDisplay.value = lpDetailListInitResult.value;
-          myInfiniteScroll.value.stop();
+          pageView.value = apiResult.value;
+          infiniteScroll.value.stop();
         }
       }
     };
-    const onLoad = (index: any, done: any) => {
-      const start = retrieveIndex.value * pageSlice;
-      const end = (retrieveIndex.value + 1) * pageSlice;
-      setTimeout(() => {
-        for (let i = start; i < end; i++) {
-          if (lpDetailListInitResult.value[i]) {
-            lpDetailListDisplay.value.push(lpDetailListInitResult.value[i]);
-          }
-        }
-        if (
-          lpDetailListDisplay.value.length ==
-          (retrieveIndex.value + 1) * pageSlice
-        ) {
-          retrieveIndex.value++;
-        } else {
-          myInfiniteScroll.value.stop();
-        }
-        done();
-      }, 200);
-    };
     return {
-      refresh,
-      backUrlParam,
       loadingStatus,
-      lpDetailListDisplay,
-      myInfiniteScroll,
-      myScrollArea,
+      // lpDetailListDisplay,
+      infiniteScroll,
+      scrollArea,
       noRecord,
       onLoad,
       taskId,
@@ -143,6 +195,7 @@ const LPDetailListView = defineComponent({
       titleParam,
       router,
       back,
+      pageView,
     };
   },
 });

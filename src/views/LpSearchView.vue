@@ -132,7 +132,7 @@ import {
 import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
-import { softKeyPopUp } from "../utils/screen.util";
+import { setContentHeightWithBtn, softKeyPopUp } from "../utils/screen.util";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import inputScan from "../assets/icon/compress-solid.svg";
@@ -190,10 +190,9 @@ const LpSearchView = defineComponent({
 
     // const options = [i18n.t("common.receiving"), i18n.t("common.stuffing")];
     onMounted(() => {
+      setContentHeightWithBtn("scroll-area");
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 50 + "px";
       // softkey popup
       softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
       const initData = JSON.parse(

@@ -79,10 +79,17 @@
       @close="onConfirmDialog"
       @cancel="dialogVisible = false"
     ></PopupComponent>
+    <NotifyComponent
+      :visible="notifyVisible"
+      :message="msg"
+      @close="onCloseNotify"
+    >
+    </NotifyComponent>
   </div>
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import {
   AndroidResponse,
@@ -116,6 +123,7 @@ const DataMgmtCartonDetail = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
+    NotifyComponent,
   },
   setup() {
     const store = useStore();
@@ -136,7 +144,7 @@ const DataMgmtCartonDetail = defineComponent({
     const dialogVisible = ref(false);
     const pressHome = ref(false);
     const pressSave = ref(false);
-    const editDialogSuccess = ref(false);
+    const notifyVisible = ref(false);
     onBeforeMount(() => {
       composeView();
     });
@@ -246,36 +254,26 @@ const DataMgmtCartonDetail = defineComponent({
         label.value = i18n.t("common.save");
       }
     };
-    const showSuccessDialog = () => {
-      editDialogSuccess.value = true;
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.modify_success");
-    };
     const onConfirmDialog = () => {
-      if (editDialogSuccess.value) {
-        dialogVisible.value = false;
-        router.push("/dataMgmtCartonList");
-      } else {
-        dialogVisible.value = false;
-        if (pressHome.value) {
-          router.push("/home");
-        } else if (pressSave.value) {
-          const apiParams = {
-            LPID: store.state.dataMgmtModule.cartonItem.lpID,
-            CartonID: "",
-            Style: "",
-            Quantity: "",
-            HUB: "",
-          };
-          composeApiParam(apiParams, pageView.value);
-          bridge.call("updateCarton", apiParams, (res: string) => {
-            const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              showSuccessDialog();
-            }
-          });
-        }
+      dialogVisible.value = false;
+      if (pressHome.value) {
+        router.push("/home");
+      } else if (pressSave.value) {
+        const apiParams = {
+          LPID: store.state.dataMgmtModule.cartonItem.lpID,
+          CartonID: "",
+          Style: "",
+          Quantity: "",
+          HUB: "",
+        };
+        composeApiParam(apiParams, pageView.value);
+        bridge.call("updateCarton", apiParams, (res: string) => {
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            notifyVisible.value = true;
+            msg.value = i18n.t("common.modify_success");
+          }
+        });
       }
     };
     const composeApiParam = (apiParams: any, source: any[]) => {
@@ -387,6 +385,10 @@ const DataMgmtCartonDetail = defineComponent({
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+      router.push("/dataMgmtCartonList");
+    };
     return {
       pageView,
       titles,
@@ -409,6 +411,8 @@ const DataMgmtCartonDetail = defineComponent({
       onInputKeyUp,
       validPaste,
       scan,
+      notifyVisible,
+      onCloseNotify,
     };
   },
 });

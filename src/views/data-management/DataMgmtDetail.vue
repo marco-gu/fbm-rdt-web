@@ -77,9 +77,16 @@
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
+  <NotifyComponent
+    :visible="notifyVisible"
+    :message="msg"
+    @close="onCloseNotify"
+  >
+  </NotifyComponent>
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import {
   AndroidResponse,
@@ -105,6 +112,7 @@ const DataMgmtDetail = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
+    NotifyComponent,
   },
   setup() {
     const store = useStore();
@@ -123,7 +131,7 @@ const DataMgmtDetail = defineComponent({
     const dialogVisible = ref(false);
     const pressHome = ref(false);
     const pressSave = ref(false);
-    const editDialogSuccess = ref(false);
+    const notifyVisible = ref(false);
     onBeforeMount(() => {
       composeView(dataMgmtView.value);
     });
@@ -210,42 +218,28 @@ const DataMgmtDetail = defineComponent({
         label.value = i18n.t("common.save");
       }
     };
-    const showSuccessDialog = () => {
-      editDialogSuccess.value = true;
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.modify_success");
-    };
     const onConfirmDialog = () => {
-      if (editDialogSuccess.value) {
-        dialogVisible.value = false;
-        router.push("/dataMgmtList");
-      } else {
-        dialogVisible.value = false;
-        if (pressHome.value) {
-          router.push("/home");
-        } else if (pressSave.value) {
-          const apiParams = {
-            taskId: dataMgmtView.value.taskID,
-            SO: "",
-            PO: "",
-            SKU: "",
-            ContainerNumber: "",
-            TotalCBM: "",
-            TotalWeight: "",
-          };
-          composeApiParam(apiParams, pageView.value);
-          bridge.call(
-            "updateTaskForDataManagement",
-            apiParams,
-            (res: string) => {
-              const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-              if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-                showSuccessDialog();
-              }
-            }
-          );
-        }
+      dialogVisible.value = false;
+      if (pressHome.value) {
+        router.push("/home");
+      } else if (pressSave.value) {
+        const apiParams = {
+          taskId: dataMgmtView.value.taskID,
+          SO: "",
+          PO: "",
+          SKU: "",
+          ContainerNumber: "",
+          TotalCBM: "",
+          TotalWeight: "",
+        };
+        composeApiParam(apiParams, pageView.value);
+        bridge.call("updateTaskForDataManagement", apiParams, (res: string) => {
+          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            notifyVisible.value = true;
+            msg.value = i18n.t("common.modify_success");
+          }
+        });
       }
     };
     const composeApiParam = (apiParams: any, source: any[]) => {
@@ -353,6 +347,10 @@ const DataMgmtDetail = defineComponent({
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+      router.push("/dataMgmtList");
+    };
     return {
       titles,
       pageView,
@@ -375,6 +373,8 @@ const DataMgmtDetail = defineComponent({
       inputRef,
       onInputKeyUp,
       validPaste,
+      notifyVisible,
+      onCloseNotify,
     };
   },
 });

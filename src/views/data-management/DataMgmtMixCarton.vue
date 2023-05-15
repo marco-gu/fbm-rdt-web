@@ -4,12 +4,12 @@
       :titles="[`${cartonID}: ${$t('carton.item')}${itemCount}`]"
       :icons="['back', 'home', 'empty']"
       @onHome="home"
-      @onBack="() => router.push('/dataMgmtMixCartonList')"
+      @onBack="back"
     />
     <div class="page-content">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-form ref="myForm">
-          <div v-for="(item, i) in pageViews" :key="i" class="container">
+          <div v-for="(item, i) in pageView" :key="i" class="container">
             <div v-if="item.display == 1">
               <div class="field">
                 <div class="input-title">
@@ -20,6 +20,7 @@
                   input-class="text-left"
                   ref="inputRef"
                   v-model="item.model"
+                  @keyup.enter="onInputKeyUp($event, i)"
                   @paste="validPaste($event, i)"
                   :maxlength="item.length"
                   lazy-rules
@@ -73,6 +74,12 @@
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
+  <NotifyComponent
+    :visible="notifyVisible"
+    :message="msg"
+    @close="onCloseNotify"
+  >
+  </NotifyComponent>
 </template>
 <script lang="ts">
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
@@ -87,6 +94,7 @@ import {
 } from "@/models/profile";
 import {
   composeViewElement,
+  validPasteInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
@@ -96,15 +104,19 @@ import { useRoute, useRouter } from "vue-router";
 import inputScan from "../../assets/icon/compress-solid.svg";
 import { resetForm } from "../../utils/form.util";
 import { setContentHeightWithBtn } from "../../utils/screen.util";
+import { useStore } from "@/store";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 const DataMgmtMixCarton = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
+    NotifyComponent,
   },
   setup() {
     const i18n = useI18n();
     const route = useRoute();
     const router = useRouter();
+    const store = useStore();
     const dialogVisible = ref(false);
     const type = ref("");
     const msg = ref("");
@@ -113,13 +125,15 @@ const DataMgmtMixCarton = defineComponent({
     const scanType = route.params.scanType;
     const itemCount = ref(route.params.itemCount as any);
     const profileName = route.params.profileName;
-    const pageViews = ref([] as ViewDisplayAttribute[]);
+    const pageView = ref([] as ViewDisplayAttribute[]);
     const myForm = ref();
     const inputScanIcon = inputScan;
     const pressComplete = ref(false);
     const pressHome = ref(false);
-    const addDialogSuccess = ref(false);
-    const completeDialogSuccess = ref(false);
+    // const addDialogSuccess = ref(false);
+    // const completeDialogSuccess = ref(false);
+    const inputRef = ref();
+    const notifyVisible = ref(false);
     onBeforeMount(() => {
       composeView();
     });
@@ -135,7 +149,7 @@ const DataMgmtMixCarton = defineComponent({
         const mixProfiles = JSON.parse(res) as ProfileDisplayAttribute[];
         mixProfiles.forEach((item) => {
           const element = composeViewElement(item);
-          pageViews.value.push(element);
+          pageView.value.push(element);
         });
       });
     };
@@ -145,30 +159,38 @@ const DataMgmtMixCarton = defineComponent({
         scanType: scanType,
         taskID: taskID,
       };
-      composeApiParam(apiParams, pageViews.value);
+      composeApiParam(apiParams, pageView.value);
       bridge.call("addMixCarton", apiParams, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           if (pressComplete.value) {
-            showCompleteSuccessDialog();
+            // showCompleteSuccessDialog();
+            notifyVisible.value = true;
+            msg.value = i18n.t("common.complete_success");
+            // router.push("/dataMgmtMixCartonList");
           } else {
-            showAddSuccessDialog();
+            // showAddSuccessDialog();
+            notifyVisible.value = true;
+            msg.value = i18n.t("common.add_success");
+            // addDialogSuccess.value = false;
+            itemCount.value++;
+            resetForm(pageView.value, myForm.value);
           }
         }
       });
     };
-    const showAddSuccessDialog = () => {
-      addDialogSuccess.value = true;
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.add_success");
-    };
-    const showCompleteSuccessDialog = () => {
-      completeDialogSuccess.value = true;
-      dialogVisible.value = true;
-      type.value = "success";
-      msg.value = i18n.t("common.add_success");
-    };
+    // const showAddSuccessDialog = () => {
+    //   addDialogSuccess.value = true;
+    //   dialogVisible.value = true;
+    //   type.value = "success";
+    //   msg.value = i18n.t("common.add_success");
+    // };
+    // const showCompleteSuccessDialog = () => {
+    //   completeDialogSuccess.value = true;
+    //   dialogVisible.value = true;
+    //   type.value = "success";
+    //   msg.value = i18n.t("common.add_success");
+    // };
     const composeApiParam = (apiParams: any, source: any[]) => {
       const profileMixCartonLevel = new ProfileMixCartonLevel();
       let j: keyof ProfileMixCartonLevel;
@@ -204,13 +226,14 @@ const DataMgmtMixCarton = defineComponent({
     };
     const onConfirmDialog = () => {
       dialogVisible.value = false;
-      if (completeDialogSuccess.value) {
-        router.push("/dataMgmtMixCartonList");
-      } else if (addDialogSuccess.value) {
-        addDialogSuccess.value = false;
-        itemCount.value++;
-        resetForm(pageViews.value, myForm.value);
-      } else if (pressHome.value) {
+      // if (completeDialogSuccess.value) {
+      //   router.push("/dataMgmtMixCartonList");
+      // } else if (addDialogSuccess.value) {
+      //   addDialogSuccess.value = false;
+      //   itemCount.value++;
+      //   resetForm(pageView.value, myForm.value);
+      // } else
+      if (pressHome.value) {
         router.push("/home");
       } else {
         onSubmit();
@@ -222,6 +245,66 @@ const DataMgmtMixCarton = defineComponent({
       type.value = "action";
       msg.value = i18n.t("common.return_home");
     };
+    const scan = (fieldName: string, event: Event) => {
+      const isCamera = store.state.commonModule.scanDevice === "camera";
+      if (isCamera) {
+        const reqParams = {
+          scanType: "DM",
+          fieldName: fieldName,
+        };
+        bridge.call("scanForInput", reqParams);
+      } else {
+        event.stopPropagation();
+      }
+    };
+    bridge.register("getScanResult", (res: string) => {
+      const param = inputRef.value as any;
+      let scanFieldName = "";
+      pageView.value.forEach((view: any) => {
+        const key = "DM_" + view.fieldName;
+        if (key == res.substring(0, res.lastIndexOf("_"))) {
+          view.model = res.substring(res.lastIndexOf("_") + 1);
+          scanFieldName = view.fieldName;
+        }
+      });
+      param.forEach((t: any, i: number) => {
+        if (pageView.value[i].fieldName == scanFieldName) {
+          t.validate(pageView.value[i].model);
+        }
+      });
+    });
+    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
+      if (event.code === "Enter" || event.which === 13) {
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (i === index) {
+            const inputText = t.$props.modelValue;
+            t.validate(inputText).then(() => {
+              if (param.length > index + 1) {
+                param[index + 1].focus();
+              }
+            });
+          }
+        });
+      }
+    };
+    const validPaste = (event: any, index: number) => {
+      validPasteInput(inputRef, event, index);
+    };
+    const back = () => {
+      router.push({
+        path: "/dataMgmtMixCartonList",
+        query: {
+          from: "true",
+        },
+      });
+    };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+      if (pressComplete.value) {
+        router.push("/dataMgmtMixCartonList");
+      }
+    };
     return {
       msg,
       type,
@@ -230,13 +313,20 @@ const DataMgmtMixCarton = defineComponent({
       dialogVisible,
       home,
       router,
-      pageViews,
+      pageView,
       onSubmit,
       myForm,
       inputScanIcon,
       complete,
       add,
       onConfirmDialog,
+      inputRef,
+      validPaste,
+      scan,
+      onInputKeyUp,
+      back,
+      notifyVisible,
+      onCloseNotify,
     };
   },
 });
