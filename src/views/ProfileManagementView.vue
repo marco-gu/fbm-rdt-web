@@ -230,16 +230,12 @@ const ProfileManagementView = defineComponent({
       }
     };
     const back = () => {
-      if (isEditMode.value) {
-        isEditMode.value = false;
-      } else {
-        router.push({
-          path: "/home",
-          query: {
-            leftDrawerOpen: "true",
-          },
-        });
-      }
+      router.push({
+        path: "/home",
+        query: {
+          leftDrawerOpen: "true",
+        },
+      });
     };
     const refresh = (done: any) => {
       loadingStatus.value = true;
