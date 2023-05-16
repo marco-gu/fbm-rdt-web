@@ -9,22 +9,22 @@
       @onBack="back"
     />
     <div class="page-content">
-      <div class="setting-card-item" @click="onChangeRingVoice('on')">
+      <div class="setting-item" @click="onChangeRingVoice('on')">
         <div class="label">{{ $t("setting.on") }}</div>
         <div v-if="ringVoice == 'on'" class="right-icon">
           <q-icon name="check" />
         </div>
         <div class="spacer"></div>
       </div>
-      <!-- <q-separator inset color="grey-3" /> -->
-      <div class="setting-card-item" @click="onChangeRingVoice('off')">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item" @click="onChangeRingVoice('off')">
         <div class="label">{{ $t("setting.off") }}</div>
         <div v-if="ringVoice == 'off'" class="right-icon">
           <q-icon name="check" />
         </div>
         <div class="spacer"></div>
       </div>
-      <!-- <q-separator inset color="grey-3" /> -->
+      <q-separator inset color="grey-3" />
     </div>
   </div>
 </template>
