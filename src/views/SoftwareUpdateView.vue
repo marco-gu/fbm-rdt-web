@@ -11,35 +11,31 @@
       @onBack="back"
     />
     <div class="page-content" v-if="currentVersionCode < latestVersionCode">
-      <div class="setting-card-item">
-        <div class="title">
-          {{ $t("setting.latest_version_label") }}: Ver {{ latestVersionName }}
+      <div class="setting-item">
+        <div class="label">
+          {{ $t("setting.latest_version_label") }}
         </div>
-        <div></div>
-        <div class="spacer"></div>
-        <div style="text-align: center; white-space: pre-wrap">
-          {{ latestVersionDetail }}
-        </div>
+        <div class="item-value">Ver {{ latestVersionName }}</div>
         <div class="spacer"></div>
       </div>
-      <!-- <q-separator inset color="grey-3" /> -->
-      <!-- <div class="setting-card-item">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item">
         <div class="label" style="text-align: left; white-space: pre-wrap">
           {{ latestVersionDetail }}
         </div>
         <div class="spacer"></div>
-      </div> -->
+      </div>
     </div>
     <div class="page-content" v-else>
-      <div class="setting-card-item">
-        <div class="title">
+      <div class="setting-item">
+        <div class="label">
           {{ $t("setting.already_latest_version_label") }}
         </div>
-        <!-- <div class="item-value">Ver {{ currentVersionName }}</div> -->
+        <div class="item-value">Ver {{ currentVersionName }}</div>
         <div class="spacer"></div>
       </div>
     </div>
-    <!-- <q-separator inset color="grey-3" /> -->
+    <q-separator inset color="grey-3" />
     <div
       class="bottom-button"
       id="bottom-button"
@@ -157,11 +153,3 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
-.title {
-  text-align: center;
-  font-size: 20px;
-  font-family: Maersk Text-Bold, Maersk Text;
-  font-weight: bold;
-}
-</style>

@@ -193,7 +193,7 @@
     "camera": "Camera",
     "bluetooth": "Bluetooth",
     "scanner": "Scanner",
-    "already_latest_version_label": "Already latest version !",
+    "already_latest_version_label": "It is the latest version",
     "latest_version_label": "The latest version"
   },
   "carton": {

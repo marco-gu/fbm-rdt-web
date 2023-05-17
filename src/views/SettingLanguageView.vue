@@ -10,38 +10,38 @@
       @onBack="back"
     />
     <div class="page-content">
-      <div class="setting-card-item" @click="onChangeLanguage('en')">
+      <div class="setting-item" @click="onChangeLanguage('en')">
         <div class="label">{{ $t("setting.english") }}</div>
         <div v-if="selectedLanguage == 'en'" class="right-icon">
           <q-icon name="check" />
         </div>
         <div class="spacer"></div>
       </div>
-      <!-- <q-separator inset color="grey-3" /> -->
-      <div class="setting-card-item" @click="onChangeLanguage('zh')">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item" @click="onChangeLanguage('zh')">
         <div class="label">{{ $t("setting.chinese") }}</div>
         <div v-if="selectedLanguage == 'zh'" class="right-icon">
           <q-icon name="check" />
         </div>
         <div class="spacer"></div>
       </div>
-      <!-- <q-separator inset color="grey-3" /> -->
-      <div class="setting-card-item" @click="onChangeLanguage('da')">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item" @click="onChangeLanguage('da')">
         <div class="label">{{ $t("setting.danish") }}</div>
         <div v-if="selectedLanguage == 'da'" class="right-icon">
           <q-icon name="check" />
         </div>
         <div class="spacer"></div>
       </div>
-      <!-- <q-separator inset color="grey-3" /> -->
-      <div class="setting-card-item" @click="onChangeLanguage('ar')">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item" @click="onChangeLanguage('ar')">
         <div class="label">{{ $t("setting.arabic") }}</div>
         <div v-if="selectedLanguage == 'ar'" class="right-icon">
           <q-icon name="check" />
         </div>
         <div class="spacer"></div>
       </div>
-      <!-- <q-separator inset color="grey-3" /> -->
+      <q-separator inset color="grey-3" />
     </div>
   </div>
 </template>

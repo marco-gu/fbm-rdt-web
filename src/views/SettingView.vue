@@ -9,48 +9,48 @@
       @onBack="back"
     />
     <div class="page-content">
-      <div class="setting-card-item" @click="goRingVoice">
+      <div class="setting-item" @click="goRingVoice">
         <div class="label">{{ $t("setting.ring_voice") }}</div>
-        <!-- <div class="right-icon">
+        <div class="right-icon">
           <q-icon name="chevron_right" />
-        </div> -->
+        </div>
         <div class="item-value">
           {{ ringVoice }}
         </div>
         <div class="spacer"></div>
       </div>
-
-      <div class="setting-card-item" @click="goLanguage">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item" @click="goLanguage">
         <div class="label">{{ $t("setting.language") }}</div>
-        <!-- <div class="right-icon">
+        <div class="right-icon">
           <q-icon name="chevron_right" />
-        </div> -->
+        </div>
         <div class="item-value">
           {{ $t("setting.current_language") }}
         </div>
         <div class="spacer"></div>
       </div>
-
-      <div class="setting-card-item" @click="goScanningDevice">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item" @click="goScanningDevice">
         <div class="label">{{ $t("setting.scanning_device") }}</div>
-        <!-- <div class="right-icon">
+        <div class="right-icon">
           <q-icon name="chevron_right" />
-        </div> -->
+        </div>
         <div class="item-value">
           {{ scanningDevice }}
         </div>
         <div class="spacer"></div>
       </div>
-
-      <div class="setting-card-item" @click="goResetPwd">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item" @click="goResetPwd">
         <div class="label">{{ $t("setting.reset_password") }}</div>
-        <!-- <div class="right-icon">
+        <div class="right-icon">
           <q-icon name="chevron_right" />
-        </div> -->
+        </div>
         <div class="spacer"></div>
       </div>
-
-      <div class="setting-card-item">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item">
         <div class="label">{{ $t("setting.last_profile_sync_time") }}</div>
         <div class="item-value">
           {{
@@ -61,15 +61,16 @@
         </div>
         <div class="spacer"></div>
       </div>
-
-      <div class="setting-card-item" @click="goSoftwareUpdate">
+      <q-separator inset color="grey-3" />
+      <div class="setting-item" @click="goSoftwareUpdate">
         <div class="label">{{ $t("setting.software_update") }}</div>
-        <!-- <div class="right-icon">
+        <div class="right-icon">
           <q-icon name="chevron_right" />
-        </div> -->
+        </div>
         <div class="item-value">Ver {{ softwareUpdate }}</div>
         <div class="spacer"></div>
       </div>
+      <q-separator inset color="grey-3" />
     </div>
   </div>
 </template>
