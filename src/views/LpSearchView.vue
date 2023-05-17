@@ -190,9 +190,10 @@ const LpSearchView = defineComponent({
 
     // const options = [i18n.t("common.receiving"), i18n.t("common.stuffing")];
     onMounted(() => {
-      setContentHeightWithBtn("scroll-area");
+      const deviceHeight = store.state.screenModule.screenHeight;
+      setContentHeightWithBtn("scroll-area", deviceHeight);
       // calculate scroll area height
-      const deviceHeight = window.innerHeight;
+
       // softkey popup
       softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
       const initData = JSON.parse(

@@ -1,31 +1,38 @@
 <template>
-  <div class="card" @click="goOnline">
-    <div class="title">{{ onlineTitle }}</div>
-    <div>
-      {{ onlineDesc }}
-    </div>
-  </div>
-  <div class="card" @click="goOffline">
-    <div class="title">{{ offlineTitle }}</div>
-    <div>
-      {{ offlineDesc }}
-    </div>
-  </div>
-  <div class="card" @click="goContinue">
-    <div v-show="count == 0">
-      <div style="margin-bottom: 5px">
-        <q-img no-transition no-spinner :src="bellCompleteIcon" width="20px" />
-      </div>
-      <div>{{ continueWithNo }}</div>
-    </div>
-    <div v-show="count != 0">
-      <div style="margin-bottom: 5px">
-        <q-img no-transition no-spinner :src="bellIcon" width="20px" />
-      </div>
+  <div class="card-area">
+    <div class="card" @click="goOnline">
+      <div class="title">{{ onlineTitle }}</div>
       <div>
-        {{ continuePartialOne }}
-        <span style="color: #d62d23; font-weight: bold">{{ count }}</span>
-        {{ continuePartialTwo }}
+        {{ onlineDesc }}
+      </div>
+    </div>
+    <div class="card" @click="goOffline">
+      <div class="title">{{ offlineTitle }}</div>
+      <div>
+        {{ offlineDesc }}
+      </div>
+    </div>
+    <div class="card" @click="goContinue">
+      <div v-show="count == 0">
+        <div style="margin-bottom: 5px">
+          <q-img
+            no-transition
+            no-spinner
+            :src="bellCompleteIcon"
+            width="20px"
+          />
+        </div>
+        <div>{{ continueWithNo }}</div>
+      </div>
+      <div v-show="count != 0">
+        <div style="margin-bottom: 5px">
+          <q-img no-transition no-spinner :src="bellIcon" width="20px" />
+        </div>
+        <div>
+          {{ continuePartialOne }}
+          <span style="color: #d62d23; font-weight: bold">{{ count }}</span>
+          {{ continuePartialTwo }}
+        </div>
       </div>
     </div>
   </div>
@@ -57,8 +64,7 @@ import point from "../assets/icon/arrow-pointer-solid.svg";
 import spirit from "../assets/icon/lns_spirit.png";
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
-import { ScanDataManagement } from "@/models/profile";
-import store, { useStore } from "@/store";
+import { useStore } from "@/store";
 import { useI18n } from "vue-i18n";
 const NewMainView = defineComponent({
   setup() {

@@ -185,7 +185,6 @@ const NewLoginView = defineComponent({
     const goFirstPage = () => {
       bridge.call("goFirstPage");
     };
-
     onMounted(() => {
       bridge.call("checkUserUid", null, async (res: string) => {
         if (res) {

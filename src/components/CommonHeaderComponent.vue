@@ -144,7 +144,7 @@ export default CommonHeaderComponent;
   &--container {
     color: #ffffff;
     width: 100%;
-    padding: 30px 5px 5px 5px;
+    padding: 0px 5px 5px 5px;
     font-size: 14px;
     font-weight: 500;
     font-variant: small-caps;

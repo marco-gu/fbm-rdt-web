@@ -196,6 +196,28 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from, next) => {
+  const args = {
+    type: "",
+  };
+  if (to.path == "/home") {
+    args.type = "home";
+    setTimeout(() => {
+      bridge.call("switchBarColor", args);
+    }, 0);
+  } else if (to.path == "/") {
+    args.type = "login";
+    setTimeout(() => {
+      bridge.call("switchBarColor", args);
+    }, 0);
+  } else {
+    args.type = "other";
+    setTimeout(() => {
+      bridge.call("switchBarColor", args);
+    }, 0);
+  }
+  next();
+});
 // fix defect #6
 // let fromPath = "/";
 // router.beforeEach((to, from, next) => {

@@ -200,7 +200,8 @@ const ProfileView = defineComponent({
       });
     };
     onMounted(() => {
-      setContentHeight("scroll-area");
+      const deviceHeight = store.state.screenModule.screenHeight;
+      setContentHeight("scroll-area", deviceHeight);
       // Initialize
       getProfileList();
     });
