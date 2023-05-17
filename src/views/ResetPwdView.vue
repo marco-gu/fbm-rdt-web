@@ -317,6 +317,11 @@ const ResetPwdView = defineComponent({
         router.push("/setting");
       }
     };
+    const home = () => {
+      router.push({
+        path: "/home",
+      });
+    };
     return {
       titleParam,
       isPwd,
@@ -337,6 +342,7 @@ const ResetPwdView = defineComponent({
       isNewPwd,
       isNewRePwd,
       popupConfirm,
+      home,
     };
   },
 });
