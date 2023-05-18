@@ -273,6 +273,11 @@ const ProfileManagementView = defineComponent({
             -1
         );
         profileListDisplay.value = filteredResult;
+        if (filteredResult.length > 0) {
+          noRecord.value = false;
+        } else {
+          noRecord.value = true;
+        }
       } else {
         profileListDisplay.value = result;
       }
