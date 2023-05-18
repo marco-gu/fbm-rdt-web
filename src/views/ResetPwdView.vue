@@ -136,6 +136,7 @@ import { useI18n } from "vue-i18n";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import NotifyComponent from "@/components/NotifyComponent.vue";
+import { setContentHeightWithBtn } from "../utils/screen.util";
 const ResetPwdView = defineComponent({
   components: {
     // HeaderComponent,
@@ -164,23 +165,7 @@ const ResetPwdView = defineComponent({
     const popupVisible = ref(false);
     const notifyVisible = ref(false);
     onMounted(() => {
-      // calculate scroll area height
-      const deviceHeight = window.innerHeight;
-      const scrollArea = document.getElementById("scroll-area") as any;
-      scrollArea.style.height = deviceHeight - scrollArea.offsetTop + "px";
-      // hide bottom button if soft key up
-      window.onresize = () => {
-        // get resize height and recalculate scroll area
-        const resizeHeight = window.innerHeight;
-        const scrollArea = document.getElementById("scroll-area") as any;
-        scrollArea.style.height = resizeHeight - scrollArea.offsetTop + "px";
-        const bottom = document.getElementById("bottom-button") as any;
-        if (deviceHeight - resizeHeight > 0) {
-          bottom.style.visibility = "hidden";
-        } else {
-          bottom.style.visibility = "visible";
-        }
-      };
+      setContentHeightWithBtn("scroll-area");
       from.value = route.params.from as string;
       username.value = route.params.username as string;
       initPwd.value = route.params.password as string;
