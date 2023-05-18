@@ -96,6 +96,12 @@
     "
     @cancel="homePopup = false"
   />
+  <NotifyComponent
+    :visible="notifyVisible"
+    :message="msg"
+    @close="onCloseNotify"
+  >
+  </NotifyComponent>
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
@@ -113,6 +119,7 @@ import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import rotate from "../assets/icon/rotate-solid.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 import {
   setContentHeight,
   setContentHeightInSearch,
@@ -123,6 +130,7 @@ const ProfileView = defineComponent({
     CommonHeaderComponent,
     PopupComponent,
     LoadingComponent,
+    NotifyComponent,
   },
   setup() {
     const router = useRouter();
@@ -142,6 +150,7 @@ const ProfileView = defineComponent({
     const popupVisible = ref(false);
     const loadingStatus = ref(false);
     const homePopup = ref(false);
+    const notifyVisible = ref(false);
     const refresh = (done: any) => {
       loadingStatus.value = true;
       bridge.call("refreshProfile", null, (res: string) => {
@@ -192,8 +201,7 @@ const ProfileView = defineComponent({
         } else {
           sortProfileList(profileListDisplay.value);
           if (!isFirstSync.value) {
-            type.value = "success";
-            popupVisible.value = true;
+            notifyVisible.value = true;
             msg.value = i18n.t("profile.sync_complete");
           }
         }
@@ -224,6 +232,9 @@ const ProfileView = defineComponent({
     const closeSearch = () => {
       setContentHeightOutSearch("scroll-area");
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+    };
     return {
       formatDate,
       isFirstSync,
@@ -234,6 +245,7 @@ const ProfileView = defineComponent({
       search,
       backUrlParam,
       dialogVisible,
+      notifyVisible,
       rotateIcon,
       type,
       popupVisible,
@@ -243,6 +255,7 @@ const ProfileView = defineComponent({
       homePopup,
       openSearch,
       closeSearch,
+      onCloseNotify,
     };
   },
 });

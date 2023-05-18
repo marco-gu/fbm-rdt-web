@@ -111,6 +111,12 @@
       :type="type"
       @close="popupConfirm"
     ></PopupComponent>
+    <NotifyComponent
+      :visible="notifyVisible"
+      :message="msg"
+      @close="onCloseNotify"
+    >
+    </NotifyComponent>
   </div>
 </template>
 <script lang="ts">
@@ -126,14 +132,16 @@ import { useRoute, useRouter } from "vue-router";
 import md5 from "md5";
 import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { useI18n } from "vue-i18n";
-import HeaderComponent from "@/components/HeaderComponent.vue";
+// import HeaderComponent from "@/components/HeaderComponent.vue";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 const ResetPwdView = defineComponent({
   components: {
     // HeaderComponent,
     CommonHeaderComponent,
     PopupComponent,
+    NotifyComponent,
   },
   setup() {
     const route = useRoute();
@@ -154,6 +162,7 @@ const ResetPwdView = defineComponent({
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
+    const notifyVisible = ref(false);
     onMounted(() => {
       // calculate scroll area height
       const deviceHeight = window.innerHeight;
@@ -197,24 +206,9 @@ const ResetPwdView = defineComponent({
             closeLoading($q);
             const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
             if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-              type.value = "success";
-              popupVisible.value = true;
+              notifyVisible.value = true;
               msg.value = i18n.t("messageCode.E93-02-0001");
-              // if (from.value == "LoginView") {
-              //   setTimeout(() => {
-              //     router.push("/home");
-              //   }, 1800);
-              // } else if (from.value == "SettingView") {
-              //   setTimeout(() => {
-              //     router.push("/setting");
-              //   }, 1800);
-              // }
-              // popupSuccessMsg($q, message);
             } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-              // const message = i18n.t(
-              //   "messageCode." + androidResponse.messageCode
-              // );
-              // popupErrorMsg($q, message);
               type.value = "error";
               popupVisible.value = true;
               msg.value = i18n.t("messageCode." + androidResponse.messageCode);
@@ -322,6 +316,14 @@ const ResetPwdView = defineComponent({
         path: "/home",
       });
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+      if (from.value == "LoginView") {
+        router.push("/home");
+      } else if (from.value == "SettingView") {
+        router.push("/setting");
+      }
+    };
     return {
       titleParam,
       isPwd,
@@ -343,6 +345,8 @@ const ResetPwdView = defineComponent({
       isNewRePwd,
       popupConfirm,
       home,
+      onCloseNotify,
+      notifyVisible,
     };
   },
 });
