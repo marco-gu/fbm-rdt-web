@@ -98,6 +98,7 @@
     "retype_password": "Retype New Password",
     "retype_password_hint": "Please retype the new password",
     "sso_login": "Login via SSO",
+    "email_address": "Email Address",
     "force_login_dialog": "Your account has been logged in another device, are you sure to force to log in this device?"
   },
   "home": {

@@ -6,7 +6,7 @@
       transition-show="scale"
       transition-hide="scale"
     >
-      <q-card>
+      <!-- <q-card>
         <q-form @submit="onConfirm">
           <q-toolbar>
             <q-toolbar-title
@@ -44,8 +44,50 @@
             </div>
           </q-card-section>
         </q-form>
-      </q-card>
+      </q-card> -->
+      <div class="dialog-container">
+        <div class="dialog-container__title">
+          {{ $t("login.forgot_password") }}
+          <q-btn @click="onClose" flat round dense icon="close" v-close-popup />
+        </div>
+        <q-form @submit="onConfirm">
+          <div class="dialog-container__content">
+            <div class="field">
+              <div class="input-title">
+                <span class="text">{{ $t("login.email_address") }}</span>
+              </div>
+              <q-input
+                class="input-field"
+                input-class="text-left"
+                v-model="mail"
+                lazy-rules
+                :rules="[mailRule]"
+                borderless
+                type="email"
+                :placeholder="$t('login.forgot_password_hint')"
+              />
+            </div>
+          </div>
+          <div class="dialog-container__button">
+            <button class="dialog-button confirm" type="submit">
+              {{ $t("common.confirm") }}
+            </button>
+          </div>
+        </q-form>
+      </div>
     </q-dialog>
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
+    <NotifyComponent
+      :visible="notifyVisible"
+      :message="msg"
+      @close="notifyVisible = false"
+    >
+    </NotifyComponent>
   </div>
 </template>
 <script lang="ts">
@@ -59,12 +101,18 @@ import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { defineComponent, ref, toRefs, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import PopupComponent from "@/components/PopupComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 const ForgotPwdComponent = defineComponent({
   props: {
     dialogVisible: {
       type: Boolean,
       default: false,
     },
+  },
+  components: {
+    PopupComponent,
+    NotifyComponent,
   },
   emits: ["close", "confirm"],
   setup(props, context) {
@@ -73,6 +121,10 @@ const ForgotPwdComponent = defineComponent({
     const $q = useQuasar();
     const mail = ref("");
     const visible = ref(false);
+    const type = ref("");
+    const msg = ref("");
+    const popupVisible = ref(false);
+    const notifyVisible = ref(false);
     const onClose = () => {
       mail.value = "";
       context.emit("close");
@@ -88,10 +140,13 @@ const ForgotPwdComponent = defineComponent({
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
           context.emit("confirm");
           const message = i18n.t("messageCode.E93-03-0001");
-          // popupSuccessMsg($q, message);
+          msg.value = message;
+          notifyVisible.value = true;
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
-          // popupErrorMsg($q, message);
+          type.value = "error";
+          msg.value = message;
+          popupVisible.value = true;
         }
       });
     };
@@ -121,28 +176,63 @@ const ForgotPwdComponent = defineComponent({
     );
     return {
       mail,
-      visible,
+      mailRule,
+      msg,
+      notifyVisible,
       onClose,
       onConfirm,
-      mailRule,
+      popupVisible,
+      type,
+      visible,
     };
   },
 });
 export default ForgotPwdComponent;
 </script>
 <style lang="scss" scoped>
-.toolbar-title {
-  font-size: 17px;
-  font-weight: normal;
-}
-.q-card__section--vert {
-  padding: 0 12px;
-}
-.button-container {
-  width: 100%;
-  padding-bottom: 12px;
-  button {
-    width: 100%;
+// .toolbar-title {
+//   font-size: 17px;
+//   font-weight: normal;
+// }
+// .q-card__section--vert {
+//   padding: 0 12px;
+// }
+// .button-container {
+//   width: 100%;
+//   padding-bottom: 12px;
+//   button {
+//     width: 100%;
+//   }
+// }
+.dialog-container {
+  font-family: "Maersk Text";
+  &__title {
+    padding-left: 15px;
+    padding-right: 6px;
+    .q-btn {
+      float: right;
+      font-size: 14px;
+      padding-bottom: 14px;
+    }
   }
+  &__content {
+    padding: 0;
+  }
+  &__button {
+    text-align: center;
+    background: #ffffff;
+    padding: 15px;
+    .dialog-button {
+      &.confirm {
+        width: 100%;
+      }
+    }
+  }
+}
+.field {
+  margin: 0 15px;
+}
+.q-field {
+  height: 43px;
 }
 </style>
