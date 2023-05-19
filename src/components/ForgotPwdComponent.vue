@@ -50,7 +50,7 @@
           {{ $t("login.forgot_password") }}
           <q-btn @click="onClose" flat round dense icon="close" v-close-popup />
         </div>
-        <q-form @submit="onConfirm">
+        <q-form @submit="onConfirm" ref="myForm">
           <div class="dialog-container__content">
             <div class="field">
               <div class="input-title">
@@ -63,7 +63,6 @@
                 lazy-rules
                 :rules="[mailRule]"
                 borderless
-                type="email"
                 :placeholder="$t('login.forgot_password_hint')"
               />
             </div>
@@ -117,36 +116,43 @@ const ForgotPwdComponent = defineComponent({
   emits: ["close", "confirm"],
   setup(props, context) {
     const { dialogVisible } = toRefs(props);
-    const i18n = useI18n();
     const $q = useQuasar();
+    const i18n = useI18n();
     const mail = ref("");
-    const visible = ref(false);
-    const type = ref("");
     const msg = ref("");
-    const popupVisible = ref(false);
+    const myForm = ref();
     const notifyVisible = ref(false);
+    const popupVisible = ref(false);
+    const type = ref("");
+    const visible = ref(false);
     const onClose = () => {
       mail.value = "";
       context.emit("close");
     };
     const onConfirm = () => {
-      showLoading($q);
-      const args = {
-        mail: mail.value,
-      };
-      bridge.call("forgotPassword", args, (res: string) => {
-        closeLoading($q);
-        const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
-        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          context.emit("confirm");
-          const message = i18n.t("messageCode.E93-03-0001");
-          msg.value = message;
-          notifyVisible.value = true;
-        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          const message = i18n.t("messageCode." + androidResponse.messageCode);
-          type.value = "error";
-          msg.value = message;
-          popupVisible.value = true;
+      myForm.value.validate().then((success: any) => {
+        if (success) {
+          showLoading($q);
+          const args = {
+            mail: mail.value,
+          };
+          bridge.call("forgotPassword", args, (res: string) => {
+            closeLoading($q);
+            const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
+            if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+              context.emit("confirm");
+              const message = i18n.t("messageCode.E93-03-0001");
+              msg.value = message;
+              notifyVisible.value = true;
+            } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+              const message = i18n.t(
+                "messageCode." + androidResponse.messageCode
+              );
+              type.value = "error";
+              msg.value = message;
+              popupVisible.value = true;
+            }
+          });
         }
       });
     };
@@ -178,6 +184,7 @@ const ForgotPwdComponent = defineComponent({
       mail,
       mailRule,
       msg,
+      myForm,
       notifyVisible,
       onClose,
       onConfirm,
