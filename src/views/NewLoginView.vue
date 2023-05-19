@@ -275,8 +275,9 @@ const NewLoginView = defineComponent({
       router.push("/home");
     };
     const directToResetPassword = () => {
+      store.dispatch("commonModule/setIsLogin");
       router.push({
-        name: "resetPwd",
+        name: "resetPwdHome",
         params: {
           from: "LoginView",
           username: username.value,

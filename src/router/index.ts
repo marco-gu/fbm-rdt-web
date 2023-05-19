@@ -57,6 +57,11 @@ const routes: Array<RouteRecordRaw> = [
     component: ResetPwdView,
   },
   {
+    path: "/resetPwdHome",
+    name: "resetPwdHome",
+    component: ResetPwdView,
+  },
+  {
     path: "/profile/:id",
     name: "profile",
     children: [
