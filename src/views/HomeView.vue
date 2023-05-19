@@ -11,7 +11,13 @@
       />
       <q-img no-transition no-spinner :src="logoIcon" width="46px" />
     </q-header>
-    <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-grey-2">
+    <q-drawer
+      v-model="leftDrawerOpen"
+      show-if-above
+      class="bg-grey-2"
+      @show="showDrawer"
+      @hide="hideDrawer"
+    >
       <div class="drawer-content">
         <div style="margin-top: 50px">
           <q-img
@@ -143,6 +149,14 @@ export default {
         router.push("/");
       });
     };
+
+    const showDrawer = () => {
+      bridge.call("switchBarColor", { type: "drawer_backdrop" });
+    };
+
+    const hideDrawer = () => {
+      bridge.call("switchBarColor", { type: "home" });
+    };
     return {
       leftDrawerOpen,
       toggleLeftDrawer,
@@ -155,6 +169,8 @@ export default {
       menuWhite,
       appVersionName,
       router,
+      showDrawer,
+      hideDrawer,
     };
   },
 };
