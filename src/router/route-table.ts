@@ -1,6 +1,6 @@
 const routeTableNotLoggedIn = [
   {
-    path: "/",
+    path: "/home",
     children: [
       {
         path: "/resetPwd",
@@ -149,6 +149,10 @@ const routeTableLoggedIn = [
       },
       {
         path: "/continueJobs",
+        children: [],
+      },
+      {
+        path: "/resetPwdHome",
         children: [],
       },
     ],

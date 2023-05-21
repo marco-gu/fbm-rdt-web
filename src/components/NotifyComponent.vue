@@ -51,7 +51,7 @@ export default NotifyComponent;
     transform: translateY(200px);
   }
   100% {
-    transform: translateY(20px);
+    transform: translateY(50px);
   }
 }
 </style>

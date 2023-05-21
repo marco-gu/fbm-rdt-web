@@ -94,6 +94,12 @@
       :type="type"
       @close="OnClosePopUp"
     ></PopupComponent>
+    <NotifyComponent
+      :visible="notifyVisible"
+      :message="msg"
+      @close="onCloseNotify"
+    >
+    </NotifyComponent>
     <PopupComponent
       :visible="homePopup"
       :message="$t('common.return_home')"
@@ -135,6 +141,7 @@ import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { setContentHeightWithBtn, softKeyPopUp } from "../utils/screen.util";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 import inputScan from "../assets/icon/compress-solid.svg";
 // Define Scan Type
 const enum ScanType {
@@ -148,6 +155,7 @@ const enum ValidationType {
 }
 const LpSearchView = defineComponent({
   components: {
+    NotifyComponent,
     CommonHeaderComponent,
     PopupComponent,
     LoadingComponent,
@@ -182,6 +190,7 @@ const LpSearchView = defineComponent({
     const type = ref("");
     const msg = ref("");
     const popupVisible = ref(false);
+    const notifyVisible = ref(false);
     const canJumpNextPage = ref(false);
     const nextPageParam = ref();
     const loadingStatus = ref(false);
@@ -333,8 +342,7 @@ const LpSearchView = defineComponent({
                 routeParams.total = androidResponse.data.total;
                 routeParams.taskID = androidResponse.data.taskID;
                 routeParams.type = scanType.value;
-                type.value = "success";
-                popupVisible.value = true;
+                notifyVisible.value = true;
                 msg.value = i18n.t("messageCode.E93-05-0005");
                 canJumpNextPage.value = true;
                 nextPageParam.value = routeParams;
@@ -369,6 +377,15 @@ const LpSearchView = defineComponent({
     };
     const OnClosePopUp = () => {
       popupVisible.value = false;
+      if (canJumpNextPage.value) {
+        router.push({
+          name: "scan",
+          params: nextPageParam.value,
+        });
+      }
+    };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
       if (canJumpNextPage.value) {
         router.push({
           name: "scan",
@@ -482,8 +499,10 @@ const LpSearchView = defineComponent({
       backUrlParam,
       type,
       popupVisible,
+      notifyVisible,
       msg,
       OnClosePopUp,
+      onCloseNotify,
       loadingStatus,
       router,
       route,

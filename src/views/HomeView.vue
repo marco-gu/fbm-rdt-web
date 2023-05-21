@@ -149,6 +149,14 @@ export default {
         router.push("/");
       });
     };
+
+    const showDrawer = () => {
+      bridge.call("switchBarColor", { type: "drawer_backdrop" });
+    };
+
+    const hideDrawer = () => {
+      bridge.call("switchBarColor", { type: "home" });
+    };
     return {
       leftDrawerOpen,
       toggleLeftDrawer,
@@ -161,6 +169,8 @@ export default {
       menuWhite,
       appVersionName,
       router,
+      showDrawer,
+      hideDrawer,
     };
   },
 };

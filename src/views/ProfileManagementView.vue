@@ -89,6 +89,12 @@
       :type="type"
       @close="popupVisible = false"
     ></PopupComponent>
+    <NotifyComponent
+      :visible="notifyVisible"
+      :message="msg"
+      @close="onCloseNotify"
+    >
+    </NotifyComponent>
     <q-dialog v-model="dialogVisible" persistent>
       <div class="dialog-container">
         <div class="dialog-container__title">
@@ -158,6 +164,7 @@ import formatDate from "../utils/formatDate";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 import {
   setContentHeight,
   setContentHeightInSearch,
@@ -169,6 +176,7 @@ const ProfileManagementView = defineComponent({
     CommonHeaderComponent,
     PopupComponent,
     LoadingComponent,
+    NotifyComponent,
   },
   setup() {
     const router = useRouter();
@@ -186,6 +194,7 @@ const ProfileManagementView = defineComponent({
     const loadingStatus = ref(false);
     const showDeleteDialog = ref(false);
     const showHomeDialog = ref(false);
+    const notifyVisible = ref(false);
     onMounted(() => {
       // calculate scroll area height
       // const deviceHeight = window.innerHeight;
@@ -212,8 +221,7 @@ const ProfileManagementView = defineComponent({
         } else {
           sortProfileList(profileListDisplay.value);
           if (!isFirstSync.value && mode != "delete") {
-            type.value = "success";
-            popupVisible.value = true;
+            notifyVisible.value = true;
             msg.value = i18n.t("profile.sync_complete");
             // popupSuccessMsg($q, i18n.t("profile.sync_complete"));
           }
@@ -273,6 +281,11 @@ const ProfileManagementView = defineComponent({
             -1
         );
         profileListDisplay.value = filteredResult;
+        if (filteredResult.length > 0) {
+          noRecord.value = false;
+        } else {
+          noRecord.value = true;
+        }
       } else {
         profileListDisplay.value = result;
       }
@@ -336,6 +349,9 @@ const ProfileManagementView = defineComponent({
     const closeSearch = () => {
       setContentHeightOutSearch("scroll-area");
     };
+    const onCloseNotify = () => {
+      notifyVisible.value = false;
+    };
     return {
       cancelEditMode,
       showDeleteDialog,
@@ -353,6 +369,8 @@ const ProfileManagementView = defineComponent({
       noRecord,
       type,
       popupVisible,
+      notifyVisible,
+      onCloseNotify,
       msg,
       loadingStatus,
       router,

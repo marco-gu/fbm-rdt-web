@@ -84,11 +84,11 @@
     </q-form>
 
     <div class="login-link">
-      <div @click="userManualVisible = true">
+      <!-- <div @click="userManualVisible = true">
         <p class="login-link-label">
           {{ $t("login.sso_login") }}
         </p>
-      </div>
+      </div> -->
       <div>
         <p class="login-link-label">
           {{ $t("login.help") }}
@@ -196,7 +196,7 @@ const NewLoginView = defineComponent({
       username,
       () => {
         if (username.value != null) {
-          username.value = username.value.toUpperCase();
+          username.value = username.value.toUpperCase().trim();
         }
       },
       { immediate: true }
@@ -204,7 +204,7 @@ const NewLoginView = defineComponent({
     const onSubmit = () => {
       loadingStatus.value = true;
       const args = {
-        username: username.value.toUpperCase(),
+        username: username.value.toUpperCase().trim(),
         password: md5(password.value),
       };
       bridge.call("login", args, (res: string) => {
@@ -275,8 +275,9 @@ const NewLoginView = defineComponent({
       router.push("/home");
     };
     const directToResetPassword = () => {
+      store.dispatch("commonModule/setIsLogin");
       router.push({
-        name: "resetPwd",
+        name: "resetPwdHome",
         params: {
           from: "LoginView",
           username: username.value,
