@@ -11,7 +11,13 @@
       />
       <q-img no-transition no-spinner :src="logoIcon" width="46px" />
     </q-header>
-    <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-grey-2">
+    <q-drawer
+      v-model="leftDrawerOpen"
+      show-if-above
+      class="bg-grey-2"
+      @show="showDrawer"
+      @hide="hideDrawer"
+    >
       <div class="drawer-content">
         <div style="margin-top: 50px">
           <q-img
