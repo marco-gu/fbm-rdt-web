@@ -84,11 +84,12 @@
     </q-form>
 
     <div class="login-link">
-      <!-- <div @click="userManualVisible = true">
+      <!-- <div @click="userManualVisible = true"> -->
+      <div>
         <p class="login-link-label">
           {{ $t("login.sso_login") }}
         </p>
-      </div> -->
+      </div>
       <div>
         <p class="login-link-label">
           {{ $t("login.help") }}
