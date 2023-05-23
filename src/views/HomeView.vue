@@ -53,7 +53,7 @@
             </q-item-section>
           </q-item>
           <q-separator inset color="grey-3" />
-          <q-item clickable>
+          <q-item clickable @click="userManualVisible = true">
             <q-item-section>
               <q-item-label>{{ $t("home.user_manual") }}</q-item-label>
             </q-item-section>
@@ -102,6 +102,11 @@
         </div>
       </div>
     </q-dialog>
+    <UserManual
+      :dialogVisible="userManualVisible"
+      @close="userManualVisible = false"
+    >
+    </UserManual>
   </q-layout>
 </template>
 <script lang="ts">
@@ -115,8 +120,12 @@ import doorOpen from "../assets/images/door-open-solid.svg";
 import maerskLogo from "../assets/icon/Maersk.png";
 import { VersionInfo } from "@/models/profile";
 import router from "@/router";
+import UserManual from "@/components/UserManualComponent.vue";
 export default {
   name: "HomeView",
+  components: {
+    UserManual,
+  },
   setup() {
     const route = useRoute();
     const leftDrawerOpen = ref(false);
@@ -127,6 +136,7 @@ export default {
     const showLogoutDialog = ref(false);
     const logoIcon = maerskLogo;
     const appVersionName = ref("");
+    const userManualVisible = ref(false);
     onMounted(() => {
       if (route.query.leftDrawerOpen == "true") {
         toggleLeftDrawer();
@@ -171,6 +181,7 @@ export default {
       router,
       showDrawer,
       hideDrawer,
+      userManualVisible,
     };
   },
 };
