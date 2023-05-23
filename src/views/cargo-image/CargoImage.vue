@@ -89,7 +89,7 @@ import { useI18n } from "vue-i18n";
 import inputScan from "../../assets/icon/compress-solid.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
-import { setContentHeightWithBtn } from "@/utils/screen.util";
+import { setContentHeightWithBtn, softKeyPopUp } from "@/utils/screen.util";
 import {
   toUpperCaseElementInput,
   validPasteInput,
@@ -117,6 +117,9 @@ const cargoImageView = defineComponent({
     });
     onMounted(() => {
       setContentHeightWithBtn("scroll-area");
+      // softkey popup
+      const deviceHeight = store.state.screenModule.screenHeight;
+      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
     });
     const composeView = () => {
       const so = {

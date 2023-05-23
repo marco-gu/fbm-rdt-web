@@ -201,8 +201,6 @@ const LpSearchView = defineComponent({
     onMounted(() => {
       const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area", deviceHeight);
-      // calculate scroll area height
-
       // softkey popup
       softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
       const initData = JSON.parse(
