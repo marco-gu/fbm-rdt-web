@@ -41,7 +41,7 @@
       :class="[isAnimation == true ? 'more-message-animation' : 'more-message']"
     >
       <div>{{ labelOne }}</div>
-      <div>{{ labelTwo }}</div>
+      <div @click="userManualVisible = true">{{ labelTwo }}</div>
     </div>
     <div
       :class="[isAnimation == true ? 'more-icon-animation' : 'more-icon']"
@@ -55,6 +55,11 @@
       <q-img no-transition no-spinner :src="spiritIcon" width="60px" />
     </div>
   </div>
+  <UserManual
+    :dialogVisible="userManualVisible"
+    @close="userManualVisible = false"
+  >
+  </UserManual>
 </template>
 <script lang="ts">
 import { defineComponent, onBeforeMount, ref } from "vue";
@@ -66,7 +71,9 @@ import { useRouter } from "vue-router";
 import bridge from "dsbridge";
 import { useStore } from "@/store";
 import { useI18n } from "vue-i18n";
+import UserManual from "@/components/UserManualComponent.vue";
 const NewMainView = defineComponent({
+  components: { UserManual },
   setup() {
     const router = useRouter();
     const bellIcon = bell;
@@ -86,6 +93,8 @@ const NewMainView = defineComponent({
     const continuePartialTwo = i18n.t("main.continuePartialTwo");
     const labelOne = i18n.t("main.labelOne");
     const labelTwo = i18n.t("main.labelTwo");
+    const userManualVisible = ref(false);
+
     setTimeout(() => {
       if (isAnimation.value) {
         const pointer = document.getElementById("pointer") as any;
@@ -130,6 +139,7 @@ const NewMainView = defineComponent({
       continueWithNo,
       labelOne,
       labelTwo,
+      userManualVisible,
     };
   },
 });
