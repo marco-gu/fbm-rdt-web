@@ -60,7 +60,7 @@ export function setContentHeight(scrollAreaID: string, height?: number) {
 export function setContentHeightWithBtn(scrollAreaID: string, height?: number) {
   const deviceHeight = height ? height : window.innerHeight;
   const scrollArea = document.getElementById(scrollAreaID) as any;
-  scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 51 + "px";
+  scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 60 + "px";
 }
 
 /**
@@ -70,7 +70,7 @@ export function setContentHeightWithBtn(scrollAreaID: string, height?: number) {
 export function setContentHeightInSearch(scrollAreaID: string) {
   const deviceHeight = window.innerHeight;
   const scrollArea = document.getElementById(scrollAreaID) as any;
-  scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 56 + "px";
+  scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 60 + "px";
 }
 
 export function setContentHeightOutSearch(scrollAreaID: string) {
