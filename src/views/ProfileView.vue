@@ -152,6 +152,7 @@ const ProfileView = defineComponent({
     const homePopup = ref(false);
     const notifyVisible = ref(false);
     const refresh = (done: any) => {
+      dialogVisible.value = false;
       loadingStatus.value = true;
       bridge.call("refreshProfile", null, (res: string) => {
         loadingStatus.value = false;
