@@ -7,7 +7,6 @@
       :titles="[$t('setting.setting_header'), $t('setting.software_update')]"
       :icons="['back', 'home', 'empty']"
       @onHome="home"
-      v-model:searchValue="search"
       @onBack="back"
     />
     <div class="page-content" v-if="currentVersionCode < latestVersionCode">
@@ -51,21 +50,48 @@
         @click="handleDownload"
       />
     </div>
+    <!-- Progress dialog -->
+    <q-dialog v-model="progressDialogVisible" persistent>
+      <q-card>
+        <q-card-section>
+          <q-circular-progress
+            show-value
+            font-size="16px"
+            :value="progress"
+            size="80px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="q-ma-md"
+          >
+            {{ progress }}%
+          </q-circular-progress>
+          <q-card-section> Downloading...</q-card-section>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    <!-- Error message dialog -->
+    <PopupComponent
+      :visible="popupVisible"
+      :message="msg"
+      :type="type"
+      @close="popupVisible = false"
+    ></PopupComponent>
   </div>
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
-import { onMounted, ref, version } from "vue";
+import { onMounted, ref } from "vue";
 import { VersionInfo } from "@/models/profile";
 import { useRouter } from "vue-router";
-// import { popupErrorMsg } from "@/plugin/popupPlugins";
+import PopupComponent from "@/components/PopupComponent.vue";
+
 import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import HeaderComponent from "@/components/HeaderComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 export default {
@@ -73,6 +99,7 @@ export default {
   components: {
     CommonHeaderComponent,
     LoadingComponent,
+    PopupComponent,
   },
   setup() {
     const $q = useQuasar();
@@ -87,9 +114,12 @@ export default {
     const titleParam = i18n.t("setting.software_update");
     const backUrlParam = "/setting";
     const loadingStatus = ref(false);
+    const progressDialogVisible = ref(false);
+    const progress = ref(0);
+    const popupVisible = ref(false);
+    const msg = ref("");
+    const type = ref("");
     onMounted(() => {
-      // showLoading($q);
-
       bridge.call("getAppVersion", null, (res: string) => {
         const versionInfo = JSON.parse(res) as VersionInfo;
         currentVersionCode.value = versionInfo.versionCode;
@@ -106,26 +136,75 @@ export default {
           latestVersionDetail.value = versionInfo.detail;
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
-          // popupErrorMsg($q, message);
+          msg.value = message;
+          type.value = "error";
+          popupVisible.value = true;
         }
-        // closeLoading($q);
       });
     });
+
     const handleDownload = () => {
-      // showLoading($q);
-      loadingStatus.value = true;
+      showProgress();
       downloadPending.value = true;
       bridge.call("downloadLatestVersion", null, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          stopProgress();
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          progressDialogVisible.value = false;
+          const message = i18n.t("messageCode." + androidResponse.messageCode);
+          msg.value = message;
+          type.value = "error";
+          popupVisible.value = true;
+        }
+        downloadPending.value = false;
+      });
+    };
+    const installApk = () => {
+      bridge.call("installAPK", null, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           // popupErrorMsg($q, message);
         }
-        // closeLoading($q);
-        loadingStatus.value = false;
-        downloadPending.value = false;
       });
     };
+
+    function stopProgress() {
+      //下载完成，每秒20%的快速达到100%
+      const interval = setInterval(() => {
+        progress.value = Math.min(
+          100,
+          progress.value + Math.floor(Math.random() * 20)
+        );
+
+        if (progress.value === 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            progressDialogVisible.value = false;
+            installApk();
+          }, 350);
+        }
+      }, 500);
+    }
+    function showProgress() {
+      progress.value = 0;
+      progressDialogVisible.value = true;
+      const interval = setInterval(() => {
+        var add = progress.value + Math.floor(Math.random() * 5);
+        //进度大于80 ，减少每秒增加的进度
+        if (progress.value > 80) {
+          add = progress.value + Math.floor(Math.random() * 2);
+        }
+        progress.value = Math.min(100, add);
+        if (progress.value === 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            progressDialogVisible.value = false;
+          }, 350);
+        }
+      }, 1000);
+    }
     const back = () => {
       router.push({
         path: "/setting",
@@ -143,12 +222,20 @@ export default {
       currentVersionName,
       downloadPending,
       handleDownload,
+      installApk,
+      showProgress,
+      stopProgress,
       latestVersionCode,
       latestVersionName,
       latestVersionDetail,
       titleParam,
       backUrlParam,
       loadingStatus,
+      progressDialogVisible,
+      progress,
+      popupVisible,
+      msg,
+      type,
     };
   },
 };
