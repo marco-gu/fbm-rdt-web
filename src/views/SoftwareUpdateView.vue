@@ -171,6 +171,7 @@ export default {
     };
 
     function stopProgress() {
+      //下载完成，每秒20%的快速达到100%
       const interval = setInterval(() => {
         progress.value = Math.min(
           100,
@@ -190,10 +191,12 @@ export default {
       progress.value = 0;
       progressDialogVisible.value = true;
       const interval = setInterval(() => {
-        progress.value = Math.min(
-          100,
-          progress.value + Math.floor(Math.random() * 5)
-        );
+        var add = progress.value + Math.floor(Math.random() * 5);
+        //进度大于80 ，减少每秒增加的进度
+        if (progress.value > 80) {
+          add = progress.value + Math.floor(Math.random() * 2);
+        }
+        progress.value = Math.min(100, add);
         if (progress.value === 100) {
           clearInterval(interval);
           setTimeout(() => {
