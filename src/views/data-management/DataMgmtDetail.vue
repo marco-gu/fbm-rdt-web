@@ -141,7 +141,7 @@ const DataMgmtDetail = defineComponent({
     const composeView = (obj: DataMgmt) => {
       bridge.call(
         "fetchProfileByProfileCode",
-        { taskId: obj.taskID },
+        { taskId: obj.taskID, type: obj.scanType },
         (res: any) => {
           const profile = JSON.parse(res) as ProfileDisplayAttribute[];
           store.dispatch("dataMgmtModule/saveProfile", profile);

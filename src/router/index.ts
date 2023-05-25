@@ -207,19 +207,13 @@ router.beforeEach((to, from, next) => {
   };
   if (to.path == "/home") {
     args.type = "home";
-    setTimeout(() => {
-      bridge.call("switchBarColor", args);
-    }, 0);
+    bridge.call("switchBarColor", args);
   } else if (to.path == "/") {
     args.type = "login";
-    setTimeout(() => {
-      bridge.call("switchBarColor", args);
-    }, 0);
+    bridge.call("switchBarColor", args);
   } else {
     args.type = "other";
-    setTimeout(() => {
-      bridge.call("switchBarColor", args);
-    }, 0);
+    bridge.call("switchBarColor", args);
   }
   next();
 });
