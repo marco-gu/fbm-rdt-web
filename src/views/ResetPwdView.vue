@@ -136,7 +136,8 @@ import { useI18n } from "vue-i18n";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
 import NotifyComponent from "@/components/NotifyComponent.vue";
-import { setContentHeightWithBtn } from "../utils/screen.util";
+import { setContentHeightWithBtn, softKeyPopUp } from "../utils/screen.util";
+import { useStore } from "@/store";
 const ResetPwdView = defineComponent({
   components: {
     // HeaderComponent,
@@ -164,8 +165,12 @@ const ResetPwdView = defineComponent({
     const msg = ref("");
     const popupVisible = ref(false);
     const notifyVisible = ref(false);
+    const store = useStore();
     onMounted(() => {
-      setContentHeightWithBtn("scroll-area");
+      const deviceHeight = store.state.screenModule.screenHeight;
+      setContentHeightWithBtn("scroll-area", deviceHeight);
+      // softkey popup
+      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
       from.value = route.params.from as string;
       username.value = route.params.username as string;
       initPwd.value = route.params.password as string;
@@ -345,6 +350,5 @@ export default ResetPwdView;
 }
 .q-field {
   height: 43px;
-  padding: 0 0 0 10px;
 }
 </style>
