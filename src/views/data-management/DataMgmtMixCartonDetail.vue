@@ -107,10 +107,12 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 import { setContentHeightWithBtn } from "@/utils/screen.util";
+import NotifyComponent from "@/components/NotifyComponent.vue";
 const DataMgmtCartonMixedDetail = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
+    NotifyComponent,
   },
   setup() {
     const store = useStore();
