@@ -73,7 +73,7 @@
             >Label & Scan System</span
           >
           <span style="display: block; font-size: 10px; color: #757575"
-            >Version {{ appVersionName }}</span
+            >Version {{ appVersionName }}{{ envInfo }}</span
           >
           <span style="display: block; font-size: 10px; color: #757575"
             >by Maersk WDP@2023-3-10</span
@@ -136,6 +136,7 @@ export default {
     const showLogoutDialog = ref(false);
     const logoIcon = maerskLogo;
     const appVersionName = ref("");
+    const envInfo = ref("");
     const userManualVisible = ref(false);
     onMounted(() => {
       if (route.query.leftDrawerOpen == "true") {
@@ -145,6 +146,11 @@ export default {
         if (res) {
           const versionInfo = JSON.parse(res) as VersionInfo;
           appVersionName.value = versionInfo.versionName;
+        }
+      });
+      bridge.call("getEnvInfo", null, (res: string) => {
+        if (res) {
+          envInfo.value = res;
         }
       });
     });
@@ -178,6 +184,7 @@ export default {
       menuBlack,
       menuWhite,
       appVersionName,
+      envInfo,
       router,
       showDrawer,
       hideDrawer,
