@@ -69,10 +69,10 @@
       />
     </div>
     <PopupComponent
-      :visible="popupVisible"
+      :visible="dialogVisible"
       :message="msg"
       :type="type"
-      @close="popupVisible = false"
+      @close="onConfirmDialog"
     ></PopupComponent>
   </div>
 </template>
@@ -110,8 +110,9 @@ const cargoImageView = defineComponent({
     const inputScanIcon = inputScan;
     const type = ref("");
     const msg = ref("");
-    const popupVisible = ref(false);
+    const dialogVisible = ref(false);
     const inputRef = ref();
+    const pressHome = ref();
     onBeforeMount(() => {
       composeView();
     });
@@ -198,7 +199,7 @@ const cargoImageView = defineComponent({
             const androidResponse = JSON.parse(res) as AndroidResponse<any>;
             if (androidResponse.status == AndroidResponseStatus.ERROR) {
               type.value = "error";
-              popupVisible.value = true;
+              dialogVisible.value = true;
               msg.value = i18n.t("messageCode." + androidResponse.messageCode);
             } else {
               bridge.call("createCargoImageTask", {
@@ -264,6 +265,18 @@ const cargoImageView = defineComponent({
         },
       });
     };
+    const home = () => {
+      pressHome.value = true;
+      dialogVisible.value = true;
+      type.value = "action";
+      msg.value = i18n.t("common.return_home");
+    };
+    const onConfirmDialog = () => {
+      dialogVisible.value = false;
+      if (pressHome.value) {
+        router.push("/home");
+      }
+    };
     const multiWatchSources = [pageView.value];
     toUpperCaseElementInput(multiWatchSources);
     return {
@@ -275,11 +288,13 @@ const cargoImageView = defineComponent({
       inputScanIcon,
       back,
       type,
-      popupVisible,
+      dialogVisible,
       msg,
       onInputKeyUp,
       validPaste,
       inputRef,
+      home,
+      onConfirmDialog,
     };
   },
 });
