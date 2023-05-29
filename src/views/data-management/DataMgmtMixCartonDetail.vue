@@ -106,7 +106,7 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { setContentHeightWithBtn } from "@/utils/screen.util";
+import { setContentHeightWithBtn, softKeyPopUp } from "@/utils/screen.util";
 import NotifyComponent from "@/components/NotifyComponent.vue";
 const DataMgmtCartonMixedDetail = defineComponent({
   components: {
@@ -139,7 +139,9 @@ const DataMgmtCartonMixedDetail = defineComponent({
       composeView();
     });
     onMounted(() => {
+      const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area");
+      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
     });
     const composeView = () => {
       store.state.dataMgmtModule.profile.forEach(

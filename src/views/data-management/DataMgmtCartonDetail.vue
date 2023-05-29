@@ -107,7 +107,7 @@ import {
   validPasteInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
-import { setContentHeightWithBtn } from "@/utils/screen.util";
+import { setContentHeightWithBtn, softKeyPopUp } from "@/utils/screen.util";
 import bridge from "dsbridge";
 import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -149,7 +149,9 @@ const DataMgmtCartonDetail = defineComponent({
       composeView();
     });
     onMounted(() => {
+      const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area");
+      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
     });
     const composeView = () => {
       pageView.value.push({
@@ -259,6 +261,7 @@ const DataMgmtCartonDetail = defineComponent({
       if (pressHome.value) {
         router.push("/home");
       } else if (pressSave.value) {
+        pressSave.value = false;
         const apiParams = {
           LPID: store.state.dataMgmtModule.cartonItem.lpID,
           CartonID: "",
@@ -272,6 +275,10 @@ const DataMgmtCartonDetail = defineComponent({
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             notifyVisible.value = true;
             msg.value = i18n.t("common.modify_success");
+          } else {
+            type.value = "error";
+            dialogVisible.value = true;
+            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
           }
         });
       }
