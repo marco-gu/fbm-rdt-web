@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <common-header-component
-      :titles="[titleParam]"
+      :titles="titleParam"
       :icons="['back', 'home']"
       @onHome="onHome"
       @onBack="closeCartonDetail"
@@ -103,7 +103,7 @@ const CartonDetailView = defineComponent({
     const popupVisible = ref(false);
     const pressHome = ref(false);
     const taskID = ref("");
-    const titleParam = ref("");
+    const titleParam = ref([] as string[]);
     const type = ref("");
     const route = useRoute();
     const router = useRouter();
@@ -111,7 +111,7 @@ const CartonDetailView = defineComponent({
       const param = JSON.parse(res);
       cartonID.value = param.cartonID;
       taskID.value = param.taskID;
-      titleParam.value = `${param.cartonID}: ${i18n.t("common.detail")}`;
+      titleParam.value = [param.cartonID, i18n.t("common.detail")];
     });
     bridge.register("closeCartonDetail", () => {
       closeCartonDetail();

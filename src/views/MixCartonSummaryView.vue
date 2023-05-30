@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <common-header-component
-      :titles="[`${soNumber} | ${cartonID}`]"
+      :titles="[soNumber, cartonID]"
       :icons="['back', 'home', 'empty']"
       @onHome="onHome"
       @onBack="onBack"

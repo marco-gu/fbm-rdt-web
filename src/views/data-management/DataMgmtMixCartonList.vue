@@ -118,7 +118,10 @@ const DataMgmtMixCartonList = defineComponent({
     const store = useStore();
     const i18n = useI18n();
     const label = ref(i18n.t("dataManagement.add"));
-    const titles = [store.state.dataMgmtModule.cartonItem.cartonID, "Detail"];
+    const titles = [
+      store.state.dataMgmtModule.cartonItem.cartonID,
+      i18n.t("common.detail"),
+    ];
     const dialogVisible = ref(false);
     const type = ref("");
     const msg = ref("");
