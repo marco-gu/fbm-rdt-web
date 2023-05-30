@@ -1,8 +1,6 @@
 <template>
   <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component> -->
     <common-header-component
       :titles="[$t('profile.profiles')]"
       :icons="['back', 'search', 'home']"
@@ -13,20 +11,11 @@
       @onCloseSearch="closeSearch"
     />
     <div class="page-content">
-      <!-- <div class="search">
-        <q-input
-          v-model="search"
-          outlined
-          dense
-          :placeholder="$t('common.search')"
-        >
-          <template v-slot:prepend>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </div> -->
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <q-pull-to-refresh @refresh="refresh">
+          <div v-if="noRecord">
+            <div class="no-record">{{ $t("common.no_record") }}</div>
+          </div>
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
             <!-- <div class="no-data">
               {{ $t("common.no_record") }}
@@ -141,6 +130,7 @@ const ProfileView = defineComponent({
     const backUrlParam = "/home";
     let result: ProfileMaster[] = [];
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
+    const noRecord = ref(false);
     const search = ref("");
     const dialogVisible = ref(false);
     const rotateIcon = rotate;
@@ -151,29 +141,34 @@ const ProfileView = defineComponent({
     const loadingStatus = ref(false);
     const homePopup = ref(false);
     const notifyVisible = ref(false);
+    const searchMode = ref(false);
     const refresh = (done: any) => {
-      dialogVisible.value = false;
-      loadingStatus.value = true;
-      bridge.call("refreshProfile", null, (res: string) => {
-        loadingStatus.value = false;
-        const androidResponse = JSON.parse(res) as AndroidResponse<
-          ProfileMaster[]
-        >;
-        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-          getProfileList();
-          isFirstSync.value = false;
-          bridge.call("setProfileLastSyncDate", {
-            formatDate: formatDate(new Date()),
-          });
-        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-          type.value = "error";
-          popupVisible.value = true;
-          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
-          msgCode.value = androidResponse.messageCode;
-        }
+      if (!searchMode.value) {
         dialogVisible.value = false;
+        loadingStatus.value = true;
+        bridge.call("refreshProfile", null, (res: string) => {
+          loadingStatus.value = false;
+          const androidResponse = JSON.parse(res) as AndroidResponse<
+            ProfileMaster[]
+          >;
+          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+            getProfileList();
+            isFirstSync.value = false;
+            bridge.call("setProfileLastSyncDate", {
+              formatDate: formatDate(new Date()),
+            });
+          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+            type.value = "error";
+            popupVisible.value = true;
+            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
+          }
+          dialogVisible.value = false;
+          done();
+        });
+      } else {
         done();
-      });
+      }
     };
     const sortProfileList = (profileListDisplay: any[]) => {
       profileListDisplay.sort((a: any, b: any) => {
@@ -198,6 +193,10 @@ const ProfileView = defineComponent({
         if (result.length === 0) {
           if (isFirstSync.value) {
             dialogVisible.value = true;
+          } else {
+            noRecord.value = true;
+            notifyVisible.value = true;
+            msg.value = i18n.t("profile.sync_complete");
           }
         } else {
           sortProfileList(profileListDisplay.value);
@@ -211,7 +210,6 @@ const ProfileView = defineComponent({
     onMounted(() => {
       const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeight("scroll-area", deviceHeight);
-      // Initialize
       getProfileList();
     });
 
@@ -222,15 +220,27 @@ const ProfileView = defineComponent({
             item.profileCode.toLowerCase().indexOf(search.value.toLowerCase()) >
             -1
         );
-        profileListDisplay.value = filteredResult;
+        if (filteredResult.length > 0) {
+          noRecord.value = false;
+          profileListDisplay.value = filteredResult;
+        } else {
+          noRecord.value = true;
+          profileListDisplay.value = [];
+        }
       } else {
+        noRecord.value = false;
         profileListDisplay.value = result;
       }
     });
     const openSearch = () => {
+      searchMode.value = true;
       setContentHeightInSearch("scroll-area");
     };
     const closeSearch = () => {
+      searchMode.value = false;
+      noRecord.value =
+        noRecord.value == true ? !noRecord.value : noRecord.value;
+      profileListDisplay.value = result;
       setContentHeightOutSearch("scroll-area");
     };
     const onCloseNotify = () => {
@@ -257,6 +267,7 @@ const ProfileView = defineComponent({
       openSearch,
       closeSearch,
       onCloseNotify,
+      noRecord,
     };
   },
 });
