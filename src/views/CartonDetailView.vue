@@ -239,7 +239,7 @@ const CartonDetailView = defineComponent({
     const OnClose = () => {
       popupVisible.value = false;
       if (pressHome.value) {
-        router.push("/home");
+        bridge.call("goFirstPage");
       }
       pressHome.value = false;
     };

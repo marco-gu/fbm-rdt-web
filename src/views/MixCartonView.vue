@@ -320,7 +320,7 @@ const MixCartonView = defineComponent({
     const OnClose = () => {
       popupVisible.value = false;
       if (pressHome.value) {
-        router.push("/home");
+        bridge.call("goFirstPage");
       }
     };
     const onHome = () => {
