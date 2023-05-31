@@ -31,6 +31,8 @@ import SoftwareUpdateView from "../views/SoftwareUpdateView.vue";
 import NativeBridgeView from "../views/NativeBridgeView.vue";
 import NewLoginView from "../views/NewLoginView.vue";
 import NewMainView from "../views/NewMainView.vue";
+import FAQ from "../views/FaqView.vue";
+
 const routes: Array<RouteRecordRaw> = [
   // {
   //   path: "/",
@@ -193,6 +195,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/dataMgmtMixCarton",
     name: "dataMgmtMixCarton",
     component: DataMgmtMixCarton,
+  },
+  {
+    path: "/faq",
+    name: "faq",
+    component: FAQ,
   },
 ];
 

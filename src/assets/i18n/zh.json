@@ -99,7 +99,8 @@
     "retype_password_hint": "请重新输入新密码",
     "sso_login": "SSO单点登录",
     "email_address": "邮箱",
-    "force_login_dialog": "您的帐户已登录到另一个设备，您确定要强制登录此设备吗?"
+    "force_login_dialog": "您的帐户已登录到另一个设备，您确定要强制登录此设备吗?",
+    "login_help": "登录帮助"
   },
   "home": {
     "pre_validation": "预验证扫描",
