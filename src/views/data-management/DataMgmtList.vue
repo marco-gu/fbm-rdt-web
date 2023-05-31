@@ -176,6 +176,10 @@ const DataMgmtList = defineComponent({
     const notifyVisible = ref(false);
     onMounted(() => {
       setContentHeight("scroll-area");
+      loadingStatus.value = true;
+      setTimeout(() => {
+        getData();
+      }, 200);
       if (route.params.from) {
         apiResult.value = store.state.dataMgmtModule.dataMgmtList;
         processData();

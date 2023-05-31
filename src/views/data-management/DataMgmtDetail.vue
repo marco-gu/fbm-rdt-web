@@ -294,12 +294,7 @@ const DataMgmtDetail = defineComponent({
       msg.value = i18n.t("common.return_home");
     };
     const back = () => {
-      router.push({
-        name: "dataMgmtList",
-        params: {
-          from: "true",
-        },
-      });
+      router.push("/dataMgmtList");
     };
     const multiWatchSources = [pageView.value];
     toUpperCaseElementInput(multiWatchSources);
