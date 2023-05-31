@@ -1,7 +1,9 @@
 <template>
-  <div v-if="persistent" style="padding: 0px 40px" class="notify">
-    <q-card style="bottom: 180px">
-      <q-card-section> {{ prompt }} </q-card-section>
+  <div class="container" v-if="persistent">
+    <q-card class="notify">
+      <q-card-section>
+        {{ prompt }}
+      </q-card-section>
     </q-card>
   </div>
 </template>
@@ -40,7 +42,16 @@ const NotifyComponent = defineComponent({
 export default NotifyComponent;
 </script>
 <style lang="scss" scoped>
+.container {
+  position: fixed;
+  height: 100vh;
+  z-index: 990;
+  width: 200px;
+  left: 50%;
+  margin-left: -100px;
+}
 .notify {
+  bottom: 200px;
   animation-name: move;
   animation-duration: 1.5s;
   animation-fill-mode: forwards;

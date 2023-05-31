@@ -50,6 +50,12 @@
         </q-pull-to-refresh>
       </q-scroll-area>
     </div>
+    <NotifyComponent
+      :visible="notifyVisible"
+      :message="msg"
+      @close="onCloseNotify"
+    >
+    </NotifyComponent>
     <PopupComponent
       :visible="popupVisible"
       :message="msg"
@@ -85,12 +91,6 @@
     "
     @cancel="homePopup = false"
   />
-  <NotifyComponent
-    :visible="notifyVisible"
-    :message="msg"
-    @close="onCloseNotify"
-  >
-  </NotifyComponent>
 </template>
 <script lang="ts">
 import bridge from "dsbridge";

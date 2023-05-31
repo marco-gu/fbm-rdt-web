@@ -1,8 +1,6 @@
 <template>
   <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component> -->
     <common-header-component
       :titles="[$t('setting.setting_header'), $t('setting.software_update')]"
       :icons="['back', 'home', 'empty']"

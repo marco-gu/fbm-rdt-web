@@ -1,7 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backFunctionParam="back">
-    </header-component> -->
     <common-header-component
       :titles="[$t('setting.setting_header')]"
       :icons="['back', 'home', 'empty']"
@@ -80,7 +78,6 @@ import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import formatDate from "../utils/formatDate";
-import HeaderComponent from "@/components/HeaderComponent.vue";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { VersionInfo } from "@/models/profile";
 export default {

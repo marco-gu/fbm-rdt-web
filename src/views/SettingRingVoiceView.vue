@@ -1,7 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component> -->
     <common-header-component
       :titles="[$t('setting.setting_header'), $t('setting.ring_voice')]"
       :icons="['back', 'home', 'empty']"
@@ -33,7 +31,6 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import bridge from "dsbridge";
 import { useI18n } from "vue-i18n";
-import HeaderComponent from "@/components/HeaderComponent.vue";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 export default {
   name: "SettingRingVoiceView",

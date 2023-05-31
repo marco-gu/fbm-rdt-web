@@ -20,15 +20,6 @@
           >
           </q-input>
         </div>
-        <!-- <div class="input-label">{{ $t("login.account") }}</div>
-        <q-input
-          v-model="username"
-          outlined
-          color="secondary"
-          dense
-          lazy-rules
-          :rules="[(val) => !!val || $t('messageCode.E91-01-0004')]"
-        /> -->
         <div class="field">
           <div class="input-title">
             <span class="text">{{ $t("login.password") }}</span>

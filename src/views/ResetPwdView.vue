@@ -1,7 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backFunctionParam="back">
-    </header-component> -->
     <common-header-component
       :titles="titleParam"
       :icons="['back', 'home', 'empty']"

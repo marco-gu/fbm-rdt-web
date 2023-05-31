@@ -1,8 +1,6 @@
 <template>
   <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component> -->
     <common-header-component
       :titles="[
         profileCode,

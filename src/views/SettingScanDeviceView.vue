@@ -1,7 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component> -->
     <common-header-component
       :titles="[$t('setting.setting_header'), $t('setting.scanning_device')]"
       :icons="['back', 'home', 'empty']"
@@ -42,7 +40,6 @@ import { ref } from "vue";
 import store from "@/store";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import HeaderComponent from "@/components/HeaderComponent.vue";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 export default {
   name: "SettingScanDeviceView",

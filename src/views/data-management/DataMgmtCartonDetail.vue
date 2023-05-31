@@ -72,6 +72,12 @@
         {{ label }}
       </q-btn>
     </div>
+    <NotifyComponent
+      :visible="notifyVisible"
+      :message="msg"
+      @close="onCloseNotify"
+    >
+    </NotifyComponent>
     <PopupComponent
       :visible="dialogVisible"
       :message="msg"
@@ -79,12 +85,6 @@
       @close="onConfirmDialog"
       @cancel="dialogVisible = false"
     ></PopupComponent>
-    <NotifyComponent
-      :visible="notifyVisible"
-      :message="msg"
-      @close="onCloseNotify"
-    >
-    </NotifyComponent>
   </div>
 </template>
 <script lang="ts">
@@ -263,11 +263,12 @@ const DataMgmtCartonDetail = defineComponent({
       } else if (pressSave.value) {
         pressSave.value = false;
         const apiParams = {
-          LPID: store.state.dataMgmtModule.cartonItem.lpID,
+          lpID: store.state.dataMgmtModule.cartonItem.lpID,
           CartonID: "",
           Style: "",
           Quantity: "",
           HUB: "",
+          taskID: store.state.dataMgmtModule.dataMgmt.taskID,
         };
         composeApiParam(apiParams, pageView.value);
         bridge.call("updateCarton", apiParams, (res: string) => {

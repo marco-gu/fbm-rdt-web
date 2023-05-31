@@ -1,7 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- <header-component :titleParam="titleParam" :backUrlParam="backUrlParam">
-    </header-component> -->
     <common-header-component
       :titles="[$t('setting.setting_header'), $t('setting.setting_language')]"
       :icons="['back', 'home', 'empty']"
@@ -51,7 +49,6 @@ import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import { useStore } from "@/store";
 import { useI18n } from "vue-i18n";
-//import HeaderComponent from "@/components/HeaderComponent.vue";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 export default {
   name: "SettingLanguageView",
