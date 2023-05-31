@@ -6,6 +6,10 @@ const routeTableNotLoggedIn = [
         path: "/resetPwd",
         children: [],
       },
+      {
+        path: "/faq",
+        children: [],
+      },
     ],
   },
 ];

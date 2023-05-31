@@ -83,7 +83,7 @@
       </div>
       <div @click="userManualVisible = true">
         <p class="login-link-label">
-          {{ $t("login.help") }}
+          <span @click="goFAQ">{{ $t("login.help") }} </span>
         </p>
       </div>
       <div>
@@ -277,6 +277,11 @@ const NewLoginView = defineComponent({
         },
       });
     };
+
+    const goFAQ = () => {
+      router.push("/faq");
+    };
+
     return {
       username,
       password,
@@ -295,6 +300,7 @@ const NewLoginView = defineComponent({
       loadingStatus,
       showForceLoginDialog,
       forceLogin,
+      goFAQ,
     };
   },
 });

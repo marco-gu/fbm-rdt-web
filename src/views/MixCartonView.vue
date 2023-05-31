@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <common-header-component
-      :titles="[`${cartonID}: ${$t('carton.item')}${itemCount}`]"
+      :titles="[cartonID, `${$t('carton.item')}${itemCount}`]"
       :icons="['back', 'home', 'empty']"
       @onHome="onHome"
       @onBack="onBack"
@@ -320,7 +320,7 @@ const MixCartonView = defineComponent({
     const OnClose = () => {
       popupVisible.value = false;
       if (pressHome.value) {
-        router.push("/home");
+        bridge.call("goFirstPage");
       }
     };
     const onHome = () => {

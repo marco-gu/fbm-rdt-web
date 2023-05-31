@@ -33,6 +33,11 @@ const App = defineComponent({
     bridge.register("backHome", () => {
       router.push("/home");
     });
+
+    bridge.register("openFAQ", () => {
+      router.push("/faq");
+    });
+
     onMounted(() => {
       bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.locale.value = res;

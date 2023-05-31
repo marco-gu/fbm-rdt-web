@@ -99,7 +99,8 @@
     "retype_password_hint": "Please retype the new password",
     "sso_login": "Login via SSO",
     "email_address": "Email Address",
-    "force_login_dialog": "Your account has been logged in another device, are you sure to force to log in this device?"
+    "force_login_dialog": "Your account has been logged in another device, are you sure to force to log in this device?",
+    "login_help": "Login Help"
   },
   "home": {
     "pre_validation": "Pre-validation",

@@ -90,7 +90,8 @@
     "retype_password": "Gentag den nye adgangskode",
     "retype_password_hint": "Send venligst den nye adgangskode igen",
     "sso_login": "Log ind via SSO",
-    "force_login_dialog": "Din konto er blevet logget ind på en anden enhed, er du sikker på at tvinge til at logge ind på denne enhed?"
+    "force_login_dialog": "Din konto er blevet logget ind på en anden enhed, er du sikker på at tvinge til at logge ind på denne enhed?",
+    "login_help": "login hjælp"
   },
   "home": {
     "pre_validation": "Forvalidering",

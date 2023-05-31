@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <common-header-component
-      :titles="[`${cartonID}: ${$t('carton.item')}${itemCount}`]"
+      :titles="[cartonID, `${$t('carton.item')}${itemCount}`]"
       :icons="['back', 'home', 'empty']"
       @onHome="home"
       @onBack="back"
