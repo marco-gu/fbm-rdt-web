@@ -261,7 +261,7 @@ const cargoImageView = defineComponent({
       router.push({
         name: "cargoImageList",
         params: {
-          from: "true",
+          from: "back",
         },
       });
     };

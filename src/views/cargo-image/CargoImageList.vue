@@ -148,7 +148,7 @@ const CargoImageList = defineComponent({
     const notifyVisible = ref(false);
     onMounted(() => {
       setContentHeightWithBtn("scroll-area");
-      if (route.params.from) {
+      if (route.params.from == "back") {
         apiResult.value = store.state.cargoImageModule.cargoImages;
         processData();
       } else {
