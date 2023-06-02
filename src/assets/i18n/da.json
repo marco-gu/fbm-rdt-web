@@ -206,7 +206,8 @@
     "offline": "Start et nyt Carton ID (SSCC) scanningsjob, uden at fabriksfilen er udskiftet, skal du uploade og validere scanningsinfo bagefter.",
     "continueWithNo": "Intet fremragende scanningsjob, godt klaret!",
     "continuePartialOne": "Der er",
-    "continuePartialTwo": "Ufuldstændige job (er), klik på dette kort for at fortsætte.",
+    "continuePartialTwo": "ufuldstændige job(s) og i alt",
+    "continuePartialThree": "Scannede job. Klik her for at fortsætte scanningen eller se mere.",
     "labelOne": "Kom i gang.",
     "labelTwo": "Brug for hjælp?"
   }

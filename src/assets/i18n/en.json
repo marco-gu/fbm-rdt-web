@@ -217,7 +217,8 @@
     "offline": " Start a new carton id (SSCC) scan job, WITHOUT factory file or SO replaced, you should upload and validate the scan info afterwards.",
     "continueWithNo": "No outstanding scan job, well done!",
     "continuePartialOne": "There is (are)",
-    "continuePartialTwo": "incomplete job(s), please click this card to continue.",
+    "continuePartialTwo": "incomplete job(s), and TOTAL",
+    "continuePartialThree": "Scanned Jobs. Click here to Continue Scan or view more.",
     "labelOne": "Please get started.",
     "labelTwo": "Need help?"
   }
