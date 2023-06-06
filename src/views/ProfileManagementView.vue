@@ -225,6 +225,7 @@ const ProfileManagementView = defineComponent({
             msg.value = i18n.t("profile.sync_complete");
             // popupSuccessMsg($q, i18n.t("profile.sync_complete"));
           }
+          isFirstSync.value = false;
         }
       });
     };
