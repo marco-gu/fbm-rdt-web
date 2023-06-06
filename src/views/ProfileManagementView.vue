@@ -254,8 +254,8 @@ const ProfileManagementView = defineComponent({
             ProfileMaster[]
           >;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            getProfileList("refresh");
             isFirstSync.value = false;
+            getProfileList("refresh");
             bridge.call("setProfileLastSyncDate", {
               formatDate: formatDate(new Date()),
             });
@@ -269,7 +269,9 @@ const ProfileManagementView = defineComponent({
             msg.value = i18n.t("messageCode." + androidResponse.messageCode);
           }
           dialogVisible.value = false;
-          done();
+          if (typeof done === "function") {
+            done();
+          }
         });
       }
     };
