@@ -164,10 +164,10 @@ const ProfileView = defineComponent({
             msgCode.value = androidResponse.messageCode;
           }
           dialogVisible.value = false;
-          done();
+          typeof done === "function" && done();
         });
       } else {
-        done();
+        typeof done === "function" && done();
       }
     };
     const sortProfileList = (profileListDisplay: any[]) => {

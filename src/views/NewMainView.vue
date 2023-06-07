@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="card" @click="goContinue">
-      <div v-show="count == 0">
+      <div v-show="incompleteCount == 0">
         <div style="margin-bottom: 5px">
           <q-img
             no-transition
@@ -24,14 +24,18 @@
         </div>
         <div>{{ continueWithNo }}</div>
       </div>
-      <div v-show="count != 0">
+      <div v-show="incompleteCount != 0">
         <div style="margin-bottom: 5px">
           <q-img no-transition no-spinner :src="bellIcon" width="20px" />
         </div>
         <div>
           {{ continuePartialOne }}
-          <span style="color: #d62d23; font-weight: bold">{{ count }}</span>
+          <span style="color: #d62d23; font-weight: bold">{{
+            incompleteCount
+          }}</span>
           {{ continuePartialTwo }}
+          <span style="color: black; font-weight: bold">{{ totalCount }} </span>
+          {{ continuePartialThree }}
         </div>
       </div>
     </div>
@@ -80,7 +84,8 @@ const NewMainView = defineComponent({
     const bellCompleteIcon = bellComplete;
     const pointIcon = point;
     const spiritIcon = spirit;
-    const count = ref(0);
+    const incompleteCount = ref(0);
+    const totalCount = ref(0);
     const isAnimation = ref();
     const store = useStore();
     const i18n = useI18n();
@@ -91,6 +96,7 @@ const NewMainView = defineComponent({
     const continueWithNo = i18n.t("main.continueWithNo");
     const continuePartialOne = i18n.t("main.continuePartialOne");
     const continuePartialTwo = i18n.t("main.continuePartialTwo");
+    const continuePartialThree = i18n.t("main.continuePartialThree");
     const labelOne = i18n.t("main.labelOne");
     const labelTwo = i18n.t("main.labelTwo");
     const userManualVisible = ref(false);
@@ -102,10 +108,11 @@ const NewMainView = defineComponent({
       }
     }, 2000);
     onBeforeMount(() => {
-      bridge.call("retrieveContinueJobCounts", null, (data: any) => {
+      bridge.call("retrieveContinueJobAndTotalCounts", null, (data: any) => {
         const apiResult = JSON.parse(data);
         if (apiResult) {
-          count.value = apiResult;
+          incompleteCount.value = apiResult.incompleteCount;
+          totalCount.value = apiResult.totalCount;
         }
       });
     });
@@ -124,7 +131,8 @@ const NewMainView = defineComponent({
       bellIcon,
       pointIcon,
       spiritIcon,
-      count,
+      incompleteCount,
+      totalCount,
       goOnline,
       goOffline,
       goContinue,
@@ -136,6 +144,7 @@ const NewMainView = defineComponent({
       offlineDesc,
       continuePartialOne,
       continuePartialTwo,
+      continuePartialThree,
       continueWithNo,
       labelOne,
       labelTwo,

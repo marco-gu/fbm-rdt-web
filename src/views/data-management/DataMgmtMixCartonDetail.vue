@@ -164,8 +164,8 @@ const DataMgmtCartonMixedDetail = defineComponent({
                 case "Size":
                   element.model = ref(obj.size);
                   break;
-                case "Quantity":
-                  element.model = ref(obj.value.quantity);
+                case "QTY":
+                  element.model = ref(obj.quantity);
                   break;
                 default:
                   break;
@@ -220,7 +220,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
             case "Size":
               apiParams.Size = item.model;
               break;
-            case "Quantity":
+            case "QTY":
               apiParams.Quantity = item.model;
               break;
           }

@@ -270,7 +270,7 @@ const DataMgmtMixCartonList = defineComponent({
                       case "Size":
                         viewElement.attribute.size = ref(mixItem.size);
                         break;
-                      case "Quantity":
+                      case "QTY":
                         viewElement.attribute.quantity = ref(mixItem.quantity);
                         break;
                       default:

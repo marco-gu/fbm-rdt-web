@@ -219,7 +219,8 @@
     "offline": " 开始新的箱子(SSCC)扫码工作，使用工厂配置文件进行校验，但是不需要网络。",
     "continueWithNo": "没有剩余的工作，很好!",
     "continuePartialOne": "现在还有",
-    "continuePartialTwo": "没有完成的工作, 请前往卡片继续进行。",
+    "continuePartialTwo": "个没有完成的任务, 以及总共",
+    "continuePartialThree": "个扫描任务。点击此处继续扫描或查看更多。",
     "labelOne": "请开始操作。",
     "labelTwo": "需要帮助吗?"
   }

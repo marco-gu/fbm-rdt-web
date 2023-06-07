@@ -28,6 +28,7 @@
               <div class="label mb-lg">
                 {{ item.profileName
                 }}<span class="separator">&nbsp;|&nbsp;</span>{{ item.so }}
+                <span class="separator">&nbsp;|&nbsp;</span>{{ item.scanType }}
               </div>
               <div class="value">
                 {{ item.po
