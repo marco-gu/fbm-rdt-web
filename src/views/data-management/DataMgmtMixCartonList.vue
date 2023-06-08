@@ -257,7 +257,7 @@ const DataMgmtMixCartonList = defineComponent({
               (item: ProfileDisplayAttribute) => {
                 if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
                   if (item.level == ProfileElementLevel.CARTON_UPC) {
-                    switch (item.displayDataFieldName) {
+                    switch (item.dataFieldName) {
                       case "UPC":
                         viewElement.attribute.upc = ref(mixItem.upc);
                         break;
@@ -270,7 +270,7 @@ const DataMgmtMixCartonList = defineComponent({
                       case "Size":
                         viewElement.attribute.size = ref(mixItem.size);
                         break;
-                      case "QTY":
+                      case "Quantity":
                         viewElement.attribute.quantity = ref(mixItem.quantity);
                         break;
                       default:

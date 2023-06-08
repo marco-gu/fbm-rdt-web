@@ -190,8 +190,8 @@ const DataMgmtCartonDetail = defineComponent({
               let canAdd = false;
               element.editable = true;
               // fieldName from Profile
-              switch (item.displayDataFieldName) {
-                case "CID":
+              switch (item.dataFieldName) {
+                case "CartonID":
                   element.model = ref(
                     store.state.dataMgmtModule.cartonItem.cartonID
                   );

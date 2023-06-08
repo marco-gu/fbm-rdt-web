@@ -150,7 +150,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
             if (item.level == ProfileElementLevel.CARTON_UPC) {
               const element = composeViewElement(item);
               element.editable = true;
-              switch (item.displayDataFieldName) {
+              switch (item.dataFieldName) {
                 case "UPC":
                   element.model = ref(obj.upc);
                   element.scan = 1;
@@ -164,7 +164,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
                 case "Size":
                   element.model = ref(obj.size);
                   break;
-                case "QTY":
+                case "Quantity":
                   element.model = ref(obj.quantity);
                   break;
                 default:
@@ -207,7 +207,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
           taskId: store.state.dataMgmtModule.dataMgmt.taskID,
         };
         pageView.value.forEach((item: any) => {
-          switch (item.displayFieldName) {
+          switch (item.fieldName) {
             case "UPC":
               apiParams.UPC = item.model;
               break;
@@ -220,7 +220,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
             case "Size":
               apiParams.Size = item.model;
               break;
-            case "QTY":
+            case "Quantity":
               apiParams.Quantity = item.model;
               break;
           }
