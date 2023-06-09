@@ -170,6 +170,7 @@ const DataMgmtCartonList = defineComponent({
     const onDetail = (item: Carton) => {
       if (!isEditMode.value) {
         const carton = {} as CartonItem;
+        carton.taskId = dataMgmt.value.taskID;
         carton.client = dataMgmt.value.client;
         carton.so = dataMgmt.value.so;
         carton.po = dataMgmt.value.po ? dataMgmt.value.po : "";

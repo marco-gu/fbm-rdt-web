@@ -134,7 +134,7 @@ const DataMgmtCartonDetail = defineComponent({
       store.state.dataMgmtModule.cartonItem.so,
       store.state.dataMgmtModule.cartonItem.cartonID,
     ];
-    const icons = ref(["back", "home", "mixed"]);
+    const icons = ref(["back", "home", "empty"]);
     const myForm = ref();
     const inputScanIcon = inputScan;
     const isEditMode = ref(false);
@@ -152,7 +152,21 @@ const DataMgmtCartonDetail = defineComponent({
       const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area");
       softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      getMixStatus();
     });
+    const getMixStatus = () => {
+      const params = { taskId: store.state.dataMgmtModule.cartonItem.taskId };
+      bridge.call("getIsMix", params, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          if (androidResponse.data == 1) {
+            icons.value = ["back", "home", "mixed"];
+          } else {
+            icons.value = ["back", "home", "empty"];
+          }
+        }
+      });
+    };
     const composeView = () => {
       pageView.value.push({
         displayFieldName: "Client",
@@ -421,6 +435,7 @@ const DataMgmtCartonDetail = defineComponent({
       scan,
       notifyVisible,
       onCloseNotify,
+      getMixStatus,
     };
   },
 });

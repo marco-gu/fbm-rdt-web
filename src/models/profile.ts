@@ -234,8 +234,9 @@ export type CartonItem = {
   quantity: string;
   style: string;
   lpID: string;
+  taskId: string;
   // id: number;
-  // taskId: string;
+
   // so: string;
   // po: string;
   // sku: string;

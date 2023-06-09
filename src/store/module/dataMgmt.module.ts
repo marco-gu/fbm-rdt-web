@@ -48,6 +48,7 @@ const dataMgmtModule: Module<DataMgmtState, RootState> = {
       quantity: "",
       style: "",
       lpID: "",
+      taskId: "",
     },
   },
   actions: {
