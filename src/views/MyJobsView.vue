@@ -96,6 +96,13 @@ const MyJobsView = defineComponent({
     const scrollArea = ref();
     const searchMode = ref(false);
     const pageInit = ref(false);
+    bridge.register("returnContinueJobs", () => {
+      setContentHeight("scroll-area");
+      loadingStatus.value = true;
+      setTimeout(() => {
+        getData();
+      }, 200);
+    });
     onMounted(() => {
       setContentHeight("scroll-area");
       loadingStatus.value = true;
@@ -113,7 +120,7 @@ const MyJobsView = defineComponent({
         fromPageName: "continueJob",
       };
       bridge.call("continueJobScan", args);
-      router.push("/nativeBridge");
+      // router.push("/nativeBridge");
     };
     const onLoad = (index: any, done: any) => {
       if (searchMode.value) {

@@ -2,11 +2,14 @@
   <div class="content"></div>
 </template>
 <script lang="ts">
+import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import bridge from "dsbridge";
 import { defineComponent } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 export default defineComponent({
   setup() {
+    const route = useRoute();
+    const path = route.params.id as string;
     const router = useRouter();
     bridge.register("backHome", () => {
       router.push("/home");
@@ -16,7 +19,7 @@ export default defineComponent({
         path: "/cargoImageList",
       });
     });
-    bridge.register("refreshJobs", () => {
+    bridge.register("returnContinueJobs", () => {
       router.push({
         path: "/continueJobs",
       });
@@ -24,8 +27,3 @@ export default defineComponent({
   },
 });
 </script>
-<style lang="scss" scoped>
-.content {
-  background: white;
-}
-</style>
