@@ -66,7 +66,7 @@
   </UserManual>
 </template>
 <script lang="ts">
-import { defineComponent, onBeforeMount, ref } from "vue";
+import { defineComponent, onBeforeMount, ref, computed } from "vue";
 import bellComplete from "../assets/icon/bell-complete.svg";
 import bell from "../assets/icon/bell-solid.svg";
 import point from "../assets/icon/arrow-pointer-solid.svg";
@@ -127,6 +127,9 @@ const NewMainView = defineComponent({
     const goContinue = () => {
       router.push("/continueJobs");
     };
+    const dynamicPaddingY = computed(() => {
+      return window.innerHeight < 600 ? "2%" : "5%";
+    });
     return {
       bellIcon,
       pointIcon,
@@ -149,6 +152,7 @@ const NewMainView = defineComponent({
       labelOne,
       labelTwo,
       userManualVisible,
+      dynamicPaddingY,
     };
   },
 });
@@ -159,7 +163,7 @@ export default NewMainView;
   width: 80%;
   text-align: center;
   border-bottom: 1px solid #f6f3f1;
-  padding: 5% 0;
+  padding: v-bind("dynamicPaddingY") 0;
   margin: 0px auto;
   .title {
     font-weight: 600;
