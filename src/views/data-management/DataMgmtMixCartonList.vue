@@ -231,10 +231,11 @@ const DataMgmtMixCartonList = defineComponent({
     const getData = () => {
       pageView.value = [];
       bridge.call(
-        "fetchMixCartonItemsForDM",
+        "fetchCartonProducts",
         {
-          cartonID: store.state.dataMgmtModule.cartonItem.cartonID,
-          taskID: store.state.dataMgmtModule.dataMgmt.taskID,
+          cartonId: store.state.dataMgmtModule.cartonItem.cartonID,
+          taskId: store.state.dataMgmtModule.dataMgmt.taskID,
+          scanType: store.state.dataMgmtModule.dataMgmt.scanType,
         },
         (res) => {
           loadingStatus.value = false;
