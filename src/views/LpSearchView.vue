@@ -14,7 +14,11 @@
       @onBack="() => router.push(backUrlParam)"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form @submit="onSubmit" ref="myForm">
           <div class="field">
             <div class="input-title">
@@ -53,6 +57,7 @@
                   class="input-field"
                   input-class="text-left"
                   ref="inputRef"
+                  @focus="onFocus(i)"
                   v-model="item.model"
                   @keyup.enter="onInputKeyUp($event, i)"
                   @paste="validPaste($event, i)"
@@ -194,7 +199,7 @@ const LpSearchView = defineComponent({
     const loadingStatus = ref(false);
     const options = ref([]);
     const homePopup = ref(false);
-
+    const scrollAreaRef = ref(null);
     // const options = [i18n.t("common.receiving"), i18n.t("common.stuffing")];
     onMounted(() => {
       const deviceHeight = store.state.screenModule.screenHeight;
@@ -477,6 +482,12 @@ const LpSearchView = defineComponent({
       },
       { immediate: true }
     );
+    const onFocus = (position: any) => {
+      const scrollRef = scrollAreaRef.value as any;
+      setTimeout(() => {
+        if (position > 1) scrollRef.setScrollPercentage("vertical", 0.92);
+      }, 200);
+    };
     return {
       profileCode,
       scanType,
@@ -506,6 +517,8 @@ const LpSearchView = defineComponent({
       options,
       onClear,
       homePopup,
+      scrollAreaRef,
+      onFocus,
     };
   },
 });
