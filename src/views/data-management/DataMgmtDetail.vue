@@ -158,8 +158,9 @@ const DataMgmtDetail = defineComponent({
           profile.forEach((item: ProfileDisplayAttribute) => {
             if (item.type == obj.scanType) {
               if (
-                item.level == ProfileElementLevel.CARTON_COMMON ||
-                item.level == ProfileElementLevel.ORDER
+                (item.level == ProfileElementLevel.CARTON_COMMON ||
+                  item.level == ProfileElementLevel.ORDER) &&
+                item.combo == 1
               ) {
                 const element = composeViewElement(item);
                 element.editable = true;

@@ -189,16 +189,25 @@ const DataMgmtCartonDetail = defineComponent({
         scan: 0,
         editable: false,
       });
-      pageView.value.push({
-        displayFieldName: "Purchase Order",
-        fieldName: "PO",
-        model: store.state.dataMgmtModule.cartonItem.po,
-        scan: 0,
-        editable: false,
-      });
       store.state.dataMgmtModule.profile.forEach(
         (item: ProfileDisplayAttribute) => {
           if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
+            if (
+              item.level == ProfileElementLevel.CARTON_COMMON ||
+              item.level == ProfileElementLevel.ORDER
+            ) {
+              const element = composeViewElement(item);
+              if (element.fieldName == "PO" && element.display) {
+                // in case of PO might not be in profile
+                pageView.value.push({
+                  displayFieldName: "Purchase Order",
+                  fieldName: "PO",
+                  model: store.state.dataMgmtModule.cartonItem.po,
+                  scan: 0,
+                  editable: false,
+                });
+              }
+            }
             if (item.level == ProfileElementLevel.CARTON_INDIVIDUAL) {
               const element = composeViewElement(item);
               let canAdd = false;
