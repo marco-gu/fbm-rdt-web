@@ -115,6 +115,7 @@ import { useRoute } from "vue-router";
 import { PAGESIZE } from "@/models/constant";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NotifyComponent from "@/components/NotifyComponent.vue";
+import { DataMgmt } from "@/models/data.management";
 const DataMgmtCartonList = defineComponent({
   components: {
     CommonHeaderComponent,
@@ -230,6 +231,16 @@ const DataMgmtCartonList = defineComponent({
             scrollArea.value.setScrollPosition("vertical", 0);
             cancelEditMode();
             getData();
+
+            //更新一下缓存 store 里的 dataMgmt
+            bridge.call(
+              "fetchDataMgmtByTaskId",
+              { taskId: dataMgmt.value.taskID },
+              (data: any) => {
+                const dataMgmt = JSON.parse(data) as DataMgmt;
+                store.dispatch("dataMgmtModule/saveDataMgmtItem", dataMgmt);
+              }
+            );
           }
         });
       }
