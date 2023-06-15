@@ -86,6 +86,7 @@
     <PopupComponent
       :visible="popupVisible"
       :message="msg"
+      :messageCode="msgCode"
       :type="type"
       @close="popupVisible = false"
     ></PopupComponent>
@@ -190,6 +191,7 @@ const ProfileManagementView = defineComponent({
     const noRecord = ref(false);
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const popupVisible = ref(false);
     const loadingStatus = ref(false);
     const showDeleteDialog = ref(false);
@@ -268,6 +270,7 @@ const ProfileManagementView = defineComponent({
             type.value = "error";
             popupVisible.value = true;
             msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
           }
           dialogVisible.value = false;
           if (typeof done === "function") {
@@ -328,6 +331,7 @@ const ProfileManagementView = defineComponent({
             type.value = "error";
             popupVisible.value = true;
             msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
           }
           showDeleteDialog.value = false;
         });
@@ -335,6 +339,7 @@ const ProfileManagementView = defineComponent({
         type.value = "error";
         popupVisible.value = true;
         msg.value = i18n.t("messageCode.E93-04-0004");
+        msgCode.value = "E93-04-0004";
         // const message = i18n.t("messageCode.E93-04-0004");
         // popupErrorMsg($q, message);
       }
@@ -375,6 +380,7 @@ const ProfileManagementView = defineComponent({
       notifyVisible,
       onCloseNotify,
       msg,
+      msgCode,
       loadingStatus,
       router,
       isDeleteButtonDisabled,
