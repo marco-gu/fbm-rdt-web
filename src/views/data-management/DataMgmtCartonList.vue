@@ -219,6 +219,7 @@ const DataMgmtCartonList = defineComponent({
           }
         });
         const apiParams = {
+          taskId: dataMgmt.value.taskID,
           idList: idList,
         };
         bridge.call("deleteCartons", apiParams, (res: string) => {
