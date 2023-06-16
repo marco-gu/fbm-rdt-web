@@ -184,13 +184,20 @@ const DataMgmtCartonDetail = defineComponent({
         scan: 0,
         editable: false,
       });
-      pageView.value.push({
-        displayFieldName: "Shipping Order",
-        fieldName: "SO",
-        model: store.state.dataMgmtModule.cartonItem.so,
-        scan: 0,
-        editable: false,
-      });
+      // pageView.value.push({
+      //   displayFieldName: "Shipping Order",
+      //   fieldName: "SO",
+      //   model: store.state.dataMgmtModule.cartonItem.so,
+      //   scan: 0,
+      //   editable: false,
+      // });
+      // pageView.value.push({
+      //   displayFieldName: "Purchase Order",
+      //   fieldName: "PO",
+      //   model: store.state.dataMgmtModule.cartonItem.po,
+      //   scan: 0,
+      //   editable: false,
+      // });
       store.state.dataMgmtModule.profile.forEach(
         (item: ProfileDisplayAttribute) => {
           if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
@@ -202,9 +209,17 @@ const DataMgmtCartonDetail = defineComponent({
               if (element.fieldName == "PO" && element.display) {
                 // in case of PO might not be in profile
                 pageView.value.push({
-                  displayFieldName: "Purchase Order",
+                  displayFieldName: element.displayFieldName,
                   fieldName: "PO",
                   model: store.state.dataMgmtModule.cartonItem.po,
+                  scan: 0,
+                  editable: false,
+                });
+              } else if (element.fieldName == "SO") {
+                pageView.value.push({
+                  displayFieldName: element.displayFieldName,
+                  fieldName: "SO",
+                  model: store.state.dataMgmtModule.cartonItem.so,
                   scan: 0,
                   editable: false,
                 });
@@ -220,7 +235,7 @@ const DataMgmtCartonDetail = defineComponent({
                   element.model = ref(
                     store.state.dataMgmtModule.cartonItem.cartonID
                   );
-                  element.displayFieldName = "Carton ID";
+                  // element.displayFieldName = "Carton ID";
                   element.scan = 1;
                   canAdd = true;
                   break;
