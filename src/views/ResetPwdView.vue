@@ -106,6 +106,7 @@
     <PopupComponent
       :visible="popupVisible"
       :message="msg"
+      :messageCode="msgCode"
       :type="type"
       @close="popupConfirm"
     ></PopupComponent>
@@ -161,6 +162,7 @@ const ResetPwdView = defineComponent({
     var titleParam: Ref<string[]> = ref([i18n.t("setting.reset_password")]);
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const popupVisible = ref(false);
     const notifyVisible = ref(false);
     const store = useStore();
@@ -196,10 +198,12 @@ const ResetPwdView = defineComponent({
             if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
               notifyVisible.value = true;
               msg.value = i18n.t("messageCode.E93-02-0001");
+              msgCode.value = "E93-02-0001";
             } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
               type.value = "error";
               popupVisible.value = true;
               msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+              msgCode.value = androidResponse.messageCode;
             }
           });
         }
@@ -329,6 +333,7 @@ const ResetPwdView = defineComponent({
       type,
       popupVisible,
       msg,
+      msgCode,
       isNewPwd,
       isNewRePwd,
       popupConfirm,

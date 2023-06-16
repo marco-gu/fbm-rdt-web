@@ -81,6 +81,7 @@
     <PopupComponent
       :visible="dialogVisible"
       :message="msg"
+      :messageCode="msgCode"
       :type="type"
       @close="onConfirmDialog"
       @cancel="dialogVisible = false"
@@ -141,6 +142,7 @@ const DataMgmtCartonDetail = defineComponent({
     const label = ref(i18n.t("common.edit"));
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const dialogVisible = ref(false);
     const pressHome = ref(false);
     const pressSave = ref(false);
@@ -303,6 +305,7 @@ const DataMgmtCartonDetail = defineComponent({
             type.value = "error";
             dialogVisible.value = true;
             msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
           }
         });
       }
@@ -431,6 +434,7 @@ const DataMgmtCartonDetail = defineComponent({
       myForm,
       type,
       msg,
+      msgCode,
       dialogVisible,
       onConfirmDialog,
       onDetail,

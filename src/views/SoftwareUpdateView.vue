@@ -72,6 +72,7 @@
     <PopupComponent
       :visible="popupVisible"
       :message="msg"
+      :messageCode="msgCode"
       :type="type"
       @close="popupVisible = false"
     ></PopupComponent>
@@ -116,6 +117,7 @@ export default {
     const progress = ref(0);
     const popupVisible = ref(false);
     const msg = ref("");
+    const msgCode = ref("");
     const type = ref("");
     onMounted(() => {
       bridge.call("getAppVersion", null, (res: string) => {
@@ -135,6 +137,7 @@ export default {
         } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           msg.value = message;
+          msgCode.value = androidResponse.messageCode;
           type.value = "error";
           popupVisible.value = true;
         }
@@ -152,6 +155,7 @@ export default {
           progressDialogVisible.value = false;
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           msg.value = message;
+          msgCode.value = androidResponse.messageCode;
           type.value = "error";
           popupVisible.value = true;
         }
@@ -162,6 +166,7 @@ export default {
       bridge.call("installAPK", null, (res: string) => {
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          msgCode.value = androidResponse.messageCode;
           const message = i18n.t("messageCode." + androidResponse.messageCode);
           // popupErrorMsg($q, message);
         }
@@ -231,6 +236,7 @@ export default {
       progress,
       popupVisible,
       msg,
+      msgCode,
       type,
     };
   },
