@@ -93,6 +93,7 @@ import router from "@/router";
 import {
   composeViewElement,
   ProfileElementLevel,
+  toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
 import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
@@ -256,6 +257,8 @@ const DataMgmtCartonMixedDetail = defineComponent({
         },
       });
     };
+    const multiWatchSources = [pageView.value];
+    toUpperCaseElementInput(multiWatchSources);
     const scan = (fieldName: string, event: Event) => {
       const isCamera = store.state.commonModule.scanDevice === "camera";
       if (isCamera) {
