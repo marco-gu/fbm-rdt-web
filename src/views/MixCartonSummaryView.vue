@@ -222,7 +222,7 @@ const MixCartonSummaryView = defineComponent({
     const OnClose = () => {
       popupVisible.value = false;
       if (pressHome.value) {
-        router.push("/home");
+        bridge.call("goFirstPage");
       } else if (pressDelete.value) {
         deleteCartonProducts();
       }
