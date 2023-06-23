@@ -7,7 +7,11 @@
       @onBack="onBack"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form @submit="onSubmit" ref="myForm">
           <div v-for="(item, i) in pageViews" :key="i" class="container">
             <div v-if="item.display == 1">
@@ -21,6 +25,7 @@
                   ref="inputRef"
                   v-model="item.model"
                   @paste="validPaste($event, i)"
+                  @focus="onFocus(i)"
                   :maxlength="item.length"
                   lazy-rules
                   :rules="[item.valid]"
@@ -118,6 +123,7 @@ const MixCartonView = defineComponent({
     const taskID = ref("");
     const type = ref("");
     let isCamera = true;
+    const scrollAreaRef = ref(null);
     bridge.register("getMixCartonParam", (res: string) => {
       const mixCartonParam = JSON.parse(res);
       cartonID.value = mixCartonParam.cartonID;
@@ -160,9 +166,9 @@ const MixCartonView = defineComponent({
         }
       });
     });
-    // bridge.register("closeMixCarton", () => {
-    //   closeMixCarton();
-    // });
+    bridge.register("onBack", () => {
+      onBack();
+    });
     onBeforeMount(() => {
       const param = route.params.id as any;
       const args = {
@@ -252,39 +258,39 @@ const MixCartonView = defineComponent({
         }
       });
     };
-    const closeMixCarton = () => {
-      if (itemCount.value == 0) {
-        // Step 1: Check is include mandatory field
-        let isIncludeMandatory = false;
-        pageViews.value.forEach((view) => {
-          if (view.mandatory == 1) {
-            isIncludeMandatory = true;
-          }
-        });
-        if (!isIncludeMandatory) {
-          // bridge.call("completeMixCarton", null, () => {
-          //   reset();
-          // });
-        } else {
-          // Step 2: Check input all required field
-          myForm.value.validate().then((success: any) => {
-            if (success) {
-              type.value = "error";
-              popupVisible.value = true;
-              msg.value = i18n.t("messageCode.E93-07-0001");
-            } else {
-              type.value = "error";
-              popupVisible.value = true;
-              msg.value = i18n.t("messageCode.E93-07-0002");
-            }
-          });
-        }
-      } else {
-        // bridge.call("completeMixCarton", null, () => {
-        //   reset();
-        // });
-      }
-    };
+    // const closeMixCarton = () => {
+    //   if (itemCount.value == 0) {
+    //     // Step 1: Check is include mandatory field
+    //     let isIncludeMandatory = false;
+    //     pageViews.value.forEach((view) => {
+    //       if (view.mandatory == 1) {
+    //         isIncludeMandatory = true;
+    //       }
+    //     });
+    //     if (!isIncludeMandatory) {
+    //       // bridge.call("completeMixCarton", null, () => {
+    //       //   reset();
+    //       // });
+    //     } else {
+    //       // Step 2: Check input all required field
+    //       myForm.value.validate().then((success: any) => {
+    //         if (success) {
+    //           type.value = "error";
+    //           popupVisible.value = true;
+    //           msg.value = i18n.t("messageCode.E93-07-0001");
+    //         } else {
+    //           type.value = "error";
+    //           popupVisible.value = true;
+    //           msg.value = i18n.t("messageCode.E93-07-0002");
+    //         }
+    //       });
+    //     }
+    //   } else {
+    //     // bridge.call("completeMixCarton", null, () => {
+    //     //   reset();
+    //     // });
+    //   }
+    // };
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
     };
@@ -329,6 +335,16 @@ const MixCartonView = defineComponent({
       type.value = "action";
       msg.value = i18n.t("common.return_home");
     };
+    const onFocus = (position: any) => {
+      popupSoftKey(position);
+    };
+    // softkey popup auto scroll
+    const popupSoftKey = (position: any) => {
+      const scrollRef = scrollAreaRef.value as any;
+      setTimeout(() => {
+        if (position > 1) scrollRef.setScrollPercentage("vertical", 0.95);
+      }, 600);
+    };
     return {
       cartonID,
       complete,
@@ -346,6 +362,8 @@ const MixCartonView = defineComponent({
       scan,
       type,
       validPaste,
+      scrollAreaRef,
+      onFocus,
     };
   },
 });

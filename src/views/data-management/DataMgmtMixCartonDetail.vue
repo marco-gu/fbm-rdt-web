@@ -7,7 +7,11 @@
       @onBack="back"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form @submit="onSubmit" ref="myForm">
           <div v-for="(item, index) in pageView" :key="index">
             <div class="field">
@@ -19,6 +23,7 @@
                 input-class="text-left"
                 ref="inputRef"
                 v-model="item.model"
+                @focus="onFocus(i)"
                 @keyup.enter="onInputKeyUp($event, i)"
                 @paste="validPaste($event, i)"
                 lazy-rules
@@ -135,6 +140,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
     const pressSave = ref(false);
     const notifyVisible = ref(false);
     const obj = store.state.dataMgmtModule.cartonMixItem.attribute;
+    const scrollAreaRef = ref(null);
     onBeforeMount(() => {
       composeView();
     });
@@ -306,6 +312,18 @@ const DataMgmtCartonMixedDetail = defineComponent({
       notifyVisible.value = false;
       router.push("/dataMgmtMixCartonList");
     };
+    const onFocus = (position: any) => {
+      popupSoftKey(position);
+    };
+    // softkey popup auto scroll
+    const popupSoftKey = (position: any) => {
+      const scrollRef = scrollAreaRef.value as any;
+      setTimeout(() => {
+        if (position > 4) {
+          scrollRef.setScrollPercentage("vertical", 0.95);
+        }
+      }, 600);
+    };
     return {
       titles,
       router,
@@ -328,6 +346,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
       onInputKeyUp,
       notifyVisible,
       onCloseNotify,
+      onFocus,
     };
   },
 });

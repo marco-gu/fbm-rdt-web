@@ -7,7 +7,11 @@
       @onBack="back"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form ref="myForm">
           <div v-for="(item, i) in pageView" :key="i" class="container">
             <div v-if="item.display == 1">
@@ -20,6 +24,7 @@
                   input-class="text-left"
                   ref="inputRef"
                   v-model="item.model"
+                  @focus="onFocus(i)"
                   @keyup.enter="onInputKeyUp($event, i)"
                   @paste="validPaste($event, i)"
                   :maxlength="item.length"
@@ -134,6 +139,7 @@ const DataMgmtMixCarton = defineComponent({
     // const completeDialogSuccess = ref(false);
     const inputRef = ref();
     const notifyVisible = ref(false);
+    const scrollAreaRef = ref(null);
     onBeforeMount(() => {
       composeView();
     });
@@ -305,6 +311,18 @@ const DataMgmtMixCarton = defineComponent({
         router.push("/dataMgmtMixCartonList");
       }
     };
+    const onFocus = (position: any) => {
+      popupSoftKey(position);
+    };
+    // softkey popup auto scroll
+    const popupSoftKey = (position: any) => {
+      const scrollRef = scrollAreaRef.value as any;
+      setTimeout(() => {
+        if (position > 4) {
+          scrollRef.setScrollPercentage("vertical", 0.95);
+        }
+      }, 600);
+    };
     return {
       msg,
       type,
@@ -327,6 +345,7 @@ const DataMgmtMixCarton = defineComponent({
       back,
       notifyVisible,
       onCloseNotify,
+      onFocus,
     };
   },
 });

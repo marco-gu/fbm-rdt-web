@@ -200,9 +200,8 @@ const LpSearchView = defineComponent({
     const options = ref([]);
     const homePopup = ref(false);
     const scrollAreaRef = ref(null);
-    // const options = [i18n.t("common.receiving"), i18n.t("common.stuffing")];
     onMounted(() => {
-      const deviceHeight = store.state.screenModule.screenHeight;
+      const deviceHeight = window.innerHeight;
       setContentHeightWithBtn("scroll-area", deviceHeight);
       // softkey popup
       softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
@@ -298,20 +297,6 @@ const LpSearchView = defineComponent({
         }
       });
     };
-    // const changeScanType = (val: string) => {
-    //   if (
-    //     (receivingFlag.value && val == ScanType.RECEIVING) ||
-    //     (stuffingFlag.value && val == ScanType.STUFFING)
-    //   ) {
-    //     nextTick(() => {
-    //       reset(inputRef.value);
-    //     });
-    //     pageViews.value =
-    //       scanType.value == ScanType.RECEIVING
-    //         ? receivingViews.value
-    //         : stuffingViews.value;
-    //   }
-    // };
     const onSubmit = () => {
       myForm.value.validate().then((success: any) => {
         if (success) {
@@ -455,6 +440,9 @@ const LpSearchView = defineComponent({
               }
             });
           }
+          if (index == param.length - 1) {
+            popupSoftKey(index);
+          }
         });
       }
     };
@@ -483,10 +471,14 @@ const LpSearchView = defineComponent({
       { immediate: true }
     );
     const onFocus = (position: any) => {
+      popupSoftKey(position);
+    };
+    // softkey popup auto scroll
+    const popupSoftKey = (position: any) => {
       const scrollRef = scrollAreaRef.value as any;
       setTimeout(() => {
-        if (position > 1) scrollRef.setScrollPercentage("vertical", 0.92);
-      }, 200);
+        if (position > 1) scrollRef.setScrollPercentage("vertical", 0.95);
+      }, 600);
     };
     return {
       profileCode,
@@ -495,7 +487,6 @@ const LpSearchView = defineComponent({
       receivingFlag,
       stuffingFlag,
       pageViews,
-      // changeScanType,
       scan,
       inputRef,
       validPaste,

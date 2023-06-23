@@ -47,12 +47,14 @@
             </q-item-section>
           </q-item>
           <q-separator inset color="grey-3" />
-          <q-item clickable @click="() => router.push('/cargoImageList')">
-            <q-item-section>
-              <q-item-label>{{ $t("home.cargo_image") }}</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-separator inset color="grey-3" />
+          <div v-if="imageVisible == 2">
+            <q-item clickable @click="() => router.push('/cargoImageList')">
+              <q-item-section>
+                <q-item-label>{{ $t("home.cargo_image") }}</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-separator inset color="grey-3" />
+          </div>
           <q-item clickable @click="userManualVisible = true">
             <q-item-section>
               <q-item-label>{{ $t("home.user_manual") }}</q-item-label>
@@ -121,6 +123,7 @@ import maerskLogo from "../assets/icon/Maersk.png";
 import { VersionInfo } from "@/models/profile";
 import router from "@/router";
 import UserManual from "@/components/UserManualComponent.vue";
+import { useStore } from "@/store";
 export default {
   name: "HomeView",
   components: {
@@ -138,6 +141,8 @@ export default {
     const appVersionName = ref("");
     const envInfo = ref("");
     const userManualVisible = ref(false);
+    const store = useStore();
+    const imageVisible = store.state.deviceProfileModule.deviceProfile.type;
     onMounted(() => {
       if (route.query.leftDrawerOpen == "true") {
         toggleLeftDrawer();
@@ -189,6 +194,7 @@ export default {
       showDrawer,
       hideDrawer,
       userManualVisible,
+      imageVisible,
     };
   },
 };
