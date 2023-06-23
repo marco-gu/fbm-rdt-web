@@ -94,6 +94,7 @@
     <PopupComponent
       :visible="popupVisible"
       :message="msg"
+      :messageCode="msgCode"
       :type="type"
       @close="OnClosePopUp"
     ></PopupComponent>
@@ -106,6 +107,7 @@
     <PopupComponent
       :visible="homePopup"
       :message="$t('common.return_home')"
+      :messageCode="msgCode"
       :type="'action'"
       @close="
         () => {
@@ -192,6 +194,7 @@ const LpSearchView = defineComponent({
     });
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const popupVisible = ref(false);
     const notifyVisible = ref(false);
     const canJumpNextPage = ref(false);
@@ -330,6 +333,7 @@ const LpSearchView = defineComponent({
                 routeParams.type = scanType.value;
                 notifyVisible.value = true;
                 msg.value = i18n.t("messageCode.E93-05-0005");
+                msgCode.value = "E93-05-0005";
                 canJumpNextPage.value = true;
                 nextPageParam.value = routeParams;
               } else if (androidResponse.status == AndroidResponseStatus.INFO) {
@@ -338,6 +342,7 @@ const LpSearchView = defineComponent({
                 msg.value = i18n.t(
                   "messageCode." + androidResponse.messageCode
                 );
+                msgCode.value = androidResponse.messageCode;
               } else if (
                 androidResponse.status == AndroidResponseStatus.ERROR
               ) {
@@ -346,6 +351,7 @@ const LpSearchView = defineComponent({
                 msg.value = i18n.t(
                   "messageCode." + androidResponse.messageCode
                 );
+                msgCode.value = androidResponse.messageCode;
               }
             });
           } else {
@@ -499,6 +505,7 @@ const LpSearchView = defineComponent({
       popupVisible,
       notifyVisible,
       msg,
+      msgCode,
       OnClosePopUp,
       onCloseNotify,
       loadingStatus,

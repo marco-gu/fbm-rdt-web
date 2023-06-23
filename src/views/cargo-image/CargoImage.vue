@@ -71,6 +71,7 @@
     <PopupComponent
       :visible="dialogVisible"
       :message="msg"
+      :messageCode="msgCode"
       :type="type"
       @close="onConfirmDialog"
     ></PopupComponent>
@@ -110,6 +111,7 @@ const cargoImageView = defineComponent({
     const inputScanIcon = inputScan;
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const dialogVisible = ref(false);
     const inputRef = ref();
     const pressHome = ref();
@@ -201,6 +203,7 @@ const cargoImageView = defineComponent({
               type.value = "error";
               dialogVisible.value = true;
               msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+              msgCode.value = androidResponse.messageCode;
             } else {
               bridge.call("createCargoImageTask", {
                 cartonID: cartonID,
@@ -290,6 +293,7 @@ const cargoImageView = defineComponent({
       type,
       dialogVisible,
       msg,
+      msgCode,
       onInputKeyUp,
       validPaste,
       inputRef,

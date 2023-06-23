@@ -71,6 +71,7 @@
     <PopupComponent
       :visible="popupVisible"
       :message="msg"
+      :messageCode="msgCode"
       :type="type"
       @close="OnClose"
       @cancel="popupVisible = false"
@@ -106,6 +107,7 @@ const MixCartonSummaryView = defineComponent({
     const isEditMode = ref(false);
     const mixCartonListDisplay: Ref<MixCartonProduct[]> = ref([]);
     const msg = ref("");
+    const msgCode = ref("");
     const pageViews = ref([] as ViewDisplayAttribute[]);
     const popupVisible = ref(false);
     const pressDelete = ref(false);
@@ -154,6 +156,7 @@ const MixCartonSummaryView = defineComponent({
           type.value = "error";
           popupVisible.value = true;
           msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+          msgCode.value = androidResponse.messageCode;
         }
       });
     };
@@ -222,7 +225,7 @@ const MixCartonSummaryView = defineComponent({
     const OnClose = () => {
       popupVisible.value = false;
       if (pressHome.value) {
-        router.push("/home");
+        bridge.call("goFirstPage");
       } else if (pressDelete.value) {
         deleteCartonProducts();
       }
@@ -244,6 +247,7 @@ const MixCartonSummaryView = defineComponent({
       isEditMode,
       mixCartonListDisplay,
       msg,
+      msgCode,
       onBack,
       onClickAdd,
       onClickDelete,

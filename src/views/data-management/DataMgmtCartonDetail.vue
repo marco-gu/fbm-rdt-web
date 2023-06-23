@@ -86,6 +86,7 @@
     <PopupComponent
       :visible="dialogVisible"
       :message="msg"
+      :messageCode="msgCode"
       :type="type"
       @close="onConfirmDialog"
       @cancel="dialogVisible = false"
@@ -146,6 +147,7 @@ const DataMgmtCartonDetail = defineComponent({
     const label = ref(i18n.t("common.edit"));
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const dialogVisible = ref(false);
     const pressHome = ref(false);
     const pressSave = ref(false);
@@ -188,23 +190,47 @@ const DataMgmtCartonDetail = defineComponent({
         scan: 0,
         editable: false,
       });
-      pageView.value.push({
-        displayFieldName: "Shipping Order",
-        fieldName: "SO",
-        model: store.state.dataMgmtModule.cartonItem.so,
-        scan: 0,
-        editable: false,
-      });
-      pageView.value.push({
-        displayFieldName: "Purchase Order",
-        fieldName: "PO",
-        model: store.state.dataMgmtModule.cartonItem.po,
-        scan: 0,
-        editable: false,
-      });
+      // pageView.value.push({
+      //   displayFieldName: "Shipping Order",
+      //   fieldName: "SO",
+      //   model: store.state.dataMgmtModule.cartonItem.so,
+      //   scan: 0,
+      //   editable: false,
+      // });
+      // pageView.value.push({
+      //   displayFieldName: "Purchase Order",
+      //   fieldName: "PO",
+      //   model: store.state.dataMgmtModule.cartonItem.po,
+      //   scan: 0,
+      //   editable: false,
+      // });
       store.state.dataMgmtModule.profile.forEach(
         (item: ProfileDisplayAttribute) => {
           if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
+            if (
+              item.level == ProfileElementLevel.CARTON_COMMON ||
+              item.level == ProfileElementLevel.ORDER
+            ) {
+              const element = composeViewElement(item);
+              if (element.fieldName == "PO" && element.display) {
+                // in case of PO might not be in profile
+                pageView.value.push({
+                  displayFieldName: element.displayFieldName,
+                  fieldName: "PO",
+                  model: store.state.dataMgmtModule.cartonItem.po,
+                  scan: 0,
+                  editable: false,
+                });
+              } else if (element.fieldName == "SO") {
+                pageView.value.push({
+                  displayFieldName: element.displayFieldName,
+                  fieldName: "SO",
+                  model: store.state.dataMgmtModule.cartonItem.so,
+                  scan: 0,
+                  editable: false,
+                });
+              }
+            }
             if (item.level == ProfileElementLevel.CARTON_INDIVIDUAL) {
               const element = composeViewElement(item);
               let canAdd = false;
@@ -215,7 +241,7 @@ const DataMgmtCartonDetail = defineComponent({
                   element.model = ref(
                     store.state.dataMgmtModule.cartonItem.cartonID
                   );
-                  element.displayFieldName = "Carton ID";
+                  // element.displayFieldName = "Carton ID";
                   element.scan = 1;
                   canAdd = true;
                   break;
@@ -300,6 +326,7 @@ const DataMgmtCartonDetail = defineComponent({
             type.value = "error";
             dialogVisible.value = true;
             msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
           }
         });
       }
@@ -440,6 +467,7 @@ const DataMgmtCartonDetail = defineComponent({
       myForm,
       type,
       msg,
+      msgCode,
       dialogVisible,
       onConfirmDialog,
       onDetail,

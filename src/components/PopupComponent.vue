@@ -115,8 +115,8 @@ const PopupComponent = defineComponent({
               title.value = i18n.t("common.error");
               dialogType.value = DialogType.ERROR;
               if (
-                messageCode.value == "E92-99-0003" ||
-                messageCode.value == "E92-99-0004"
+                messageCode.value === "E92-99-0003" ||
+                messageCode.value === "E92-99-0004"
               ) {
                 returnHome.value = true;
                 label.value = i18n.t("common.ok");
