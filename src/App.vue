@@ -38,6 +38,10 @@ const App = defineComponent({
       router.push("/faq");
     });
 
+    bridge.register("goLogin", () => {
+      router.replace("/");
+    });
+
     onMounted(() => {
       bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.locale.value = res;
