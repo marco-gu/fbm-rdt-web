@@ -43,32 +43,16 @@ const routeTableLoggedIn = [
       },
       {
         path: "/profileManagement",
+        query: {
+          leftDrawerOpen: "true",
+        },
         children: [],
       },
-      // TODO data management query info need to be updated
-      // {
-      //   path: "/DataMgmtList",
-      //   children: [
-      //     {
-      //       path: "/dataMgmtGD",
-      //       children: [
-      //         {
-      //           path: "/dataMgmtGDEdit",
-      //           children: [
-      //             {
-      //               path: "/dataManagementMixCartonList",
-      //               children: [
-      //                 { path: "/dataManagementMixCarton", children: [] },
-      //               ],
-      //             },
-      //           ],
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
       {
         path: "/dataMgmtList",
+        query: {
+          leftDrawerOpen: "true",
+        },
         children: [
           {
             path: "/dataMgmtDetail",
@@ -140,10 +124,16 @@ const routeTableLoggedIn = [
       },
       {
         path: "/lpList",
+        query: {
+          leftDrawerOpen: "true",
+        },
         children: [{ path: "/lpDetailList", children: [] }],
       },
       {
         path: "/cargoImageList",
+        query: {
+          leftDrawerOpen: "true",
+        },
         children: [
           {
             path: "/cargoImage",

@@ -14,6 +14,7 @@ import commonModule from "./module/common.module";
 import dataMgmtModule from "./module/dataMgmt.module";
 import cargoImageModule from "./module/cargoImage.module";
 import lpModule from "./module/lp.module";
+import deviceProfileModule from "./module/device.profile.module";
 
 const debug = process.env.NODE_ENV !== "product";
 export default createStore({
@@ -28,6 +29,7 @@ export default createStore({
     dataMgmtModule,
     cargoImageModule,
     lpModule,
+    deviceProfileModule,
   },
   strict: debug,
   plugins: debug ? [createLogger()] : [],

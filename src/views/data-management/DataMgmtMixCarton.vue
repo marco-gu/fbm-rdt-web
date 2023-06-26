@@ -7,7 +7,11 @@
       @onBack="back"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form ref="myForm">
           <div v-for="(item, i) in pageView" :key="i" class="container">
             <div v-if="item.display == 1">
@@ -20,6 +24,7 @@
                   input-class="text-left"
                   ref="inputRef"
                   v-model="item.model"
+                  @focus="onFocus(i)"
                   @keyup.enter="onInputKeyUp($event, i)"
                   @paste="validPaste($event, i)"
                   :maxlength="item.length"
@@ -98,12 +103,12 @@ import {
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
-import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import inputScan from "../../assets/icon/compress-solid.svg";
 import { resetForm } from "../../utils/form.util";
-import { setContentHeightWithBtn } from "../../utils/screen.util";
+import { resizeScreen, setContentHeightWithBtn } from "../../utils/screen.util";
 import { useStore } from "@/store";
 import NotifyComponent from "@/components/NotifyComponent.vue";
 const DataMgmtMixCarton = defineComponent({
@@ -134,11 +139,14 @@ const DataMgmtMixCarton = defineComponent({
     // const completeDialogSuccess = ref(false);
     const inputRef = ref();
     const notifyVisible = ref(false);
+    const scrollAreaRef = ref(null);
+    let position = 0;
     onBeforeMount(() => {
       composeView();
     });
     onMounted(() => {
       setContentHeightWithBtn("scroll-area");
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
     });
     const composeView = () => {
       const param = {
@@ -285,6 +293,9 @@ const DataMgmtMixCarton = defineComponent({
               }
             });
           }
+          if (index == param.length - 1) {
+            position = index;
+          }
         });
       }
     };
@@ -305,6 +316,23 @@ const DataMgmtMixCarton = defineComponent({
         router.push("/dataMgmtMixCartonList");
       }
     };
+    const onFocus = (val: any) => {
+      position = val;
+    };
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        const scrollRef = scrollAreaRef.value as any;
+        if (scrollRef) {
+          scrollRef.setScrollPercentage("vertical", 0);
+        }
+        if (newVal && position > 1) {
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       msg,
       type,
@@ -327,6 +355,8 @@ const DataMgmtMixCarton = defineComponent({
       back,
       notifyVisible,
       onCloseNotify,
+      onFocus,
+      scrollAreaRef,
     };
   },
 });

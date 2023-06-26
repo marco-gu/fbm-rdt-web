@@ -7,7 +7,11 @@
       @onBack="onBack"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form @submit="onSubmit" ref="myForm">
           <div v-for="(item, i) in pageViews" :key="i" class="container">
             <div v-if="item.display == 1">
@@ -21,6 +25,8 @@
                   ref="inputRef"
                   v-model="item.model"
                   @paste="validPaste($event, i)"
+                  @keyup.enter="onInputKeyUp($event, i)"
+                  @focus="onFocus(i)"
                   :maxlength="item.length"
                   lazy-rules
                   :rules="[item.valid]"
@@ -82,15 +88,20 @@ import {
   ProfileDisplayAttribute,
   ProfileMixCartonLevel,
 } from "@/models/profile";
+import { useStore } from "@/store";
 import {
   composeViewElement,
   ViewDisplayAttribute,
   toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
-import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
+import {
+  calScrollAreaWithBottom,
+  resizeScreen,
+  softKeyPopUp,
+} from "@/utils/screen.util";
 import bridge from "dsbridge";
-import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
+import { defineComponent, ref, onBeforeMount, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import inputScan from "../assets/icon/compress-solid.svg";
@@ -118,6 +129,9 @@ const MixCartonView = defineComponent({
     const taskID = ref("");
     const type = ref("");
     let isCamera = true;
+    const scrollAreaRef = ref(null);
+    const store = useStore();
+    let position = 0;
     bridge.register("getMixCartonParam", (res: string) => {
       const mixCartonParam = JSON.parse(res);
       cartonID.value = mixCartonParam.cartonID;
@@ -160,9 +174,9 @@ const MixCartonView = defineComponent({
         }
       });
     });
-    // bridge.register("closeMixCarton", () => {
-    //   closeMixCarton();
-    // });
+    bridge.register("onBack", () => {
+      onBack();
+    });
     onBeforeMount(() => {
       const param = route.params.id as any;
       const args = {
@@ -182,7 +196,8 @@ const MixCartonView = defineComponent({
     });
     onMounted(() => {
       calScrollAreaWithBottom("scroll-area", "bottom-button");
-      softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
+      // softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
       arrangeRouteParams();
     });
     const arrangeRouteParams = () => {
@@ -252,39 +267,6 @@ const MixCartonView = defineComponent({
         }
       });
     };
-    const closeMixCarton = () => {
-      if (itemCount.value == 0) {
-        // Step 1: Check is include mandatory field
-        let isIncludeMandatory = false;
-        pageViews.value.forEach((view) => {
-          if (view.mandatory == 1) {
-            isIncludeMandatory = true;
-          }
-        });
-        if (!isIncludeMandatory) {
-          // bridge.call("completeMixCarton", null, () => {
-          //   reset();
-          // });
-        } else {
-          // Step 2: Check input all required field
-          myForm.value.validate().then((success: any) => {
-            if (success) {
-              type.value = "error";
-              popupVisible.value = true;
-              msg.value = i18n.t("messageCode.E93-07-0001");
-            } else {
-              type.value = "error";
-              popupVisible.value = true;
-              msg.value = i18n.t("messageCode.E93-07-0002");
-            }
-          });
-        }
-      } else {
-        // bridge.call("completeMixCarton", null, () => {
-        //   reset();
-        // });
-      }
-    };
     const validPaste = (event: any, index: number) => {
       validPasteInput(inputRef, event, index);
     };
@@ -329,6 +311,41 @@ const MixCartonView = defineComponent({
       type.value = "action";
       msg.value = i18n.t("common.return_home");
     };
+    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
+      if (event.code === "Enter" || event.which === 13) {
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (i === index) {
+            const inputText = t.$props.modelValue;
+            t.validate(inputText).then(() => {
+              if (param.length > index + 1) {
+                param[index + 1].focus();
+              }
+            });
+          }
+          if (index == param.length - 1) {
+            position = index;
+          }
+        });
+      }
+    };
+    const onFocus = (val: any) => {
+      position = val;
+    };
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        if (newVal && position > 1) {
+          const scrollRef = scrollAreaRef.value as any;
+          if (scrollRef) {
+            scrollRef.setScrollPercentage("vertical", 0);
+          }
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       cartonID,
       complete,
@@ -346,6 +363,9 @@ const MixCartonView = defineComponent({
       scan,
       type,
       validPaste,
+      scrollAreaRef,
+      onFocus,
+      onInputKeyUp,
     };
   },
 });

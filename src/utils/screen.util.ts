@@ -78,3 +78,28 @@ export function setContentHeightOutSearch(scrollAreaID: string) {
   const scrollArea = document.getElementById(scrollAreaID) as any;
   scrollArea.style.height = deviceHeight - scrollArea.offsetTop + 52 + "px";
 }
+
+export function resizeScreen(
+  deviceHeight: number,
+  startEL: string,
+  endEL: string,
+  store: any
+) {
+  window.onresize = () => {
+    const resizeHeight = window.innerHeight;
+    const scrollArea = document.getElementById(startEL) as any;
+    scrollArea.style.height = resizeHeight - scrollArea.offsetTop - 30 + "px";
+    const bottom = document.getElementById(endEL) as any;
+    if (deviceHeight > resizeHeight) {
+      bottom.style.visibility = "hidden";
+      store.dispatch("screenModule/saveSoftKeyStatus", {
+        softKeyStatus: true,
+      });
+    } else {
+      bottom.style.visibility = "visible";
+      store.dispatch("screenModule/saveSoftKeyStatus", {
+        softKeyStatus: false,
+      });
+    }
+  };
+}

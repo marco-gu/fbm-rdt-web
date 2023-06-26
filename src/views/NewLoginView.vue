@@ -116,8 +116,10 @@
     <q-dialog v-model="showForceLoginDialog" persistent>
       <div class="dialog-container">
         <div class="dialog-container__title">
+          <a class="icon"
+            ><i class="fa-solid fa-circle-info" style="color: #64b2d4"></i>
+          </a>
           {{ $t("common.confirm") }}
-          <!-- <q-icon name="close" v-close-popup /> -->
         </div>
         <div class="dialog-container__content">
           {{ $t("login.force_login_dialog") }}
@@ -237,6 +239,7 @@ const NewLoginView = defineComponent({
     };
     const forceLogin = () => {
       showForceLoginDialog.value = false;
+      loadingStatus.value = true;
       const args = {
         username: username.value,
         userID: userID.value,
@@ -244,6 +247,7 @@ const NewLoginView = defineComponent({
         password: md5(password.value),
       };
       bridge.call("forceLogin", args, (res: string) => {
+        loadingStatus.value = false;
         const androidResponse = JSON.parse(
           res
         ) as AndroidResponse<LoginResponse>;

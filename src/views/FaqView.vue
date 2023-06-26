@@ -2,7 +2,7 @@
   <div class="wrapper">
     <common-header-component
       :titles="[$t('login.login_help')]"
-      :icons="['back', 'home']"
+      :icons="['back', 'home', 'empty']"
       @onHome="goFirstPage"
       @onBack="() => router.push('/')"
     />

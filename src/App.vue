@@ -1,7 +1,5 @@
 <template>
-  <!-- <Transition name="slide-fade"> -->
   <router-view />
-  <!-- </Transition> -->
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, watch } from "vue";
@@ -17,16 +15,10 @@ const App = defineComponent({
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
-    // let isLoggedIn = false;
     const deviceHeight = window.innerHeight;
     store.dispatch("screenModule/saveScreenHeight", {
       screenHeight: deviceHeight,
     });
-
-    // bridge.register("reLogin", () => {
-    //   isLoggedIn = false;
-    //   router.push({ name: "login", params: { message: "TOKEN EXPIRED" } });
-    // });
     bridge.register("onKeyCodeClick", (keycode: string) => {
       console.log("CUSTOM_KEY_CODE_WEBVIEW ===> " + keycode);
     });
@@ -47,30 +39,35 @@ const App = defineComponent({
         i18n.locale.value = res;
         store.dispatch("languageModule/setCurrentLang", res);
       });
-      // bridge.call("fetchUserToken", null, (res: string) => {
-      //   isLoggedIn = !!res;
-      // });
-      // override back pressed event
+      bridge.call("getScanDeviceType", null, (res: string) => {
+        store.dispatch("deviceProfileModule/saveDeviceProfile", res);
+      });
       bridge.register("onBackPressed", () => {
         const isLoggedIn = store.state.commonModule.isLogin;
         const currentRoute = route.path;
-        if (isLoggedIn) {
-          const matchedItem = searchRoute(routeTableLoggedIn[0], currentRoute);
-          if (matchedItem.parent) {
-            router.push({
-              path: matchedItem.parent.path,
-              query: matchedItem.matched.query || route.query || null,
-            });
-          }
-        } else {
+        if (currentRoute == "/faq") {
           router.push("/");
+        } else {
+          if (isLoggedIn) {
+            const matchedItem = searchRoute(
+              routeTableLoggedIn[0],
+              currentRoute
+            );
+            if (matchedItem.parent) {
+              router.push({
+                path: matchedItem.parent.path,
+                query: matchedItem.matched.query || route.query || null,
+              });
+            }
+          } else {
+            router.push("/");
+          }
         }
       });
       bridge.call("getScanDevice", (res: string) => {
         store.dispatch("commonModule/setScanDevice", res);
       });
     });
-    // store i18n in store for changing
     watch(
       () => store.state.languageModule.currentLang,
       (newVal) => {
@@ -107,7 +104,6 @@ export default App;
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-  /* transform: translateX(100%); */
   transform: translateX(10px);
   opacity: 0;
 }

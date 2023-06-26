@@ -14,7 +14,11 @@
       @onBack="() => router.push(backUrlParam)"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form @submit="onSubmit" ref="myForm">
           <div class="field">
             <div class="input-title">
@@ -53,6 +57,7 @@
                   class="input-field"
                   input-class="text-left"
                   ref="inputRef"
+                  @focus="onFocus(i)"
                   v-model="item.model"
                   @keyup.enter="onInputKeyUp($event, i)"
                   @paste="validPaste($event, i)"
@@ -138,7 +143,7 @@ import {
 import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
-import { setContentHeightWithBtn, softKeyPopUp } from "../utils/screen.util";
+import { resizeScreen, setContentHeightWithBtn } from "../utils/screen.util";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NotifyComponent from "@/components/NotifyComponent.vue";
@@ -197,13 +202,11 @@ const LpSearchView = defineComponent({
     const loadingStatus = ref(false);
     const options = ref([]);
     const homePopup = ref(false);
-
-    // const options = [i18n.t("common.receiving"), i18n.t("common.stuffing")];
+    const scrollAreaRef = ref(null);
+    let position = 0;
     onMounted(() => {
-      const deviceHeight = store.state.screenModule.screenHeight;
-      setContentHeightWithBtn("scroll-area", deviceHeight);
-      // softkey popup
-      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      setContentHeightWithBtn("scroll-area", window.innerHeight);
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
       ) as ProfileMaster;
@@ -296,20 +299,6 @@ const LpSearchView = defineComponent({
         }
       });
     };
-    // const changeScanType = (val: string) => {
-    //   if (
-    //     (receivingFlag.value && val == ScanType.RECEIVING) ||
-    //     (stuffingFlag.value && val == ScanType.STUFFING)
-    //   ) {
-    //     nextTick(() => {
-    //       reset(inputRef.value);
-    //     });
-    //     pageViews.value =
-    //       scanType.value == ScanType.RECEIVING
-    //         ? receivingViews.value
-    //         : stuffingViews.value;
-    //   }
-    // };
     const onSubmit = () => {
       myForm.value.validate().then((success: any) => {
         if (success) {
@@ -456,6 +445,9 @@ const LpSearchView = defineComponent({
               }
             });
           }
+          if (index == param.length - 1) {
+            position = index;
+          }
         });
       }
     };
@@ -483,6 +475,23 @@ const LpSearchView = defineComponent({
       },
       { immediate: true }
     );
+    const onFocus = (val: any) => {
+      position = val;
+    };
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        if (newVal && position > 1) {
+          const scrollRef = scrollAreaRef.value as any;
+          if (scrollRef) {
+            scrollRef.setScrollPercentage("vertical", 0);
+          }
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       profileCode,
       scanType,
@@ -490,7 +499,6 @@ const LpSearchView = defineComponent({
       receivingFlag,
       stuffingFlag,
       pageViews,
-      // changeScanType,
       scan,
       inputRef,
       validPaste,
@@ -513,6 +521,8 @@ const LpSearchView = defineComponent({
       options,
       onClear,
       homePopup,
+      scrollAreaRef,
+      onFocus,
     };
   },
 });

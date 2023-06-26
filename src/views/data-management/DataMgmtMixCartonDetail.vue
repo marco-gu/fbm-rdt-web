@@ -7,9 +7,13 @@
       @onBack="back"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form @submit="onSubmit" ref="myForm">
-          <div v-for="(item, index) in pageView" :key="index">
+          <div v-for="(item, i) in pageView" :key="i">
             <div class="field">
               <div class="input-title">
                 <span class="text"> {{ item.displayFieldName }}</span>
@@ -19,6 +23,7 @@
                 input-class="text-left"
                 ref="inputRef"
                 v-model="item.model"
+                @focus="onFocus(i)"
                 @keyup.enter="onInputKeyUp($event, i)"
                 @paste="validPaste($event, i)"
                 lazy-rules
@@ -96,7 +101,7 @@ import {
   toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
-import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "@/store";
 import { useI18n } from "vue-i18n";
@@ -107,7 +112,11 @@ import {
   AndroidResponse,
   AndroidResponseStatus,
 } from "@/models/android.response";
-import { setContentHeightWithBtn, softKeyPopUp } from "@/utils/screen.util";
+import {
+  resizeScreen,
+  setContentHeightWithBtn,
+  softKeyPopUp,
+} from "@/utils/screen.util";
 import NotifyComponent from "@/components/NotifyComponent.vue";
 const DataMgmtCartonMixedDetail = defineComponent({
   components: {
@@ -136,13 +145,16 @@ const DataMgmtCartonMixedDetail = defineComponent({
     const pressSave = ref(false);
     const notifyVisible = ref(false);
     const obj = store.state.dataMgmtModule.cartonMixItem.attribute;
+    const scrollAreaRef = ref(null);
+    let position = 0;
     onBeforeMount(() => {
       composeView();
     });
     onMounted(() => {
-      const deviceHeight = store.state.screenModule.screenHeight;
+      // const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area");
-      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      // softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
     });
     const composeView = () => {
       store.state.dataMgmtModule.profile.forEach(
@@ -299,6 +311,9 @@ const DataMgmtCartonMixedDetail = defineComponent({
               }
             });
           }
+          if (index == param.length - 1) {
+            position = index;
+          }
         });
       }
     };
@@ -309,6 +324,23 @@ const DataMgmtCartonMixedDetail = defineComponent({
       notifyVisible.value = false;
       router.push("/dataMgmtMixCartonList");
     };
+    const onFocus = (val: any) => {
+      position = val;
+    };
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        const scrollRef = scrollAreaRef.value as any;
+        if (scrollRef) {
+          scrollRef.setScrollPercentage("vertical", 0);
+        }
+        if (newVal && position > 1) {
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       titles,
       router,
@@ -331,6 +363,8 @@ const DataMgmtCartonMixedDetail = defineComponent({
       onInputKeyUp,
       notifyVisible,
       onCloseNotify,
+      onFocus,
+      scrollAreaRef,
     };
   },
 });

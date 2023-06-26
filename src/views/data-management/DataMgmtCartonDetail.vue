@@ -8,9 +8,13 @@
       @onMixed="onDetail"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form @submit="onSubmit" ref="myForm">
-          <div v-for="(item, index) in pageView" :key="index">
+          <div v-for="(item, i) in pageView" :key="i">
             <div class="field">
               <div class="input-title">
                 <span class="text"> {{ item.displayFieldName }}</span>
@@ -20,6 +24,7 @@
                 input-class="text-left"
                 ref="inputRef"
                 v-model="item.model"
+                @focus="onFocus(i)"
                 @keyup.enter="onInputKeyUp($event, i)"
                 @paste="validPaste($event, i)"
                 lazy-rules
@@ -108,9 +113,13 @@ import {
   validPasteInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
-import { setContentHeightWithBtn, softKeyPopUp } from "@/utils/screen.util";
+import {
+  resizeScreen,
+  setContentHeightWithBtn,
+  softKeyPopUp,
+} from "@/utils/screen.util";
 import bridge from "dsbridge";
-import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import inputScan from "../../assets/icon/compress-solid.svg";
 type ViewElement = {
@@ -147,13 +156,16 @@ const DataMgmtCartonDetail = defineComponent({
     const pressHome = ref(false);
     const pressSave = ref(false);
     const notifyVisible = ref(false);
+    const scrollAreaRef = ref(null);
+    let position = 0;
     onBeforeMount(() => {
       composeView();
     });
     onMounted(() => {
-      const deviceHeight = store.state.screenModule.screenHeight;
+      // const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area");
-      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      // softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
       getMixStatus();
     });
     const getMixStatus = () => {
@@ -428,6 +440,9 @@ const DataMgmtCartonDetail = defineComponent({
               }
             });
           }
+          if (index == param.length - 1) {
+            position = index;
+          }
         });
       }
     };
@@ -438,6 +453,23 @@ const DataMgmtCartonDetail = defineComponent({
       notifyVisible.value = false;
       router.push("/dataMgmtCartonList");
     };
+    const onFocus = (val: any) => {
+      position = val;
+    };
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        const scrollRef = scrollAreaRef.value as any;
+        if (scrollRef) {
+          scrollRef.setScrollPercentage("vertical", 0);
+        }
+        if (newVal && position > 4) {
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       pageView,
       titles,
@@ -464,6 +496,8 @@ const DataMgmtCartonDetail = defineComponent({
       notifyVisible,
       onCloseNotify,
       getMixStatus,
+      onFocus,
+      scrollAreaRef,
     };
   },
 });

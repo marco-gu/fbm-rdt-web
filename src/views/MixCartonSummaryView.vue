@@ -213,6 +213,9 @@ const MixCartonSummaryView = defineComponent({
         },
       });
     };
+    bridge.register("onBack", () => {
+      onBack();
+    });
     const onClickDelete = () => {
       type.value = "action";
       pressDelete.value = true;

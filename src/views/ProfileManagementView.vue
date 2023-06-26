@@ -249,6 +249,7 @@ const ProfileManagementView = defineComponent({
       });
     };
     const refresh = (done: any) => {
+      dialogVisible.value = false;
       loadingStatus.value = true;
       if (!isEditMode.value) {
         bridge.call("refreshProfile", null, (res: string) => {

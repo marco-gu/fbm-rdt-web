@@ -1,6 +1,7 @@
 import { CargoImageState } from "./module/cargoImage.module";
 import { CommonState } from "./module/common.module";
 import { DataMgmtState } from "./module/dataMgmt.module";
+import { DeviceProfileState } from "./module/device.profile.module";
 import { LanguageState } from "./module/language.module";
 import { LpState } from "./module/lp.module";
 import { ProfileState } from "./module/profile.module";
@@ -18,4 +19,5 @@ export interface State extends RootState {
   dataMgmtModule: DataMgmtState;
   cargoImageModule: CargoImageState;
   lpModule: LpState;
+  deviceProfileModule: DeviceProfileState;
 }
