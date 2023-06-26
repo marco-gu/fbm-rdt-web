@@ -41,17 +41,23 @@ const App = defineComponent({
       bridge.register("onBackPressed", () => {
         const isLoggedIn = store.state.commonModule.isLogin;
         const currentRoute = route.path;
-        if (isLoggedIn) {
-          const matchedItem = searchRoute(routeTableLoggedIn[0], currentRoute);
-          if (matchedItem.parent) {
-            alert("onBackPressed " + JSON.stringify(matchedItem.parent.path));
-            router.push({
-              path: matchedItem.parent.path,
-              query: matchedItem.matched.query || route.query || null,
-            });
-          }
-        } else {
+        if (currentRoute == "/faq") {
           router.push("/");
+        } else {
+          if (isLoggedIn) {
+            const matchedItem = searchRoute(
+              routeTableLoggedIn[0],
+              currentRoute
+            );
+            if (matchedItem.parent) {
+              router.push({
+                path: matchedItem.parent.path,
+                query: matchedItem.matched.query || route.query || null,
+              });
+            }
+          } else {
+            router.push("/");
+          }
         }
       });
       bridge.call("getScanDevice", (res: string) => {

@@ -26,8 +26,8 @@
                 v-model="item.model"
                 @keyup.enter="onInputKeyUp($event, i)"
                 @paste="validPaste($event, i)"
-                lazy-rules
                 @focus="onFocus(i)"
+                lazy-rules
                 :rules="[item.valid]"
                 :maxlength="item.length"
                 borderless
@@ -109,10 +109,14 @@ import {
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
-import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import inputScan from "../../assets/icon/compress-solid.svg";
-import { setContentHeightWithBtn, softKeyPopUp } from "../../utils/screen.util";
+import {
+  resizeScreen,
+  setContentHeightWithBtn,
+  softKeyPopUp,
+} from "../../utils/screen.util";
 const DataMgmtDetail = defineComponent({
   components: {
     CommonHeaderComponent,
@@ -138,13 +142,14 @@ const DataMgmtDetail = defineComponent({
     const pressSave = ref(false);
     const notifyVisible = ref(false);
     const scrollAreaRef = ref(null);
+    let position = 0;
     onBeforeMount(() => {
       composeView(dataMgmtView.value);
     });
     onMounted(() => {
-      const deviceHeight = window.innerHeight;
       setContentHeightWithBtn("scroll-area");
-      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      // softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
     });
     const composeView = (obj: DataMgmt) => {
       bridge.call(
@@ -345,6 +350,9 @@ const DataMgmtDetail = defineComponent({
               }
             });
           }
+          if (index == param.length - 1) {
+            position = index;
+          }
         });
       }
     };
@@ -355,18 +363,23 @@ const DataMgmtDetail = defineComponent({
       notifyVisible.value = false;
       router.push("/dataMgmtList");
     };
-    const onFocus = (position: any) => {
-      popupSoftKey(position);
+    const onFocus = (val: any) => {
+      position = val;
     };
-    // softkey popup auto scroll
-    const popupSoftKey = (position: any) => {
-      const scrollRef = scrollAreaRef.value as any;
-      setTimeout(() => {
-        if (position > 4) {
-          scrollRef.setScrollPercentage("vertical", 0.95);
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        const scrollRef = scrollAreaRef.value as any;
+        if (scrollRef) {
+          scrollRef.setScrollPercentage("vertical", 0);
         }
-      }, 600);
-    };
+        if (newVal && position > 4) {
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       titles,
       pageView,

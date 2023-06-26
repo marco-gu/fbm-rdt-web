@@ -14,7 +14,7 @@
         ref="scrollAreaRef"
       >
         <q-form @submit="onSubmit" ref="myForm">
-          <div v-for="(item, index) in pageView" :key="index">
+          <div v-for="(item, i) in pageView" :key="i">
             <div class="field">
               <div class="input-title">
                 <span class="text"> {{ item.displayFieldName }}</span>
@@ -113,9 +113,13 @@ import {
   validPasteInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
-import { setContentHeightWithBtn, softKeyPopUp } from "@/utils/screen.util";
+import {
+  resizeScreen,
+  setContentHeightWithBtn,
+  softKeyPopUp,
+} from "@/utils/screen.util";
 import bridge from "dsbridge";
-import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import inputScan from "../../assets/icon/compress-solid.svg";
 type ViewElement = {
@@ -153,13 +157,15 @@ const DataMgmtCartonDetail = defineComponent({
     const pressSave = ref(false);
     const notifyVisible = ref(false);
     const scrollAreaRef = ref(null);
+    let position = 0;
     onBeforeMount(() => {
       composeView();
     });
     onMounted(() => {
-      const deviceHeight = store.state.screenModule.screenHeight;
+      // const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area");
-      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      // softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
       getMixStatus();
     });
     const getMixStatus = () => {
@@ -434,6 +440,9 @@ const DataMgmtCartonDetail = defineComponent({
               }
             });
           }
+          if (index == param.length - 1) {
+            position = index;
+          }
         });
       }
     };
@@ -444,18 +453,23 @@ const DataMgmtCartonDetail = defineComponent({
       notifyVisible.value = false;
       router.push("/dataMgmtCartonList");
     };
-    const onFocus = (position: any) => {
-      popupSoftKey(position);
+    const onFocus = (val: any) => {
+      position = val;
     };
-    // softkey popup auto scroll
-    const popupSoftKey = (position: any) => {
-      const scrollRef = scrollAreaRef.value as any;
-      setTimeout(() => {
-        if (position > 4) {
-          scrollRef.setScrollPercentage("vertical", 0.95);
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        const scrollRef = scrollAreaRef.value as any;
+        if (scrollRef) {
+          scrollRef.setScrollPercentage("vertical", 0);
         }
-      }, 600);
-    };
+        if (newVal && position > 4) {
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       pageView,
       titles,
@@ -482,6 +496,8 @@ const DataMgmtCartonDetail = defineComponent({
       notifyVisible,
       onCloseNotify,
       getMixStatus,
+      onFocus,
+      scrollAreaRef,
     };
   },
 });

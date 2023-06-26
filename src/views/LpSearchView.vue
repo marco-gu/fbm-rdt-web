@@ -143,7 +143,7 @@ import {
 import { useI18n } from "vue-i18n";
 import { useStore } from "@/store";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
-import { setContentHeightWithBtn, softKeyPopUp } from "../utils/screen.util";
+import { resizeScreen, setContentHeightWithBtn } from "../utils/screen.util";
 import PopupComponent from "@/components/PopupComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NotifyComponent from "@/components/NotifyComponent.vue";
@@ -203,11 +203,10 @@ const LpSearchView = defineComponent({
     const options = ref([]);
     const homePopup = ref(false);
     const scrollAreaRef = ref(null);
+    let position = 0;
     onMounted(() => {
-      const deviceHeight = window.innerHeight;
-      setContentHeightWithBtn("scroll-area", deviceHeight);
-      // softkey popup
-      softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
+      setContentHeightWithBtn("scroll-area", window.innerHeight);
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
       const initData = JSON.parse(
         localStorage.getItem("profile") as never
       ) as ProfileMaster;
@@ -447,7 +446,7 @@ const LpSearchView = defineComponent({
             });
           }
           if (index == param.length - 1) {
-            popupSoftKey(index);
+            position = index;
           }
         });
       }
@@ -476,16 +475,23 @@ const LpSearchView = defineComponent({
       },
       { immediate: true }
     );
-    const onFocus = (position: any) => {
-      popupSoftKey(position);
+    const onFocus = (val: any) => {
+      position = val;
     };
-    // softkey popup auto scroll
-    const popupSoftKey = (position: any) => {
-      const scrollRef = scrollAreaRef.value as any;
-      setTimeout(() => {
-        if (position > 1) scrollRef.setScrollPercentage("vertical", 0.95);
-      }, 600);
-    };
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        if (newVal && position > 1) {
+          const scrollRef = scrollAreaRef.value as any;
+          if (scrollRef) {
+            scrollRef.setScrollPercentage("vertical", 0);
+          }
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       profileCode,
       scanType,

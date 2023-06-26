@@ -103,12 +103,12 @@ import {
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
-import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import inputScan from "../../assets/icon/compress-solid.svg";
 import { resetForm } from "../../utils/form.util";
-import { setContentHeightWithBtn } from "../../utils/screen.util";
+import { resizeScreen, setContentHeightWithBtn } from "../../utils/screen.util";
 import { useStore } from "@/store";
 import NotifyComponent from "@/components/NotifyComponent.vue";
 const DataMgmtMixCarton = defineComponent({
@@ -140,11 +140,13 @@ const DataMgmtMixCarton = defineComponent({
     const inputRef = ref();
     const notifyVisible = ref(false);
     const scrollAreaRef = ref(null);
+    let position = 0;
     onBeforeMount(() => {
       composeView();
     });
     onMounted(() => {
       setContentHeightWithBtn("scroll-area");
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
     });
     const composeView = () => {
       const param = {
@@ -291,6 +293,9 @@ const DataMgmtMixCarton = defineComponent({
               }
             });
           }
+          if (index == param.length - 1) {
+            position = index;
+          }
         });
       }
     };
@@ -311,18 +316,23 @@ const DataMgmtMixCarton = defineComponent({
         router.push("/dataMgmtMixCartonList");
       }
     };
-    const onFocus = (position: any) => {
-      popupSoftKey(position);
+    const onFocus = (val: any) => {
+      position = val;
     };
-    // softkey popup auto scroll
-    const popupSoftKey = (position: any) => {
-      const scrollRef = scrollAreaRef.value as any;
-      setTimeout(() => {
-        if (position > 4) {
-          scrollRef.setScrollPercentage("vertical", 0.95);
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        const scrollRef = scrollAreaRef.value as any;
+        if (scrollRef) {
+          scrollRef.setScrollPercentage("vertical", 0);
         }
-      }, 600);
-    };
+        if (newVal && position > 1) {
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       msg,
       type,
@@ -346,6 +356,7 @@ const DataMgmtMixCarton = defineComponent({
       notifyVisible,
       onCloseNotify,
       onFocus,
+      scrollAreaRef,
     };
   },
 });
