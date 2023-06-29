@@ -111,6 +111,7 @@ import {
   composeViewElement,
   ProfileElementLevel,
   validPasteInput,
+  toUpperCaseElementInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
 import {
@@ -400,6 +401,8 @@ const DataMgmtCartonDetail = defineComponent({
         },
       });
     };
+    const multiWatchSources = [pageView.value];
+    toUpperCaseElementInput(multiWatchSources);
     const scan = (fieldName: string, event: Event) => {
       const isCamera = store.state.commonModule.scanDevice === "camera";
       if (isCamera) {
