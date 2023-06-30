@@ -100,6 +100,7 @@ import {
 import {
   composeViewElement,
   validPasteInput,
+  toUpperCaseElementInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
 import bridge from "dsbridge";
@@ -253,6 +254,8 @@ const DataMgmtMixCarton = defineComponent({
       type.value = "action";
       msg.value = i18n.t("common.return_home");
     };
+    const multiWatchSources = [pageView.value];
+    toUpperCaseElementInput(multiWatchSources);
     const scan = (fieldName: string, event: Event) => {
       const isCamera = store.state.commonModule.scanDevice === "camera";
       if (isCamera) {
