@@ -43,25 +43,6 @@
             </template>
           </q-input>
         </div>
-        <!-- <div class="input-label">{{ $t("login.password") }}</div>
-        <q-input
-          v-model="password"
-          outlined
-          dense
-          color="secondary"
-          :type="isPwd ? 'password' : 'text'"
-          lazy-rules
-          :rules="[(val) => !!val || $t('messageCode.E91-01-0005')]"
-        >
-          <template v-slot:append>
-            <q-icon
-              :color="isPwd ? 'gray' : 'secondary'"
-              :name="isPwd ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="isPwd = !isPwd"
-            />
-          </template>
-        </q-input> -->
       </div>
       <q-btn
         no-caps
@@ -75,7 +56,6 @@
     </q-form>
 
     <div class="login-link">
-      <!-- <div @click="userManualVisible = true"> -->
       <div>
         <p class="login-link-label">
           {{ $t("login.sso_login") }}
@@ -101,6 +81,8 @@
       :dialogVisible="forgotPwdVisible"
       @confirm="forgotPwdVisible = false"
       @close="forgotPwdVisible = false"
+      @showLoading="showLoading"
+      @closeLoading="loadingStatus = false"
     ></ForgotPwdComponent>
     <UserManual
       :dialogVisible="userManualVisible"
@@ -285,7 +267,10 @@ const NewLoginView = defineComponent({
     const goFAQ = () => {
       router.push("/faq");
     };
-
+    const showLoading = () => {
+      loadingStatus.value = true;
+      forgotPwdVisible.value = false;
+    };
     return {
       username,
       password,
@@ -296,15 +281,12 @@ const NewLoginView = defineComponent({
       goFirstPage,
       type,
       popupVisible,
-      // i18n,
-      // versionNum,
-      // inputUsername,
-      // inputPassword,
       msg,
       loadingStatus,
       showForceLoginDialog,
       forceLogin,
       goFAQ,
+      showLoading,
     };
   },
 });

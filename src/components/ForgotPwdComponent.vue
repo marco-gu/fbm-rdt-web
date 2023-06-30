@@ -6,45 +6,6 @@
       transition-show="scale"
       transition-hide="scale"
     >
-      <!-- <q-card>
-        <q-form @submit="onConfirm">
-          <q-toolbar>
-            <q-toolbar-title
-              ><span class="toolbar-title">{{
-                $t("login.forgot_password")
-              }}</span>
-            </q-toolbar-title>
-            <q-btn
-              @click="onClose"
-              flat
-              round
-              dense
-              icon="close"
-              v-close-popup
-            />
-          </q-toolbar>
-          <q-card-section>
-            <q-input
-              outlined
-              dense
-              v-model="mail"
-              :placeholder="$t('login.forgot_password_hint')"
-              type="email"
-              lazy-rules
-              :rules="[mailRule]"
-            >
-              <template v-slot:prepend>
-                <q-icon name="mail" />
-              </template>
-            </q-input>
-            <div class="button-container">
-              <q-btn no-caps unelevated type="submit" color="secondary">
-                {{ $t("common.confirm") }}
-              </q-btn>
-            </div>
-          </q-card-section>
-        </q-form>
-      </q-card> -->
       <div class="dialog-container">
         <div class="dialog-container__title">
           {{ $t("login.forgot_password") }}
@@ -95,9 +56,7 @@ import {
   AndroidResponseStatus,
 } from "@/models/android.response";
 
-import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import bridge from "dsbridge";
-import { useQuasar } from "quasar";
 import { defineComponent, ref, toRefs, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import PopupComponent from "@/components/PopupComponent.vue";
@@ -113,10 +72,9 @@ const ForgotPwdComponent = defineComponent({
     PopupComponent,
     NotifyComponent,
   },
-  emits: ["close", "confirm"],
+  emits: ["close", "confirm", "showLoading", "closeLoading"],
   setup(props, context) {
     const { dialogVisible } = toRefs(props);
-    const $q = useQuasar();
     const i18n = useI18n();
     const mail = ref("");
     const msg = ref("");
@@ -132,12 +90,12 @@ const ForgotPwdComponent = defineComponent({
     const onConfirm = () => {
       myForm.value.validate().then((success: any) => {
         if (success) {
-          showLoading($q);
+          context.emit("showLoading");
           const args = {
             mail: mail.value,
           };
           bridge.call("forgotPassword", args, (res: string) => {
-            closeLoading($q);
+            context.emit("closeLoading");
             const androidResponse = JSON.parse(res) as AndroidResponse<unknown>;
             if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
               context.emit("confirm");
@@ -197,20 +155,6 @@ const ForgotPwdComponent = defineComponent({
 export default ForgotPwdComponent;
 </script>
 <style lang="scss" scoped>
-// .toolbar-title {
-//   font-size: 17px;
-//   font-weight: normal;
-// }
-// .q-card__section--vert {
-//   padding: 0 12px;
-// }
-// .button-container {
-//   width: 100%;
-//   padding-bottom: 12px;
-//   button {
-//     width: 100%;
-//   }
-// }
 .dialog-container {
   font-family: "Maersk Text";
   &__title {
