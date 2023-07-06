@@ -340,6 +340,7 @@ const ResetPwdView = defineComponent({
       home,
       onCloseNotify,
       notifyVisible,
+      loadingStatus,
     };
   },
 });
