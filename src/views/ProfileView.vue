@@ -17,9 +17,6 @@
             <div class="no-record">{{ $t("common.no_record") }}</div>
           </div>
           <template v-if="profileListDisplay.length === 0 && !isFirstSync">
-            <!-- <div class="no-data">
-              {{ $t("common.no_record") }}
-            </div> -->
           </template>
           <template v-else>
             <div class="scroll-area">
@@ -34,17 +31,6 @@
                   {{ formatDate(new Date(item.updateDatetime)) }}
                 </div>
               </div>
-              <!-- <q-item class="card-item" clickable @click="onClickProfile(item)">
-                <q-item-section class="card-item-labels">
-                  <q-item-label>{{ item.profileCode }}</q-item-label>
-                  <q-item-label class="card-item-date-text">
-                    {{ formatDate(new Date(item.updateDatetime)) }}
-                  </q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-icon name="chevron_right" color="black" />
-                </q-item-section>
-              </q-item> -->
             </div>
           </template>
         </q-pull-to-refresh>

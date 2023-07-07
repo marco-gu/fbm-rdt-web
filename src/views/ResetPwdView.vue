@@ -130,7 +130,6 @@ import { useQuasar } from "quasar";
 import { defineComponent, onMounted, ref, Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import md5 from "md5";
-import { closeLoading, showLoading } from "@/plugin/loadingPlugins";
 import { useI18n } from "vue-i18n";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
@@ -167,6 +166,7 @@ const ResetPwdView = defineComponent({
     const popupVisible = ref(false);
     const notifyVisible = ref(false);
     const store = useStore();
+    const loadingStatus = ref(false);
     onMounted(() => {
       const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area", deviceHeight);
