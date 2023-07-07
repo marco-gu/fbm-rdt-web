@@ -158,7 +158,6 @@ const ResetPwdView = defineComponent({
     const isNewPwd = ref(true);
     const isNewRePwd = ref(true);
     const myForm = ref();
-    const loadingStatus = ref(false);
     var titleParam: Ref<string[]> = ref([i18n.t("setting.reset_password")]);
     const type = ref("");
     const msg = ref("");
