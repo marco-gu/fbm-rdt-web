@@ -18,12 +18,17 @@
             >
           </q-item>
         </div>
+        <div class="image-gallery">
+          <div class="image-container" v-for="image in images" :key="image">
+            <img :src="image" alt="Image" class="full-page-image" />
+          </div>
+        </div>
       </div>
     </q-dialog>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, toRefs, watch } from "vue";
+import { defineComponent, ref, toRefs, watch, onMounted, Ref } from "vue";
 const UserManual = defineComponent({
   props: {
     dialogVisible: {
@@ -39,6 +44,18 @@ const UserManual = defineComponent({
     const onClose = () => {
       context.emit("close");
     };
+
+    const images: Ref<string[]> = ref([]);
+
+    onMounted(() => {
+      images.value = Array.from(
+        { length: 21 },
+        (_, index) =>
+          `/LNS_Scanapp_User_Manual/LNS_Scanapp_User_Manual-${(index + 1)
+            .toString()
+            .padStart(2, "0")}.png`
+      );
+    });
     watch(
       dialogVisible,
       (newValue) => {
@@ -50,6 +67,7 @@ const UserManual = defineComponent({
       visible,
       maximizedToggle,
       onClose,
+      images,
     };
   },
 });
@@ -73,5 +91,20 @@ export default UserManual;
   font-size: 21px;
   color: black;
   margin-left: -10%;
+}
+
+.image-gallery {
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+.image-container {
+  width: 100%;
+  height: auto;
+}
+
+.full-page-image {
+  width: 100%;
+  height: auto;
 }
 </style>
