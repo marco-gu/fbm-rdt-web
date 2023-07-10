@@ -48,12 +48,12 @@ const UserManual = defineComponent({
     const images: Ref<string[]> = ref([]);
 
     onMounted(() => {
-      images.value = Array.from(
-        { length: 21 },
-        (_, index) =>
-          `/LNS_Scanapp_User_Manual/LNS_Scanapp_User_Manual-${(index + 1)
-            .toString()
-            .padStart(2, "0")}.png`
+      images.value = Array.from({ length: 21 }, (_, index) =>
+        require(`@/assets/LNS_Scanapp_User_Manual/LNS_Scanapp_User_Manual-${(
+          index + 1
+        )
+          .toString()
+          .padStart(2, "0")}.png`)
       );
     });
     watch(
@@ -80,6 +80,7 @@ export default UserManual;
   flex-flow: column;
   background-color: #dbdbdb;
 }
+
 .header {
   padding-top: 1px;
   padding-bottom: 1px;
@@ -87,6 +88,7 @@ export default UserManual;
   background-color: white;
   color: black;
 }
+
 .header-title {
   font-size: 21px;
   color: black;
