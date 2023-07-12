@@ -217,7 +217,7 @@ router.beforeEach((to, from, next) => {
     bridge.call("switchBarColor", args);
   } else if (to.path == "/") {
     args.type = "login";
-    bridge.call("switchBarColor", args);
+    // bridge.call("switchBarColor", args);
   } else {
     args.type = "other";
     bridge.call("switchBarColor", args);

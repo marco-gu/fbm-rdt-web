@@ -31,7 +31,8 @@ const App = defineComponent({
     });
 
     bridge.register("goLogin", () => {
-      router.replace("/");
+      router.push("/");
+      bridge.call("logout");
     });
 
     onMounted(() => {
