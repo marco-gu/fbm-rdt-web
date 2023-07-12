@@ -372,7 +372,6 @@ const DataMgmtCartonDetail = defineComponent({
         }
       });
       isEditMode.value = false;
-      icons.value = ["back", "home", "mixed"];
       label.value = i18n.t("common.edit");
     };
     const onDetail = () => {
