@@ -76,6 +76,7 @@
     :visible="dialogVisible"
     :message="msg"
     :type="type"
+    :messageCode="msgCode"
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
@@ -126,6 +127,7 @@ const DataMgmtMixCarton = defineComponent({
     const dialogVisible = ref(false);
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const cartonID = route.params.cartonID;
     const taskID = route.params.taskID;
     const scanType = route.params.scanType;
@@ -185,6 +187,11 @@ const DataMgmtMixCarton = defineComponent({
             itemCount.value++;
             resetForm(pageView.value, myForm.value);
           }
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          type.value = "error";
+          dialogVisible.value = true;
+          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+          msgCode.value = androidResponse.messageCode;
         }
       });
     };
@@ -338,6 +345,7 @@ const DataMgmtMixCarton = defineComponent({
     );
     return {
       msg,
+      msgCode,
       type,
       cartonID,
       itemCount,

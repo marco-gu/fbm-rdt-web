@@ -81,6 +81,7 @@
     :visible="dialogVisible"
     :message="msg"
     :type="type"
+    :messageCode="msgCode"
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
@@ -139,6 +140,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
     const label = ref(i18n.t("common.edit"));
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const dialogVisible = ref(false);
     const inputScanIcon = inputScan;
     const pressHome = ref(false);
@@ -246,6 +248,11 @@ const DataMgmtCartonMixedDetail = defineComponent({
             if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
               notifyVisible.value = true;
               msg.value = i18n.t("common.modify_success");
+            } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+              type.value = "error";
+              dialogVisible.value = true;
+              msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+              msgCode.value = androidResponse.messageCode;
             }
           }
         );
@@ -354,6 +361,7 @@ const DataMgmtCartonMixedDetail = defineComponent({
       type,
       dialogVisible,
       msg,
+      msgCode,
       onConfirmDialog,
       home,
       back,

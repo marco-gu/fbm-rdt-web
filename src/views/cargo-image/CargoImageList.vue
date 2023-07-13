@@ -83,6 +83,7 @@
       :visible="dialogVisible"
       :message="msg"
       :type="type"
+      :messageCode="msgCode"
       @close="onConfirmDialog"
       @cancel="dialogVisible = false"
     ></PopupComponent>
@@ -140,6 +141,7 @@ const CargoImageList = defineComponent({
     const searchMode = ref(false);
     const dialogVisible = ref(false);
     const msg = ref("");
+    const msgCode = ref("");
     const type = ref("");
     const label = ref(i18n.t("image.access_image_button"));
     const pressDelete = ref(false);
@@ -228,6 +230,11 @@ const CargoImageList = defineComponent({
             scrollArea.value.setScrollPosition("vertical", 0);
             cancelEditMode();
             getData();
+          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+            type.value = "error";
+            dialogVisible.value = true;
+            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
           }
         });
       }
@@ -375,6 +382,7 @@ const CargoImageList = defineComponent({
       home,
       handleHold,
       msg,
+      msgCode,
       type,
       dialogVisible,
       label,

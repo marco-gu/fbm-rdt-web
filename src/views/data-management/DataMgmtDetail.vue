@@ -79,6 +79,7 @@
     :visible="dialogVisible"
     :message="msg"
     :type="type"
+    :messageCode="msgCode"
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
@@ -137,6 +138,7 @@ const DataMgmtDetail = defineComponent({
     const label = ref(i18n.t("common.edit"));
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const dialogVisible = ref(false);
     const pressHome = ref(false);
     const pressSave = ref(false);
@@ -252,6 +254,11 @@ const DataMgmtDetail = defineComponent({
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             notifyVisible.value = true;
             msg.value = i18n.t("common.modify_success");
+          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+            type.value = "error";
+            dialogVisible.value = true;
+            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
           }
         });
       }
@@ -392,6 +399,7 @@ const DataMgmtDetail = defineComponent({
       type,
       dialogVisible,
       msg,
+      msgCode,
       onConfirmDialog,
       home,
       icons,

@@ -82,6 +82,7 @@
     :visible="dialogVisible"
     :message="msg"
     :type="type"
+    :messageCode="msgCode"
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
@@ -140,6 +141,7 @@ const DataMgmtCartonList = defineComponent({
     const dialogVisible = ref(false);
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const pressHome = ref(false);
     const loadingStatus = ref(false);
     const route = useRoute();
@@ -241,6 +243,11 @@ const DataMgmtCartonList = defineComponent({
                 store.dispatch("dataMgmtModule/saveDataMgmtItem", dataMgmt);
               }
             );
+          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+            type.value = "error";
+            dialogVisible.value = true;
+            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
           }
         });
       }
@@ -379,6 +386,7 @@ const DataMgmtCartonList = defineComponent({
       dialogVisible,
       type,
       msg,
+      msgCode,
       home,
       scrollArea,
       onLoad,

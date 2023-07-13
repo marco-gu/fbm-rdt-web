@@ -110,6 +110,7 @@
     :visible="dialogVisible"
     :message="msg"
     :type="type"
+    :messageCode="msgCode"
     @close="onConfirmDialog"
     @cancel="dialogVisible = false"
   ></PopupComponent>
@@ -166,6 +167,7 @@ const DataMgmtList = defineComponent({
     const dialogVisible = ref(false);
     const type = ref("");
     const msg = ref("");
+    const msgCode = ref("");
     const pressUpload = ref(false);
     const pressDelete = ref(false);
     const loadingStatus = ref(false);
@@ -254,6 +256,11 @@ const DataMgmtList = defineComponent({
             scrollArea.value.setScrollPosition("vertical", 0);
             cancelEditMode();
             getData();
+          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+            type.value = "error";
+            dialogVisible.value = true;
+            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
           }
         });
       } else if (pressDelete.value) {
@@ -268,6 +275,11 @@ const DataMgmtList = defineComponent({
             scrollArea.value.setScrollPosition("vertical", 0);
             cancelEditMode();
             getData();
+          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+            type.value = "error";
+            dialogVisible.value = true;
+            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+            msgCode.value = androidResponse.messageCode;
           }
         });
       }
@@ -413,6 +425,7 @@ const DataMgmtList = defineComponent({
       type,
       dialogVisible,
       msg,
+      msgCode,
       showDeleteDialog,
       onConfirmDialog,
       onLoad,
