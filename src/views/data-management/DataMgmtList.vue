@@ -282,6 +282,8 @@ const DataMgmtList = defineComponent({
             msgCode.value = androidResponse.messageCode;
           }
         });
+      } else {
+        dialogVisible.value = false;
       }
     };
     const onLoad = (index: any, done: any) => {
