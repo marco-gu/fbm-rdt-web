@@ -61,7 +61,7 @@
           {{ $t("login.sso_login") }}
         </p>
       </div>
-      <div @click="userManualVisible = true">
+      <div>
         <p class="login-link-label">
           <span @click="goFAQ">{{ $t("login.help") }} </span>
         </p>
@@ -84,11 +84,6 @@
       @showLoading="showLoading"
       @closeLoading="loadingStatus = false"
     ></ForgotPwdComponent>
-    <UserManual
-      :dialogVisible="userManualVisible"
-      @close="userManualVisible = false"
-    >
-    </UserManual>
     <PopupComponent
       :visible="popupVisible"
       :message="msg"
@@ -132,13 +127,11 @@ import {
 import { LoginResponse } from "@/models/login.response";
 import { useStore } from "@/store";
 import PopupComponent from "@/components/PopupComponent.vue";
-import UserManual from "@/components/UserManualComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 const NewLoginView = defineComponent({
   components: {
     ForgotPwdComponent,
     PopupComponent,
-    UserManual,
     LoadingComponent,
   },
   setup() {
@@ -147,7 +140,6 @@ const NewLoginView = defineComponent({
     const username = ref("");
     const password = ref("");
     const forgotPwdVisible = ref(false);
-    const userManualVisible = ref(false);
     const isPwd = ref(true);
     const store = useStore();
     const type = ref("");
@@ -276,7 +268,6 @@ const NewLoginView = defineComponent({
       password,
       isPwd,
       forgotPwdVisible,
-      userManualVisible,
       onSubmit,
       goFirstPage,
       type,

@@ -146,6 +146,10 @@ const routeTableLoggedIn = [
         children: [],
       },
       {
+        path: "/user_manual",
+        children: [],
+      },
+      {
         path: "/resetPwdHome",
         children: [],
       },

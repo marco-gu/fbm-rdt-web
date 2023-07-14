@@ -32,6 +32,7 @@ import NativeBridgeView from "../views/NativeBridgeView.vue";
 import NewLoginView from "../views/NewLoginView.vue";
 import NewMainView from "../views/NewMainView.vue";
 import FAQ from "../views/FaqView.vue";
+import UserManual from "@/components/UserManualComponent.vue";
 
 const routes: Array<RouteRecordRaw> = [
   // {
@@ -200,6 +201,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/faq",
     name: "faq",
     component: FAQ,
+  },
+  {
+    path: "/user_manual",
+    name: "UserManual",
+    component: UserManual,
   },
 ];
 
