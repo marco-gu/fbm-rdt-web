@@ -246,9 +246,10 @@ const DataMgmtList = defineComponent({
       };
       if (pressUpload.value) {
         dialogVisible.value = false;
+        loadingStatus.value = true;
         bridge.call("uploadScanData", args, (res: string) => {
           pressUpload.value = false;
-          // uploadDialogSuccess.value = true;
+          loadingStatus.value = false;
           const androidResponse = JSON.parse(res) as AndroidResponse<any>;
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             notifyVisible.value = true;
