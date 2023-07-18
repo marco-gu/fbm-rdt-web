@@ -15,7 +15,11 @@
         <div class="spacer"></div>
       </div>
       <q-separator inset color="grey-3" />
-      <div class="setting-item" @click="onChangeDevice('bluetooth')">
+      <div
+        v-if="deviceType == 2"
+        class="setting-item"
+        @click="onChangeDevice('bluetooth')"
+      >
         <div class="label">{{ $t("setting.bluetooth") }}</div>
         <div v-if="selectedDevice == 'bluetooth'" class="right-icon">
           <q-icon name="check" />
@@ -37,7 +41,7 @@
 <script lang="ts">
 import bridge from "dsbridge";
 import { ref } from "vue";
-import store from "@/store";
+import { useStore } from "@/store";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
@@ -52,6 +56,8 @@ export default {
     const i18n = useI18n();
     const titleParam = i18n.t("setting.scanning_device");
     const backUrlParam = "/setting";
+    const store = useStore();
+    const deviceType = store.state.deviceProfileModule.deviceProfile.type;
     bridge.call("getScanDevice", null, (res: string) => {
       selectedDevice.value = res;
     });
@@ -81,6 +87,7 @@ export default {
       selectedDevice,
       titleParam,
       backUrlParam,
+      deviceType,
     };
   },
 };
