@@ -2,8 +2,9 @@
   <div class="wrapper">
     <common-header-component
       :titles="[$t('home.user_manual')]"
-      :icons="['back', 'empty', 'empty-2']"
+      :icons="['back', 'empty', 'home']"
       @onBack="() => router.push('/home')"
+      @onHome="() => router.push('/home')"
     />
     <div class="page-content image-gallery">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
@@ -55,6 +56,10 @@ export default UserManual;
 <style lang="scss" scoped>
 .wrapper {
   background-color: #eee;
+}
+
+.page-content {
+  padding-top: 0 !important;
 }
 
 .image-container {
