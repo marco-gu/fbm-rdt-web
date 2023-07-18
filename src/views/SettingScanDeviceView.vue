@@ -27,7 +27,11 @@
         <div class="spacer"></div>
       </div>
       <q-separator inset color="grey-3" />
-      <div class="setting-item" @click="onChangeDevice('scanner')">
+      <div
+        v-if="deviceType == 1"
+        class="setting-item"
+        @click="onChangeDevice('scanner')"
+      >
         <div class="label">{{ $t("setting.scanner") }}</div>
         <div v-if="selectedDevice == 'scanner'" class="right-icon">
           <q-icon name="check" />
