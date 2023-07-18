@@ -51,7 +51,7 @@ export default NotifyComponent;
   margin-left: -100px;
 }
 .notify {
-  bottom: 200px;
+  bottom: 165px;
   animation-name: move;
   animation-duration: 1.5s;
   animation-fill-mode: forwards;
@@ -59,7 +59,7 @@ export default NotifyComponent;
 }
 @keyframes move {
   0% {
-    transform: translateY(200px);
+    transform: translateY(165px);
   }
   100% {
     transform: translateY(50px);
