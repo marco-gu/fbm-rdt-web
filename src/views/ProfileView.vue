@@ -92,7 +92,6 @@ import formatDate from "../utils/formatDate";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import rotate from "../assets/icon/rotate-solid.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
-import LoadingComponent from "@/components/LoadingComponent.vue";
 import NotifyComponent from "@/components/NotifyComponent.vue";
 import {
   setContentHeight,
@@ -103,7 +102,6 @@ const ProfileView = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
-    LoadingComponent,
     NotifyComponent,
   },
   setup() {

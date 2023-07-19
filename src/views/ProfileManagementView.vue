@@ -163,7 +163,6 @@ import {
 import formatDate from "../utils/formatDate";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import PopupComponent from "@/components/PopupComponent.vue";
-import LoadingComponent from "@/components/LoadingComponent.vue";
 import NotifyComponent from "@/components/NotifyComponent.vue";
 import {
   setContentHeight,
@@ -175,7 +174,6 @@ const ProfileManagementView = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
-    LoadingComponent,
     NotifyComponent,
   },
   setup() {

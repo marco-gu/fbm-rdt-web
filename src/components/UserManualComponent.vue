@@ -6,7 +6,7 @@
       @onBack="() => router.push('/home')"
       @onHome="() => router.push('/home')"
     />
-    <div class="page-content image-gallery">
+    <div class="page-content image-gallery" style="padding-top: 0px">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
         <div class="image-container" v-for="image in images" :key="image">
           <img :src="image" alt="Image" class="full-page-image" />
@@ -56,10 +56,6 @@ export default UserManual;
 <style lang="scss" scoped>
 .wrapper {
   background-color: #eee;
-}
-
-.page-content {
-  padding-top: 0 !important;
 }
 
 .image-container {
