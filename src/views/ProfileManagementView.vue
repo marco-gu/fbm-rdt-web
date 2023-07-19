@@ -217,6 +217,7 @@ const ProfileManagementView = defineComponent({
             noRecord.value = true;
           }
         } else {
+          noRecord.value = false;
           sortProfileList(profileListDisplay.value);
           if (!isFirstSync.value && mode != "delete") {
             notifyVisible.value = true;
