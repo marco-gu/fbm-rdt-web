@@ -1,5 +1,4 @@
 <template>
-  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <common-header-component
       :titles="[$t('profile.profiles')]"
@@ -124,16 +123,13 @@ const ProfileView = defineComponent({
     const msg = ref("");
     const msgCode = ref("");
     const popupVisible = ref(false);
-    const loadingStatus = ref(false);
     const homePopup = ref(false);
     const notifyVisible = ref(false);
     const searchMode = ref(false);
     const refresh = (done: any) => {
       if (!searchMode.value) {
         dialogVisible.value = false;
-        loadingStatus.value = true;
         bridge.call("refreshProfile", null, (res: string) => {
-          loadingStatus.value = false;
           const androidResponse = JSON.parse(res) as AndroidResponse<
             ProfileMaster[]
           >;
@@ -247,7 +243,6 @@ const ProfileView = defineComponent({
       type,
       popupVisible,
       msg,
-      loadingStatus,
       msgCode,
       homePopup,
       openSearch,

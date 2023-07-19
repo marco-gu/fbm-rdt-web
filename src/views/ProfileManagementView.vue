@@ -1,5 +1,4 @@
 <template>
-  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <common-header-component
       :titles="[$t('profile.profiles')]"
@@ -193,7 +192,6 @@ const ProfileManagementView = defineComponent({
     const msg = ref("");
     const msgCode = ref("");
     const popupVisible = ref(false);
-    const loadingStatus = ref(false);
     const showDeleteDialog = ref(false);
     const showHomeDialog = ref(false);
     const notifyVisible = ref(false);
@@ -250,10 +248,8 @@ const ProfileManagementView = defineComponent({
     };
     const refresh = (done: any) => {
       dialogVisible.value = false;
-      loadingStatus.value = true;
       if (!isEditMode.value) {
         bridge.call("refreshProfile", null, (res: string) => {
-          loadingStatus.value = false;
           const androidResponse = JSON.parse(res) as AndroidResponse<
             ProfileMaster[]
           >;
@@ -382,7 +378,6 @@ const ProfileManagementView = defineComponent({
       onCloseNotify,
       msg,
       msgCode,
-      loadingStatus,
       router,
       isDeleteButtonDisabled,
       showHomeDialog,
