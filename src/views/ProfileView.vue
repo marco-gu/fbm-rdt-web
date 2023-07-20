@@ -48,7 +48,7 @@
       :messageCode="msgCode"
       @close="popupVisible = false"
     ></PopupComponent>
-    <q-dialog v-model="dialogVisible" persistent>
+    <!-- <q-dialog v-model="dialogVisible" persistent>
       <div class="dialog-container">
         <div class="dialog-container__title">
           {{ $t("profile.sync_profile") }}
@@ -62,7 +62,14 @@
           </button>
         </div>
       </div>
-    </q-dialog>
+    </q-dialog> -->
+    <PopupComponent
+      :visible="dialogVisible"
+      :message="$t('profile.sync_latest')"
+      :type="'info'"
+      @close="refresh"
+      @cancel="dialogVisible = false"
+    />
   </div>
   <PopupComponent
     :visible="homePopup"

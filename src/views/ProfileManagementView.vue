@@ -79,7 +79,7 @@
         push
         :label="$t('common.delete')"
         :disable="isDeleteButtonDisabled"
-        @click="showDeleteDialog = true"
+        @click="showDeleteDialog"
       />
     </div>
     <PopupComponent
@@ -87,7 +87,8 @@
       :message="msg"
       :messageCode="msgCode"
       :type="type"
-      @close="popupVisible = false"
+      @close="onConfirmDialog"
+      @cancel="popupVisible = false"
     ></PopupComponent>
     <NotifyComponent
       :visible="notifyVisible"
@@ -95,59 +96,6 @@
       @close="onCloseNotify"
     >
     </NotifyComponent>
-    <q-dialog v-model="dialogVisible" persistent>
-      <div class="dialog-container">
-        <div class="dialog-container__title">
-          {{ $t("profile.sync_profile") }}
-        </div>
-        <div class="dialog-container__content">
-          {{ $t("profile.sync_latest") }}
-        </div>
-        <div class="dialog-container__button">
-          <button class="dialog-button confirm" @click="refresh">
-            {{ $t("common.ok") }}
-          </button>
-        </div>
-      </div>
-    </q-dialog>
-    <q-dialog v-model="showHomeDialog" persistent>
-      <div class="dialog-container">
-        <div class="dialog-container__title">
-          {{ $t("common.confirm") }}
-          <q-icon name="close" v-close-popup />
-        </div>
-        <div class="dialog-container__content">
-          {{ $t("profile.home_dialog_message") }}
-        </div>
-        <div class="dialog-container__button">
-          <button class="dialog-button cancel" v-close-popup>
-            {{ $t("common.cancel") }}
-          </button>
-          <button class="dialog-button confirm" @click="home">
-            {{ $t("common.confirm") }}
-          </button>
-        </div>
-      </div>
-    </q-dialog>
-    <q-dialog v-model="showDeleteDialog" persistent>
-      <div class="dialog-container">
-        <div class="dialog-container__title">
-          {{ $t("common.confirm") }}
-          <q-icon name="close" v-close-popup />
-        </div>
-        <div class="dialog-container__content">
-          {{ $t("profile.delete_dialog_message") }}
-        </div>
-        <div class="dialog-container__button">
-          <button class="dialog-button cancel" v-close-popup>
-            {{ $t("common.cancel") }}
-          </button>
-          <button class="dialog-button confirm" @click="deleteProfile">
-            {{ $t("common.delete") }}
-          </button>
-        </div>
-      </div>
-    </q-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -184,20 +132,15 @@ const ProfileManagementView = defineComponent({
     let result: ProfileMaster[] = [];
     const isFirstSync = ref(true);
     const profileListDisplay: Ref<ProfileMaster[]> = ref([]);
-    const dialogVisible = ref(false);
     const noRecord = ref(false);
     const type = ref("");
     const msg = ref("");
     const msgCode = ref("");
     const popupVisible = ref(false);
-    const showDeleteDialog = ref(false);
-    const showHomeDialog = ref(false);
     const notifyVisible = ref(false);
+    const pressHome = ref(false);
+    const pressDelete = ref(false);
     onMounted(() => {
-      // calculate scroll area height
-      // const deviceHeight = window.innerHeight;
-      // const scrollArea = document.getElementById("scroll-area") as any;
-      // scrollArea.style.height = deviceHeight - scrollArea.offsetTop - 20 + "px";
       setContentHeight("scroll-area");
       getProfileList("onMounted");
     });
@@ -212,7 +155,9 @@ const ProfileManagementView = defineComponent({
         profileListDisplay.value = JSON.parse(res) as ProfileMaster[];
         if (result.length === 0) {
           if (isFirstSync.value) {
-            dialogVisible.value = true;
+            popupVisible.value = true;
+            type.value = "info";
+            msg.value = i18n.t("profile.sync_latest");
           } else {
             noRecord.value = true;
           }
@@ -222,15 +167,17 @@ const ProfileManagementView = defineComponent({
           if (!isFirstSync.value && mode != "delete") {
             notifyVisible.value = true;
             msg.value = i18n.t("profile.sync_complete");
-            // popupSuccessMsg($q, i18n.t("profile.sync_complete"));
           }
           isFirstSync.value = false;
         }
       });
     };
     const home = () => {
-      if (isEditMode.value && !showHomeDialog.value) {
-        showHomeDialog.value = true;
+      if (isEditMode.value) {
+        pressHome.value = true;
+        popupVisible.value = true;
+        type.value = "action";
+        msg.value = i18n.t("common.return_home");
       } else {
         router.push({
           path: "/home",
@@ -246,7 +193,6 @@ const ProfileManagementView = defineComponent({
       });
     };
     const refresh = (done: any) => {
-      dialogVisible.value = false;
       if (!isEditMode.value) {
         bridge.call("refreshProfile", null, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<
@@ -259,16 +205,11 @@ const ProfileManagementView = defineComponent({
               formatDate: formatDate(new Date()),
             });
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            // const message = i18n.t(
-            //   "messageCode." + androidResponse.messageCode
-            // );
-            // popupErrorMsg($q, message);
             type.value = "error";
             popupVisible.value = true;
             msg.value = i18n.t("messageCode." + androidResponse.messageCode);
             msgCode.value = androidResponse.messageCode;
           }
-          dialogVisible.value = false;
           if (typeof done === "function") {
             done();
           }
@@ -320,24 +261,17 @@ const ProfileManagementView = defineComponent({
             isEditMode.value = false;
             getProfileList("delete");
           } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            // const message = i18n.t(
-            //   "messageCode." + androidResponse.messageCode
-            // );
-            // popupErrorMsg($q, message);
             type.value = "error";
             popupVisible.value = true;
             msg.value = i18n.t("messageCode." + androidResponse.messageCode);
             msgCode.value = androidResponse.messageCode;
           }
-          showDeleteDialog.value = false;
         });
       } else {
         type.value = "error";
         popupVisible.value = true;
         msg.value = i18n.t("messageCode.E93-04-0004");
         msgCode.value = "E93-04-0004";
-        // const message = i18n.t("messageCode.E93-04-0004");
-        // popupErrorMsg($q, message);
       }
     };
     const cancelEditMode = () => {
@@ -356,13 +290,29 @@ const ProfileManagementView = defineComponent({
     const onCloseNotify = () => {
       notifyVisible.value = false;
     };
+    const onConfirmDialog = () => {
+      if (isFirstSync.value) {
+        refresh(0);
+      } else if (pressHome.value) {
+        router.push("/home");
+      } else if (pressDelete.value) {
+        deleteProfile();
+        pressDelete.value = false;
+      }
+      popupVisible.value = false;
+    };
+    const showDeleteDialog = () => {
+      popupVisible.value = true;
+      type.value = "action";
+      pressDelete.value = true;
+      msg.value = i18n.t("common.delete_dialog_message");
+    };
     return {
       cancelEditMode,
       showDeleteDialog,
       back,
       home,
       deleteProfile,
-      dialogVisible,
       formatDate,
       handleHold,
       isEditMode,
@@ -375,11 +325,11 @@ const ProfileManagementView = defineComponent({
       popupVisible,
       notifyVisible,
       onCloseNotify,
+      onConfirmDialog,
       msg,
       msgCode,
       router,
       isDeleteButtonDisabled,
-      showHomeDialog,
       openSearch,
       closeSearch,
     };
