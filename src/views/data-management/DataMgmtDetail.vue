@@ -113,11 +113,7 @@ import bridge from "dsbridge";
 import { defineComponent, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import inputScan from "../../assets/icon/compress-solid.svg";
-import {
-  resizeScreen,
-  setContentHeightWithBtn,
-  softKeyPopUp,
-} from "../../utils/screen.util";
+import { resizeScreen, setContentHeightWithBtn } from "../../utils/screen.util";
 const DataMgmtDetail = defineComponent({
   components: {
     CommonHeaderComponent,
@@ -150,7 +146,6 @@ const DataMgmtDetail = defineComponent({
     });
     onMounted(() => {
       setContentHeightWithBtn("scroll-area");
-      // softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
       resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
     });
     const composeView = (obj: DataMgmt) => {

@@ -95,11 +95,7 @@ import {
   toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
-import {
-  calScrollAreaWithBottom,
-  resizeScreen,
-  softKeyPopUp,
-} from "@/utils/screen.util";
+import { calScrollAreaWithBottom, resizeScreen } from "@/utils/screen.util";
 import bridge from "dsbridge";
 import { defineComponent, ref, onBeforeMount, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -196,7 +192,6 @@ const MixCartonView = defineComponent({
     });
     onMounted(() => {
       calScrollAreaWithBottom("scroll-area", "bottom-button");
-      // softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
       resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
       arrangeRouteParams();
     });

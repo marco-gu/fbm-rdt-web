@@ -114,11 +114,7 @@ import {
   toUpperCaseElementInput,
   ViewDisplayAttribute,
 } from "@/utils/profile.render";
-import {
-  resizeScreen,
-  setContentHeightWithBtn,
-  softKeyPopUp,
-} from "@/utils/screen.util";
+import { resizeScreen, setContentHeightWithBtn } from "@/utils/screen.util";
 import bridge from "dsbridge";
 import { defineComponent, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -165,7 +161,6 @@ const DataMgmtCartonDetail = defineComponent({
     onMounted(() => {
       // const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area");
-      // softKeyPopUp(deviceHeight, "scroll-area", "bottom-button");
       resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
       getMixStatus();
     });

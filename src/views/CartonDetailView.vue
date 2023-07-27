@@ -2,12 +2,16 @@
   <div class="wrapper">
     <common-header-component
       :titles="titleParam"
-      :icons="['back', 'home']"
+      :icons="['back', 'home', 'empty']"
       @onHome="onHome"
       @onBack="closeCartonDetail"
     />
     <div class="page-content">
-      <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
+      <q-scroll-area
+        id="scroll-area"
+        :thumb-style="{ width: '0px' }"
+        ref="scrollAreaRef"
+      >
         <q-form @submit="onSubmit" ref="myForm">
           <div v-for="(item, i) in pageViews" :key="i">
             <div v-if="item.display == 1">
@@ -21,8 +25,10 @@
                   ref="inputRef"
                   v-model="item.model"
                   @paste="validPaste($event, i)"
+                  @keyup.enter="onInputKeyUp($event, i)"
                   :maxlength="item.length"
                   lazy-rules
+                  @focus="onFocus(i)"
                   :rules="[item.valid]"
                   borderless
                 >
@@ -79,12 +85,13 @@ import {
   toUpperCaseElementInput,
   validPasteInput,
 } from "@/utils/profile.render";
-import { calScrollAreaWithBottom, softKeyPopUp } from "@/utils/screen.util";
+import { calScrollAreaWithBottom, resizeScreen } from "@/utils/screen.util";
 import bridge from "dsbridge";
-import { defineComponent, ref, onBeforeMount, onMounted } from "vue";
+import { defineComponent, ref, onBeforeMount, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import inputScan from "../assets/images/input_scan.svg";
+import { useStore } from "@/store";
 const CartonDetailView = defineComponent({
   components: {
     CommonHeaderComponent,
@@ -107,6 +114,9 @@ const CartonDetailView = defineComponent({
     const type = ref("");
     const route = useRoute();
     const router = useRouter();
+    const store = useStore();
+    const scrollAreaRef = ref(null);
+    let position = 0;
     bridge.register("getCartonDetailParam", (res: string) => {
       const param = JSON.parse(res);
       cartonID.value = param.cartonID;
@@ -156,8 +166,7 @@ const CartonDetailView = defineComponent({
     onMounted(() => {
       // calculate scroll area height
       calScrollAreaWithBottom("scroll-area", "bottom-button");
-      // hide bottom button if soft key up
-      softKeyPopUp(window.innerHeight, "scroll-area", "bottom-button");
+      resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
     });
     const composeApiParam = (apiParams: any, source: any[]) => {
       const profileCartonIndividualLevel = new ProfileCartonIndividualLevel();
@@ -249,6 +258,41 @@ const CartonDetailView = defineComponent({
       type.value = "action";
       msg.value = i18n.t("common.return_home");
     };
+    const onInputKeyUp = (event: KeyboardEvent, index: number) => {
+      if (event.code === "Enter" || event.which === 13) {
+        const param = inputRef.value as any;
+        param.forEach((t: any, i: number) => {
+          if (i === index) {
+            const inputText = t.$props.modelValue;
+            t.validate(inputText).then(() => {
+              if (param.length > index + 1) {
+                param[index + 1].focus();
+              }
+            });
+          }
+          if (index == param.length - 1) {
+            position = index;
+          }
+        });
+      }
+    };
+    const onFocus = (val: any) => {
+      position = val;
+    };
+    watch(
+      () => store.state.screenModule.softKeyStatus,
+      (newVal) => {
+        if (newVal && position > 1) {
+          const scrollRef = scrollAreaRef.value as any;
+          if (scrollRef) {
+            scrollRef.setScrollPercentage("vertical", 0);
+          }
+          setTimeout(() => {
+            scrollRef.setScrollPercentage("vertical", 0.95);
+          }, 0);
+        }
+      }
+    );
     return {
       closeCartonDetail,
       inputRef,
@@ -265,6 +309,9 @@ const CartonDetailView = defineComponent({
       titleParam,
       type,
       validPaste,
+      scrollAreaRef,
+      onFocus,
+      onInputKeyUp,
     };
   },
 });
