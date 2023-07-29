@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="card" @click="goContinue">
-      <div v-show="incompleteCount == 0">
+      <div v-show="totalCount == 0">
         <div style="margin-bottom: 5px">
           <q-img
             no-transition
@@ -24,7 +24,7 @@
         </div>
         <div>{{ continueWithNo }}</div>
       </div>
-      <div v-show="incompleteCount != 0">
+      <div v-show="totalCount != 0">
         <div style="margin-bottom: 5px">
           <q-img no-transition no-spinner :src="bellIcon" width="20px" />
         </div>

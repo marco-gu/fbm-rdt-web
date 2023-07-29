@@ -336,6 +336,12 @@ const DataMgmtDetail = defineComponent({
       });
       param.forEach((t: any, i: number) => {
         if (pageView.value[i].fieldName == scanFieldName) {
+          if (pageView.value[i].negative) {
+            pageView.value[i].model = pageView.value[i].model.substring(
+              0,
+              pageView.value[i].length
+            );
+          }
           t.validate(pageView.value[i].model);
         }
       });

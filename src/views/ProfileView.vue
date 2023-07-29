@@ -3,7 +3,7 @@
     <common-header-component
       :titles="[$t('profile.profiles')]"
       :icons="['back', 'search', 'home']"
-      @onHome="homePopup = true"
+      @onHome="() => router.push('/home')"
       @onBack="() => router.push('/home')"
       v-model:searchValue="search"
       @onOpenSearch="openSearch"
@@ -48,21 +48,6 @@
       :messageCode="msgCode"
       @close="popupVisible = false"
     ></PopupComponent>
-    <!-- <q-dialog v-model="dialogVisible" persistent>
-      <div class="dialog-container">
-        <div class="dialog-container__title">
-          {{ $t("profile.sync_profile") }}
-        </div>
-        <div class="dialog-container__content">
-          {{ $t("profile.sync_latest") }}
-        </div>
-        <div class="dialog-container__button">
-          <button class="dialog-button confirm" @click="refresh">
-            {{ $t("common.ok") }}
-          </button>
-        </div>
-      </div>
-    </q-dialog> -->
     <PopupComponent
       :visible="dialogVisible"
       :message="$t('profile.sync_latest')"
@@ -71,18 +56,6 @@
       @cancel="dialogVisible = false"
     />
   </div>
-  <PopupComponent
-    :visible="homePopup"
-    :message="$t('common.return_home')"
-    :type="'action'"
-    @close="
-      () => {
-        homePopup = false;
-        router.push('/home');
-      }
-    "
-    @cancel="homePopup = false"
-  />
 </template>
 <script lang="ts">
 import bridge from "dsbridge";
@@ -97,7 +70,6 @@ import {
 import { useI18n } from "vue-i18n";
 import formatDate from "../utils/formatDate";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
-import rotate from "../assets/icon/rotate-solid.svg";
 import PopupComponent from "@/components/PopupComponent.vue";
 import NotifyComponent from "@/components/NotifyComponent.vue";
 import {
@@ -123,12 +95,10 @@ const ProfileView = defineComponent({
     const noRecord = ref(false);
     const search = ref("");
     const dialogVisible = ref(false);
-    const rotateIcon = rotate;
     const type = ref("");
     const msg = ref("");
     const msgCode = ref("");
     const popupVisible = ref(false);
-    const homePopup = ref(false);
     const notifyVisible = ref(false);
     const searchMode = ref(false);
     const refresh = (done: any) => {
@@ -244,12 +214,10 @@ const ProfileView = defineComponent({
       backUrlParam,
       dialogVisible,
       notifyVisible,
-      rotateIcon,
       type,
       popupVisible,
       msg,
       msgCode,
-      homePopup,
       openSearch,
       closeSearch,
       onCloseNotify,
