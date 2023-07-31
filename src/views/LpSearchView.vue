@@ -415,11 +415,9 @@ const LpSearchView = defineComponent({
         });
         param.forEach((t: any, i: number) => {
           if (receivingViews.value[i].fieldName == scanFieldName) {
-            if (receivingViews.value[i].negative) {
-              receivingViews.value[i].model = receivingViews.value[
-                i
-              ].model.substring(0, receivingViews.value[i].length);
-            }
+            receivingViews.value[i].model = receivingViews.value[
+              i
+            ].model.substring(0, receivingViews.value[i].length);
             t.validate(receivingViews.value[i].model);
           }
         });
@@ -433,11 +431,9 @@ const LpSearchView = defineComponent({
         });
         param.forEach((t: any, i: number) => {
           if (stuffingViews.value[i].fieldName == scanFieldName) {
-            if (stuffingViews.value[i].negative) {
-              stuffingViews.value[i].model = stuffingViews.value[
-                i
-              ].model.substring(0, stuffingViews.value[i].length);
-            }
+            stuffingViews.value[i].model = stuffingViews.value[
+              i
+            ].model.substring(0, stuffingViews.value[i].length);
             t.validate(stuffingViews.value[i].model);
           }
         });

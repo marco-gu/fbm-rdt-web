@@ -13,7 +13,6 @@ export interface ViewDisplayAttribute {
   length?: number;
   valid: (val: string) => Promise<any>;
   editable?: boolean; //data mgmt
-  negative?: boolean;
 }
 
 export enum ProfileElementLevel {
@@ -111,7 +110,6 @@ export function composeViewElement(attr: ProfileDisplayAttribute) {
       }
     });
   };
-  element.negative = attr.maxLength < 0 ? true : false;
   return element;
 }
 

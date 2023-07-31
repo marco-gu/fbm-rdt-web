@@ -325,6 +325,7 @@ const DataMgmtCartonList = defineComponent({
     const onClear = () => {
       search.value = "";
       searchMode.value = false;
+      noRecord.value = false;
       scrollArea.value.setScrollPosition("vertical", 0);
       processData();
     };

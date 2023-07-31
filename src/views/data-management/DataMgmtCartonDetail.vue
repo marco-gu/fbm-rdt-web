@@ -125,6 +125,7 @@ type ViewElement = {
   model: string;
   scan: number;
   editable: boolean;
+  length?: number;
 };
 const DataMgmtCartonDetail = defineComponent({
   components: {
@@ -159,7 +160,6 @@ const DataMgmtCartonDetail = defineComponent({
       composeView();
     });
     onMounted(() => {
-      // const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeightWithBtn("scroll-area");
       resizeScreen(window.innerHeight, "scroll-area", "bottom-button", store);
       getMixStatus();
@@ -192,20 +192,6 @@ const DataMgmtCartonDetail = defineComponent({
         scan: 0,
         editable: false,
       });
-      // pageView.value.push({
-      //   displayFieldName: "Shipping Order",
-      //   fieldName: "SO",
-      //   model: store.state.dataMgmtModule.cartonItem.so,
-      //   scan: 0,
-      //   editable: false,
-      // });
-      // pageView.value.push({
-      //   displayFieldName: "Purchase Order",
-      //   fieldName: "PO",
-      //   model: store.state.dataMgmtModule.cartonItem.po,
-      //   scan: 0,
-      //   editable: false,
-      // });
       store.state.dataMgmtModule.profile.forEach(
         (item: ProfileDisplayAttribute) => {
           if (item.type == store.state.dataMgmtModule.dataMgmt.scanType) {
@@ -371,15 +357,6 @@ const DataMgmtCartonDetail = defineComponent({
     };
     const onDetail = () => {
       router.push("/dataMgmtMixCartonList");
-      // const item = {
-      //   taskID: store.state.dataMgmtModule.dataMgmt.taskID,
-      //   cartonID: store.state.dataMgmtModule.cartonItem.cartonID,
-      // };
-      // store
-      //   .dispatch("dataMgmtModule/saveSelectedCartonHeader", item)
-      //   .then(() => {
-      //     router.push("/dataMgmtCartonMixed");
-      //   });
     };
     const home = () => {
       pressHome.value = true;
@@ -421,6 +398,10 @@ const DataMgmtCartonDetail = defineComponent({
       });
       param.forEach((t: any, i: number) => {
         if (pageView.value[i].fieldName == scanFieldName) {
+          pageView.value[i].model = pageView.value[i].model.substring(
+            0,
+            pageView.value[i].length
+          );
           t.validate(pageView.value[i].model);
         }
       });

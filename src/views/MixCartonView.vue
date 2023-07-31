@@ -166,6 +166,10 @@ const MixCartonView = defineComponent({
       });
       param.forEach((t: any, i: number) => {
         if (pageViews.value[i].fieldName == scanFieldName) {
+          pageViews.value[i].model = pageViews.value[i].model.substring(
+            0,
+            pageViews.value[i].length
+          );
           t.validate(pageViews.value[i].model);
         }
       });
