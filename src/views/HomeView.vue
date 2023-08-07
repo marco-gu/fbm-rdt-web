@@ -55,7 +55,7 @@
             </q-item>
             <q-separator inset color="grey-3" />
           </div>
-          <q-item clickable @click="() => router.push('/user_manual')">
+          <q-item clickable @click="goUserManual">
             <q-item-section>
               <q-item-label>{{ $t("home.user_manual") }}</q-item-label>
             </q-item-section>
@@ -170,6 +170,16 @@ export default {
     const hideDrawer = () => {
       bridge.call("switchBarColor", { type: "home" });
     };
+
+    const goUserManual = () => {
+      router.push({
+        path: "/user_manual",
+        query: {
+          from: "slider",
+        },
+      });
+    };
+
     return {
       leftDrawerOpen,
       toggleLeftDrawer,
@@ -186,6 +196,7 @@ export default {
       showDrawer,
       hideDrawer,
       imageVisible,
+      goUserManual,
     };
   },
 };
