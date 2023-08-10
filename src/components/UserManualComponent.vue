@@ -37,7 +37,7 @@ const UserManual = defineComponent({
       const deviceHeight = store.state.screenModule.screenHeight;
       setContentHeight("scroll-area", deviceHeight);
 
-      images.value = Array.from({ length: 21 }, (_, index) =>
+      images.value = Array.from({ length: 83 }, (_, index) =>
         require(`@/assets/LNS_Scanapp_User_Manual/LNS_Scanapp_User_Manual-${(
           index + 1
         )
