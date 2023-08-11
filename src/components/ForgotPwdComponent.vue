@@ -8,8 +8,10 @@
     >
       <div class="dialog-container">
         <div class="dialog-container__title">
+          <a class="icon">
+            <i class="fa-solid fa-circle-info" style="color: #64b2d4" />
+          </a>
           {{ $t("login.forgot_password") }}
-          <q-btn @click="onClose" flat round dense icon="close" v-close-popup />
         </div>
         <q-form @submit="onConfirm" ref="myForm">
           <div class="dialog-container__content">
@@ -29,7 +31,18 @@
             </div>
           </div>
           <div class="dialog-container__button">
-            <button class="dialog-button confirm" type="submit">
+            <button
+              class="dialog-button cancel"
+              @click="onClose"
+              ref="cancelButton"
+            >
+              {{ $t("common.cancel") }}
+            </button>
+            <button
+              class="dialog-button confirm"
+              type="submit"
+              ref="confirmButton"
+            >
               {{ $t("common.confirm") }}
             </button>
           </div>
@@ -175,7 +188,7 @@ export default ForgotPwdComponent;
     padding: 15px;
     .dialog-button {
       &.confirm {
-        width: 100%;
+        width: 45%;
       }
     }
   }
