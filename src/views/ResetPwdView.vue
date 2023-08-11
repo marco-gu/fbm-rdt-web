@@ -353,6 +353,6 @@ export default ResetPwdView;
   font-size: $--card-font-size;
 }
 .q-field {
-  height: 43px;
+  height: 40px;
 }
 </style>
