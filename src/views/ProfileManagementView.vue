@@ -251,28 +251,21 @@ const ProfileManagementView = defineComponent({
           profileNameList.push(item.profileName);
         }
       });
-      if (profileNameList.length > 0) {
-        const args = {
-          profileNameList: profileNameList,
-        };
-        bridge.call("deleteProfile", args, (res: string) => {
-          const androidResponse = JSON.parse(res) as AndroidResponse<any>;
-          if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
-            isEditMode.value = false;
-            getProfileList("delete");
-          } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
-            type.value = "error";
-            popupVisible.value = true;
-            msg.value = i18n.t("messageCode." + androidResponse.messageCode);
-            msgCode.value = androidResponse.messageCode;
-          }
-        });
-      } else {
-        type.value = "error";
-        popupVisible.value = true;
-        msg.value = i18n.t("messageCode.E93-04-0004");
-        msgCode.value = "E93-04-0004";
-      }
+      const args = {
+        profileNameList: profileNameList,
+      };
+      bridge.call("deleteProfile", args, (res: string) => {
+        const androidResponse = JSON.parse(res) as AndroidResponse<any>;
+        if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
+          isEditMode.value = false;
+          getProfileList("delete");
+        } else if (androidResponse.status == AndroidResponseStatus.ERROR) {
+          type.value = "error";
+          popupVisible.value = true;
+          msg.value = i18n.t("messageCode." + androidResponse.messageCode);
+          msgCode.value = androidResponse.messageCode;
+        }
+      });
     };
     const cancelEditMode = () => {
       isEditMode.value = false;
