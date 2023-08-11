@@ -65,7 +65,7 @@
         <div class="right-icon">
           <q-icon name="chevron_right" />
         </div>
-        <div class="item-value">Ver {{ softwareUpdate }}</div>
+        <div class="item-value">{{ softwareUpdate }}</div>
         <div class="spacer"></div>
       </div>
       <q-separator inset color="grey-3" />

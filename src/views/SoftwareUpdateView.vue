@@ -12,7 +12,7 @@
         <div class="label">
           {{ $t("setting.latest_version_label") }}
         </div>
-        <div class="item-value">Ver {{ latestVersionName }}</div>
+        <div class="item-value">{{ latestVersionName }}</div>
         <div class="spacer"></div>
       </div>
       <q-separator inset color="grey-3" />
@@ -28,7 +28,7 @@
         <div class="label">
           {{ $t("setting.already_latest_version_label") }}
         </div>
-        <div class="item-value">Ver {{ currentVersionName }}</div>
+        <div class="item-value">{{ currentVersionName }}</div>
         <div class="spacer"></div>
       </div>
     </div>
