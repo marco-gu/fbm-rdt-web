@@ -26,8 +26,8 @@ const App = defineComponent({
       router.push("/home");
     });
 
-    bridge.register("openFAQ", () => {
-      router.push("/faq");
+    bridge.register("openFAQFromWelcome", () => {
+      router.push("/faq?from=welcome");
     });
 
     bridge.register("goLogin", () => {
@@ -46,8 +46,13 @@ const App = defineComponent({
       bridge.register("onBackPressed", () => {
         const isLoggedIn = store.state.commonModule.isLogin;
         const currentRoute = route.path;
-        if (currentRoute == "/faq") {
-          router.push("/");
+        if (currentRoute.includes("/faq")) {
+          const fromValue = route.query.from || "unknown";
+          if (fromValue == "welcome") {
+            bridge.call("goFirstPage");
+          } else {
+            router.push("/");
+          }
         } else {
           if (isLoggedIn) {
             const matchedItem = searchRoute(

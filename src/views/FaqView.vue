@@ -4,7 +4,7 @@
       :titles="[$t('login.login_help')]"
       :icons="['back', 'home', 'empty']"
       @onHome="goFirstPage"
-      @onBack="() => router.push('/')"
+      @onBack="back"
     />
     <div class="page-content faq-container">
       <q-scroll-area id="scroll-area" :thumb-style="{ width: '0px' }">
@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useStore } from "@/store";
 import CommonHeaderComponent from "@/components/CommonHeaderComponent.vue";
 import { faq } from "@/utils/faq.list";
@@ -45,10 +45,20 @@ export default defineComponent({
     CommonHeaderComponent,
   },
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const store = useStore();
 
     const faqList = ref(faq);
+    const fromValue = route.query.from || "unknown";
+
+    const back = () => {
+      if (fromValue == "welcome") {
+        goFirstPage();
+      } else {
+        router.push("/");
+      }
+    };
 
     const goFirstPage = () => {
       bridge.call("goFirstPage");
@@ -63,7 +73,7 @@ export default defineComponent({
       setContentHeight("scroll-area", deviceHeight);
     });
 
-    return { router, faqList, toggleAnswer, goFirstPage };
+    return { router, faqList, toggleAnswer, goFirstPage, back };
   },
 });
 </script>
