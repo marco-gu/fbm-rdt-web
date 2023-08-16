@@ -34,7 +34,9 @@ const App = defineComponent({
       router.push("/");
       bridge.call("logout");
     });
-
+    bridge.register("welcomeGoLogin", () => {
+      router.push("/");
+    });
     onMounted(() => {
       bridge.call("getSettingLanguage", null, (res: string) => {
         i18n.locale.value = res;

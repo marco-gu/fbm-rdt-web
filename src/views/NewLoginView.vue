@@ -57,6 +57,11 @@
     <div class="login-link">
       <div>
         <p class="login-link-label">
+          {{ $t("login.sso_login") }}
+        </p>
+      </div>
+      <div>
+        <p class="login-link-label">
           <span @click="goFAQ">{{ $t("login.help") }} </span>
         </p>
       </div>
