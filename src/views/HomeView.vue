@@ -155,12 +155,8 @@ export default {
 
     const logout = () => {
       showLogoutDialog.value = false;
-      bridge.call("logout", null, () => {
-        router.replace("/");
-      });
-      // bridge.call("goFirstPage", null, () => {
-      //   router.push("/");
-      // });
+      router.replace("/");
+      bridge.call("logout");
     };
 
     const showDrawer = () => {

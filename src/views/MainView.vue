@@ -30,9 +30,6 @@
         <div class="sub-title">{{ $t("home.continue_hint") }}</div>
       </div>
     </div>
-    <!-- <div class="version-bottom">
-      <span> {{ versionNum }} </span>
-    </div> -->
   </div>
 </template>
 <script lang="ts">

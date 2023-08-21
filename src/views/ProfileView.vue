@@ -1,4 +1,5 @@
 <template>
+  <LoadingComponent :visible="loadingStatus"> </LoadingComponent>
   <div class="wrapper">
     <common-header-component
       :titles="[$t('profile.profiles')]"
@@ -77,11 +78,13 @@ import {
   setContentHeightInSearch,
   setContentHeightOutSearch,
 } from "@/utils/screen.util";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 const ProfileView = defineComponent({
   components: {
     CommonHeaderComponent,
     PopupComponent,
     NotifyComponent,
+    LoadingComponent,
   },
   setup() {
     const router = useRouter();
@@ -101,9 +104,13 @@ const ProfileView = defineComponent({
     const popupVisible = ref(false);
     const notifyVisible = ref(false);
     const searchMode = ref(false);
+    const loadingStatus = ref(false);
     const refresh = (done: any) => {
       if (!searchMode.value) {
         dialogVisible.value = false;
+        if (profileListDisplay.value.length == 0) {
+          loadingStatus.value = true;
+        }
         bridge.call("refreshProfile", null, (res: string) => {
           const androidResponse = JSON.parse(res) as AndroidResponse<
             ProfileMaster[]
@@ -111,6 +118,9 @@ const ProfileView = defineComponent({
           if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
             getProfileList();
             isFirstSync.value = false;
+            if (loadingStatus.value) {
+              loadingStatus.value = false;
+            }
             bridge.call("setProfileLastSyncDate", {
               formatDate: formatDate(new Date()),
             });
@@ -222,6 +232,7 @@ const ProfileView = defineComponent({
       closeSearch,
       onCloseNotify,
       noRecord,
+      loadingStatus,
     };
   },
 });
