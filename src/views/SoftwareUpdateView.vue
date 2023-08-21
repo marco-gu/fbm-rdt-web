@@ -127,6 +127,7 @@ export default {
       });
       loadingStatus.value = true;
       bridge.call("getLatestVersion", null, (res: string) => {
+        alert("already get latest version");
         loadingStatus.value = false;
         const androidResponse = JSON.parse(res) as AndroidResponse<any>;
         if (androidResponse.status == AndroidResponseStatus.SUCCESS) {
