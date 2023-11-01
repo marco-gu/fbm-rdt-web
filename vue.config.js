@@ -21,8 +21,17 @@ module.exports = defineConfig({
     chainWebpack: config => {
         config.resolve.alias.set("vue-i18n", "vue-i18n/dist/vue-i18n.cjs.js")
     },
-    publicPath: process.env.NODE_ENV == "product" ? "././" : ""
-
-
-
-});
+    devServer: {
+        proxy: {
+            "^/workflow": {
+                target: "http://localhost:8080/fbm-wms-rdt/RDTEngine",
+                changeOrigin: true,
+                secure: false,
+                pathRewrite: {
+                    "^/workflow": ""
+                },
+                logLevel: "debug"
+            }
+        }
+    },
+})

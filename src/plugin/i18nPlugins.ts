@@ -1,16 +1,17 @@
 import { inject, provide, ref } from "vue";
-import { I18nOptions } from "vue-i18n";
 
 const createI18n = (config: any) => ({
-  category: ref(config.category),
+  screenNm: ref(config.screenNm),
   locale: ref(config.locale),
   message: config.messages,
-  globalInjection: true,
+  $t(key: string) {
+    return this.message[this.screenNm.value][this.locale.value][key];
+  },
 });
 
 const i18nSymbol = Symbol();
 
-export function provideI18n(i18nConfig: I18nOptions) {
+export function provideI18n(i18nConfig: any) {
   const i18n = createI18n(i18nConfig);
   provide(i18nSymbol, i18n);
 }
