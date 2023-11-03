@@ -37,9 +37,11 @@ export class NodeDetail {
   attributeName: string;
   label: string;
   value: string;
+  color: string;
   constructor() {
     this.attributeName = "";
     this.label = "";
     this.value = "";
+    this.color = "";
   }
 }

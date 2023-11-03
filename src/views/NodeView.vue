@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, h, onMounted, ref, watch } from "vue";
+import { defineComponent, h, onMounted, ref } from "vue";
 import response from "../assets/mock/response.json";
 import { EngineResponseDto, GroupNode } from "@/utils/process.render";
 import InputBoxComponent from "@/components/InputBoxComponent.vue";
@@ -100,18 +100,18 @@ const NodeView = defineComponent({
         result.value.fields.forEach((t: any) => {
           const y = map.get(t.coordinateY);
           if (y) {
-            if (t.attributeType != "Label") {
+            if (t.attributeType != "output") {
               y.type = t.attributeType;
-              if (t.attributeType == "InputBox") {
-                y.detail.label = y.detail.value;
-                y.detail.value = "";
+              if (t.attributeType == "input") {
+                // y.detail.label = y.detail.value;
+                // y.detail.value = "";
                 y.detail.attributeName = t.attributeName;
               }
             } else {
               if (t.value) {
-                y.detail.label = t.value;
+                y.detail.value = t.value;
               } else {
-                y.detail.label = t.defaultValue;
+                y.detail.value = t.defaultValue;
               }
             }
           } else {
@@ -123,32 +123,34 @@ const NodeView = defineComponent({
               temp.detail.value = t.defaultValue;
             }
             temp.detail.attributeName = t.attributeName;
+            temp.detail.color = t.color;
             map.set(t.coordinateY, temp);
           }
         });
         map.forEach((t) => {
           console.log(t);
           switch (t.type) {
-            case "Label": {
-              const element = h(
-                "div",
-                { style: "margin-bottom: 10px" },
-                t.detail.value
-              );
+            case "output": {
+              const color = "black";
+
+              const style = {
+                style: "margin-bottom: 10px; color:" + color + ";",
+              };
+              const element = h("div", style, t.detail.value);
               elementList.value.push(element);
               break;
             }
-            case "InputBox": {
+            case "input": {
               const element = h(InputBoxComponent, {
-                labelName: t.detail.label,
+                labelName: t.detail.value,
                 attributeName: t.detail.attributeName,
               });
               elementList.value.push(element);
               break;
             }
-            case "Password": {
+            case "password": {
               const element = h(InputBoxComponent, {
-                labelName: t.detail.label,
+                labelName: t.detail.value,
                 attributeName: t.detail.attributeName,
               });
               elementList.value.push(element);

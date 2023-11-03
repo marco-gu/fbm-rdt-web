@@ -2,7 +2,8 @@ import axios from "axios";
 axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
 const service = axios.create({
   headers: {
-    "API-Version": "2",
+    "API-Version": "1",
+    "X-Mobile-Number": "22",
   },
 });
 export const post = (url: string, requestParam: any) => {
@@ -18,9 +19,9 @@ export const post = (url: string, requestParam: any) => {
   });
 };
 
-export const get = (url: string) => {
+export const get = (params: string) => {
   return new Promise((resolve, reject) => {
-    service.get(url).then(
+    service.get(params).then(
       (res) => {
         resolve(res.data);
       },

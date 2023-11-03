@@ -1,7 +1,8 @@
 import { Module } from "vuex";
 import RootState from "../state";
-import { post } from "@/service/http";
-import { EngineResponseDto } from "@/utils/process.render";
+import { get, post } from "@/service/http";
+import { EngineResponseDto, FieldDto } from "@/utils/process.render";
+import { XmlDocument } from "xmldoc";
 
 export interface WorkflowState {
   params: any[];
@@ -38,8 +39,9 @@ const workflowModule: Module<WorkflowState, RootState> = {
           params.capturedValues.push(temp);
         });
       }
-      const url = "";
-      post(url, params).then((data) => {
+      const temp = "GBR?I_Field01=RDT222&I_Field02=RDTadmin&type=Submit";
+      get(temp).then((data) => {
+        console.log(data);
         context.commit("onSubmit", data);
         context.commit("clearParam");
       });
@@ -53,7 +55,25 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.params = [];
     },
     onSubmit(state, payload) {
-      state.response = payload;
+      const temp = {} as EngineResponseDto;
+      temp.fields = [];
+      const doc = new XmlDocument(payload);
+      doc.children.forEach((t: any) => {
+        const element = {} as FieldDto;
+        if (t.name == "field") {
+          element.color = t.attr.color;
+          element.coordinateX = t.attr.x;
+          element.coordinateY = t.attr.y;
+          element.attributeType = t.attr.typ;
+          element.value = t.attr.value;
+        }
+        if (element.coordinateX) {
+          temp.fields.push(element);
+        }
+      });
+      console.log(temp.fields);
+      temp.sessionId = 11;
+      state.response = temp;
       state.sessionId = payload.sessionId;
     },
   },
