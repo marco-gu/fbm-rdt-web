@@ -3,7 +3,7 @@ axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
 const service = axios.create({
   headers: {
     "API-Version": "1",
-    "X-Mobile-Number": "22",
+    "X-Mobile-Number": "",
   },
 });
 export const post = (url: string, requestParam: any) => {

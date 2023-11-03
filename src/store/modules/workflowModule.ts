@@ -39,7 +39,24 @@ const workflowModule: Module<WorkflowState, RootState> = {
           params.capturedValues.push(temp);
         });
       }
-      const temp = "GBR?I_Field01=RDT222&I_Field02=RDTadmin&type=Submit";
+      let temp = "GBR?";
+      // let temp = "GBR?I_Field01=RDT222&I_Field02=RDTadmin&type=Submit";
+      let last = "";
+      params.capturedValues.forEach((t: any) => {
+        if (last != t.attributeName) {
+          temp += t.attributeName + "=" + t.value + "&";
+          last = t.attributeName;
+        }
+        // if (last) {
+        //   if (last != t.attributeName) {
+        //     temp += t.attributeName + "=" + t.value + "&";
+        //   }
+        // } else {
+        //   last = t.attributeName;
+        // }
+      });
+      temp += "type=Submit";
+      console.log("--------" + temp);
       get(temp).then((data) => {
         console.log(data);
         context.commit("onSubmit", data);
@@ -66,13 +83,13 @@ const workflowModule: Module<WorkflowState, RootState> = {
           element.coordinateY = t.attr.y;
           element.attributeType = t.attr.typ;
           element.value = t.attr.value;
+          element.attributeName = t.attr.id;
         }
         if (element.coordinateX) {
           temp.fields.push(element);
         }
       });
-      console.log(temp.fields);
-      temp.sessionId = 11;
+      temp.sessionId = 22;
       state.response = temp;
       state.sessionId = payload.sessionId;
     },

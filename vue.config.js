@@ -24,7 +24,7 @@ module.exports = defineConfig({
     devServer: {
         proxy: {
             "^/workflow": {
-                target: "http://localhost:8080/fbm-wms-rdt/RDTEngine/",
+                target: "http://101.132.69.151:8100/fbm-wms-rdt/RDTEngine/",
                 changeOrigin: true,
                 secure: false,
                 pathRewrite: {
