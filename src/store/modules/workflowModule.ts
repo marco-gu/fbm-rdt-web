@@ -1,97 +1,69 @@
 import { Module } from "vuex";
 import RootState from "../state";
-import { get, post } from "@/service/http";
-import { EngineResponseDto, FieldDto } from "@/utils/process.render";
-import { XmlDocument } from "xmldoc";
+import { get } from "@/service/http";
+import { CapturedValue } from "@/entity/request.entity";
+import { parseLineView, parseXML } from "@/utils/util.parse";
+import { ScreenEntity, ScreenRowEntity } from "@/entity/screen.entity";
 
 export interface WorkflowState {
-  params: any[];
-  sessionId: number;
-  response: EngineResponseDto;
+  capturedValues: CapturedValue[];
+  sessionID: number;
+  screenTitle: string;
+  screenEntity: ScreenEntity;
+  linesView: Map<number, ScreenRowEntity>;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
-    params: [],
-    sessionId: 0,
-    response: {} as EngineResponseDto,
+    capturedValues: [],
+    sessionID: -1,
+    screenTitle: "",
+    screenEntity: {} as ScreenEntity,
+    linesView: new Map() as Map<number, ScreenRowEntity>,
   },
   actions: {
-    addParam(context, payload) {
-      context.commit("addParam", payload);
+    saveCapturedValue(context, payload: CapturedValue) {
+      context.commit("saveCapturedValue", payload);
     },
-    clearParam(context, payload) {
-      context.commit("clearParam", payload);
-    },
-    onSubmit(context, payload) {
-      const params = {
-        sessionId: context.state.sessionId,
-        actionKey: "Submit",
-        countryAbbreviatedName: "GBR",
-        capturedValues: [],
-      };
-      if (context.state.params.length > 0) {
-        context.state.params.forEach((t: any) => {
-          const temp = {
-            attributeName: t.attributeName,
-            dataType: "STRING",
-            value: t.value,
-          } as never;
-          params.capturedValues.push(temp);
-        });
-      }
-      let temp = "GBR?";
-      // let temp = "GBR?I_Field01=RDT222&I_Field02=RDTadmin&type=Submit";
-      let last = "";
-      params.capturedValues.forEach((t: any) => {
-        if (last != t.attributeName) {
-          temp += t.attributeName + "=" + t.value + "&";
-          last = t.attributeName;
-        }
-        // if (last) {
-        //   if (last != t.attributeName) {
-        //     temp += t.attributeName + "=" + t.value + "&";
-        //   }
-        // } else {
-        //   last = t.attributeName;
-        // }
+    onSubmit(context) {
+      let url = "GBR?";
+      context.state.capturedValues.forEach((cv: CapturedValue) => {
+        url += cv.attributeName + "=" + cv.value + "&";
       });
-      temp += "type=Submit";
-      console.log("--------" + temp);
-      get(temp).then((data) => {
-        console.log(data);
+      url += "type=Submit";
+      get(url, context.state.sessionID).then((data) => {
         context.commit("onSubmit", data);
-        context.commit("clearParam");
       });
     },
   },
   mutations: {
-    addParam(state, payload) {
-      state.params.push(payload);
-    },
-    clearParam(state, payload) {
-      state.params = [];
-    },
-    onSubmit(state, payload) {
-      const temp = {} as EngineResponseDto;
-      temp.fields = [];
-      const doc = new XmlDocument(payload);
-      doc.children.forEach((t: any) => {
-        const element = {} as FieldDto;
-        if (t.name == "field") {
-          element.color = t.attr.color;
-          element.coordinateX = t.attr.x;
-          element.coordinateY = t.attr.y;
-          element.attributeType = t.attr.typ;
-          element.value = t.attr.value;
-          element.attributeName = t.attr.id;
-        }
-        if (element.coordinateX) {
-          temp.fields.push(element);
+    saveCapturedValue(state, payload: CapturedValue) {
+      let newCapturedValue = true;
+      state.capturedValues.forEach((capturedValue) => {
+        if (capturedValue.attributeName == payload.attributeName) {
+          capturedValue.value = payload.value;
+          newCapturedValue = false;
         }
       });
-      temp.sessionId = 22;
-      state.response = temp;
-      state.sessionId = payload.sessionId;
+      if (newCapturedValue) {
+        state.capturedValues.push(payload);
+      }
+    },
+    onSubmit(state, payload) {
+      const screenEntity = parseXML(payload);
+      const map = parseLineView(screenEntity);
+      state.linesView = map;
+      state.screenTitle = screenEntity.screenTitle;
+      state.capturedValues = screenEntity.capturedValues;
+    },
+    saveScreenEntity(state, payload) {
+      state.screenEntity = payload;
+      state.sessionID = payload.sessionID;
+      state.screenTitle = payload.screenTitle;
+      state.capturedValues = payload.capturedValues;
+      if (!localStorage.getItem("sessionID")) {
+        localStorage.setItem("sessionID", payload.sessionID);
+        localStorage.setItem("screenEntity", JSON.stringify(payload));
+      }
     },
   },
   namespaced: true,

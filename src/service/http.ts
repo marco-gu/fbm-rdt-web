@@ -19,9 +19,15 @@ export const post = (url: string, requestParam: any) => {
   });
 };
 
-export const get = (params: string) => {
+export const get = (params: string, sessionID: number) => {
+  const config = {
+    headers: {
+      "API-Version": "1",
+      "X-Mobile-Number": sessionID,
+    },
+  };
   return new Promise((resolve, reject) => {
-    service.get(params).then(
+    service.get(params, config).then(
       (res) => {
         resolve(res.data);
       },

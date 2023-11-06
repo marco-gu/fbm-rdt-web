@@ -1,6 +1,7 @@
-export interface EngineResponseDto {
-  sessionId: number;
+export interface EngineResponse {
+  sessionID: number;
   resultStatus: string;
+  screenTitle: string;
   fields: FieldDto[];
   legacyOutPutXML: string;
 }
@@ -22,26 +23,4 @@ export interface FieldDto {
   coordinateX: number;
   coordinateY: number;
   color: string;
-}
-
-export class GroupNode {
-  type: string;
-  detail: NodeDetail;
-  constructor() {
-    this.type = "";
-    this.detail = new NodeDetail();
-  }
-}
-
-export class NodeDetail {
-  attributeName: string;
-  label: string;
-  value: string;
-  color: string;
-  constructor() {
-    this.attributeName = "";
-    this.label = "";
-    this.value = "";
-    this.color = "";
-  }
 }

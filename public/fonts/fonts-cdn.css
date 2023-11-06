@@ -1,0 +1,59 @@
+@font-face {
+  font-family: "Maersk Text";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-Regular.eot?") format("eot"), url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-Regular.woff2") format("woff2"), url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Text";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-Bold.eot?") format("eot"), url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-Bold.woff2") format("woff2"), url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Text";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-BoldItalic.eot?") format("eot"), 
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-BoldItalic.woff2") format("woff2"), 
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-BoldItalic.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Text";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-Italic.eot?") format("eot"),
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-Italic.woff2") format("woff2"),
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/text/MaerskText-Italic.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Headline";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/headline/MaerskHeadline-Regular.eot?") format("eot"),
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/headline/MaerskHeadline-Regular.woff2") format("woff2"),
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/headline/MaerskHeadline-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Headline";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/headline/MaerskHeadline-Bold.eot?") format("eot"),
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/headline/MaerskHeadline-Bold.woff2") format("woff2"),
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/headline/MaerskHeadline-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Headline";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/headline/MaerskHeadline-Light.eot?") format("eot"),
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/headline/MaerskHeadline-Light.woff2") format("woff2"),
+    url("https://maersk-designsystem.azureedge.net/fonts/latest/maeu/headline/MaerskHeadline-Light.woff") format("woff");
+}

@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import NodeView from "../views/NodeView.vue";
+import PageView from "../views/PageView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "NodeView",
-    component: NodeView,
+    name: "PageView",
+    component: PageView,
   },
 ];
 

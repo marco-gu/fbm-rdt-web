@@ -1,0 +1,72 @@
+@font-face {
+  font-family: "Maersk Text";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./text/MaerskText-Regular.eot?") format("eot"), 
+    url("./text/MaerskText-Regular.woff2") format("woff2"), 
+    url("./text/MaerskText-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Text";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url("./text/MaerskText-Light.eot?") format("eot"), 
+    url("./text/MaerskText-Light.woff2") format("woff2"), 
+    url("./text/MaerskText-Light.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Text";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./text/MaerskText-Bold.eot?") format("eot"), 
+    url("./text/MaerskText-Bold.woff2") format("woff2"), 
+    url("./text/MaerskText-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Text";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./text/MaerskText-BoldItalic.eot?") format("eot"), 
+    url("./text/MaerskText-BoldItalic.woff2") format("woff2"), 
+    url("./text/MaerskText-BoldItalic.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Text";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./text/MaerskText-Italic.eot?") format("eot"), 
+    url("./text/MaerskText-Italic.woff2") format("woff2"), 
+    url("./text/MaerskText-Italic.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Headline";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./headline/MaerskHeadline-Regular.eot?") format("eot"), 
+    url("./headline/MaerskHeadline-Regular.woff2") format("woff2"), 
+    url("./headline/MaerskHeadline-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Headline";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./headline/MaerskHeadline-Bold.eot?") format("eot"), 
+    url("./headline/MaerskHeadline-Bold.woff2") format("woff2"), 
+    url("./headline/MaerskHeadline-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "Maersk Headline";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("./headline/MaerskHeadline-Light.eot?") format("eot"), 
+    url("./headline/MaerskHeadline-Light.woff2") format("woff2"), 
+    url("./headline/MaerskHeadline-Light.woff") format("woff");
+}

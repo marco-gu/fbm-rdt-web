@@ -16,8 +16,8 @@ export default createStore({
   modules: {
     workflowModule,
   },
-  strict: debug,
-  plugins: debug ? [createLogger()] : [],
+  // strict: debug,
+  // plugins: debug ? [createLogger()] : [],
 });
 export const key: InjectionKey<Store<RootState>> = Symbol("vue-store");
 export function useStore<T = State>() {
