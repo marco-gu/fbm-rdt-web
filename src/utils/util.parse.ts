@@ -17,7 +17,12 @@ export function parseXML(xml: any): ScreenEntity {
         element.color = t.attr.color;
         element.coordinateX = t.attr.x;
         element.coordinateY = t.attr.y;
-        element.attributeType = t.attr.typ;
+        response.screenTitle.includes("Menu");
+        if (response.screenTitle.includes("Menu")) {
+          element.attributeType = "menu";
+        } else {
+          element.attributeType = t.attr.typ;
+        }
         element.value = t.attr.value;
         element.attributeName = t.attr.id;
         element.defaultValue = t.attr.default;
@@ -98,8 +103,11 @@ export function parseLineView(
       switch (column.attributeType) {
         case "output":
           line.type = "output";
-          line.detail.value = line.detail.label ? column.value : "";
-          line.detail.label = column.value;
+          if (line.detail.label == "") {
+            line.detail.label = column.value;
+          } else {
+            line.detail.value = column.value;
+          }
           break;
         case "input":
           line.type = "input";
@@ -111,6 +119,10 @@ export function parseLineView(
           line.type = "password";
           line.detail.attributeName = column.attributeName;
           line.detail.maxLength = column.maxLength;
+          break;
+        case "menu":
+          line.type = "menu";
+          line.detail.label = column.value;
           break;
       }
     });

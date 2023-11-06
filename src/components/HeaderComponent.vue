@@ -1,7 +1,6 @@
 <template>
   <div
     style="
-      margin-bottom: 10px;
       background-color: #64b2d4;
       padding: 10px 5px;
       color: white;

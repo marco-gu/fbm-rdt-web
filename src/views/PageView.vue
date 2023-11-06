@@ -4,6 +4,8 @@ import InputComponent from "@/components/InputComponent.vue";
 import { useStore } from "@/store";
 import { parseLineView } from "@/utils/util.parse";
 import { ScreenRowEntity } from "@/entity/screen.entity";
+import MenuComponent from "@/components/MenuComponent.vue";
+import LabelComponent from "@/components/LabelComponent.vue";
 const PageView = defineComponent({
   setup() {
     const store = useStore();
@@ -20,35 +22,48 @@ const PageView = defineComponent({
     const renderView = (lines: Map<number, ScreenRowEntity>) => {
       const elementList = ref([] as any[]);
       // TBD Body
+      let colorIndex = 0;
       lines.forEach((line: ScreenRowEntity, index: number) => {
-        const color = line.detail.color
-          ? line.detail.color == "white"
-            ? "black"
-            : "red"
-          : "black";
+        const color = colorIndex % 2 ? "#D4D4D4" : "#E0EEEE";
+        colorIndex++;
         switch (line.type) {
           case "output": {
-            const style = {
-              style: "padding: 5px 5px; font-size:12px; color:" + color,
-            };
-            const element = h("div", style, line.detail.label);
+            const element = h("div", { style: "background-color: " + color }, [
+              h(LabelComponent, {
+                labelName: line.detail.label,
+                labelValue: line.detail.value,
+              }),
+            ]);
             elementList.value.push(element);
             break;
           }
           case "input": {
-            const element = h(InputComponent, {
-              labelName: line.detail.label,
-              attributeName: line.detail.attributeName,
-              defaultValue: line.detail.value,
-            });
+            const element = h("div", { style: "background-color: " + color }, [
+              h(InputComponent, {
+                labelName: line.detail.label,
+                attributeName: line.detail.attributeName,
+                defaultValue: line.detail.value,
+              }),
+            ]);
             elementList.value.push(element);
             break;
           }
           case "password": {
-            const element = h(InputComponent, {
-              labelName: line.detail.label,
-              attributeName: line.detail.attributeName,
-            });
+            const element = h("div", { style: "background-color: " + color }, [
+              h(InputComponent, {
+                labelName: line.detail.label,
+                attributeName: line.detail.attributeName,
+              }),
+            ]);
+            elementList.value.push(element);
+            break;
+          }
+          case "menu": {
+            const element = h("div", { style: "background-color: " + color }, [
+              h(MenuComponent, {
+                menuName: line.detail.label,
+              }),
+            ]);
             elementList.value.push(element);
             break;
           }

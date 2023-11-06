@@ -24,6 +24,16 @@ const workflowModule: Module<WorkflowState, RootState> = {
     saveCapturedValue(context, payload: CapturedValue) {
       context.commit("saveCapturedValue", payload);
     },
+    onCancel(context) {
+      let url = "GBR?";
+      context.state.capturedValues.forEach((cv: CapturedValue) => {
+        url += cv.attributeName + "=" + cv.value + "&";
+      });
+      url += "type=Cancel";
+      get(url, context.state.sessionID).then((data) => {
+        context.commit("onSubmit", data);
+      });
+    },
     onSubmit(context) {
       let url = "GBR?";
       context.state.capturedValues.forEach((cv: CapturedValue) => {
@@ -60,10 +70,10 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.sessionID = payload.sessionID;
       state.screenTitle = payload.screenTitle;
       state.capturedValues = payload.capturedValues;
-      if (!localStorage.getItem("sessionID")) {
-        localStorage.setItem("sessionID", payload.sessionID);
-        localStorage.setItem("screenEntity", JSON.stringify(payload));
-      }
+      // if (!localStorage.getItem("sessionID")) {
+      //   localStorage.setItem("sessionID", payload.sessionID);
+      //   localStorage.setItem("screenEntity", JSON.stringify(payload));
+      // }
     },
   },
   namespaced: true,

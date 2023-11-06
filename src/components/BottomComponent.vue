@@ -8,11 +8,11 @@
       border-radius: 2px;
     "
   >
-    <div style="color: white">
-      <i class="fa-solid fa-arrow-left" @click="back"></i>
+    <div style="color: white" @click="back">
+      <i class="fa-solid fa-arrow-left"></i>
     </div>
-    <div style="color: white">
-      <i class="fa-solid fa-arrow-right" @click="submit"></i>
+    <div style="color: white" @click="submit">
+      <i class="fa-solid fa-arrow-right"></i>
     </div>
   </div>
 </template>
@@ -23,7 +23,7 @@ const BottomComponent = defineComponent({
   setup() {
     const store = useStore();
     const back = () => {
-      console.log("back");
+      store.dispatch("workflowModule/onCancel");
     };
     const submit = () => {
       store.dispatch("workflowModule/onSubmit");

@@ -22,16 +22,20 @@ export default defineComponent({
     const store = useStore();
     const isShow = ref(false);
     const url = "GBR";
-    if (localStorage.getItem("sessionID")) {
-      const response = localStorage.getItem("screenEntity") as any;
-      store.commit("workflowModule/saveScreenEntity", JSON.parse(response));
+    get(url, -1).then((data) => {
+      store.commit("workflowModule/saveScreenEntity", parseXML(data));
       isShow.value = true;
-    } else {
-      get(url, -1).then((data) => {
-        store.commit("workflowModule/saveScreenEntity", parseXML(data));
-        isShow.value = true;
-      });
-    }
+    });
+    // if (localStorage.getItem("sessionID")) {
+    //   const response = localStorage.getItem("screenEntity") as any;
+    //   store.commit("workflowModule/saveScreenEntity", JSON.parse(response));
+    //   isShow.value = true;
+    // } else {
+    //   get(url, -1).then((data) => {
+    //     store.commit("workflowModule/saveScreenEntity", parseXML(data));
+    //     isShow.value = true;
+    //   });
+    // }
     return {
       isShow,
     };
