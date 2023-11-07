@@ -1,14 +1,19 @@
 <template>
   <div
     style="
+      display: flex;
       background-color: #64b2d4;
-      padding: 10px 5px;
+      justify-content: space-between;
+      padding: 10px 10px 10px 5px;
       color: white;
       font-weight: bold;
       border-radius: 2px;
     "
   >
-    {{ header }}
+    <div>{{ header }}</div>
+    <div>
+      <i class="fa-solid fa-gear"></i>
+    </div>
   </div>
 </template>
 <script lang="ts">
