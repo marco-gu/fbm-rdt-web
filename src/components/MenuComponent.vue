@@ -21,7 +21,7 @@ const MenuComponent = defineComponent({
     const onClick = () => {
       const param = {
         attributeName: "I_Field01",
-        value: "1",
+        value: menuName.value?.substring(0, menuName.value?.indexOf(".")),
       } as CapturedValue;
       store.dispatch("workflowModule/saveCapturedValue", param).then(() => {
         store.dispatch("workflowModule/onSubmit");

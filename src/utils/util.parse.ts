@@ -105,8 +105,10 @@ export function parseLineView(
           line.type = "output";
           if (line.detail.label == "") {
             line.detail.label = column.value;
+            line.detail.labelX = column.coordinateX;
           } else {
             line.detail.value = column.value;
+            line.detail.valueX = column.coordinateX;
           }
           break;
         case "input":
@@ -114,15 +116,18 @@ export function parseLineView(
           line.detail.attributeName = column.attributeName;
           line.detail.maxLength = column.maxLength;
           line.detail.value = column.defaultValue;
+          line.detail.valueX = column.coordinateX;
           break;
         case "password":
           line.type = "password";
           line.detail.attributeName = column.attributeName;
           line.detail.maxLength = column.maxLength;
+          line.detail.valueX = column.coordinateX;
           break;
         case "menu":
           line.type = "menu";
           line.detail.label = column.value;
+          line.detail.labelX = column.coordinateX;
           break;
       }
     });

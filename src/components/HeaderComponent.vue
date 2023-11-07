@@ -21,7 +21,7 @@ import { useStore } from "@/store";
 import { defineComponent, ref } from "vue";
 const HeaderComponent = defineComponent({
   setup() {
-    const header = ref(null);
+    const header = ref("Login NewRDT");
     const store = useStore();
     store.subscribe((mutation, state) => {
       if (state.workflowModule.screenTitle) {

@@ -24,13 +24,17 @@ export class ScreenRowEntity {
 export class ScreenRowDetailEntity {
   attributeName: string;
   label: string;
+  labelX: number;
   value: string;
+  valueX: number;
   color: string;
   maxLength: number;
   constructor() {
     this.attributeName = "";
     this.label = "";
+    this.labelX = 0;
     this.value = "";
+    this.valueX = 0;
     this.color = "";
     this.maxLength = 0;
   }

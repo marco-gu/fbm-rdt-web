@@ -1,12 +1,12 @@
 <template>
   <div style="width: 230px">
-    <header-component v-if="isShow"></header-component>
+    <header-component></header-component>
     <div style="height: 230px"><router-view v-if="isShow"></router-view></div>
-    <bottom-component v-if="isShow"></bottom-component>
+    <bottom-component></bottom-component>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import BottomComponent from "./components/BottomComponent.vue";
 import HeaderComponent from "./components/HeaderComponent.vue";
 import { get } from "./service/http";
@@ -22,10 +22,20 @@ export default defineComponent({
     const store = useStore();
     const isShow = ref(false);
     const url = "GBR";
+    onMounted(() => {
+      // window.addEventListener("");
+    });
     get(url, -1).then((data) => {
       store.commit("workflowModule/saveScreenEntity", parseXML(data));
       isShow.value = true;
     });
+    const handleEnterKey = () => {
+      alert("1111");
+      store.dispatch("workflowModule/onSubmit");
+    };
+    const handleEscKey = () => {
+      store.dispatch("workflowModule/onCancel");
+    };
     // if (localStorage.getItem("sessionID")) {
     //   const response = localStorage.getItem("screenEntity") as any;
     //   store.commit("workflowModule/saveScreenEntity", JSON.parse(response));
@@ -38,6 +48,8 @@ export default defineComponent({
     // }
     return {
       isShow,
+      handleEnterKey,
+      handleEscKey,
     };
   },
 });
