@@ -8,7 +8,10 @@ export function parseXML(xml: any): ScreenEntity {
   const response = {} as EngineResponse;
   const screenEntity = {} as ScreenEntity;
   screenEntity.capturedValues = [];
-  response.sessionID = doc.attr.number as unknown as number;
+  screenEntity.screenFocusName = doc.attr.focus;
+  // screenEntity.screenTitle = response.screenTitle;
+  screenEntity.sessionID = doc.attr.number as unknown as number;
+  // response.sessionID = doc.attr.number as unknown as number;
   response.fields = [];
   doc.children.forEach((t: any) => {
     switch (t.name) {
@@ -17,8 +20,8 @@ export function parseXML(xml: any): ScreenEntity {
         element.color = t.attr.color;
         element.coordinateX = t.attr.x;
         element.coordinateY = t.attr.y;
-        response.screenTitle.includes("Menu");
-        if (response.screenTitle.includes("Menu")) {
+        // response.screenTitle.includes("Menu");
+        if (screenEntity.screenTitle.includes("Menu")) {
           element.attributeType = "menu";
         } else {
           element.attributeType = t.attr.typ;
@@ -37,7 +40,8 @@ export function parseXML(xml: any): ScreenEntity {
         break;
       }
       case "screen": {
-        response.screenTitle = t.attr.title;
+        // response.screenTitle = t.attr.title;
+        screenEntity.screenTitle = t.attr.title;
       }
     }
   });
@@ -88,8 +92,8 @@ export function parseXML(xml: any): ScreenEntity {
   rows.shift();
   console.log(rows);
   screenEntity.screenLines = rows;
-  screenEntity.screenTitle = response.screenTitle;
-  screenEntity.sessionID = response.sessionID;
+  // screenEntity.screenTitle = response.screenTitle;
+  // screenEntity.sessionID = response.sessionID;
   return screenEntity;
 }
 
@@ -119,6 +123,9 @@ export function parseLineView(
           line.detail.maxLength = column.maxLength;
           line.detail.value = column.defaultValue;
           line.detail.valueX = column.coordinateX;
+          if (screenEntity.screenFocusName == column.attributeName) {
+            line.isFocus = true;
+          }
           break;
         case "password":
           line.type = "password";

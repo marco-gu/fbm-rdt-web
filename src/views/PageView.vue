@@ -27,7 +27,13 @@ const PageView = defineComponent({
       // TBD Body
       let colorIndex = 0;
       lines.forEach((line: ScreenLineEntity, index: number) => {
-        const color = colorIndex % 2 ? "#D4D4D4" : "#E0EEEE";
+        const color = line.isLastLine
+          ? "#FFFFFF"
+          : !line.detail.label
+          ? "#FFFFFF"
+          : colorIndex % 2
+          ? "#f5fcff"
+          : "#e7eff3";
         colorIndex++;
         switch (line.type) {
           case "output": {
@@ -92,7 +98,9 @@ const PageView = defineComponent({
             const element = h(
               "div",
               {
-                class: ["center-items"],
+                class: line.isLastLine
+                  ? ["center-items last-item"]
+                  : ["center-items"],
                 style: { "background-color": color, height: lineHeight + "px" },
               },
               [

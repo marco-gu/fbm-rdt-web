@@ -14,7 +14,19 @@
     padding: 3px;
     font-size: 12px;
 }
+
 .center-items {
     display: flex;
     align-items: center;
+}
+
+.last-item {
+    position: absolute;
+    bottom: 0;
+    background-color: inherit;
+    width: 100%;
+}
+
+.bg-white {
+    background-color: #FFFFFF;
 }

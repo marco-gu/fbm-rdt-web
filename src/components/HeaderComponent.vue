@@ -4,10 +4,11 @@
       display: flex;
       background-color: #64b2d4;
       justify-content: space-between;
-      padding: 10px 10px 10px 5px;
+      padding: 8px 10px 8px 5px;
       color: white;
       font-weight: bold;
       border-radius: 2px;
+      box-shadow: rgba(0, 0, 0, 0.2) 1px 1px 8px 2px;
     "
   >
     <div>{{ header }}</div>

@@ -1,7 +1,5 @@
 <template>
-  <div class="line-item" :class="{ 'last-item': isBottomElement }">
-    <!-- <div style="padding: 5px 5px; font-size: 12px; cursor: pointer"> -->
-    <!-- </div> -->
+  <div class="line-item">
     <div class="label-item">
       <span @click="onClick" style="cursor: pointer">{{ name }} </span>
     </div>
@@ -51,4 +49,10 @@ export default MenuComponent;
 input:focus {
   outline: none;
 }
+// .last-item {
+//   position: absolute;
+//   bottom: 0;
+//   background-color: inherit;
+//   width: 100%;
+// }
 </style>

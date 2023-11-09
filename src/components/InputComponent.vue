@@ -166,6 +166,7 @@ export default InputComponent;
       text-align: right;
       border: none;
       border-radius: 3px;
+      background-color: transparent;
       &:focus {
         outline: none;
       }

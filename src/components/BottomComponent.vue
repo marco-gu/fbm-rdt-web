@@ -6,6 +6,7 @@
       padding: 5px 40px;
       background-color: #64b2d4;
       border-radius: 2px;
+      box-shadow: rgba(0, 0, 0, 0.2) 1px -1px 8px 2px;
     "
   >
     <div style="color: white" @click="back">

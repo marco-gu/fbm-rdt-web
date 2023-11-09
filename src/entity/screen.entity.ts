@@ -5,20 +5,24 @@ export class ScreenEntity {
   sessionID: number;
   screenLines: any[][];
   capturedValues: CapturedValue[];
+  screenFocusName: string;
   constructor() {
     this.screenTitle = "";
     this.sessionID = -1;
     this.screenLines = [[]];
     this.capturedValues = [];
+    this.screenFocusName = "";
   }
 }
 export class ScreenLineEntity {
   type: string;
   isLastLine: boolean;
+  isFocus: boolean;
   detail: ScreenLineDetailEntity;
   constructor() {
     this.type = "";
     this.isLastLine = false;
+    this.isFocus = false;
     this.detail = new ScreenLineDetailEntity();
   }
 }
