@@ -3,7 +3,7 @@ import { defineComponent, h, onMounted, ref } from "vue";
 import InputComponent from "@/components/InputComponent.vue";
 import { useStore } from "@/store";
 import { parseLineView } from "@/utils/util.parse";
-import { ScreenRowEntity } from "@/entity/screen.entity";
+import { ScreenLineEntity } from "@/entity/screen.entity";
 import MenuComponent from "@/components/MenuComponent.vue";
 import LabelComponent from "@/components/LabelComponent.vue";
 const PageView = defineComponent({
@@ -22,11 +22,11 @@ const PageView = defineComponent({
         renderView(state.workflowModule.linesView);
       }
     });
-    const renderView = (lines: Map<number, ScreenRowEntity>) => {
+    const renderView = (lines: Map<number, ScreenLineEntity>) => {
       const elementList = ref([] as any[]);
       // TBD Body
       let colorIndex = 0;
-      lines.forEach((line: ScreenRowEntity, index: number) => {
+      lines.forEach((line: ScreenLineEntity, index: number) => {
         const color = colorIndex % 2 ? "#D4D4D4" : "#E0EEEE";
         colorIndex++;
         switch (line.type) {
@@ -89,11 +89,19 @@ const PageView = defineComponent({
             break;
           }
           case "menu": {
-            const element = h("div", { style: "background-color: " + color }, [
-              h(MenuComponent, {
-                menuName: line.detail.label,
-              }),
-            ]);
+            const element = h(
+              "div",
+              {
+                class: ["center-items"],
+                style: { "background-color": color, height: lineHeight + "px" },
+              },
+              [
+                h(MenuComponent, {
+                  menuName: line.detail.label,
+                  isBottomElement: line.isLastLine,
+                }),
+              ]
+            );
             elementList.value.push(element);
             break;
           }

@@ -3,14 +3,14 @@ import RootState from "../state";
 import { get } from "@/service/http";
 import { CapturedValue } from "@/entity/request.entity";
 import { parseLineView, parseXML } from "@/utils/util.parse";
-import { ScreenEntity, ScreenRowEntity } from "@/entity/screen.entity";
+import { ScreenEntity, ScreenLineEntity } from "@/entity/screen.entity";
 
 export interface WorkflowState {
   capturedValues: CapturedValue[];
   sessionID: number;
   screenTitle: string;
   screenEntity: ScreenEntity;
-  linesView: Map<number, ScreenRowEntity>;
+  linesView: Map<number, ScreenLineEntity>;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
@@ -18,7 +18,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
     sessionID: -1,
     screenTitle: "",
     screenEntity: {} as ScreenEntity,
-    linesView: new Map() as Map<number, ScreenRowEntity>,
+    linesView: new Map() as Map<number, ScreenLineEntity>,
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {

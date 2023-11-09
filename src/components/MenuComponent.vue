@@ -1,6 +1,10 @@
 <template>
-  <div style="padding: 5px 5px; font-size: 12px; cursor: pointer">
-    <span @click="onClick">{{ name }} </span>
+  <div class="line-item" :class="{ 'last-item': isBottomElement }">
+    <!-- <div style="padding: 5px 5px; font-size: 12px; cursor: pointer"> -->
+    <!-- </div> -->
+    <div class="label-item">
+      <span @click="onClick" style="cursor: pointer">{{ name }} </span>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -12,9 +16,12 @@ const MenuComponent = defineComponent({
     menuName: {
       type: String,
     },
+    isBottomElement: {
+      type: Boolean,
+    },
   },
   setup(props) {
-    const { menuName } = toRefs(props);
+    const { menuName, isBottomElement } = toRefs(props);
     const store = useStore();
     const name = ref();
     name.value = menuName.value;

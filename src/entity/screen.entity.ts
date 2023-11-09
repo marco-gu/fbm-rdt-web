@@ -3,25 +3,27 @@ import { CapturedValue } from "./request.entity";
 export class ScreenEntity {
   screenTitle: string;
   sessionID: number;
-  screenRows: any[][];
+  screenLines: any[][];
   capturedValues: CapturedValue[];
   constructor() {
     this.screenTitle = "";
     this.sessionID = -1;
-    this.screenRows = [[]];
+    this.screenLines = [[]];
     this.capturedValues = [];
   }
 }
-export class ScreenRowEntity {
+export class ScreenLineEntity {
   type: string;
-  detail: ScreenRowDetailEntity;
+  isLastLine: boolean;
+  detail: ScreenLineDetailEntity;
   constructor() {
     this.type = "";
-    this.detail = new ScreenRowDetailEntity();
+    this.isLastLine = false;
+    this.detail = new ScreenLineDetailEntity();
   }
 }
 
-export class ScreenRowDetailEntity {
+export class ScreenLineDetailEntity {
   attributeName: string;
   label: string;
   labelX: number;

@@ -1,6 +1,6 @@
 import { XmlDocument } from "xmldoc";
 import { EngineResponse, FieldDto } from "@/entity/response.entity";
-import { ScreenEntity, ScreenRowEntity } from "@/entity/screen.entity";
+import { ScreenEntity, ScreenLineEntity } from "@/entity/screen.entity";
 import { CapturedValue } from "@/entity/request.entity";
 
 export function parseXML(xml: any): ScreenEntity {
@@ -87,7 +87,7 @@ export function parseXML(xml: any): ScreenEntity {
   });
   rows.shift();
   console.log(rows);
-  screenEntity.screenRows = rows;
+  screenEntity.screenLines = rows;
   screenEntity.screenTitle = response.screenTitle;
   screenEntity.sessionID = response.sessionID;
   return screenEntity;
@@ -95,14 +95,15 @@ export function parseXML(xml: any): ScreenEntity {
 
 export function parseLineView(
   screenEntity: ScreenEntity
-): Map<number, ScreenRowEntity> {
+): Map<number, ScreenLineEntity> {
   const map: Map<number, any> = new Map();
-  screenEntity.screenRows.forEach((screenRow: any[]) => {
-    const line = new ScreenRowEntity();
+  screenEntity.screenLines.forEach((screenRow: any[], index: number) => {
+    const line = new ScreenLineEntity();
     screenRow.forEach((column: FieldDto) => {
       switch (column.attributeType) {
         case "output":
           line.type = "output";
+          line.isLastLine = index == screenEntity.screenLines.length - 1;
           if (line.detail.label == "") {
             line.detail.label = column.value;
             line.detail.labelX = column.coordinateX;
@@ -113,6 +114,7 @@ export function parseLineView(
           break;
         case "input":
           line.type = "input";
+          line.isLastLine = index == screenEntity.screenLines.length - 1;
           line.detail.attributeName = column.attributeName;
           line.detail.maxLength = column.maxLength;
           line.detail.value = column.defaultValue;
@@ -120,12 +122,14 @@ export function parseLineView(
           break;
         case "password":
           line.type = "password";
+          line.isLastLine = index == screenEntity.screenLines.length - 1;
           line.detail.attributeName = column.attributeName;
           line.detail.maxLength = column.maxLength;
           line.detail.valueX = column.coordinateX;
           break;
         case "menu":
           line.type = "menu";
+          line.isLastLine = index == screenEntity.screenLines.length - 1;
           line.detail.label = column.value;
           line.detail.labelX = column.coordinateX;
           break;
