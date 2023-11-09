@@ -1,17 +1,9 @@
 <template>
-  <div
-    style="
-      display: flex;
-      justify-content: space-between;
-      padding: 5px 5px;
-      font-size: 12px;
-      min-height: 25px;
-    "
-  >
-    <div>
-      <span>{{ name }} </span>
+  <div class="line-item" :class="{ 'last-item': isBottomElement }">
+    <div class="label-item">
+      {{ name }}
     </div>
-    <div>{{ value }}</div>
+    <div class="label-item">{{ value }}</div>
   </div>
 </template>
 <script lang="ts">
@@ -24,9 +16,12 @@ const LabelComponent = defineComponent({
     labelValue: {
       type: String,
     },
+    isBottomElement: {
+      type: Boolean,
+    },
   },
   setup(props) {
-    const { labelName, labelValue } = toRefs(props);
+    const { labelName, labelValue, isBottomElement } = toRefs(props);
     const name = ref();
     name.value = labelName.value;
     const value = ref();
@@ -49,3 +44,14 @@ const LabelComponent = defineComponent({
 });
 export default LabelComponent;
 </script>
+<style lang="scss" scoped>
+.label-item {
+  display: inline-block;
+}
+.last-item {
+  position: absolute;
+  bottom: 0;
+  background-color: inherit;
+  width: 100%;
+}
+</style>

@@ -1,7 +1,9 @@
 <template>
   <div style="width: 230px">
     <header-component></header-component>
-    <div style="height: 230px"><router-view v-if="isShow"></router-view></div>
+    <div id="content" class="content-container">
+      <router-view v-if="isShow"></router-view>
+    </div>
     <bottom-component></bottom-component>
   </div>
 </template>
@@ -54,3 +56,9 @@ export default defineComponent({
   },
 });
 </script>
+<style scoped lang="scss">
+.content-container {
+  height: 240px;
+  position: relative;
+}
+</style>

@@ -6,3 +6,15 @@
     flex-direction: column;
     justify-content: space-between;
 }
+
+.line-item {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 3px;
+    font-size: 12px;
+}
+.center-items {
+    display: flex;
+    align-items: center;
+}

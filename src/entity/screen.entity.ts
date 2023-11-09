@@ -28,7 +28,7 @@ export class ScreenRowDetailEntity {
   value: string;
   valueX: number;
   color: string;
-  maxLength: number;
+  maxLength: string | number;
   constructor() {
     this.attributeName = "";
     this.label = "";

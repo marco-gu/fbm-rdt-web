@@ -10,8 +10,11 @@ const PageView = defineComponent({
   setup() {
     const store = useStore();
     const render = ref();
+    const LAST_INDEX = 15;
+    let lineHeight = 30;
     onMounted(() => {
       const lines = parseLineView(store.state.workflowModule.screenEntity);
+      calculateLineHeight(lines.size);
       renderView(lines);
     });
     store.subscribe((mutation, state) => {
@@ -28,33 +31,60 @@ const PageView = defineComponent({
         colorIndex++;
         switch (line.type) {
           case "output": {
-            const element = h("div", { style: "background-color: " + color }, [
-              h(LabelComponent, {
-                labelName: line.detail.label,
-                labelValue: line.detail.value,
-              }),
-            ]);
+            const element = h(
+              "div",
+              {
+                class: ["center-items"],
+                style: { "background-color": color, height: lineHeight + "px" },
+              },
+              [
+                h(LabelComponent, {
+                  labelName: line.detail.label,
+                  labelValue: line.detail.value,
+                  isBottomElement: LAST_INDEX === Number(index),
+                }),
+              ]
+            );
             elementList.value.push(element);
             break;
           }
           case "input": {
-            const element = h("div", { style: "background-color: " + color }, [
-              h(InputComponent, {
-                labelName: line.detail.label,
-                attributeName: line.detail.attributeName,
-                defaultValue: line.detail.value,
-              }),
-            ]);
+            const element = h(
+              "div",
+              {
+                class: ["center-items"],
+                style: { "background-color": color, height: lineHeight + "px" },
+              },
+              [
+                h(InputComponent, {
+                  labelName: line.detail.label,
+                  attributeName: line.detail.attributeName,
+                  defaultValue: line.detail.value,
+                  inputType: line.type,
+                  max: line.detail.maxLength as string,
+                }),
+              ]
+            );
             elementList.value.push(element);
             break;
           }
           case "password": {
-            const element = h("div", { style: "background-color: " + color }, [
-              h(InputComponent, {
-                labelName: line.detail.label,
-                attributeName: line.detail.attributeName,
-              }),
-            ]);
+            const element = h(
+              "div",
+              {
+                class: ["center-items"],
+                style: { "background-color": color, height: lineHeight + "px" },
+              },
+              [
+                h(InputComponent, {
+                  labelName: line.detail.label,
+                  attributeName: line.detail.attributeName,
+                  defaultValue: line.detail.value,
+                  inputType: line.type,
+                  max: line.detail.maxLength as string,
+                }),
+              ]
+            );
             elementList.value.push(element);
             break;
           }
@@ -76,6 +106,21 @@ const PageView = defineComponent({
         },
         elementList.value
       );
+    };
+    const calculateLineHeight = (lineNumber: number) => {
+      const contentEle = document.getElementById("content");
+      if (contentEle) {
+        const calculatedHeight = Math.floor(
+          contentEle.offsetHeight / lineNumber
+        );
+        // 30 > lineheight > 24
+        lineHeight =
+          calculatedHeight > 30
+            ? 30
+            : calculatedHeight < 24
+            ? 24
+            : calculatedHeight;
+      }
     };
     return () => render.value;
   },

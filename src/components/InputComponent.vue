@@ -1,19 +1,36 @@
 <template>
-  <div
-    style="
-      display: flex;
-      justify-content: space-between;
-      padding: 5px 5px;
-      font-size: 12px;
-    "
-  >
-    <span>{{ label }} </span>
-    <input
-      v-model="model"
-      style="margin-left: 10px; border: 0px; text-align: right"
-      autofocus
-      @blur="blur()"
-    />
+  <div class="line-item inputs-container">
+    <div class="label-block" :class="{ 'text-focus': isFocus }">
+      {{ labelName }}
+    </div>
+    <div class="input-block">
+      <input
+        ref="input"
+        v-if="
+          inputType === 'password' ||
+          (inputType === 'input' && textLength < TEXT_MAX_LENGTH)
+        "
+        v-model="model"
+        autofocus
+        :type="inputType === 'password' ? 'password' : 'text'"
+        @change="onTextChange()"
+        :maxlength="max === '0' ? Number(max) + 1 : max"
+        @focus="onFocus()"
+        @blur="onBlur()"
+      />
+      <textarea
+        v-else
+        ref="textarea"
+        v-model="model"
+        autofocus
+        rows="2"
+        @change="onTextChange()"
+        :maxlength="max"
+        @focus="onFocus()"
+        @blur="onBlur()"
+      />
+      <div class="measure-text-length" ref="measureTextLength">{{ model }}</div>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -31,16 +48,34 @@ const InputComponent = defineComponent({
     defaultValue: {
       type: String,
     },
+    inputType: {
+      type: String,
+    },
+    max: {
+      type: String,
+    },
+    labelX: {
+      type: Number,
+    },
+    valueX: {
+      type: Number,
+    },
   },
   setup(props) {
-    const { attributeName, labelName, defaultValue } = toRefs(props);
+    const { attributeName, labelName, defaultValue, inputType, max } =
+      toRefs(props);
     const store = useStore();
-    const label = ref();
     const model = ref();
+    const measureTextLength = ref();
+    const input = ref();
+    const textarea = ref();
+    const textLength = ref(0);
     model.value = defaultValue.value;
     const lastAttributeName = ref();
-    label.value = labelName.value;
-    const blur = () => {
+    const TEXT_MAX_LENGTH = ref(128);
+    const isFocus = ref(false);
+
+    const onTextChange = () => {
       const param = {
         attributeName: attributeName.value,
         value: model.value,
@@ -48,27 +83,99 @@ const InputComponent = defineComponent({
       store.dispatch("workflowModule/saveCapturedValue", param);
       lastAttributeName.value = attributeName.value;
     };
-    watch(defaultValue, (newValue) => {
-      console.log(newValue);
-      nextTick(() => {
-        model.value = newValue;
-      });
+
+    const onFocus = () => {
+      isFocus.value = true;
+    };
+    const onBlur = () => {
+      isFocus.value = false;
+    };
+    watch(model, () => {
+      textLength.value = measureText();
+      if (textLength.value >= TEXT_MAX_LENGTH.value) {
+        nextTick(() => {
+          textarea.value.focus();
+        });
+      } else {
+        nextTick(() => {
+          input.value.focus();
+        });
+      }
     });
     watch(labelName, (newValue) => {
-      label.value = newValue;
       model.value = "";
     });
+    watch(defaultValue, (newValue) => {
+      nextTick(() => {
+        if (newValue) {
+          model.value = newValue;
+        }
+      });
+    });
+    const measureText = () => {
+      return measureTextLength.value.clientWidth;
+    };
+
     return {
-      label,
       model,
-      blur,
+      onTextChange,
+      measureTextLength,
+      textLength,
+      input,
+      textarea,
+      TEXT_MAX_LENGTH,
+      onFocus,
+      onBlur,
+      isFocus,
     };
   },
 });
 export default InputComponent;
 </script>
 <style lang="scss" scoped>
-input:focus {
-  outline: none;
+.inputs-container {
+  width: 100%;
+  justify-content: space-between;
+  .label-block {
+    text-align: left;
+    &.text-focus {
+      font-weight: bold;
+    }
+    // font-weight: bold;
+  }
+  .input-block {
+    text-align: right;
+    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    textarea {
+      text-align: right;
+      border: none;
+      resize: none;
+      border-radius: 3px;
+      // width: 131px;
+      padding-left: 13px;
+      height: 24px;
+      line-height: 1;
+      font-size: 10px;
+      &:focus {
+        outline: none;
+      }
+    }
+    input {
+      text-align: right;
+      border: none;
+      border-radius: 3px;
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}
+.measure-text-length {
+  height: 0;
+  opacity: 0;
+  position: absolute;
+  left: -1000px;
 }
 </style>
