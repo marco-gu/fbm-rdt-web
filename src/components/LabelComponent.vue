@@ -1,9 +1,12 @@
 <template>
-  <div class="line-item" :class="{ 'last-item': isBottomElement }">
-    <div class="label-item">
+  <div
+    class="line-item label-container"
+    :class="{ 'last-item': isBottomElement }"
+  >
+    <div class="label-block">
       {{ name }}
     </div>
-    <div class="label-item">{{ value }}</div>
+    <div class="value-block">{{ value }}</div>
   </div>
 </template>
 <script lang="ts">
@@ -45,8 +48,18 @@ const LabelComponent = defineComponent({
 export default LabelComponent;
 </script>
 <style lang="scss" scoped>
-.label-item {
-  display: inline-block;
+.label-container {
+  width: 100%;
+  justify-content: space-between;
+  .label-block {
+    text-align: left;
+  }
+  .value-block {
+    text-align: right;
+    padding-left: 10px;
+    display: flex;
+    align-items: center;
+  }
 }
 .last-item {
   position: absolute;
