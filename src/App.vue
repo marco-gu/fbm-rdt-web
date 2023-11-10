@@ -8,7 +8,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import BottomComponent from "./components/BottomComponent.vue";
 import HeaderComponent from "./components/HeaderComponent.vue";
 import { get } from "./service/http";
@@ -25,18 +25,24 @@ export default defineComponent({
     const isShow = ref(false);
     const url = "GBR";
     onMounted(() => {
-      // window.addEventListener("");
+      window.addEventListener("keydown", handleKeyDown);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("keydown", handleKeyDown);
     });
     get(url, -1).then((data) => {
       store.commit("workflowModule/saveScreenEntity", parseXML(data));
       isShow.value = true;
     });
-    const handleEnterKey = () => {
-      alert("1111");
-      store.dispatch("workflowModule/onSubmit");
-    };
-    const handleEscKey = () => {
-      store.dispatch("workflowModule/onCancel");
+    const handleKeyDown = (event: any) => {
+      switch (event.keyCode) {
+        case 13:
+          store.dispatch("workflowModule/onSubmit");
+          break;
+        case 27:
+          store.dispatch("workflowModule/onCancel");
+          break;
+      }
     };
     // if (localStorage.getItem("sessionID")) {
     //   const response = localStorage.getItem("screenEntity") as any;
@@ -50,8 +56,6 @@ export default defineComponent({
     // }
     return {
       isShow,
-      handleEnterKey,
-      handleEscKey,
     };
   },
 });
