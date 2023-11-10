@@ -11,10 +11,11 @@
           (inputType === 'input' && textLength < TEXT_MAX_LENGTH)
         "
         v-model="model"
-        autofocus
+        :autofocus="autoFocus"
         :type="inputType === 'password' ? 'password' : 'text'"
         @change="onTextChange()"
         :maxlength="max === '0' ? Number(max) + 1 : max"
+        :tabindex="tabindex"
         @focus="onFocus()"
         @blur="onBlur()"
       />
@@ -22,10 +23,11 @@
         v-else
         ref="textarea"
         v-model="model"
-        autofocus
+        :autofocus="autoFocus"
+        :tabindex="tabindex"
         rows="2"
         @change="onTextChange()"
-        :maxlength="max"
+        :maxlength="max === '0' ? Number(max) + 1 : max"
         @focus="onFocus()"
         @blur="onBlur()"
       />
@@ -35,7 +37,7 @@
 </template>
 <script lang="ts">
 import { useStore } from "@/store";
-import { defineComponent, nextTick, ref, toRefs, watch } from "vue";
+import { defineComponent, nextTick, ref, toRefs, watch, onMounted } from "vue";
 import { CapturedValue } from "../entity/request.entity";
 const InputComponent = defineComponent({
   props: {
@@ -60,10 +62,23 @@ const InputComponent = defineComponent({
     valueX: {
       type: Number,
     },
+    autoFocus: {
+      type: Boolean,
+    },
+    tabindex: {
+      type: Number,
+    },
   },
   setup(props) {
-    const { attributeName, labelName, defaultValue, inputType, max } =
-      toRefs(props);
+    const {
+      attributeName,
+      labelName,
+      defaultValue,
+      inputType,
+      max,
+      autoFocus,
+      tabindex,
+    } = toRefs(props);
     const store = useStore();
     const model = ref();
     const measureTextLength = ref();
@@ -74,6 +89,12 @@ const InputComponent = defineComponent({
     const lastAttributeName = ref();
     const TEXT_MAX_LENGTH = ref(128);
     const isFocus = ref(false);
+
+    onMounted(() => {
+      if (autoFocus.value) {
+        input.value.focus();
+      }
+    });
 
     const onTextChange = () => {
       const param = {
