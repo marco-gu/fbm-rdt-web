@@ -10,7 +10,6 @@ const PageView = defineComponent({
   setup() {
     const store = useStore();
     const render = ref();
-    const LAST_INDEX = 15;
     let lineHeight = 30;
     onMounted(() => {
       const lines = parseLineView(store.state.workflowModule.screenEntity);
@@ -47,7 +46,7 @@ const PageView = defineComponent({
                 h(LabelComponent, {
                   labelName: line.detail.label,
                   labelValue: line.detail.value,
-                  isBottomElement: LAST_INDEX === Number(index),
+                  isBottomElement: line.isLastLine,
                 }),
               ]
             );
@@ -68,6 +67,8 @@ const PageView = defineComponent({
                   defaultValue: line.detail.value,
                   inputType: line.type,
                   max: line.detail.maxLength as string,
+                  autoFocus: line.isFocus,
+                  tabindex: Number(index),
                 }),
               ]
             );
@@ -88,6 +89,8 @@ const PageView = defineComponent({
                   defaultValue: line.detail.value,
                   inputType: line.type,
                   max: line.detail.maxLength as string,
+                  autoFocus: line.isFocus,
+                  tabindex: Number(index),
                 }),
               ]
             );
@@ -107,6 +110,7 @@ const PageView = defineComponent({
                 h(MenuComponent, {
                   menuName: line.detail.label,
                   isBottomElement: line.isLastLine,
+                  tabindex: Number(index),
                 }),
               ]
             );
