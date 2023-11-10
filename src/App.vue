@@ -25,10 +25,10 @@ export default defineComponent({
     const isShow = ref(false);
     const url = "GBR";
     onMounted(() => {
-      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("keyup", handleKeyDown);
     });
     onUnmounted(() => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyDown);
     });
     get(url, -1).then((data) => {
       store.commit("workflowModule/saveScreenEntity", parseXML(data));
