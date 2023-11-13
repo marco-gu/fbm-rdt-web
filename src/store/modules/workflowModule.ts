@@ -11,6 +11,7 @@ export interface WorkflowState {
   screenTitle: string;
   screenEntity: ScreenEntity;
   linesView: Map<number, ScreenLineEntity>;
+  isLoadingVisible: boolean;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
@@ -19,12 +20,14 @@ const workflowModule: Module<WorkflowState, RootState> = {
     screenTitle: "",
     screenEntity: {} as ScreenEntity,
     linesView: new Map() as Map<number, ScreenLineEntity>,
+    isLoadingVisible: false,
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {
       context.commit("saveCapturedValue", payload);
     },
     onCancel(context) {
+      context.state.isLoadingVisible = true;
       let url = "GBR?";
       context.state.capturedValues.forEach((cv: CapturedValue) => {
         url += cv.attributeName + "=" + cv.value + "&";
@@ -35,6 +38,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
       });
     },
     onSubmit(context) {
+      context.state.isLoadingVisible = true;
       let url = "GBR?";
       context.state.capturedValues.forEach((cv: CapturedValue) => {
         url += cv.attributeName + "=" + cv.value + "&";
@@ -59,6 +63,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
       }
     },
     onSubmit(state, payload) {
+      state.isLoadingVisible = false;
       const screenEntity = parseXML(payload);
       const map = parseLineView(screenEntity);
       state.linesView = map;

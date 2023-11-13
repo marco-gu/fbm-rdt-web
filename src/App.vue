@@ -3,12 +3,20 @@
     <header-component></header-component>
     <div id="content" class="content-container">
       <router-view v-if="isShow"></router-view>
+      <q-inner-loading
+        :showing="visible"
+        label-class="text-teal"
+        label="Loading..."
+        color="primary"
+        label-style="font-size: 1.1em"
+      >
+      </q-inner-loading>
     </div>
     <bottom-component></bottom-component>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import BottomComponent from "./components/BottomComponent.vue";
 import HeaderComponent from "./components/HeaderComponent.vue";
 import { get } from "./service/http";
@@ -24,6 +32,7 @@ export default defineComponent({
     const store = useStore();
     const isShow = ref(false);
     const url = "GBR";
+    const visible = ref(true);
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
     });
@@ -33,6 +42,7 @@ export default defineComponent({
     get(url, -1).then((data) => {
       store.commit("workflowModule/saveScreenEntity", parseXML(data));
       isShow.value = true;
+      visible.value = false;
     });
     const handleKeyDown = (event: any) => {
       switch (event.keyCode) {
@@ -44,6 +54,9 @@ export default defineComponent({
           break;
       }
     };
+    watch(store.state.workflowModule, () => {
+      visible.value = store.state.workflowModule.isLoadingVisible;
+    });
     // if (localStorage.getItem("sessionID")) {
     //   const response = localStorage.getItem("screenEntity") as any;
     //   store.commit("workflowModule/saveScreenEntity", JSON.parse(response));
@@ -56,6 +69,7 @@ export default defineComponent({
     // }
     return {
       isShow,
+      visible,
     };
   },
 });
@@ -63,7 +77,7 @@ export default defineComponent({
 <style scoped lang="scss">
 .content-container {
   margin: 10px 0px;
-  height: 240px;
+  height: 280px;
   position: relative;
 }
 </style>
