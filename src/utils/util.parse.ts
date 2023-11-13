@@ -33,7 +33,9 @@ export function parseXML(xml: any): ScreenEntity {
         if (element.attributeType == "input") {
           const capturedValue = {} as CapturedValue;
           capturedValue.attributeName = element.attributeName;
-          capturedValue.value = element.defaultValue;
+          capturedValue.value = element.defaultValue
+            ? element.defaultValue
+            : "";
           screenEntity.capturedValues.push(capturedValue);
         }
         response.fields.push(element);
