@@ -6,6 +6,7 @@ import { parseLineView } from "@/utils/util.parse";
 import { ScreenLineEntity } from "@/entity/screen.entity";
 import MenuComponent from "@/components/MenuComponent.vue";
 import LabelComponent from "@/components/LabelComponent.vue";
+import TestComponent from "@/components/TestComponent.vue";
 const PageView = defineComponent({
   setup() {
     const store = useStore();
@@ -17,13 +18,18 @@ const PageView = defineComponent({
       renderView(lines);
     });
     store.subscribe((mutation, state) => {
-      if (state.workflowModule.linesView.size > 0) {
+      // console.log(state.workflowModule.renderView);
+      // if (state.workflowModule.linesView.size > 0) {
+      //   renderView(state.workflowModule.linesView);
+      //   store.commit("workflowModule/saveRenderStatus", false);
+      // }
+      if (state.workflowModule.isRenderView) {
+        store.commit("workflowModule/saveRenderStatus", false);
         renderView(state.workflowModule.linesView);
       }
     });
     const renderView = (lines: Map<number, ScreenLineEntity>) => {
-      const elementList = ref([] as any[]);
-      // TBD Body
+      let elementList = [] as any[];
       let colorIndex = 0;
       lines.forEach((line: ScreenLineEntity, index: number) => {
         const color = line.isLastLine
@@ -50,10 +56,11 @@ const PageView = defineComponent({
                 }),
               ]
             );
-            elementList.value.push(element);
+            elementList.push(element);
             break;
           }
           case "input": {
+            console.log("render input component at " + index);
             const element = h(
               "div",
               {
@@ -62,6 +69,11 @@ const PageView = defineComponent({
               },
               [
                 h(InputComponent, {
+                  key:
+                    index +
+                    new Date().getMilliseconds() +
+                    Math.floor(Math.random() * 10) +
+                    1,
                   labelName: line.detail.label,
                   attributeName: line.detail.attributeName,
                   defaultValue: line.detail.value,
@@ -72,7 +84,7 @@ const PageView = defineComponent({
                 }),
               ]
             );
-            elementList.value.push(element);
+            elementList.push(element);
             break;
           }
           case "password": {
@@ -94,7 +106,7 @@ const PageView = defineComponent({
                 }),
               ]
             );
-            elementList.value.push(element);
+            elementList.push(element);
             break;
           }
           case "menu": {
@@ -114,7 +126,7 @@ const PageView = defineComponent({
                 }),
               ]
             );
-            elementList.value.push(element);
+            elementList.push(element);
             break;
           }
         }
@@ -124,7 +136,7 @@ const PageView = defineComponent({
         {
           class: "app",
         },
-        elementList.value
+        elementList
       );
     };
     const calculateLineHeight = (lineNumber: number) => {

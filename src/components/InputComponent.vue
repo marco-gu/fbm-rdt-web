@@ -89,7 +89,10 @@ const InputComponent = defineComponent({
     const lastAttributeName = ref();
     const TEXT_MAX_LENGTH = ref(128);
     const isFocus = ref(false);
-
+    console.log(
+      "init input component",
+      " input lable is " + labelName.value + " & value is " + model.value
+    );
     onMounted(() => {
       if (autoFocus.value) {
         input.value.focus();
@@ -123,16 +126,18 @@ const InputComponent = defineComponent({
         });
       }
     });
-    watch(labelName, (newValue) => {
-      model.value = "";
-    });
-    watch(defaultValue, (newValue) => {
-      nextTick(() => {
-        if (newValue) {
-          model.value = newValue;
-        }
-      });
-    });
+    // watch(labelName, (newValue) => {
+    //   console.log(labelName);
+    //   model.value = "";
+    // });
+    // watch(defaultValue, (oldValue, newValue) => {
+    //   console.log(newValue);
+    //   nextTick(() => {
+    //     if (newValue) {
+    //       model.value = newValue;
+    //     }
+    //   });
+    // });
     const measureText = () => {
       return measureTextLength.value.clientWidth;
     };

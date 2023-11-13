@@ -12,6 +12,7 @@ export interface WorkflowState {
   screenEntity: ScreenEntity;
   linesView: Map<number, ScreenLineEntity>;
   isLoadingVisible: boolean;
+  isRenderView: boolean;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
@@ -21,6 +22,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
     screenEntity: {} as ScreenEntity,
     linesView: new Map() as Map<number, ScreenLineEntity>,
     isLoadingVisible: false,
+    isRenderView: false,
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {
@@ -50,6 +52,9 @@ const workflowModule: Module<WorkflowState, RootState> = {
     },
   },
   mutations: {
+    saveRenderStatus(state, payload) {
+      state.isRenderView = payload;
+    },
     saveCapturedValue(state, payload: CapturedValue) {
       let newCapturedValue = true;
       state.capturedValues.forEach((capturedValue) => {
@@ -69,6 +74,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.linesView = map;
       state.screenTitle = screenEntity.screenTitle;
       state.capturedValues = screenEntity.capturedValues;
+      state.isRenderView = true;
     },
     saveScreenEntity(state, payload) {
       state.screenEntity = payload;
