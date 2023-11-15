@@ -14,34 +14,40 @@ export class ScreenEntity {
     this.screenFocusName = "";
   }
 }
-export class ScreenLineEntity {
-  type: string;
+
+export interface ScreenLineEntity {
+  type: ScreenLineTypeEnum;
   isLastLine: boolean;
+  coordinateY: number;
   isFocus: boolean;
-  detail: ScreenLineDetailEntity;
-  constructor() {
-    this.type = "";
-    this.isLastLine = false;
-    this.isFocus = false;
-    this.detail = new ScreenLineDetailEntity();
-  }
+  detail: InputLineEntity | LabelLineEntity | MenuLineEntity;
 }
 
-export class ScreenLineDetailEntity {
+export interface InputLineEntity {
   attributeName: string;
-  label: string;
-  labelX: number;
+  name?: string;
   value: string;
-  valueX: number;
-  color: string;
+  coordinateNameX: number;
+  coordinateValueX: number;
+  nameColor: string;
+  valueColor?: string;
   maxLength: string | number;
-  constructor() {
-    this.attributeName = "";
-    this.label = "";
-    this.labelX = 0;
-    this.value = "";
-    this.valueX = 0;
-    this.color = "";
-    this.maxLength = 0;
-  }
+}
+
+export interface LabelLineEntity {
+  name: string | [];
+  coordinateNameX: number | [number];
+  nameColor: string | [string];
+}
+
+export interface MenuLineEntity {
+  name: string;
+  coordinateNameX: number;
+  nameColor: string;
+}
+
+export enum ScreenLineTypeEnum {
+  Input,
+  Label,
+  Menu,
 }
