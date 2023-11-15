@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="line-item label-container"
-    :class="{ 'last-item': isBottomElement }"
-  >
+  <div class="line-item label-container">
     <div class="label-block">
       {{ name }}
     </div>
@@ -19,12 +16,9 @@ const LabelComponent = defineComponent({
     labelValue: {
       type: String,
     },
-    isBottomElement: {
-      type: Boolean,
-    },
   },
   setup(props) {
-    const { labelName, labelValue, isBottomElement } = toRefs(props);
+    const { labelName, labelValue } = toRefs(props);
     const name = ref();
     name.value = labelName.value;
     const value = ref();
