@@ -1,6 +1,10 @@
 <template>
   <div class="line-item inputs-container">
-    <div class="label-block" :class="{ 'text-focus': isFocus }">
+    <div
+      v-if="labelName"
+      class="label-block"
+      :class="{ 'text-focus': isFocus }"
+    >
       {{ labelName }}
     </div>
     <div class="input-block">
@@ -87,12 +91,8 @@ const InputComponent = defineComponent({
     const textLength = ref(0);
     model.value = defaultValue.value;
     const lastAttributeName = ref();
-    const TEXT_MAX_LENGTH = ref(128);
+    const TEXT_MAX_LENGTH = ref(170);
     const isFocus = ref(false);
-    console.log(
-      "init input component",
-      " input lable is " + labelName.value + " & value is " + model.value
-    );
     onMounted(() => {
       if (autoFocus.value) {
         input.value.focus();
@@ -126,18 +126,6 @@ const InputComponent = defineComponent({
         });
       }
     });
-    // watch(labelName, (newValue) => {
-    //   console.log(labelName);
-    //   model.value = "";
-    // });
-    // watch(defaultValue, (oldValue, newValue) => {
-    //   console.log(newValue);
-    //   nextTick(() => {
-    //     if (newValue) {
-    //       model.value = newValue;
-    //     }
-    //   });
-    // });
     const measureText = () => {
       return measureTextLength.value.clientWidth;
     };
@@ -165,36 +153,35 @@ export default InputComponent;
   .label-block {
     text-align: left;
     &.text-focus {
-      font-weight: bold;
+      // font-weight: bold;
     }
-    // font-weight: bold;
   }
   .input-block {
-    text-align: right;
-    padding-left: 10px;
     display: flex;
     align-items: center;
     textarea {
-      text-align: right;
       border: none;
       resize: none;
-      border-radius: 3px;
-      // width: 131px;
-      padding-left: 13px;
+      padding-left: 4px;
       height: 24px;
       line-height: 1;
       font-size: 10px;
+      color: #ffc58f;
+      background-color: #00346e;
       &:focus {
         outline: none;
       }
     }
     input {
-      text-align: right;
       border: none;
-      border-radius: 3px;
-      background-color: transparent;
+      color: #ffc58f;
+      background-color: #00346e;
       &:focus {
         outline: none;
+        background-color: blue;
+      }
+      &:active {
+        background-color: blue;
       }
     }
   }
