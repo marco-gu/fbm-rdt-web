@@ -20,10 +20,10 @@ export interface ScreenLineEntity {
   isLastLine: boolean;
   coordinateY: number;
   isFocus: boolean;
-  detail: InputLineEntity | LabelLineEntity | MenuLineEntity;
+  detail: LineDetailEntity;
 }
 
-export interface InputLineEntity {
+export interface LineDetailEntity {
   attributeName: string;
   name?: string;
   value: string;
@@ -34,20 +34,9 @@ export interface InputLineEntity {
   maxLength: string | number;
 }
 
-export interface LabelLineEntity {
-  name: string | [];
-  coordinateNameX: number | [number];
-  nameColor: string | [string];
-}
-
-export interface MenuLineEntity {
-  name: string;
-  coordinateNameX: number;
-  nameColor: string;
-}
-
 export enum ScreenLineTypeEnum {
-  Input,
-  Label,
-  Menu,
+  Input = "input",
+  Password = "password",
+  Label = "label",
+  Menu = "menu",
 }

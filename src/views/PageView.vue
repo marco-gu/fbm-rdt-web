@@ -34,14 +34,14 @@ const PageView = defineComponent({
       lines.forEach((line: ScreenLineEntity, index: number) => {
         const color = line.isLastLine
           ? "#FFFFFF"
-          : !line.detail.label
+          : !line.detail.name
           ? "#FFFFFF"
           : colorIndex % 2
           ? "#f5fcff"
           : "#e7eff3";
         colorIndex++;
         switch (line.type) {
-          case "output": {
+          case "label": {
             const element = h(
               "div",
               {
@@ -50,7 +50,7 @@ const PageView = defineComponent({
               },
               [
                 h(LabelComponent, {
-                  labelName: line.detail.label,
+                  labelName: line.detail.name,
                   labelValue: line.detail.value,
                   isBottomElement: line.isLastLine,
                 }),
@@ -74,7 +74,7 @@ const PageView = defineComponent({
                     new Date().getMilliseconds() +
                     Math.floor(Math.random() * 10) +
                     1,
-                  labelName: line.detail.label,
+                  labelName: line.detail.name,
                   attributeName: line.detail.attributeName,
                   defaultValue: line.detail.value,
                   inputType: line.type,
@@ -96,7 +96,7 @@ const PageView = defineComponent({
               },
               [
                 h(InputComponent, {
-                  labelName: line.detail.label,
+                  labelName: line.detail.name,
                   attributeName: line.detail.attributeName,
                   defaultValue: line.detail.value,
                   inputType: line.type,
@@ -120,7 +120,7 @@ const PageView = defineComponent({
               },
               [
                 h(MenuComponent, {
-                  menuName: line.detail.label,
+                  menuName: line.detail.name,
                   isBottomElement: line.isLastLine,
                   tabindex: Number(index),
                 }),
