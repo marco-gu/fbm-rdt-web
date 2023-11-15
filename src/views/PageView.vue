@@ -11,8 +11,7 @@ const PageView = defineComponent({
     const store = useStore();
     const render = ref();
     const lastRow = ref(0);
-    // TBD fixed line height
-    let lineHeight = 30;
+    // TBD fixed line height d
     onMounted(() => {
       const lines = parseLineView(store.state.workflowModule.screenEntity);
       // calculateLineHeight(lines.size);
@@ -32,9 +31,7 @@ const PageView = defineComponent({
     const renderView = (lines: Map<number, ScreenLineEntity>) => {
       let elementList = [] as any[];
       lines.forEach((line: ScreenLineEntity, index: number) => {
-        console.log(index);
-        console.log(lastRow.value);
-        const top = index == 1 ? 0 : (index - lastRow.value - 1) * 20;
+        const top = index == 1 ? 0 : (index - lastRow.value - 1) * 21.5;
         lastRow.value = index;
         switch (line.type) {
           case "label": {
@@ -60,7 +57,7 @@ const PageView = defineComponent({
               "div",
               {
                 class: ["center-items"],
-                style: { height: lineHeight + "px" },
+                style: { "margin-top": top + "px" },
               },
               [
                 h(InputComponent, {
@@ -87,7 +84,7 @@ const PageView = defineComponent({
               "div",
               {
                 class: ["center-items"],
-                style: { height: lineHeight + "px" },
+                style: { "margin-top": top + "px" },
               },
               [
                 h(InputComponent, {
@@ -111,7 +108,7 @@ const PageView = defineComponent({
                 class: line.isLastLine
                   ? ["center-items last-item"]
                   : ["center-items"],
-                style: { height: lineHeight + "px" },
+                style: { "margin-top": top + "px" },
               },
               [
                 h(MenuComponent, {

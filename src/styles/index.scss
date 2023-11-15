@@ -1,19 +1,27 @@
+$fontSize: 16px;
+$letter-spacing: -0.5px;
+$lineItemHeight: 21.5px;
+$width: 260px;
+html {
+    background-color: #0E1925;
+}
+
 #app {
     font-family: monospace;
-    font-size: 16px;
-    letter-spacing: 1px;
-    width: 320px;
-    // display: flex;
-    // flex-direction: column;
-    // justify-content: space-between;
+    font-size: $fontSize;
+    letter-spacing: $letter-spacing;
+    width: $width;
+    font-weight: 100;
     background-color: #001733;
     color: #FFEEAD;
     padding: 0 12px;
+    border: #6E7C89 .5px solid;
 }
 
 .line-item {
     display: flex;
     align-items: center;
+    height: $lineItemHeight;
     // min-height: 24px;
     // padding: 3px;
 }
