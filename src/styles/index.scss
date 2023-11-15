@@ -1,20 +1,21 @@
 #app {
-    font-family: "Maersk Text", -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", "Microsoft Yahei", "微软雅黑", STXihei, "华文细黑", sans-serif, monospace;
-    width: 250px;
-    margin: 20px 0px 0px 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color: #0E1925;
+    font-family: monospace;
+    font-size: 16px;
+    letter-spacing: 1px;
+    width: 320px;
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: space-between;
+    background-color: #001733;
     color: #FFEEAD;
+    padding: 0 12px;
 }
 
 .line-item {
     display: flex;
     align-items: center;
-    min-height: 24px;
-    padding: 3px;
-    font-size: 12px;
+    // min-height: 24px;
+    // padding: 3px;
 }
 
 .center-items {
