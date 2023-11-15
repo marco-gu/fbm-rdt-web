@@ -1,6 +1,6 @@
 <template>
   <div style="width: 260px">
-    <header-component></header-component>
+    <!-- <header-component></header-component> -->
     <div id="content" class="content-container">
       <router-view v-if="isShow"></router-view>
       <q-inner-loading
@@ -18,14 +18,14 @@
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import BottomComponent from "./components/BottomComponent.vue";
-import HeaderComponent from "./components/HeaderComponent.vue";
+// import HeaderComponent from "./components/HeaderComponent.vue";
 import { get } from "./service/http";
 import { useStore } from "./store";
 import { parseXML } from "./utils/util.parse";
 
 export default defineComponent({
   components: {
-    HeaderComponent,
+    // HeaderComponent,
     BottomComponent,
   },
   setup() {
@@ -76,8 +76,8 @@ export default defineComponent({
 </script>
 <style scoped lang="scss">
 .content-container {
-  margin: 10px 0px;
-  height: 280px;
+  margin: 0px;
+  height: 330px;
   position: relative;
 }
 </style>

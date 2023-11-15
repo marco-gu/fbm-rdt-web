@@ -6,15 +6,16 @@ import { parseLineView } from "@/utils/util.parse";
 import { ScreenLineEntity } from "@/entity/screen.entity";
 import MenuComponent from "@/components/MenuComponent.vue";
 import LabelComponent from "@/components/LabelComponent.vue";
-import TestComponent from "@/components/TestComponent.vue";
 const PageView = defineComponent({
   setup() {
     const store = useStore();
     const render = ref();
+    const lastRow = ref(0);
+    // TBD fixed line height
     let lineHeight = 30;
     onMounted(() => {
       const lines = parseLineView(store.state.workflowModule.screenEntity);
-      calculateLineHeight(lines.size);
+      // calculateLineHeight(lines.size);
       renderView(lines);
     });
     store.subscribe((mutation, state) => {
@@ -30,23 +31,18 @@ const PageView = defineComponent({
     });
     const renderView = (lines: Map<number, ScreenLineEntity>) => {
       let elementList = [] as any[];
-      let colorIndex = 0;
       lines.forEach((line: ScreenLineEntity, index: number) => {
-        const color = line.isLastLine
-          ? "#FFFFFF"
-          : !line.detail.name
-          ? "#FFFFFF"
-          : colorIndex % 2
-          ? "#f5fcff"
-          : "#e7eff3";
-        colorIndex++;
+        console.log(index);
+        console.log(lastRow.value);
+        const top = index == 1 ? 0 : (index - lastRow.value - 1) * 20;
+        lastRow.value = index;
         switch (line.type) {
           case "label": {
             const element = h(
               "div",
               {
                 class: ["center-items"],
-                style: { "background-color": color, height: lineHeight + "px" },
+                style: { "margin-top": top + "px" },
               },
               [
                 h(LabelComponent, {
@@ -60,12 +56,11 @@ const PageView = defineComponent({
             break;
           }
           case "input": {
-            console.log("render input component at " + index);
             const element = h(
               "div",
               {
                 class: ["center-items"],
-                style: { "background-color": color, height: lineHeight + "px" },
+                style: { height: lineHeight + "px" },
               },
               [
                 h(InputComponent, {
@@ -92,7 +87,7 @@ const PageView = defineComponent({
               "div",
               {
                 class: ["center-items"],
-                style: { "background-color": color, height: lineHeight + "px" },
+                style: { height: lineHeight + "px" },
               },
               [
                 h(InputComponent, {
@@ -116,7 +111,7 @@ const PageView = defineComponent({
                 class: line.isLastLine
                   ? ["center-items last-item"]
                   : ["center-items"],
-                style: { "background-color": color, height: lineHeight + "px" },
+                style: { height: lineHeight + "px" },
               },
               [
                 h(MenuComponent, {
@@ -139,21 +134,21 @@ const PageView = defineComponent({
         elementList
       );
     };
-    const calculateLineHeight = (lineNumber: number) => {
-      const contentEle = document.getElementById("content");
-      if (contentEle) {
-        const calculatedHeight = Math.floor(
-          contentEle.offsetHeight / lineNumber
-        );
-        // 30 > lineheight > 24
-        lineHeight =
-          calculatedHeight > 30
-            ? 30
-            : calculatedHeight < 24
-            ? 24
-            : calculatedHeight;
-      }
-    };
+    // const calculateLineHeight = (lineNumber: number) => {
+    //   const contentEle = document.getElementById("content");
+    //   if (contentEle) {
+    //     const calculatedHeight = Math.floor(
+    //       contentEle.offsetHeight / lineNumber
+    //     );
+    //     // 30 > lineheight > 24
+    //     lineHeight =
+    //       calculatedHeight > 30
+    //         ? 30
+    //         : calculatedHeight < 24
+    //         ? 24
+    //         : calculatedHeight;
+    //   }
+    // };
     return () => render.value;
   },
 });
