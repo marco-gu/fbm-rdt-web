@@ -50,40 +50,35 @@ export function parseXML(xml: any): ScreenEntity {
   });
   console.log(response);
   const rows: any[][] = [[]];
-  let i = 0;
   let j = 0;
   response.fields.forEach((t: FieldDto) => {
+    console.log(t.coordinateY);
     if (t.coordinateX == 1) {
-      if (i > 0 && rows[i - 1] && rows[i - 1][0].coordinateY == t.coordinateY) {
-        if (rows[i - 1][j].coordinateX > t.coordinateX) {
-          const temp = rows[i - 1][j];
-          rows[i - 1][j] = t;
+      if (rows[t.coordinateY]) {
+        if (rows[t.coordinateY][j].coordinateX > t.coordinateX) {
+          const temp = rows[t.coordinateY][j];
+          rows[t.coordinateY][j] = t;
           j++;
-          rows[i - 1][j] = temp;
+          rows[t.coordinateY][j] = temp;
         } else {
           j++;
-          rows[i - 1][j] = t;
+          rows[t.coordinateY][j] = t;
         }
       } else {
         j = 0;
-        rows[i] = [];
-        rows[i][j] = t;
+        rows[t.coordinateY] = [];
+        rows[t.coordinateY][j] = t;
       }
     } else {
-      if (rows[i - 1]) {
-        rows[i - 1].forEach((row: any) => {
-          if (row && row.coordinateY == t.coordinateY) {
-            j++;
-            rows[i - 1][j] = t;
-          }
-        });
+      if (rows[t.coordinateY]) {
+        j++;
+        rows[t.coordinateY][j] = t;
       } else {
         j = 0;
-        rows[i] = [];
-        rows[i][j] = t;
+        rows[t.coordinateY] = [];
+        rows[t.coordinateY][j] = t;
       }
     }
-    i++;
   });
   console.log(rows);
   screenEntity.screenLines = rows;
@@ -95,47 +90,50 @@ export function parseLineView(
 ): Map<number, ScreenLineEntity> {
   const map: Map<number, any> = new Map();
   screenEntity.screenLines.forEach((screenRow: any[], index: number) => {
-    const line = {} as ScreenLineEntity;
-    line.detail = {} as LineDetailEntity;
-    screenRow.forEach((column: FieldDto) => {
-      switch (column.attributeType) {
-        case "output":
-          line.type = ScreenLineTypeEnum.Label;
-          if (line.detail && !line.detail.name) {
+    if (screenRow.length > 0) {
+      const line = {} as ScreenLineEntity;
+      line.detail = {} as LineDetailEntity;
+      screenRow.forEach((column: FieldDto) => {
+        switch (column.attributeType) {
+          case "output":
+            line.type = ScreenLineTypeEnum.Label;
+            if (line.detail && !line.detail.name) {
+              line.detail.name = column.value;
+              line.detail.coordinateNameX = column.coordinateX;
+            } else {
+              line.detail.value = column.value;
+              line.detail.coordinateValueX = column.coordinateX;
+            }
+            break;
+          case "input":
+            line.type = ScreenLineTypeEnum.Input;
+            line.detail.attributeName = column.attributeName;
+            line.detail.coordinateValueX = column.coordinateX;
+            line.detail.maxLength = column.maxLength;
+            line.detail.value =
+              column.defaultValue == undefined ? "" : column.defaultValue;
+            if (screenEntity.screenFocusName == column.attributeName) {
+              line.isFocus = true;
+            }
+            break;
+          case "password":
+            line.type = ScreenLineTypeEnum.Password;
+            line.isLastLine = index == screenEntity.screenLines.length - 1;
+            line.detail.attributeName = column.attributeName;
+            line.detail.maxLength = column.maxLength;
+            line.detail.coordinateValueX = column.coordinateX;
+            break;
+          case "menu":
+            line.type = ScreenLineTypeEnum.Menu;
+            line.isLastLine = index == screenEntity.screenLines.length - 1;
             line.detail.name = column.value;
             line.detail.coordinateNameX = column.coordinateX;
-          } else {
-            line.detail.value = column.value;
-            line.detail.coordinateValueX = column.coordinateX;
-          }
-          break;
-        case "input":
-          line.type = ScreenLineTypeEnum.Input;
-          line.detail.attributeName = column.attributeName;
-          line.detail.coordinateValueX = column.coordinateX;
-          line.detail.maxLength = column.maxLength;
-          line.detail.value =
-            column.defaultValue == undefined ? "" : column.defaultValue;
-          if (screenEntity.screenFocusName == column.attributeName) {
-            line.isFocus = true;
-          }
-          break;
-        case "password":
-          line.type = ScreenLineTypeEnum.Password;
-          line.isLastLine = index == screenEntity.screenLines.length - 1;
-          line.detail.attributeName = column.attributeName;
-          line.detail.maxLength = column.maxLength;
-          line.detail.coordinateValueX = column.coordinateX;
-          break;
-        case "menu":
-          line.type = ScreenLineTypeEnum.Menu;
-          line.isLastLine = index == screenEntity.screenLines.length - 1;
-          line.detail.name = column.value;
-          line.detail.coordinateNameX = column.coordinateX;
-          break;
-      }
-    });
-    map.set(screenRow[0].coordinateY, line);
+            break;
+        }
+      });
+      console.log(screenRow[0]);
+      map.set(screenRow[0].coordinateY, line);
+    }
   });
   console.log(map);
   return map;
