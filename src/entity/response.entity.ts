@@ -24,3 +24,10 @@ export interface FieldDto {
   coordinateY: number;
   color: string;
 }
+
+export enum ResponseAttributeType {
+  INPUT = "input",
+  OUTPUT = "output",
+  PASSWORD = "password",
+  MENU = "menu",
+}

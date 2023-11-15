@@ -14,12 +14,9 @@ const MenuComponent = defineComponent({
     menuName: {
       type: String,
     },
-    isBottomElement: {
-      type: Boolean,
-    },
   },
   setup(props) {
-    const { menuName, isBottomElement } = toRefs(props);
+    const { menuName } = toRefs(props);
     const store = useStore();
     const name = ref();
     name.value = menuName.value;

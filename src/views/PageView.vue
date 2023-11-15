@@ -11,7 +11,6 @@ const PageView = defineComponent({
     const store = useStore();
     const render = ref();
     const lastRow = ref(0);
-    // TBD fixed line height d
     onMounted(() => {
       const lines = parseLineView(store.state.workflowModule.screenEntity);
       // calculateLineHeight(lines.size);
@@ -35,17 +34,19 @@ const PageView = defineComponent({
         lastRow.value = index;
         switch (line.type) {
           case "label": {
+            const lineColor =
+              line.detail.color == "white" ? "#FFEEAD" : line.detail.color;
             const element = h(
               "div",
               {
                 class: ["center-items"],
-                style: { "margin-top": top + "px" },
+                style: { "margin-top": top + "px", color: lineColor },
               },
               [
                 h(LabelComponent, {
                   labelName: line.detail.name,
                   labelValue: line.detail.value,
-                  isBottomElement: line.isLastLine,
+                  isBottomElement: false,
                 }),
               ]
             );
@@ -88,6 +89,11 @@ const PageView = defineComponent({
               },
               [
                 h(InputComponent, {
+                  key:
+                    index +
+                    new Date().getMilliseconds() +
+                    Math.floor(Math.random() * 10) +
+                    1,
                   labelName: line.detail.name,
                   attributeName: line.detail.attributeName,
                   defaultValue: line.detail.value,
@@ -105,16 +111,12 @@ const PageView = defineComponent({
             const element = h(
               "div",
               {
-                class: line.isLastLine
-                  ? ["center-items last-item"]
-                  : ["center-items"],
+                class: ["center-item"],
                 style: { "margin-top": top + "px" },
               },
               [
                 h(MenuComponent, {
                   menuName: line.detail.name,
-                  isBottomElement: line.isLastLine,
-                  tabindex: Number(index),
                 }),
               ]
             );

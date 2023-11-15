@@ -1,5 +1,9 @@
 import { XmlDocument } from "xmldoc";
-import { EngineResponse, FieldDto } from "@/entity/response.entity";
+import {
+  EngineResponse,
+  FieldDto,
+  ResponseAttributeType,
+} from "@/entity/response.entity";
 import {
   LineDetailEntity,
   ScreenEntity,
@@ -16,15 +20,18 @@ export function parseXML(xml: any): ScreenEntity {
   screenEntity.screenFocusName = doc.attr.focus;
   screenEntity.sessionID = doc.attr.number as unknown as number;
   response.fields = [];
-  doc.children.forEach((t: any) => {
+  doc.children.forEach((t: any, index: number) => {
     switch (t.name) {
       case "field": {
         const element = {} as FieldDto;
         element.color = t.attr.color;
         element.coordinateX = t.attr.x;
         element.coordinateY = t.attr.y;
-        if (screenEntity.screenTitle.includes("Menu")) {
-          element.attributeType = "menu";
+        if (
+          screenEntity.screenTitle.includes("Menu") &&
+          index < doc.children.length - 1
+        ) {
+          element.attributeType = ScreenLineTypeEnum.MENU;
         } else {
           element.attributeType = t.attr.typ;
         }
@@ -32,7 +39,7 @@ export function parseXML(xml: any): ScreenEntity {
         element.attributeName = t.attr.id;
         element.defaultValue = t.attr.default;
         element.maxLength = t.attr.length;
-        if (element.attributeType == "input") {
+        if (element.attributeType == ResponseAttributeType.INPUT) {
           const capturedValue = {} as CapturedValue;
           capturedValue.attributeName = element.attributeName;
           capturedValue.value = element.defaultValue
@@ -52,7 +59,6 @@ export function parseXML(xml: any): ScreenEntity {
   const rows: any[][] = [[]];
   let j = 0;
   response.fields.forEach((t: FieldDto) => {
-    console.log(t.coordinateY);
     if (t.coordinateX == 1) {
       if (rows[t.coordinateY]) {
         if (rows[t.coordinateY][j].coordinateX > t.coordinateX) {
@@ -89,14 +95,14 @@ export function parseLineView(
   screenEntity: ScreenEntity
 ): Map<number, ScreenLineEntity> {
   const map: Map<number, any> = new Map();
-  screenEntity.screenLines.forEach((screenRow: any[], index: number) => {
+  screenEntity.screenLines.forEach((screenRow: any[]) => {
     if (screenRow.length > 0) {
       const line = {} as ScreenLineEntity;
       line.detail = {} as LineDetailEntity;
       screenRow.forEach((column: FieldDto) => {
         switch (column.attributeType) {
-          case "output":
-            line.type = ScreenLineTypeEnum.Label;
+          case ResponseAttributeType.OUTPUT:
+            line.type = ScreenLineTypeEnum.LABEL;
             if (line.detail && !line.detail.name) {
               line.detail.name = column.value;
               line.detail.coordinateNameX = column.coordinateX;
@@ -104,9 +110,10 @@ export function parseLineView(
               line.detail.value = column.value;
               line.detail.coordinateValueX = column.coordinateX;
             }
+            line.detail.color = column.color;
             break;
-          case "input":
-            line.type = ScreenLineTypeEnum.Input;
+          case ResponseAttributeType.INPUT:
+            line.type = ScreenLineTypeEnum.INPUT;
             line.detail.attributeName = column.attributeName;
             line.detail.coordinateValueX = column.coordinateX;
             line.detail.maxLength = column.maxLength;
@@ -116,22 +123,19 @@ export function parseLineView(
               line.isFocus = true;
             }
             break;
-          case "password":
-            line.type = ScreenLineTypeEnum.Password;
-            line.isLastLine = index == screenEntity.screenLines.length - 1;
+          case ResponseAttributeType.PASSWORD:
+            line.type = ScreenLineTypeEnum.PASSWORD;
             line.detail.attributeName = column.attributeName;
             line.detail.maxLength = column.maxLength;
             line.detail.coordinateValueX = column.coordinateX;
             break;
-          case "menu":
-            line.type = ScreenLineTypeEnum.Menu;
-            line.isLastLine = index == screenEntity.screenLines.length - 1;
+          case ResponseAttributeType.MENU:
+            line.type = ScreenLineTypeEnum.MENU;
             line.detail.name = column.value;
             line.detail.coordinateNameX = column.coordinateX;
             break;
         }
       });
-      console.log(screenRow[0]);
       map.set(screenRow[0].coordinateY, line);
     }
   });
