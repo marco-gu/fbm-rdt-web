@@ -17,7 +17,7 @@ export class ScreenEntity {
 
 export interface ScreenLineEntity {
   type: ScreenLineTypeEnum;
-  isLastLine: boolean;
+  // isLastLine: boolean;
   coordinateY: number;
   isFocus: boolean;
   detail: LineDetailEntity;
@@ -29,14 +29,15 @@ export interface LineDetailEntity {
   value: string;
   coordinateNameX: number;
   coordinateValueX: number;
-  nameColor: string;
-  valueColor?: string;
+  color: string;
+  // nameColor: string;
+  // valueColor?: string;
   maxLength: string | number;
 }
 
 export enum ScreenLineTypeEnum {
-  Input = "input",
-  Password = "password",
-  Label = "label",
-  Menu = "menu",
+  INPUT = "input",
+  PASSWORD = "password",
+  LABEL = "label",
+  MENU = "menu",
 }
