@@ -1,27 +1,37 @@
 <script lang="ts">
-import { defineComponent, h, onMounted, ref } from "vue";
+import { defineComponent, h, onMounted, reactive, ref, watch } from "vue";
 import InputComponent from "@/components/InputComponent.vue";
 import { useStore } from "@/store";
 import { parseLineView } from "@/utils/util.parse";
 import { ScreenLineEntity } from "@/entity/screen.entity";
 import MenuComponent from "@/components/MenuComponent.vue";
 import LabelComponent from "@/components/LabelComponent.vue";
+import SettingView from "@/views/SubPageView.vue";
 const PageView = defineComponent({
+  components: {
+    SettingView,
+  },
   setup() {
     const store = useStore();
     const render = ref();
     const lastRow = ref(0);
+    watch(store.state.workflowModule, () => {
+      const elements = document.getElementsByClassName("center-items") as any;
+      for (let i = 0; i < elements.length; i++) {
+        elements[i].style.visibility = store.state.workflowModule.isSubPageShow
+          ? "hidden"
+          : "visible";
+      }
+      const subElement = document.getElementById("temp") as any;
+      subElement.style.visibility = store.state.workflowModule.isSubPageShow
+        ? "visible"
+        : "hidden";
+    });
     onMounted(() => {
       const lines = parseLineView(store.state.workflowModule.screenEntity);
-      // calculateLineHeight(lines.size);
       renderView(lines);
     });
     store.subscribe((mutation, state) => {
-      // console.log(state.workflowModule.renderView);
-      // if (state.workflowModule.linesView.size > 0) {
-      //   renderView(state.workflowModule.linesView);
-      //   store.commit("workflowModule/saveRenderStatus", false);
-      // }
       if (state.workflowModule.isRenderView) {
         store.commit("workflowModule/saveRenderStatus", false);
         renderView(state.workflowModule.linesView);
@@ -40,7 +50,10 @@ const PageView = defineComponent({
               "div",
               {
                 class: ["center-items"],
-                style: { "margin-top": top + "px", color: lineColor },
+                style: {
+                  "margin-top": top + "px",
+                  color: lineColor,
+                },
               },
               [
                 h(LabelComponent, {
@@ -112,7 +125,9 @@ const PageView = defineComponent({
               "div",
               {
                 class: ["center-item"],
-                style: { "margin-top": top + "px" },
+                style: {
+                  "margin-top": top + "px",
+                },
               },
               [
                 h(MenuComponent, {
@@ -125,6 +140,38 @@ const PageView = defineComponent({
           }
         }
       });
+      const element = h(
+        "div",
+        {
+          id: "temp",
+          class: ["sub-page"],
+          style: { visibility: "hidden" },
+        },
+        [h(SettingView)]
+      );
+      elementList.push(element);
+      const button = h(
+        "div",
+        {
+          style: {
+            position: "absolute",
+            left: "95%",
+            top: "92%",
+          },
+        },
+        [
+          h("i", {
+            id: "icon",
+            class: ["fa-solid fa-plus"],
+            onClick: () => {
+              store.commit("workflowModule/saveSubPageStatus", true);
+              const iconElement = document.getElementById("icon") as any;
+              iconElement.setAttribute("class", "fa-solid fa-minus");
+            },
+          }),
+        ]
+      );
+      elementList.push(button);
       render.value = h(
         "div",
         {
@@ -133,21 +180,6 @@ const PageView = defineComponent({
         elementList
       );
     };
-    // const calculateLineHeight = (lineNumber: number) => {
-    //   const contentEle = document.getElementById("content");
-    //   if (contentEle) {
-    //     const calculatedHeight = Math.floor(
-    //       contentEle.offsetHeight / lineNumber
-    //     );
-    //     // 30 > lineheight > 24
-    //     lineHeight =
-    //       calculatedHeight > 30
-    //         ? 30
-    //         : calculatedHeight < 24
-    //         ? 24
-    //         : calculatedHeight;
-    //   }
-    // };
     return () => render.value;
   },
 });
