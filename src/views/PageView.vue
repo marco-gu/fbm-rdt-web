@@ -47,6 +47,12 @@ const PageView = defineComponent({
                   labelName: line.detail.name,
                   labelValue: line.detail.value,
                   isBottomElement: false,
+                  labelX: line.detail.coordinateNameX
+                    ? Number(line.detail.coordinateNameX)
+                    : 0,
+                  valueX: line.detail.coordinateValueX
+                    ? Number(line.detail.coordinateValueX)
+                    : 0,
                 }),
               ]
             );
@@ -74,6 +80,12 @@ const PageView = defineComponent({
                   max: line.detail.maxLength as string,
                   autoFocus: line.isFocus,
                   tabindex: Number(index),
+                  labelX: line.detail.coordinateNameX
+                    ? Number(line.detail.coordinateNameX)
+                    : 0,
+                  valueX: line.detail.coordinateValueX
+                    ? Number(line.detail.coordinateValueX)
+                    : 0,
                 }),
               ]
             );
@@ -101,6 +113,12 @@ const PageView = defineComponent({
                   max: line.detail.maxLength as string,
                   autoFocus: line.isFocus,
                   tabindex: Number(index),
+                  labelX: line.detail.coordinateNameX
+                    ? Number(line.detail.coordinateNameX)
+                    : 0,
+                  valueX: line.detail.coordinateValueX
+                    ? Number(line.detail.coordinateValueX)
+                    : 0,
                 }),
               ]
             );

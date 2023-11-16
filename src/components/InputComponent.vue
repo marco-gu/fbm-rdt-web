@@ -4,10 +4,18 @@
       v-if="labelName"
       class="label-block"
       :class="{ 'text-focus': isFocus }"
+      :style="{
+        flexBasis: valueX ? (Number(valueX) / 25) * 100 + '%' : 'auto',
+      }"
     >
       {{ labelName }}
     </div>
-    <div class="input-block">
+    <div
+      class="input-block"
+      :style="{
+        flexBasis: valueX ? (1 - Number(valueX) / 25) * 100 + '%' : 'auto',
+      }"
+    >
       <input
         ref="input"
         v-if="
