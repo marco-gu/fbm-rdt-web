@@ -1,9 +1,21 @@
 <template>
   <div class="line-item label-container">
-    <div class="label-block">
+    <div
+      class="label-block"
+      :style="{
+        flexBasis: valueX ? (Number(valueX) / 25) * 100 + '%' : 'auto',
+      }"
+    >
       {{ name }}
     </div>
-    <div class="value-block">{{ value }}</div>
+    <div
+      class="value-block"
+      :style="{
+        flexBasis: valueX ? (1 - Number(valueX) / 25) * 100 + '%' : 'auto',
+      }"
+    >
+      {{ value }}
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -15,6 +27,12 @@ const LabelComponent = defineComponent({
     },
     labelValue: {
       type: String,
+    },
+    labelX: {
+      type: Number,
+    },
+    valueX: {
+      type: Number,
     },
   },
   setup(props) {
