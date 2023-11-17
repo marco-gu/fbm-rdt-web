@@ -13,8 +13,7 @@ export interface WorkflowState {
   linesView: Map<number, ScreenLineEntity>;
   isLoadingVisible: boolean;
   isRenderView: boolean;
-  isSubPageShow: boolean;
-  isGenericPageShow: boolean;
+  isOptionShow: boolean;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
@@ -25,8 +24,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
     linesView: new Map() as Map<number, ScreenLineEntity>,
     isLoadingVisible: false,
     isRenderView: false,
-    isSubPageShow: false,
-    isGenericPageShow: false,
+    isOptionShow: false,
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {
@@ -85,17 +83,9 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.sessionID = payload.sessionID;
       state.screenTitle = payload.screenTitle;
       state.capturedValues = payload.capturedValues;
-      // if (!localStorage.getItem("sessionID")) {
-      //   localStorage.setItem("sessionID", payload.sessionID);
-      //   localStorage.setItem("screenEntity", JSON.stringify(payload));
-      // }
     },
     saveSubPageStatus(state, payload) {
-      state.isSubPageShow = payload;
-      state.isGenericPageShow = payload == true ? false : true;
-    },
-    saveGenericStatus(state, payload) {
-      state.isGenericPageShow = payload;
+      state.isOptionShow = payload;
     },
   },
   namespaced: true,

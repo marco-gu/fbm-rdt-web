@@ -1,29 +1,31 @@
 <script lang="ts">
-import { defineComponent, h, onMounted, reactive, ref, watch } from "vue";
+import { defineComponent, h, onMounted, ref, watch } from "vue";
 import InputComponent from "@/components/InputComponent.vue";
 import { useStore } from "@/store";
 import { parseLineView } from "@/utils/util.parse";
 import { ScreenLineEntity } from "@/entity/screen.entity";
 import MenuComponent from "@/components/MenuComponent.vue";
 import LabelComponent from "@/components/LabelComponent.vue";
-import SettingView from "@/views/SubPageView.vue";
+import OptionsView from "@/views/options/OptionsView.vue";
+import { useRouter } from "vue-router";
 const PageView = defineComponent({
   components: {
-    SettingView,
+    OptionsView,
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
     const render = ref();
     const lastRow = ref(0);
     watch(store.state.workflowModule, () => {
       const elements = document.getElementsByClassName("center-items") as any;
-      for (let i = 0; i < elements.length; i++) {
-        elements[i].style.visibility = store.state.workflowModule.isSubPageShow
+      for (let i = 0; i < elements.length - 1; i++) {
+        elements[i].style.visibility = store.state.workflowModule.isOptionShow
           ? "hidden"
           : "visible";
       }
       const subElement = document.getElementById("temp") as any;
-      subElement.style.visibility = store.state.workflowModule.isSubPageShow
+      subElement.style.visibility = store.state.workflowModule.isOptionShow
         ? "visible"
         : "hidden";
     });
@@ -162,10 +164,10 @@ const PageView = defineComponent({
         "div",
         {
           id: "temp",
-          class: ["sub-page"],
+          class: ["options"],
           style: { visibility: "hidden" },
         },
-        [h(SettingView)]
+        [h(OptionsView)]
       );
       elementList.push(element);
       const button = h(
@@ -182,9 +184,18 @@ const PageView = defineComponent({
             id: "icon",
             class: ["fa-solid fa-plus"],
             onClick: () => {
-              store.commit("workflowModule/saveSubPageStatus", true);
+              store.commit(
+                "workflowModule/saveSubPageStatus",
+                !store.state.workflowModule.isOptionShow
+              );
               const iconElement = document.getElementById("icon") as any;
-              iconElement.setAttribute("class", "fa-solid fa-minus");
+              if (store.state.workflowModule.isOptionShow) {
+                router.push("/options/");
+                iconElement.setAttribute("class", "fa-solid fa-minus");
+              } else {
+                router.push("/");
+                iconElement.setAttribute("class", "fa-solid fa-plus");
+              }
             },
           }),
         ]
