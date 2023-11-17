@@ -77,7 +77,9 @@ const PageView = defineComponent({
                   attributeName: line.detail.attributeName,
                   defaultValue: line.detail.value,
                   inputType: line.type,
-                  max: line.detail.maxLength as string,
+                  max: line.detail.maxLength
+                    ? Number(line.detail.maxLength)
+                    : 0,
                   autoFocus: line.isFocus,
                   tabindex: Number(index),
                   labelX: line.detail.coordinateNameX
@@ -110,7 +112,9 @@ const PageView = defineComponent({
                   attributeName: line.detail.attributeName,
                   defaultValue: line.detail.value,
                   inputType: line.type,
-                  max: line.detail.maxLength as string,
+                  max: line.detail.maxLength
+                    ? Number(line.detail.maxLength)
+                    : 0,
                   autoFocus: line.isFocus,
                   tabindex: Number(index),
                   labelX: line.detail.coordinateNameX
