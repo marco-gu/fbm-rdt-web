@@ -26,10 +26,14 @@
         :autofocus="autoFocus"
         :type="inputType === 'password' ? 'password' : 'text'"
         @change="onTextChange()"
-        :maxlength="max === '0' ? Number(max) + 1 : max"
+        :maxlength="max === 0 ? max + 1 : max"
         :tabindex="tabindex"
         @focus="onFocus()"
         @blur="onBlur()"
+        :style="{
+          width:
+            max && max > 0 ? 9.6 * max + 'px' : max === 0 ? '10px' : 'auto',
+        }"
       />
       <textarea
         v-else
@@ -39,9 +43,13 @@
         :tabindex="tabindex"
         rows="2"
         @change="onTextChange()"
-        :maxlength="max === '0' ? Number(max) + 1 : max"
+        :maxlength="max === 0 ? max + 1 : max"
         @focus="onFocus()"
         @blur="onBlur()"
+        :style="{
+          maxWidth:
+            max && max > 0 ? 9.6 * max + 'px' : max === 0 ? '10px' : 'auto',
+        }"
       />
       <div class="measure-text-length" ref="measureTextLength">{{ model }}</div>
     </div>
@@ -66,7 +74,7 @@ const InputComponent = defineComponent({
       type: String,
     },
     max: {
-      type: String,
+      type: Number,
     },
     labelX: {
       type: Number,

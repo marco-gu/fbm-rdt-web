@@ -18,6 +18,12 @@ html {
     padding: 5px 12px;
     border: #6E7C89 .5px solid;
 }
+input, textarea {
+    font-family: monospace;
+    font-size: $fontSize;
+    letter-spacing: $letter-spacing;
+    font-weight: 100;
+}
 
 .line-item {
     display: flex;
