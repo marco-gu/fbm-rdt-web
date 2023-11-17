@@ -18,12 +18,12 @@ const PageView = defineComponent({
     const render = ref();
     const lastRow = ref(0);
     watch(store.state.workflowModule, () => {
-      const elements = document.getElementsByClassName("center-items") as any;
-      for (let i = 0; i < elements.length - 1; i++) {
-        elements[i].style.visibility = store.state.workflowModule.isOptionShow
-          ? "hidden"
-          : "visible";
-      }
+      // const elements = document.getElementsByClassName("center-items") as any;
+      // for (let i = 0; i < elements.length - 1; i++) {
+      //   elements[i].style.visibility = store.state.workflowModule.isOptionShow
+      //     ? "hidden"
+      //     : "visible";
+      // }
       const subElement = document.getElementById("temp") as any;
       subElement.style.visibility = store.state.workflowModule.isOptionShow
         ? "visible"

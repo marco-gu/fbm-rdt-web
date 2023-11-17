@@ -18,7 +18,9 @@ html {
     padding: 5px 12px;
     border: #6E7C89 .5px solid;
 }
-input, textarea {
+
+input,
+textarea {
     font-family: monospace;
     font-size: $fontSize;
     letter-spacing: $letter-spacing;
@@ -57,6 +59,6 @@ input, textarea {
     z-index: 200;
     background-color: #00346E;
     height: 300px;
-    width: 245px;
+    width: 255px;
     padding: 3px 6px;
 }
