@@ -59,6 +59,7 @@
 import { useStore } from "@/store";
 import { defineComponent, nextTick, ref, toRefs, watch, onMounted } from "vue";
 import { CapturedValue } from "../entity/request.entity";
+import { useRoute } from "vue-router";
 const InputComponent = defineComponent({
   props: {
     labelName: {
@@ -109,10 +110,9 @@ const InputComponent = defineComponent({
     const lastAttributeName = ref();
     const TEXT_MAX_LENGTH = ref(170);
     const isFocus = ref(false);
+    const route = useRoute();
     onMounted(() => {
-      if (autoFocus.value) {
-        input.value.focus();
-      }
+      focusInput();
     });
 
     const onTextChange = () => {
@@ -130,6 +130,11 @@ const InputComponent = defineComponent({
     const onBlur = () => {
       isFocus.value = false;
     };
+    const focusInput = () => {
+      if (autoFocus.value) {
+        input.value.focus();
+      }
+    };
     watch(model, () => {
       textLength.value = measureText();
       if (textLength.value >= TEXT_MAX_LENGTH.value) {
@@ -141,6 +146,10 @@ const InputComponent = defineComponent({
           input.value.focus();
         });
       }
+    });
+
+    watch(route, () => {
+      focusInput();
     });
     const measureText = () => {
       return measureTextLength.value.clientWidth;
