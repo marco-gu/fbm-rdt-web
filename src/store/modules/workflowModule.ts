@@ -14,6 +14,7 @@ export interface WorkflowState {
   isLoadingVisible: boolean;
   isRenderView: boolean;
   isOptionShow: boolean;
+  country: string;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
@@ -25,6 +26,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
     isLoadingVisible: false,
     isRenderView: false,
     isOptionShow: false,
+    country: "",
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {
@@ -32,23 +34,25 @@ const workflowModule: Module<WorkflowState, RootState> = {
     },
     onCancel(context) {
       context.state.isLoadingVisible = true;
-      let url = "GBR?";
+      let url = context.state.country == "" ? "GBR" : context.state.country;
+      url = url + "?";
       context.state.capturedValues.forEach((cv: CapturedValue) => {
         url += cv.attributeName + "=" + cv.value + "&";
       });
       url += "type=Cancel";
-      get(url, context.state.sessionID).then((data) => {
+      get("RDTEngine/" + url, context.state.sessionID).then((data) => {
         context.commit("onSubmit", data);
       });
     },
     onSubmit(context) {
       context.state.isLoadingVisible = true;
-      let url = "GBR?";
+      let url = context.state.country == "" ? "GBR" : context.state.country;
+      url = url + "?";
       context.state.capturedValues.forEach((cv: CapturedValue) => {
         url += cv.attributeName + "=" + cv.value + "&";
       });
       url += "type=Submit";
-      get(url, context.state.sessionID).then((data) => {
+      get("RDTEngine/" + url, context.state.sessionID).then((data) => {
         context.commit("onSubmit", data);
       });
     },
@@ -76,6 +80,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.linesView = map;
       state.screenTitle = screenEntity.screenTitle;
       state.capturedValues = screenEntity.capturedValues;
+      state.sessionID = screenEntity.sessionID;
       state.isRenderView = true;
     },
     saveScreenEntity(state, payload) {
@@ -84,8 +89,14 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.screenTitle = payload.screenTitle;
       state.capturedValues = payload.capturedValues;
     },
-    saveSubPageStatus(state, payload) {
+    saveOptionsStatus(state, payload) {
       state.isOptionShow = payload;
+    },
+    saveCountry(state, payload) {
+      state.country = payload;
+      state.isOptionShow = false;
+      state.capturedValues = [];
+      state.sessionID = -1;
     },
   },
   namespaced: true,

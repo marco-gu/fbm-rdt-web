@@ -1,5 +1,5 @@
 import axios from "axios";
-axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
+axios.defaults.baseURL = "http://101.132.69.151:8100/fbm-wms-rdt/";
 const service = axios.create({
   headers: {
     "API-Version": "1",
@@ -19,7 +19,7 @@ export const post = (url: string, requestParam: any) => {
   });
 };
 
-export const get = (params: string, sessionID: number) => {
+export const get = (params: string, sessionID?: number) => {
   const config = {
     headers: {
       "API-Version": "1",

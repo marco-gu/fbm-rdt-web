@@ -2,7 +2,7 @@
   <div>
     <div style="margin-bottom: 21.5px">Generic Settings</div>
     <div class="line-item" v-for="item in settings" v-bind:key="item">
-      <div class="label-item" @click="onClick">
+      <div class="label-item">
         <span style="cursor: pointer">{{ item }} </span>
       </div>
     </div>
@@ -35,9 +35,6 @@ export default defineComponent({
       "2. Sounds Mgmt.",
       "3. Vibration Mgmt.",
     ];
-    const onClick = () => {
-      router.push("/options/serverSelection");
-    };
     const optionValue = (value: number) => {
       if (value == 1) {
         router.push("/options/serverSelection");
@@ -45,7 +42,6 @@ export default defineComponent({
     };
     return {
       settings,
-      onClick,
       model,
       optionValue,
     };

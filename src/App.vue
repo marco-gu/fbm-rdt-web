@@ -24,7 +24,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const isShow = ref(false);
-    const url = "GBR";
+    const url = "RDTEngine/GBR";
     const visible = ref(true);
     const route = useRoute();
     onMounted(() => {
@@ -39,7 +39,6 @@ export default defineComponent({
       visible.value = false;
     });
     const handleKeyDown = (event: any) => {
-      console.log(route.path);
       if (route.path == "/") {
         {
           switch (event.keyCode) {

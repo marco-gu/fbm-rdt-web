@@ -53,6 +53,11 @@ const PageView = defineComponent({
               },
               [
                 h(LabelComponent, {
+                  // key:
+                  //   index +
+                  //   new Date().getMilliseconds() +
+                  //   Math.floor(Math.random() * 10) +
+                  //   1,
                   labelName: line.detail.name,
                   labelValue: line.detail.value,
                   isBottomElement: false,
@@ -112,11 +117,11 @@ const PageView = defineComponent({
               },
               [
                 h(InputComponent, {
-                  key:
-                    index +
-                    new Date().getMilliseconds() +
-                    Math.floor(Math.random() * 10) +
-                    1,
+                  // key:
+                  //   index +
+                  //   new Date().getMilliseconds() +
+                  //   Math.floor(Math.random() * 10) +
+                  //   1,
                   labelName: line.detail.name,
                   attributeName: line.detail.attributeName,
                   defaultValue: line.detail.value,
@@ -161,6 +166,8 @@ const PageView = defineComponent({
       const element = h(
         "div",
         {
+          // key:
+          //   new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
           id: "temp",
           class: ["options"],
           style: { visibility: "hidden" },
@@ -171,6 +178,8 @@ const PageView = defineComponent({
       const button = h(
         "div",
         {
+          // key:
+          //   new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
           style: {
             position: "absolute",
             left: "95%",
@@ -179,11 +188,13 @@ const PageView = defineComponent({
         },
         [
           h("i", {
+            // key:
+            //   new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
             id: "icon",
             class: ["fa-solid fa-plus"],
             onClick: () => {
               store.commit(
-                "workflowModule/saveSubPageStatus",
+                "workflowModule/saveOptionsStatus",
                 !store.state.workflowModule.isOptionShow
               );
               const iconElement = document.getElementById("icon") as any;
@@ -202,6 +213,8 @@ const PageView = defineComponent({
       render.value = h(
         "div",
         {
+          key:
+            new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
           class: "app",
         },
         elementList
