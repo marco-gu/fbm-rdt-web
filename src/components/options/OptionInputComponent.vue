@@ -7,45 +7,22 @@
   </div>
 </template>
 <script lang="ts">
-import { useStore } from "@/store";
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 const OptionInputComponent = defineComponent({
-  setup() {
-    const store = useStore();
+  emits: ["optionValue"],
+  setup(props, context) {
     const model = ref();
-    const measureTextLength = ref();
-    const textarea = ref();
-    const TEXT_MAX_LENGTH = ref(170);
     const isFocus = ref(false);
     const input = ref();
     onMounted(() => {
       input.value.focus();
     });
     const onTextChange = () => {
-      // const param = {
-      //   attributeName: attributeName.value,
-      //   value: model.value,
-      // } as CapturedValue;
-      // store.dispatch("workflowModule/saveCapturedValue", param);
-      // lastAttributeName.value = attributeName.value;
+      context.emit("optionValue", model.value);
     };
-    watch(model, () => {
-      // textLength.value = measureText();
-      // if (textLength.value >= TEXT_MAX_LENGTH.value) {
-      //   nextTick(() => {
-      //     textarea.value.focus();
-      //   });
-      // } else {
-      //   nextTick(() => {
-      //     input.value.focus();
-      //   });
-      // }
-    });
     return {
       model,
       onTextChange,
-      textarea,
-      TEXT_MAX_LENGTH,
       isFocus,
       input,
     };
@@ -94,11 +71,5 @@ export default OptionInputComponent;
       }
     }
   }
-}
-.measure-text-length {
-  height: 0;
-  opacity: 0;
-  position: absolute;
-  left: -1000px;
 }
 </style>

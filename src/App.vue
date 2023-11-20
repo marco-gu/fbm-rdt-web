@@ -15,6 +15,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { get } from "./service/http";
 import { useStore } from "./store";
 import { parseXML } from "./utils/util.parse";
@@ -25,6 +26,7 @@ export default defineComponent({
     const isShow = ref(false);
     const url = "GBR";
     const visible = ref(true);
+    const route = useRoute();
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
     });
@@ -37,13 +39,18 @@ export default defineComponent({
       visible.value = false;
     });
     const handleKeyDown = (event: any) => {
-      switch (event.keyCode) {
-        case 13:
-          store.dispatch("workflowModule/onSubmit");
-          break;
-        case 27:
-          store.dispatch("workflowModule/onCancel");
-          break;
+      console.log(route.path);
+      if (route.path == "/") {
+        {
+          switch (event.keyCode) {
+            case 13:
+              store.dispatch("workflowModule/onSubmit");
+              break;
+            case 27:
+              store.dispatch("workflowModule/onCancel");
+              break;
+          }
+        }
       }
     };
     watch(store.state.workflowModule, () => {

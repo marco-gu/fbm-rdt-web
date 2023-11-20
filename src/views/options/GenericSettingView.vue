@@ -10,7 +10,9 @@
       <div style="font-size: 10px; margin: 20px 0 10px 0">
         [Pg1/1] 0:Pg_Up, 9:Pg_Dn, X-Exit
       </div>
-      <option-input-component></option-input-component>
+      <option-input-component
+        @optionValue="optionValue"
+      ></option-input-component>
     </div>
   </div>
   <router-view></router-view>
@@ -36,14 +38,16 @@ export default defineComponent({
     const onClick = () => {
       router.push("/options/serverSelection");
     };
-    const onTextChange = () => {
-      store.commit("workflowModule/saveGenericStatus", model.value);
+    const optionValue = (value: number) => {
+      if (value == 1) {
+        router.push("/options/serverSelection");
+      }
     };
     return {
       settings,
       onClick,
-      onTextChange,
       model,
+      optionValue,
     };
   },
 });

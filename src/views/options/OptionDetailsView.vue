@@ -10,7 +10,7 @@
     <div style="font-size: 10px; margin: 20px 0 10px 0">
       [Pg1/1] 0:Pg_Up, 9:Pg_Dn, X-Exit
     </div>
-    <option-input-component></option-input-component>
+    <option-input-component @optionValue="optionValue"></option-input-component>
   </div>
   <router-view></router-view>
 </template>
@@ -27,24 +27,18 @@ export default defineComponent({
     const router = useRouter();
     // TODO Menu
     const menus = ["1. Generic Settings"];
-    const input = {
-      name: "Option",
-      attributeName: "test",
-      defaultValue: "",
-      inputType: "input",
-      max: "",
-      autoFocus: true,
-      tabindex: 1,
-      labelX: 0,
-      valueX: 9,
-    };
     const onClick = () => {
       router.push("/options/setting");
     };
+    const optionValue = (value: number) => {
+      if (value == 1) {
+        router.push("/options/setting");
+      }
+    };
     return {
       menus,
-      input,
       onClick,
+      optionValue,
     };
   },
 });
