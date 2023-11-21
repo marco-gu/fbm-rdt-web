@@ -23,31 +23,35 @@ export function parseXML(xml: any): ScreenEntity {
   doc.children.forEach((t: any, index: number) => {
     switch (t.name) {
       case "field": {
-        const element = {} as FieldDto;
-        element.color = t.attr.color;
-        element.coordinateX = t.attr.x;
-        element.coordinateY = t.attr.y;
-        if (
-          screenEntity.screenTitle.includes("Menu") &&
-          index < doc.children.length - 1
-        ) {
-          element.attributeType = ScreenLineTypeEnum.MENU;
+        if (t.attr.typ != "funcKey") {
+          const element = {} as FieldDto;
+          element.color = t.attr.color;
+          element.coordinateX = t.attr.x;
+          element.coordinateY = t.attr.y;
+          if (
+            screenEntity.screenTitle.includes("Menu") &&
+            index < doc.children.length - 1
+          ) {
+            element.attributeType = ScreenLineTypeEnum.MENU;
+          } else {
+            element.attributeType = t.attr.typ;
+          }
+          element.value = t.attr.value;
+          element.attributeName = t.attr.id;
+          element.defaultValue = t.attr.default;
+          element.maxLength = t.attr.length;
+          if (element.attributeType == ResponseAttributeType.INPUT) {
+            const capturedValue = {} as CapturedValue;
+            capturedValue.attributeName = element.attributeName;
+            capturedValue.value = element.defaultValue
+              ? element.defaultValue
+              : "";
+            screenEntity.capturedValues.push(capturedValue);
+          }
+          response.fields.push(element);
         } else {
-          element.attributeType = t.attr.typ;
+          // todo sub process&&funtion key
         }
-        element.value = t.attr.value;
-        element.attributeName = t.attr.id;
-        element.defaultValue = t.attr.default;
-        element.maxLength = t.attr.length;
-        if (element.attributeType == ResponseAttributeType.INPUT) {
-          const capturedValue = {} as CapturedValue;
-          capturedValue.attributeName = element.attributeName;
-          capturedValue.value = element.defaultValue
-            ? element.defaultValue
-            : "";
-          screenEntity.capturedValues.push(capturedValue);
-        }
-        response.fields.push(element);
         break;
       }
       case "screen": {
