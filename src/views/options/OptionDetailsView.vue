@@ -2,7 +2,7 @@
   <div style="margin-bottom: 21.5px">SETUP & OPTIONS</div>
   <div class="line-item" v-for="item in menus" v-bind:key="item">
     <div class="label-item">
-      <span @click="onClick" style="cursor: pointer">{{ item }} </span>
+      <span>{{ item }} </span>
     </div>
   </div>
 
@@ -25,11 +25,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    // TODO Menu
     const menus = ["1. Generic Settings"];
-    const onClick = () => {
-      router.push("/options/setting");
-    };
     const optionValue = (value: number) => {
       if (value == 1) {
         router.push("/options/setting");
@@ -37,7 +33,6 @@ export default defineComponent({
     };
     return {
       menus,
-      onClick,
       optionValue,
     };
   },

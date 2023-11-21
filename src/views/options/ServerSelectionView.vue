@@ -43,11 +43,13 @@ export default defineComponent({
       });
     });
     const optionValue = (value: number) => {
-      store.commit(
-        "workflowModule/saveCountry",
-        countries.value[value - 1].abbreviatedName.toUpperCase()
-      );
-      router.push("/");
+      if (typeof value != "string") {
+        store.commit(
+          "workflowModule/saveCountry",
+          countries.value[value - 1].abbreviatedName.toUpperCase()
+        );
+        router.push("/");
+      }
     };
     return {
       countries,

@@ -58,7 +58,7 @@ export default OptionInputComponent;
       }
     }
     input {
-      width: 7px;
+      width: 10px;
       border: none;
       color: #ffc58f;
       background-color: #00346e;

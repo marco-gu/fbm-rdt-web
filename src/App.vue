@@ -73,6 +73,17 @@ export default defineComponent({
           const iconElement = document.getElementById("icon") as any;
           router.push("/");
           iconElement.setAttribute("class", "fa-solid fa-plus");
+        } else if (event.keyCode == 88) {
+          if (route.name == "OptionDetailsView") {
+            store.commit("workflowModule/saveOptionsStatus", false);
+            const iconElement = document.getElementById("icon") as any;
+            router.push("/");
+            iconElement.setAttribute("class", "fa-solid fa-plus");
+          } else if (route.name == "GenericSettingView") {
+            router.push("/options/");
+          } else if (route.name == "ServerSelectionView") {
+            router.push("/options/setting");
+          }
         }
       }
     };

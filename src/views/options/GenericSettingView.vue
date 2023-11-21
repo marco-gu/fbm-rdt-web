@@ -3,7 +3,7 @@
     <div style="margin-bottom: 21.5px">Generic Settings</div>
     <div class="line-item" v-for="item in settings" v-bind:key="item">
       <div class="label-item">
-        <span style="cursor: pointer">{{ item }} </span>
+        <span>{{ item }} </span>
       </div>
     </div>
     <div style="position: fixed; bottom: 20px">
