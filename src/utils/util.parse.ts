@@ -65,7 +65,8 @@ export function parseXML(xml: any): ScreenEntity {
   response.fields.forEach((t: FieldDto) => {
     if (t.coordinateX == 1) {
       if (rows[t.coordinateY]) {
-        if (rows[t.coordinateY][j].coordinateX > t.coordinateX) {
+        const last = rows[t.coordinateY].length - 1;
+        if (rows[t.coordinateY][last].coordinateX > t.coordinateX) {
           const temp = rows[t.coordinateY][j];
           rows[t.coordinateY][j] = t;
           j++;
@@ -104,40 +105,42 @@ export function parseLineView(
       const line = {} as ScreenLineEntity;
       line.detail = {} as LineDetailEntity;
       screenRow.forEach((column: FieldDto) => {
-        switch (column.attributeType) {
-          case ResponseAttributeType.OUTPUT:
-            line.type = ScreenLineTypeEnum.LABEL;
-            if (line.detail && !line.detail.name) {
+        if (column) {
+          switch (column.attributeType) {
+            case ResponseAttributeType.OUTPUT:
+              line.type = ScreenLineTypeEnum.LABEL;
+              if (line.detail && !line.detail.name) {
+                line.detail.name = column.value;
+                line.detail.coordinateNameX = column.coordinateX;
+              } else {
+                line.detail.value = column.value;
+                line.detail.coordinateValueX = column.coordinateX;
+              }
+              line.detail.color = column.color;
+              break;
+            case ResponseAttributeType.INPUT:
+              line.type = ScreenLineTypeEnum.INPUT;
+              line.detail.attributeName = column.attributeName;
+              line.detail.coordinateValueX = column.coordinateX;
+              line.detail.maxLength = column.maxLength;
+              line.detail.value =
+                column.defaultValue == undefined ? "" : column.defaultValue;
+              if (screenEntity.screenFocusName == column.attributeName) {
+                line.isFocus = true;
+              }
+              break;
+            case ResponseAttributeType.PASSWORD:
+              line.type = ScreenLineTypeEnum.PASSWORD;
+              line.detail.attributeName = column.attributeName;
+              line.detail.maxLength = column.maxLength;
+              line.detail.coordinateValueX = column.coordinateX;
+              break;
+            case ResponseAttributeType.MENU:
+              line.type = ScreenLineTypeEnum.MENU;
               line.detail.name = column.value;
               line.detail.coordinateNameX = column.coordinateX;
-            } else {
-              line.detail.value = column.value;
-              line.detail.coordinateValueX = column.coordinateX;
-            }
-            line.detail.color = column.color;
-            break;
-          case ResponseAttributeType.INPUT:
-            line.type = ScreenLineTypeEnum.INPUT;
-            line.detail.attributeName = column.attributeName;
-            line.detail.coordinateValueX = column.coordinateX;
-            line.detail.maxLength = column.maxLength;
-            line.detail.value =
-              column.defaultValue == undefined ? "" : column.defaultValue;
-            if (screenEntity.screenFocusName == column.attributeName) {
-              line.isFocus = true;
-            }
-            break;
-          case ResponseAttributeType.PASSWORD:
-            line.type = ScreenLineTypeEnum.PASSWORD;
-            line.detail.attributeName = column.attributeName;
-            line.detail.maxLength = column.maxLength;
-            line.detail.coordinateValueX = column.coordinateX;
-            break;
-          case ResponseAttributeType.MENU:
-            line.type = ScreenLineTypeEnum.MENU;
-            line.detail.name = column.value;
-            line.detail.coordinateNameX = column.coordinateX;
-            break;
+              break;
+          }
         }
       });
       map.set(screenRow[0].coordinateY, line);

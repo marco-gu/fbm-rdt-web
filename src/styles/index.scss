@@ -1,9 +1,17 @@
 $fontSize: 16px;
 $letter-spacing: -0.5px;
-$lineItemHeight: 21.5px;
-$width: 260px;
+// $lineItemHeight: 21.5px;
+$lineItemHeight: 18.5px;
+// $width: 260px;
+$width: 244px;
 html {
-    background-color: #0E1925;
+    // background-color: #0E1925;
+    background-color: transparent;
+    background-image: url("~@/assets/images/rf.png");
+    background-size: 360px 800px;
+    background-repeat: no-repeat;
+    // background-position: 690px 0px;
+    background-position: -10px 0px;
 }
 
 #app {
@@ -12,11 +20,13 @@ html {
     letter-spacing: $letter-spacing;
     width: $width;
     font-weight: 100;
-    margin: 20px auto;
+    margin: 97px auto;
+    // margin: 20px auto;
     background-color: #001733;
     color: #FFEEAD;
     padding: 5px 12px;
-    border: #6E7C89 .5px solid;
+    // border: #6E7C89 .5px solid;
+    border: black 2.5px solid;
 }
 
 input,
@@ -58,7 +68,9 @@ textarea {
     transform: translate(-50%, -50%);
     z-index: 200;
     background-color: #00346E;
-    height: 300px;
-    width: 255px;
+    // height: 300px;
+    height: 275px;
+    // width: 255px;
+    width: 220px;
     padding: 3px 6px;
 }

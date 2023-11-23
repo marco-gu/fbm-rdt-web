@@ -1,4 +1,5 @@
 import axios from "axios";
+// axios.defaults.baseURL = "http://localhost:8100/fbm-wms-rdt/";
 axios.defaults.baseURL = "http://101.132.69.151:8100/fbm-wms-rdt/";
 const service = axios.create({
   headers: {

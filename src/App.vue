@@ -14,7 +14,14 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import {
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watch,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { get } from "./service/http";
 import { useStore } from "./store";
@@ -100,7 +107,8 @@ export default defineComponent({
 <style scoped lang="scss">
 .content-container {
   margin: 0px;
-  height: 330px;
+  // height: 330px;
   position: relative;
+  height: 300px;
 }
 </style>
