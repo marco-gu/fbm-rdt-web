@@ -1,0 +1,12 @@
+$color: #FFEEAD;
+$background-color: #001733;
+$fontSize: 16px;
+$width: 260px;
+$line-height: 22px;
+ :export {
+    color: $color;
+    background-color: $background-color;
+    font-size: $fontSize;
+    width: $width;
+    line-height: $line-height;
+}

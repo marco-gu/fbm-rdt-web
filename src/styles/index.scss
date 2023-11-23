@@ -1,7 +1,6 @@
-$fontSize: 16px;
+@import './variable/variable.module.scss';
 $letter-spacing: -0.5px;
 $lineItemHeight: 21.5px;
-$width: 260px;
 html {
     background-color: #0E1925;
 }
@@ -10,13 +9,10 @@ html {
     font-family: monospace;
     font-size: $fontSize;
     letter-spacing: $letter-spacing;
-    width: $width;
+    width: 100%;
     font-weight: 100;
     margin: 20px auto;
-    background-color: #001733;
-    color: #FFEEAD;
     padding: 5px 12px;
-    border: #6E7C89 .5px solid;
 }
 
 input,
@@ -30,7 +26,7 @@ textarea {
 .line-item {
     display: flex;
     align-items: center;
-    height: $lineItemHeight;
+    height: $line-height;
     // min-height: 24px;
     // padding: 3px;
 }

@@ -8,6 +8,8 @@ import MenuComponent from "@/components/MenuComponent.vue";
 import LabelComponent from "@/components/LabelComponent.vue";
 import OptionsView from "@/views/options/OptionsView.vue";
 import { useRouter } from "vue-router";
+import globalStyle from "@/styles/variable/global.module.scss";
+
 const PageView = defineComponent({
   components: {
     OptionsView,
@@ -34,7 +36,6 @@ const PageView = defineComponent({
       }
     });
     const renderView = (lines: Map<number, ScreenLineEntity>) => {
-      console.log(lines.size);
       let elementList = [] as any[];
       lines.forEach((line: ScreenLineEntity, index: number) => {
         const top = index == 1 ? 0 : (index - lastRow.value - 1) * 21.5;
@@ -42,7 +43,9 @@ const PageView = defineComponent({
         switch (line.type) {
           case "label": {
             const lineColor =
-              line.detail.color == "white" ? "#FFEEAD" : line.detail.color;
+              line.detail.color == "white"
+                ? globalStyle["color"]
+                : line.detail.color;
             const element = h(
               "div",
               {
@@ -164,8 +167,8 @@ const PageView = defineComponent({
         {
           style: {
             position: "absolute",
-            left: "95%",
-            top: "92%",
+            left: "57%",
+            top: "81%",
           },
         },
         [
@@ -193,9 +196,17 @@ const PageView = defineComponent({
       render.value = h(
         "div",
         {
+          style: {
+            width: globalStyle["width"],
+            height: "100px",
+            background: globalStyle["background-color"],
+            color: globalStyle["color"],
+            border: "#6E7C89 .5px solid",
+            margin: "auto",
+            padding: "5px 12px",
+          },
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
-          // class: "app",
         },
         elementList
       );
@@ -206,3 +217,8 @@ const PageView = defineComponent({
 });
 export default PageView;
 </script>
+<style lang="scss">
+.content {
+  height: var(--height);
+}
+</style>

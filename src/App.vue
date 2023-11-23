@@ -1,7 +1,5 @@
 <template>
-  <div id="content" class="content-container">
-    <router-view v-if="isShow"></router-view>
-  </div>
+  <router-view v-if="isShow"></router-view>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
@@ -88,9 +86,9 @@ export default defineComponent({
 });
 </script>
 <style scoped lang="scss">
-.content-container {
-  margin: 0px;
-  height: 330px;
-  position: relative;
-}
+// .content-container {
+//   margin: 0px;
+//   height: 330px;
+//   position: relative;
+// }
 </style>

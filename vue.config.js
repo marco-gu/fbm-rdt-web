@@ -25,6 +25,7 @@ module.exports = defineConfig({
         proxy: {
             "^/workflow": {
                 target: "http://101.132.69.151:8100/fbm-wms-rdt/RDTEngine/",
+                // target: "https://www.luomengjun.site:8888/fbm-wms-rdt/RDTEngine/",
                 changeOrigin: true,
                 secure: false,
                 pathRewrite: {
@@ -32,6 +33,6 @@ module.exports = defineConfig({
                 },
                 logLevel: "debug"
             }
-        }
+        },
     },
 })
