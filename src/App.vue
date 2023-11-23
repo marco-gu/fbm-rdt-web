@@ -1,16 +1,6 @@
 <template>
-  <div>
-    <div id="content" class="content-container">
-      <router-view v-if="isShow"></router-view>
-      <!-- <q-inner-loading
-        :showing="visible"
-        label-class="text-teal"
-        label="Loading..."
-        color="primary"
-        label-style="font-size: 1.1em"
-      >
-      </q-inner-loading> -->
-    </div>
+  <div id="content" class="content-container">
+    <router-view v-if="isShow"></router-view>
   </div>
 </template>
 <script lang="ts">

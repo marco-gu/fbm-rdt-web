@@ -34,6 +34,7 @@ const PageView = defineComponent({
       }
     });
     const renderView = (lines: Map<number, ScreenLineEntity>) => {
+      console.log(lines.size);
       let elementList = [] as any[];
       lines.forEach((line: ScreenLineEntity, index: number) => {
         const top = index == 1 ? 0 : (index - lastRow.value - 1) * 21.5;
@@ -194,10 +195,11 @@ const PageView = defineComponent({
         {
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
-          class: "app",
+          // class: "app",
         },
         elementList
       );
+      lastRow.value = 0;
     };
     return () => render.value;
   },
