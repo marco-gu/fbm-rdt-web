@@ -194,7 +194,7 @@ const PageView = defineComponent({
         {
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
-          class: "app",
+          // class: "app",
         },
         elementList
       );

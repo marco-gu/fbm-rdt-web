@@ -3,15 +3,15 @@ $letter-spacing: -0.5px;
 // $lineItemHeight: 21.5px;
 $lineItemHeight: 18.5px;
 // $width: 260px;
-$width: 244px;
+$width: 320px;
 html {
     // background-color: #0E1925;
     background-color: transparent;
     background-image: url("~@/assets/images/rf.png");
-    background-size: 360px 800px;
+    background-size: 400 900pxss;
     background-repeat: no-repeat;
     // background-position: 690px 0px;
-    background-position: -10px 0px;
+    background-position: 50px -25px;
 }
 
 #app {

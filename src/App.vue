@@ -1,8 +1,7 @@
 <template>
-  <div>
-    <div id="content" class="content-container">
-      <router-view v-if="isShow"></router-view>
-      <!-- <q-inner-loading
+  <!-- <div id="content" class="content-container"> -->
+  <router-view v-if="isShow"></router-view>
+  <!-- <q-inner-loading
         :showing="visible"
         label-class="text-teal"
         label="Loading..."
@@ -10,8 +9,7 @@
         label-style="font-size: 1.1em"
       >
       </q-inner-loading> -->
-    </div>
-  </div>
+  <!-- </div> -->
 </template>
 <script lang="ts">
 import {
@@ -109,6 +107,6 @@ export default defineComponent({
   margin: 0px;
   // height: 330px;
   position: relative;
-  height: 300px;
+  height: 320px;
 }
 </style>
