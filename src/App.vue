@@ -35,6 +35,12 @@ export default defineComponent({
     const router = useRouter();
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
+      const temp = window as any;
+      const temp2 = temp.electronAPI as any;
+      // TODO Mock electron
+      temp2.onUpdateCounter((_event: any, value: any) => {
+        alert("Change CT45 Profile");
+      });
     });
     onUnmounted(() => {
       window.removeEventListener("keyup", handleKeyDown);
@@ -43,6 +49,10 @@ export default defineComponent({
       store.commit("workflowModule/saveScreenEntity", parseXML(data));
       isShow.value = true;
       visible.value = false;
+      // TODO Mock electron
+      const a = window as any;
+      const b = a.electronAPI as any;
+      b.setTitle("MC93");
     });
     const handleKeyDown = (event: any) => {
       if (route.path == "/") {
