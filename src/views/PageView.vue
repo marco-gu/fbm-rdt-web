@@ -169,7 +169,7 @@ const PageView = defineComponent({
           style: {
             visibility: "hidden",
             width: globalStyle["option-width"],
-            height: globalStyle["option-height"],
+            // height: globalStyle["option-height"],
             background: globalStyle["option-background-color"],
             fontSize: globalStyle["option-font-size"],
             color: globalStyle["option-color"],
@@ -183,9 +183,7 @@ const PageView = defineComponent({
       const button = h(
         "div",
         {
-          style: {
-            margin: "-25px 0px 0px 290px",
-          },
+          class: ["plus-icon-container"],
         },
         [
           h("i", {
@@ -221,6 +219,7 @@ const PageView = defineComponent({
             letterSpacing: globalStyle["letter-spacing"],
             // border: "#6E7C89 .5px solid",
             margin: "auto",
+            position: "relative",
           },
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
