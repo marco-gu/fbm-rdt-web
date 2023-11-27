@@ -20,7 +20,8 @@ export interface ScreenLineEntity {
   // isLastLine: boolean;
   coordinateY: number;
   isFocus: boolean;
-  detail: LineDetailEntity;
+  color: string;
+  details: LineDetailEntity[];
 }
 
 export interface LineDetailEntity {
@@ -29,9 +30,6 @@ export interface LineDetailEntity {
   value: string;
   coordinateNameX: number;
   coordinateValueX: number;
-  color: string;
-  // nameColor: string;
-  // valueColor?: string;
   maxLength: string | number;
 }
 

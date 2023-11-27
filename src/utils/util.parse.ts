@@ -106,8 +106,9 @@ export function parseLineView(
   screenEntity.screenLines.forEach((screenRow: any[]) => {
     if (screenRow.length > 0) {
       const line = {} as ScreenLineEntity;
-      line.detail = {} as LineDetailEntity;
+      line.details = [] as LineDetailEntity[];
       screenRow.forEach((column: FieldDto) => {
+        const detail = {} as LineDetailEntity;
         if (column) {
           switch (column.attributeType) {
             case ResponseAttributeType.OUTPUT:
@@ -117,36 +118,53 @@ export function parseLineView(
               ) {
                 line.type = ScreenLineTypeEnum.LABEL;
               }
-              if (line.detail && !line.detail.name) {
-                line.detail.name = column.value;
-                line.detail.coordinateNameX = column.coordinateX;
-              } else {
-                line.detail.value = column.value;
-                line.detail.coordinateValueX = column.coordinateX;
-              }
-              line.detail.color = column.color;
+              detail.name = column.value;
+              detail.coordinateNameX = column.coordinateX;
+              line.color = column.color;
+              // if (line.detail && !line.detail.name) {
+              //   line.detail.name = column.value;
+              //   line.detail.coordinateNameX = column.coordinateX;
+              // } else {
+              //   line.detail.value = column.value;
+              //   line.detail.coordinateValueX = column.coordinateX;
+              // }
+              // line.detail.color = column.color;
+              line.details.push(detail);
               break;
             case ResponseAttributeType.INPUT:
               line.type = ScreenLineTypeEnum.INPUT;
-              line.detail.attributeName = column.attributeName;
-              line.detail.coordinateValueX = column.coordinateX;
-              line.detail.maxLength = column.maxLength;
-              line.detail.value =
+              detail.attributeName = column.attributeName;
+              detail.coordinateValueX = column.coordinateX;
+              detail.maxLength = column.maxLength;
+              detail.value =
                 column.defaultValue == undefined ? "" : column.defaultValue;
+              // line.detail.attributeName = column.attributeName;
+              // line.detail.coordinateValueX = column.coordinateX;
+              // line.detail.maxLength = column.maxLength;
+              // line.detail.value =
+              //   column.defaultValue == undefined ? "" : column.defaultValue;
               if (screenEntity.screenFocusName == column.attributeName) {
                 line.isFocus = true;
               }
+              line.details.push(detail);
               break;
             case ResponseAttributeType.PASSWORD:
               line.type = ScreenLineTypeEnum.PASSWORD;
-              line.detail.attributeName = column.attributeName;
-              line.detail.maxLength = column.maxLength;
-              line.detail.coordinateValueX = column.coordinateX;
+              // line.detail.attributeName = column.attributeName;
+              // line.detail.maxLength = column.maxLength;
+              // line.detail.coordinateValueX = column.coordinateX;
+              detail.attributeName = column.attributeName;
+              detail.maxLength = column.maxLength;
+              detail.coordinateValueX = column.coordinateX;
+              line.details.push(detail);
               break;
             case ResponseAttributeType.MENU:
               line.type = ScreenLineTypeEnum.MENU;
-              line.detail.name = column.value;
-              line.detail.coordinateNameX = column.coordinateX;
+              // line.detail.name = column.value;
+              // line.detail.coordinateNameX = column.coordinateX;
+              detail.name = column.value;
+              detail.coordinateNameX = column.coordinateX;
+              line.details.push(detail);
               break;
           }
         }

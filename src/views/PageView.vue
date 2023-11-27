@@ -43,103 +43,104 @@ const PageView = defineComponent({
         lastRow.value = index;
         switch (line.type) {
           case "label": {
-            const lineColor =
-              line.detail.color == "white"
-                ? globalStyle["color"]
-                : line.detail.color;
+            const color =
+              line.color == "white" ? globalStyle["color"] : line.color;
             const element = h(
               "div",
               {
                 class: ["center-items"],
                 style: {
                   "margin-top": top + "px",
-                  color: lineColor,
+                  color: color,
                   height: globalStyle["line-height"],
                 },
               },
               [
                 h(LabelComponent, {
-                  labelName: line.detail.name,
-                  labelValue: line.detail.value,
-                  isBottomElement: false,
-                  labelX: line.detail.coordinateNameX
-                    ? Number(line.detail.coordinateNameX)
-                    : 0,
-                  valueX: line.detail.coordinateValueX
-                    ? Number(line.detail.coordinateValueX)
-                    : 0,
+                  details: line.details,
                 }),
+                // h(LabelComponent, {
+                //   labelName: line.details[0].name,
+                //   labelValue: line.details[0].value,
+                //   isBottomElement: false,
+                //   labelX: line.details[0].coordinateNameX
+                //     ? Number(line.details[0].coordinateNameX)
+                //     : 0,
+                //   valueX: line.details[0].coordinateValueX
+                //     ? Number(line.details[0].coordinateValueX)
+                //     : 0,
+                // }),
               ]
             );
             elementList.push(element);
             break;
           }
-          case "input": {
-            const element = h(
-              "div",
-              {
-                class: ["center-items"],
-                style: {
-                  "margin-top": top + "px",
-                  height: globalStyle["line-height"],
-                },
-              },
-              [
-                h(InputComponent, {
-                  labelName: line.detail.name,
-                  attributeName: line.detail.attributeName,
-                  defaultValue: line.detail.value,
-                  inputType: line.type,
-                  max: line.detail.maxLength
-                    ? Number(line.detail.maxLength)
-                    : 0,
-                  autoFocus: line.isFocus,
-                  tabindex: Number(index),
-                  labelX: line.detail.coordinateNameX
-                    ? Number(line.detail.coordinateNameX)
-                    : 0,
-                  valueX: line.detail.coordinateValueX
-                    ? Number(line.detail.coordinateValueX)
-                    : 0,
-                }),
-              ]
-            );
-            elementList.push(element);
-            break;
-          }
-          case "password": {
-            const element = h(
-              "div",
-              {
-                class: ["center-items"],
-                style: {
-                  "margin-top": top + "px",
-                  height: globalStyle["line-height"],
-                },
-              },
-              [
-                h(InputComponent, {
-                  labelName: line.detail.name,
-                  attributeName: line.detail.attributeName,
-                  defaultValue: line.detail.value,
-                  inputType: line.type,
-                  max: line.detail.maxLength
-                    ? Number(line.detail.maxLength)
-                    : 0,
-                  autoFocus: line.isFocus,
-                  tabindex: Number(index),
-                  labelX: line.detail.coordinateNameX
-                    ? Number(line.detail.coordinateNameX)
-                    : 0,
-                  valueX: line.detail.coordinateValueX
-                    ? Number(line.detail.coordinateValueX)
-                    : 0,
-                }),
-              ]
-            );
-            elementList.push(element);
-            break;
-          }
+          // case "input": {
+          //   const element = h(
+          //     "div",
+          //     {
+          //       class: ["center-items"],
+          //       style: {
+          //         "margin-top": top + "px",
+          //         height: globalStyle["line-height"],
+          //       },
+          //     },
+          //     [
+          //       h(InputComponent, {
+          //         labelName: line.details.name,
+          //         attributeName: line.details.attributeName,
+          //         defaultValue: line.details.value,
+          //         inputType: line.type,
+          //         max: line.details.maxLength
+          //           ? Number(line.details[0].maxLength)
+          //           : 0,
+          //         autoFocus: line.isFocus,
+          //         tabindex: Number(index),
+          //         labelX: line.details.coordinateNameX
+          //           ? Number(line.details.coordinateNameX)
+          //           : 0,
+          //         valueX: line.details[0].coordinateValueX
+          //           ? Number(line.details.coordinateValueX)
+          //           : 0,
+          //       }),
+          //     ]
+          //   );
+          //   elementList.push(element);
+          //   break;
+          // }
+          // case "password": {
+          //   const element = h(
+          //     "div",
+          //     {
+          //       class: ["center-items"],
+          //       style: {
+          //         "margin-top": top + "px",
+          //         height: globalStyle["line-height"],
+          //       },
+          //     },
+          //     [
+          //       h(InputComponent, {
+          //         labelName: line.details[0].name,
+          //         attributeName: line.details[0].attributeName,
+          //         defaultValue: line.details[0].value,
+          //         inputType: line.type,
+          //         max: line.details[0].maxLength
+          //           ? Number(line.details[0].maxLength)
+          //           : 0,
+          //         autoFocus: line.isFocus,
+          //         tabindex: Number(index),
+          //         labelX: line.details[0].coordinateNameX
+          //           ? Number(line.details[0].coordinateNameX)
+          //           : 0,
+          //         valueX: line.details[0].coordinateValueX
+          //           ? Number(line.details[0].coordinateValueX)
+          //           : 0,
+          //       }),
+          //     ]
+          //   );
+          //   elementList.push(element);
+          //   break;
+          // }
           case "menu": {
             const element = h(
               "div",
@@ -152,7 +153,7 @@ const PageView = defineComponent({
               },
               [
                 h(MenuComponent, {
-                  menuName: line.detail.name,
+                  menuName: line.details[0].name,
                 }),
               ]
             );

@@ -2,81 +2,55 @@
   <div class="line-item label-container">
     <div
       class="label-block"
+      v-for="item in details"
+      v-bind:key="item"
       :style="{
-        flexBasis: valueX ? (Number(valueX) / 25) * 100 + '%' : 'auto',
+        flexBasis:
+          item.coordinateNameX == 1
+            ? 'auto'
+            : (Number(item.coordinateNameX) / totalColums) * 100 + '%',
       }"
     >
-      {{ name }}
-    </div>
-    <div
-      class="value-block"
-      :style="{
-        flexBasis: valueX ? (1 - Number(valueX) / 25) * 100 + '%' : 'auto',
-      }"
-    >
-      {{ value }}
+      {{ item.name }}
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, nextTick, ref, toRefs, watch } from "vue";
+import { defineComponent } from "vue";
+import { COLUMN_MC93 } from "../entity/const.entity";
 const LabelComponent = defineComponent({
   props: {
-    labelName: {
-      type: String,
-    },
-    labelValue: {
-      type: String,
-    },
-    labelX: {
-      type: Number,
-    },
-    valueX: {
-      type: Number,
+    details: {
+      type: Object,
     },
   },
   setup(props) {
-    const { labelName, labelValue } = toRefs(props);
-    const name = ref();
-    name.value = labelName.value;
-    const value = ref();
-    value.value = labelValue.value;
-    watch(labelName, (newValue) => {
-      nextTick(() => {
-        name.value = newValue;
-      });
-    });
-    watch(labelValue, (newValue) => {
-      nextTick(() => {
-        value.value = newValue;
-      });
-    });
+    const totalColums = COLUMN_MC93;
     return {
-      name,
-      value,
+      totalColums,
     };
   },
 });
 export default LabelComponent;
 </script>
 <style lang="scss" scoped>
-.label-container {
-  width: 100%;
-  justify-content: space-between;
-  .label-block {
-    text-align: left;
-  }
-  .value-block {
-    text-align: right;
-    padding-left: 10px;
-    display: flex;
-    align-items: center;
-  }
-}
-.last-item {
-  position: absolute;
-  bottom: 0;
-  background-color: inherit;
-  width: 100%;
-}
+// .label-container {
+//   width: 100%;
+//   justify-content: space-between;
+//   .label-block {
+//     text-align: left;
+//   }
+//   .value-block {
+//     text-align: right;
+//     padding-left: 10px;
+//     display: flex;
+//     align-items: center;
+//   }
+// }
+// .last-item {
+//   position: absolute;
+//   bottom: 0;
+//   background-color: inherit;
+//   width: 100%;
+// }
 </style>
