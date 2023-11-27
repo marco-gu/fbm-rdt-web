@@ -38,7 +38,8 @@ const PageView = defineComponent({
     const renderView = (lines: Map<number, ScreenLineEntity>) => {
       let elementList = [] as any[];
       lines.forEach((line: ScreenLineEntity, index: number) => {
-        const top = index == 1 ? 0 : (index - lastRow.value - 1) * 21.5;
+        const lineHight = globalStyle["line-height"].substring(0, 2) as any;
+        const top = index == 1 ? 0 : (index - lastRow.value - 1) * lineHight;
         lastRow.value = index;
         switch (line.type) {
           case "label": {
@@ -53,6 +54,7 @@ const PageView = defineComponent({
                 style: {
                   "margin-top": top + "px",
                   color: lineColor,
+                  height: globalStyle["line-height"],
                 },
               },
               [
@@ -77,7 +79,10 @@ const PageView = defineComponent({
               "div",
               {
                 class: ["center-items"],
-                style: { "margin-top": top + "px" },
+                style: {
+                  "margin-top": top + "px",
+                  height: globalStyle["line-height"],
+                },
               },
               [
                 h(InputComponent, {
@@ -107,7 +112,10 @@ const PageView = defineComponent({
               "div",
               {
                 class: ["center-items"],
-                style: { "margin-top": top + "px" },
+                style: {
+                  "margin-top": top + "px",
+                  height: globalStyle["line-height"],
+                },
               },
               [
                 h(InputComponent, {
@@ -139,6 +147,7 @@ const PageView = defineComponent({
                 class: ["center-item"],
                 style: {
                   "margin-top": top + "px",
+                  height: globalStyle["line-height"],
                 },
               },
               [
@@ -157,18 +166,25 @@ const PageView = defineComponent({
         {
           id: "temp",
           class: ["options"],
-          style: { visibility: "hidden" },
+          style: {
+            visibility: "hidden",
+            width: globalStyle["option-width"],
+            height: globalStyle["option-height"],
+            background: globalStyle["option-background-color"],
+            fontSize: globalStyle["option-font-size"],
+            color: globalStyle["option-color"],
+            letterSpacing: globalStyle["option-letter-spacing"],
+          },
         },
         [h(OptionsView)]
       );
       elementList.push(element);
+
       const button = h(
         "div",
         {
           style: {
-            position: "absolute",
-            left: "57%",
-            top: "81%",
+            margin: "-25px 0px 0px 290px",
           },
         },
         [
@@ -198,12 +214,13 @@ const PageView = defineComponent({
         {
           style: {
             width: globalStyle["width"],
-            height: "100px",
+            height: globalStyle["height"],
             background: globalStyle["background-color"],
+            fontSize: globalStyle["font-size"],
             color: globalStyle["color"],
-            border: "#6E7C89 .5px solid",
+            letterSpacing: globalStyle["letter-spacing"],
+            // border: "#6E7C89 .5px solid",
             margin: "auto",
-            padding: "5px 12px",
           },
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
@@ -217,8 +234,3 @@ const PageView = defineComponent({
 });
 export default PageView;
 </script>
-<style lang="scss">
-.content {
-  height: var(--height);
-}
-</style>

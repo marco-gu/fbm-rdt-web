@@ -85,10 +85,3 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped lang="scss">
-// .content-container {
-//   margin: 0px;
-//   height: 330px;
-//   position: relative;
-// }
-</style>
