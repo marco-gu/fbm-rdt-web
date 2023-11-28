@@ -1,129 +1,119 @@
 <template>
   <div class="line-item inputs-container">
-    <div
-      v-if="labelName"
-      class="label-block"
-      :class="{ 'text-focus': isFocus }"
-      :style="{
-        flexBasis: valueX ? (Number(valueX) / 25) * 100 + '%' : 'auto',
-      }"
-    >
-      {{ labelName }}
-    </div>
-    <div
-      class="input-block"
-      :style="{
-        flexBasis: valueX ? (1 - Number(valueX) / 25) * 100 + '%' : 'auto',
-      }"
-    >
-      <input
-        ref="input"
+    <template v-for="(item, index) in details" :key="index">
+      <div
+        v-if="item.name"
+        class="label-block"
+        :class="{ 'text-focus': isFocus }"
+        :style="{
+          flexBasis: item.coordinateNameX
+            ? Number(item.coordinateNameX) === 1
+              ? 'auto'
+              : (Number(item.coordinateNameX) / 25) * 100 + '%'
+            : 'auto',
+        }"
+      >
+        {{ item.name }}
+      </div>
+      <div
         v-if="
-          inputType === 'password' ||
-          (inputType === 'input' && textLength < TEXT_MAX_LENGTH)
+          item.attributeName &&
+          (inputType === 'password' || inputType === 'input')
         "
-        v-model="model"
-        :autofocus="autoFocus"
-        :type="inputType === 'password' ? 'password' : 'text'"
-        @change="onTextChange()"
-        :maxlength="max === 0 ? max + 1 : max"
-        :tabindex="tabindex"
-        @focus="onFocus()"
-        @blur="onBlur()"
+        class="input-block"
         :style="{
-          width:
-            max && max > 0 ? 9.6 * max + 'px' : max === 0 ? '10px' : 'auto',
+          flexBasis: item.coordinateValueX
+            ? ((25 - Number(item.coordinateValueX)) / 25) * 100 + '%'
+            : 'auto',
         }"
-      />
-      <textarea
-        v-else
-        ref="textarea"
-        v-model="model"
-        :autofocus="autoFocus"
-        :tabindex="tabindex"
-        rows="2"
-        @change="onTextChange()"
-        :maxlength="max === 0 ? max + 1 : max"
-        @focus="onFocus()"
-        @blur="onBlur()"
-        :style="{
-          maxWidth:
-            max && max > 0 ? 9.6 * max + 'px' : max === 0 ? '10px' : 'auto',
-        }"
-      />
-      <div class="measure-text-length" ref="measureTextLength">{{ model }}</div>
-    </div>
+      >
+        <input
+          ref="input"
+          v-model="item.value"
+          :autofocus="index === 0 && autoFocus"
+          :type="inputType === 'password' ? 'password' : 'text'"
+          @change="onTextChange(item)"
+          :maxlength="
+            convertMaxLength(item.maxLength) === 0
+              ? convertMaxLength(item.maxLength) + 1
+              : convertMaxLength(item.maxLength)
+          "
+          :tabindex="tabindex"
+          @focus="onFocus()"
+          @blur="onBlur()"
+          :style="{
+            width:
+              convertMaxLength(item.maxLength) &&
+              convertMaxLength(item.maxLength) > 0
+                ? 9.6 * convertMaxLength(item.maxLength) + 'px'
+                : convertMaxLength(item.maxLength) === 0
+                ? '10px'
+                : 'auto',
+          }"
+        />
+      </div>
+    </template>
   </div>
 </template>
 <script lang="ts">
 import { useStore } from "@/store";
-import { defineComponent, nextTick, ref, toRefs, watch, onMounted } from "vue";
+import {
+  defineComponent,
+  nextTick,
+  ref,
+  toRefs,
+  watch,
+  onMounted,
+  PropType,
+} from "vue";
 import { CapturedValue } from "../entity/request.entity";
 import { useRoute } from "vue-router";
+import { LineDetail } from "@/entity/screen.entity";
 const InputComponent = defineComponent({
   props: {
-    labelName: {
-      type: String,
-    },
-    attributeName: {
-      type: String,
-    },
-    defaultValue: {
-      type: String,
-    },
-    inputType: {
-      type: String,
-    },
-    max: {
-      type: Number,
-    },
-    labelX: {
-      type: Number,
-    },
-    valueX: {
-      type: Number,
-    },
-    autoFocus: {
-      type: Boolean,
+    details: {
+      type: Array as PropType<LineDetail[]>,
     },
     tabindex: {
       type: Number,
     },
+    inputType: {
+      type: String,
+    },
+    autoFocus: {
+      type: Boolean,
+    },
   },
   setup(props) {
-    const {
-      attributeName,
-      labelName,
-      defaultValue,
-      inputType,
-      max,
-      autoFocus,
-      tabindex,
-    } = toRefs(props);
+    const { details, tabindex, inputType, autoFocus } = toRefs(props);
     const store = useStore();
     const model = ref();
     const measureTextLength = ref();
     const input = ref();
     const textarea = ref();
     const textLength = ref(0);
-    model.value = defaultValue.value;
-    const lastAttributeName = ref();
     const TEXT_MAX_LENGTH = ref(170);
     const isFocus = ref(false);
     const route = useRoute();
     onMounted(() => {
+      mapRawData();
       focusInput();
     });
 
-    const onTextChange = () => {
+    const onTextChange = (detail: LineDetail) => {
       const param = {
-        attributeName: attributeName.value,
-        value: model.value,
+        attributeName: detail.attributeName,
+        value: detail.value,
       } as CapturedValue;
       store.dispatch("workflowModule/saveCapturedValue", param);
-      lastAttributeName.value = attributeName.value;
     };
-
+    const mapRawData = () => {
+      if (details.value) {
+        details.value.forEach((item: any) => {
+          item.value = item.value || "";
+        });
+      }
+    };
     const onFocus = () => {
       isFocus.value = true;
     };
@@ -132,27 +122,17 @@ const InputComponent = defineComponent({
     };
     const focusInput = () => {
       if (autoFocus.value) {
-        input.value.focus();
+        console.log(input.value);
+        if (input.value) {
+          input.value[0].focus();
+        }
       }
     };
-    watch(model, () => {
-      textLength.value = measureText();
-      if (textLength.value >= TEXT_MAX_LENGTH.value) {
-        nextTick(() => {
-          textarea.value.focus();
-        });
-      } else {
-        nextTick(() => {
-          input.value.focus();
-        });
-      }
-    });
-
     watch(route, () => {
       focusInput();
     });
-    const measureText = () => {
-      return measureTextLength.value.clientWidth;
+    const convertMaxLength = (maxLength: string | number | null) => {
+      return maxLength ? Number(maxLength) : 0;
     };
 
     return {
@@ -166,6 +146,7 @@ const InputComponent = defineComponent({
       onFocus,
       onBlur,
       isFocus,
+      convertMaxLength,
     };
   },
 });
@@ -174,7 +155,7 @@ export default InputComponent;
 <style lang="scss" scoped>
 .inputs-container {
   width: 100%;
-  justify-content: space-between;
+  // justify-content: space-between;
   .label-block {
     text-align: left;
     &.text-focus {

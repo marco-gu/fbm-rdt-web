@@ -75,72 +75,50 @@ const PageView = defineComponent({
             elementList.push(element);
             break;
           }
-          // case "input": {
-          //   const element = h(
-          //     "div",
-          //     {
-          //       class: ["center-items"],
-          //       style: {
-          //         "margin-top": top + "px",
-          //         height: globalStyle["line-height"],
-          //       },
-          //     },
-          //     [
-          //       h(InputComponent, {
-          //         labelName: line.details.name,
-          //         attributeName: line.details.attributeName,
-          //         defaultValue: line.details.value,
-          //         inputType: line.type,
-          //         max: line.details.maxLength
-          //           ? Number(line.details[0].maxLength)
-          //           : 0,
-          //         autoFocus: line.isFocus,
-          //         tabindex: Number(index),
-          //         labelX: line.details.coordinateNameX
-          //           ? Number(line.details.coordinateNameX)
-          //           : 0,
-          //         valueX: line.details[0].coordinateValueX
-          //           ? Number(line.details.coordinateValueX)
-          //           : 0,
-          //       }),
-          //     ]
-          //   );
-          //   elementList.push(element);
-          //   break;
-          // }
-          // case "password": {
-          //   const element = h(
-          //     "div",
-          //     {
-          //       class: ["center-items"],
-          //       style: {
-          //         "margin-top": top + "px",
-          //         height: globalStyle["line-height"],
-          //       },
-          //     },
-          //     [
-          //       h(InputComponent, {
-          //         labelName: line.details[0].name,
-          //         attributeName: line.details[0].attributeName,
-          //         defaultValue: line.details[0].value,
-          //         inputType: line.type,
-          //         max: line.details[0].maxLength
-          //           ? Number(line.details[0].maxLength)
-          //           : 0,
-          //         autoFocus: line.isFocus,
-          //         tabindex: Number(index),
-          //         labelX: line.details[0].coordinateNameX
-          //           ? Number(line.details[0].coordinateNameX)
-          //           : 0,
-          //         valueX: line.details[0].coordinateValueX
-          //           ? Number(line.details[0].coordinateValueX)
-          //           : 0,
-          //       }),
-          //     ]
-          //   );
-          //   elementList.push(element);
-          //   break;
-          // }
+          case "input": {
+            const element = h(
+              "div",
+              {
+                class: ["center-items"],
+                style: {
+                  "margin-top": top + "px",
+                  height: globalStyle["line-height"],
+                },
+              },
+              [
+                h(InputComponent, {
+                  details: line.details,
+                  tabindex: Number(index),
+                  inputType: line.type,
+                  autoFocus: line.isFocus,
+                }),
+              ]
+            );
+            elementList.push(element);
+            break;
+          }
+          case "password": {
+            const element = h(
+              "div",
+              {
+                class: ["center-items"],
+                style: {
+                  "margin-top": top + "px",
+                  height: globalStyle["line-height"],
+                },
+              },
+              [
+                h(InputComponent, {
+                  details: line.details,
+                  tabindex: Number(index),
+                  inputType: line.type,
+                  autoFocus: line.isFocus,
+                }),
+              ]
+            );
+            elementList.push(element);
+            break;
+          }
           case "menu": {
             const element = h(
               "div",
