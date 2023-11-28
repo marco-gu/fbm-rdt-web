@@ -32,7 +32,22 @@ export interface LineDetailEntity {
   coordinateValueX: number;
   maxLength: string | number;
 }
-
+export class LineDetail {
+  attributeName: string;
+  name?: string;
+  value?: string;
+  coordinateNameX: number | undefined | null;
+  coordinateValueX: number | undefined | null;
+  maxLength: string | number;
+  constructor() {
+    this.attributeName = "";
+    this.name = "";
+    this.value = "";
+    this.coordinateNameX = null;
+    this.coordinateValueX = null;
+    this.maxLength = "";
+  }
+}
 export enum ScreenLineTypeEnum {
   INPUT = "input",
   PASSWORD = "password",

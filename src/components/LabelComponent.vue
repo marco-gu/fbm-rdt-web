@@ -1,18 +1,19 @@
 <template>
   <div class="line-item label-container">
-    <div
-      class="label-block"
-      v-for="item in details"
-      v-bind:key="item"
-      :style="{
-        flexBasis:
-          item.coordinateNameX == 1
-            ? 'auto'
-            : (Number(item.coordinateNameX) / totalColums) * 100 + '%',
-      }"
-    >
-      {{ item.name }}
-    </div>
+    <template v-for="(item, index) in details" :key="index">
+      <div
+        v-if="item.name"
+        class="label-block"
+        :style="{
+          flexBasis:
+            item.coordinateNameX == 1
+              ? 'auto'
+              : (Number(item.coordinateNameX) / totalColums) * 100 + '%',
+        }"
+      >
+        {{ item.name }}
+      </div>
+    </template>
   </div>
 </template>
 <script lang="ts">
