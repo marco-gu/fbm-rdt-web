@@ -68,6 +68,7 @@ export function parseXML(xml: any): ScreenEntity {
         j = rows[t.coordinateY].length - 1;
         j++;
         rows[t.coordinateY][j] = t;
+        sortArray(rows[t.coordinateY]);
         // const last = rows[t.coordinateY].length - 1;
         // if (rows[t.coordinateY][last].coordinateX > t.coordinateX) {
         //   const temp = rows[t.coordinateY][j];
@@ -174,4 +175,18 @@ export function parseLineView(
   });
   console.log(map);
   return map;
+}
+
+function sortArray(array: any) {
+  let temp = null;
+  for (let i = 0; i < array.length - 1; i++) {
+    for (let j = i + 1; j < array.length; j++) {
+      if (parseInt(array[i].coordinateX) > parseInt(array[j].coordinateX)) {
+        temp = array[i];
+        console.log(i, j);
+        array[i] = array[j];
+        array[j] = temp;
+      }
+    }
+  }
 }
