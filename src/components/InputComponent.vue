@@ -182,6 +182,7 @@ export default InputComponent;
   .input-block {
     display: flex;
     align-items: center;
+    padding-left: 2px;
     textarea {
       border: none;
       resize: none;
