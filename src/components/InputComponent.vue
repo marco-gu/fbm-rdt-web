@@ -6,11 +6,7 @@
         class="label-block"
         :class="{ 'text-focus': isFocus }"
         :style="{
-          flexBasis: item.coordinateNameX
-            ? Number(item.coordinateNameX) === 1
-              ? 'auto'
-              : (Number(item.coordinateNameX) / 25) * 100 + '%'
-            : 'auto',
+          flexBasis: widthArr[index],
         }"
       >
         {{ item.name }}
@@ -22,9 +18,7 @@
         "
         class="input-block"
         :style="{
-          flexBasis: item.coordinateValueX
-            ? ((25 - Number(item.coordinateValueX)) / 25) * 100 + '%'
-            : 'auto',
+          flexBasis: widthArr[index],
         }"
       >
         <input
@@ -65,10 +59,12 @@ import {
   watch,
   onMounted,
   PropType,
+  Ref,
 } from "vue";
 import { CapturedValue } from "../entity/request.entity";
 import { useRoute } from "vue-router";
 import { LineDetail } from "@/entity/screen.entity";
+import * as deviceConfig from "@/assets/device/mc93.json";
 const InputComponent = defineComponent({
   props: {
     details: {
@@ -95,6 +91,7 @@ const InputComponent = defineComponent({
     const TEXT_MAX_LENGTH = ref(170);
     const isFocus = ref(false);
     const route = useRoute();
+    const widthArr: Ref<any> = ref([]);
     onMounted(() => {
       mapRawData();
       focusInput();
@@ -109,6 +106,25 @@ const InputComponent = defineComponent({
     };
     const mapRawData = () => {
       if (details.value) {
+        let lengthRemain = deviceConfig.colunms + 1;
+        const reversedArr = [];
+        if (details.value.length === 1) {
+          reversedArr.push("100%");
+        } else {
+          for (let i = details.value.length - 1; i >= 0; i--) {
+            const x =
+              details.value[i].coordinateValueX ||
+              details.value[i].coordinateNameX;
+            if (x) {
+              const calcColumnNo = lengthRemain - Number(x);
+              reversedArr.push(
+                Math.floor((calcColumnNo / deviceConfig.colunms) * 100) + "%"
+              );
+              lengthRemain = x;
+            }
+          }
+        }
+        widthArr.value = reversedArr.reverse();
         details.value.forEach((item: any) => {
           item.value = item.value || "";
         });
@@ -147,6 +163,7 @@ const InputComponent = defineComponent({
       onBlur,
       isFocus,
       convertMaxLength,
+      widthArr,
     };
   },
 });
