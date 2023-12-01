@@ -39,7 +39,9 @@
             width:
               convertMaxLength(item.maxLength) &&
               convertMaxLength(item.maxLength) > 0
-                ? 9.6 * convertMaxLength(item.maxLength) + 'px'
+                ? (9.6 * convertMaxLength(item.maxLength) > screenWidth
+                    ? screenWidth - 30
+                    : 9.6 * convertMaxLength(item.maxLength)) + 'px'
                 : convertMaxLength(item.maxLength) === 0
                 ? '10px'
                 : 'auto',
@@ -92,6 +94,7 @@ const InputComponent = defineComponent({
     const isFocus = ref(false);
     const route = useRoute();
     const widthArr: Ref<any> = ref([]);
+    const screenWidth: Ref<number> = ref(deviceConfig.width as number);
     onMounted(() => {
       mapRawData();
       focusInput();
@@ -164,6 +167,7 @@ const InputComponent = defineComponent({
       isFocus,
       convertMaxLength,
       widthArr,
+      screenWidth,
     };
   },
 });
