@@ -2,7 +2,7 @@ import { Module } from "vuex";
 import RootState from "../state";
 import { get } from "@/service/http";
 import { CapturedValue } from "@/entity/request.entity";
-import { parseLineView, parseXML } from "@/utils/util.parse";
+import { composeRowData, parseXML } from "@/utils/util.parse";
 import { ScreenEntity, ScreenLineEntity } from "@/entity/screen.entity";
 
 export interface WorkflowState {
@@ -10,7 +10,7 @@ export interface WorkflowState {
   sessionID: number;
   screenTitle: string;
   screenEntity: ScreenEntity;
-  linesView: Map<number, ScreenLineEntity>;
+  rowsEntity: Map<number, ScreenLineEntity>;
   isLoadingVisible: boolean;
   isRenderView: boolean;
   isOptionShow: boolean;
@@ -22,7 +22,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
     sessionID: -1,
     screenTitle: "",
     screenEntity: {} as ScreenEntity,
-    linesView: new Map() as Map<number, ScreenLineEntity>,
+    rowsEntity: new Map() as Map<number, ScreenLineEntity>,
     isLoadingVisible: false,
     isRenderView: false,
     isOptionShow: false,
@@ -76,8 +76,8 @@ const workflowModule: Module<WorkflowState, RootState> = {
     onSubmit(state, payload) {
       state.isLoadingVisible = false;
       const screenEntity = parseXML(payload);
-      const map = parseLineView(screenEntity);
-      state.linesView = map;
+      const map = composeRowData(screenEntity);
+      state.rowsEntity = map;
       state.screenTitle = screenEntity.screenTitle;
       state.capturedValues = screenEntity.capturedValues;
       state.sessionID = screenEntity.sessionID;

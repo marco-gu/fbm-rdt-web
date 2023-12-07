@@ -100,7 +100,7 @@ export function parseXML(xml: any): ScreenEntity {
   return screenEntity;
 }
 
-export function parseLineView(
+export function composeRowData(
   screenEntity: ScreenEntity
 ): Map<number, ScreenLineEntity> {
   const map: Map<number, any> = new Map();

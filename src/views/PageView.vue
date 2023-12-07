@@ -2,7 +2,7 @@
 import { defineComponent, h, onMounted, ref, watch } from "vue";
 import InputComponent from "@/components/InputComponent.vue";
 import { useStore } from "@/store";
-import { parseLineView } from "@/utils/util.parse";
+import { composeRowData } from "@/utils/util.parse";
 import { ScreenLineEntity } from "@/entity/screen.entity";
 import MenuComponent from "@/components/MenuComponent.vue";
 import LabelComponent from "@/components/LabelComponent.vue";
@@ -18,121 +18,106 @@ const PageView = defineComponent({
     const store = useStore();
     const router = useRouter();
     const render = ref();
-    const lastRow = ref(0);
+    const preRowNumber = ref(0);
+    const rowNode = ref();
+    const rowNodeColor = ref();
+    const rowNodeHeight = ref();
+    const rowsView = ref();
+    const buttonView = ref();
+    const optionView = ref();
+    const views = ref([] as any[]);
     watch(store.state.workflowModule, () => {
-      const subElement = document.getElementById("temp") as any;
-      subElement.style.visibility = store.state.workflowModule.isOptionShow
+      const options = document.getElementById("options") as any;
+      options.style.visibility = store.state.workflowModule.isOptionShow
         ? "visible"
         : "hidden";
     });
     onMounted(() => {
-      const lines = parseLineView(store.state.workflowModule.screenEntity);
-      renderView(lines);
+      const rowsEntity = composeRowData(
+        store.state.workflowModule.screenEntity
+      );
+      renderView(rowsEntity);
     });
     store.subscribe((mutation, state) => {
       if (state.workflowModule.isRenderView) {
         store.commit("workflowModule/saveRenderStatus", false);
-        renderView(state.workflowModule.linesView);
+        renderView(state.workflowModule.rowsEntity);
       }
     });
-    const renderView = (lines: Map<number, ScreenLineEntity>) => {
-      let elementList = [] as any[];
-      lines.forEach((line: ScreenLineEntity, index: number) => {
-        const lineHight = globalStyle["line-height"].substring(0, 2) as any;
-        const top = index == 1 ? 0 : (index - lastRow.value - 1) * lineHight;
-        lastRow.value = index;
-        switch (line.type) {
-          case "label": {
-            const color =
-              line.color == "white" ? globalStyle["color"] : line.color;
-            const element = h(
-              "div",
-              {
-                class: ["center-items"],
-                style: {
-                  "margin-top": top + "px",
-                  color: color,
-                  height: globalStyle["line-height"],
-                },
+    const renderView = (rowsEntity: Map<number, ScreenLineEntity>) => {
+      rowsEntity.forEach((rowEntity: ScreenLineEntity, index: number) => {
+        preRowNumber.value =
+          preRowNumber.value == 0 ? index : preRowNumber.value;
+        if (index - preRowNumber.value > 1) {
+          const range = index - preRowNumber.value;
+          for (let i = 1; i < range; i++) {
+            preRowNumber.value++;
+            const temp = h("div", {
+              id: preRowNumber.value,
+              class: ["center-items"],
+              style: {
+                color: globalStyle["color"],
+                height: globalStyle["line-height"],
               },
-              [
-                h(LabelComponent, {
-                  details: line.details,
-                }),
-              ]
-            );
-            elementList.push(element);
+            });
+            views.value.push(temp);
+          }
+        }
+        switch (rowEntity.type) {
+          case "label": {
+            rowNodeColor.value =
+              rowEntity.color == "white"
+                ? globalStyle["color"]
+                : rowEntity.color;
+            rowNode.value = h(LabelComponent, {
+              details: rowEntity.details,
+            });
             break;
           }
           case "input": {
-            const element = h(
-              "div",
-              {
-                class: ["center-items"],
-                style: {
-                  "margin-top": top + "px",
-                  height: globalStyle["line-height"],
-                },
-              },
-              [
-                h(InputComponent, {
-                  details: line.details,
-                  tabindex: Number(index),
-                  inputType: line.type,
-                  autoFocus: line.isFocus,
-                }),
-              ]
-            );
-            elementList.push(element);
+            rowNode.value = h(InputComponent, {
+              details: rowEntity.details,
+              tabindex: Number(index),
+              inputType: rowEntity.type,
+              autoFocus: rowEntity.isFocus,
+            });
             break;
           }
           case "password": {
-            const element = h(
-              "div",
-              {
-                class: ["center-items"],
-                style: {
-                  "margin-top": top + "px",
-                  height: globalStyle["line-height"],
-                },
-              },
-              [
-                h(InputComponent, {
-                  details: line.details,
-                  tabindex: Number(index),
-                  inputType: line.type,
-                  autoFocus: line.isFocus,
-                }),
-              ]
-            );
-            elementList.push(element);
+            rowNode.value = h(InputComponent, {
+              details: rowEntity.details,
+              tabindex: Number(index),
+              inputType: rowEntity.type,
+              autoFocus: rowEntity.isFocus,
+            });
             break;
           }
           case "menu": {
-            const element = h(
-              "div",
-              {
-                class: ["center-items"],
-                style: {
-                  "margin-top": top + "px",
-                  height: globalStyle["line-height"],
-                },
-              },
-              [
-                h(MenuComponent, {
-                  menuName: line.details[0].name,
-                }),
-              ]
-            );
-            elementList.push(element);
+            rowNode.value = h(MenuComponent, {
+              menuName: rowEntity.details[0].name,
+            });
             break;
           }
         }
+        rowsView.value = h(
+          "div",
+          {
+            id: index,
+            class: ["center-items"],
+            style: {
+              color: rowNodeColor.value,
+              height: globalStyle["line-height"],
+            },
+          },
+          [rowNode.value]
+        );
+        views.value.push(rowsView.value);
+        preRowNumber.value = index;
       });
-      const element = h(
+      optionView.value = h(
         "div",
         {
-          id: "temp",
+          id: "options",
           class: ["options"],
           style: {
             visibility: "hidden",
@@ -146,9 +131,8 @@ const PageView = defineComponent({
         },
         [h(OptionsView)]
       );
-      elementList.push(element);
-
-      const button = h(
+      views.value.push(optionView.value);
+      buttonView.value = h(
         "div",
         {
           class: ["plus-icon-container"],
@@ -174,13 +158,13 @@ const PageView = defineComponent({
           }),
         ]
       );
-      elementList.push(button);
+      views.value.push(buttonView.value);
       render.value = h(
         "div",
         {
           style: {
             width: globalStyle["width"],
-            height: globalStyle["height"],
+            // height: globalStyle["height"],
             background: globalStyle["background-color"],
             fontSize: globalStyle["font-size"],
             color: globalStyle["color"],
@@ -192,9 +176,10 @@ const PageView = defineComponent({
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
         },
-        elementList
+        views.value
       );
-      lastRow.value = 0;
+      preRowNumber.value = 0;
+      views.value = [];
     };
     return () => render.value;
   },

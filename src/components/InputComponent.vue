@@ -120,7 +120,7 @@ const InputComponent = defineComponent({
               details.value[i].coordinateNameX;
             if (x) {
               const calcColumnNo = lengthRemain - Number(x);
-              console.log(calcColumnNo);
+              // console.log(calcColumnNo);
               reversedArr.push(
                 Math.floor((calcColumnNo / deviceConfig.colunms) * 100) + "%"
               );
