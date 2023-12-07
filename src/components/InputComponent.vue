@@ -120,6 +120,7 @@ const InputComponent = defineComponent({
               details.value[i].coordinateNameX;
             if (x) {
               const calcColumnNo = lengthRemain - Number(x);
+              console.log(calcColumnNo);
               reversedArr.push(
                 Math.floor((calcColumnNo / deviceConfig.colunms) * 100) + "%"
               );
@@ -179,9 +180,6 @@ export default InputComponent;
   // justify-content: space-between;
   .label-block {
     text-align: left;
-    &.text-focus {
-      // font-weight: bold;
-    }
   }
   .input-block {
     display: flex;

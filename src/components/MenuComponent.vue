@@ -46,10 +46,4 @@ export default MenuComponent;
 input:focus {
   outline: none;
 }
-// .last-item {
-//   position: absolute;
-//   bottom: 0;
-//   background-color: inherit;
-//   width: 100%;
-// }
 </style>

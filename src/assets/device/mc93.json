@@ -1,8 +1,8 @@
 {
-  "height": "",
+  "height": 534,
   "width": 320,
   "rows": "",
-  "colunms": 25,
-  "fontSize": "",
-  "letterSpacing": ""
+  "colunms": 32,
+  "fontSize": "16",
+  "letterSpacing": "-0.5"
 }

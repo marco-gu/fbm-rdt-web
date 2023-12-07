@@ -1,0 +1,4 @@
+GET http://localhost:8100/fbm-wms-rdt/RDTEngine/GBR HTTP/1.1
+content-type: application/json
+api-version : 1
+X-Mobile-Number: 0

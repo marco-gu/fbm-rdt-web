@@ -59,17 +59,6 @@ const PageView = defineComponent({
                 h(LabelComponent, {
                   details: line.details,
                 }),
-                // h(LabelComponent, {
-                //   labelName: line.details[0].name,
-                //   labelValue: line.details[0].value,
-                //   isBottomElement: false,
-                //   labelX: line.details[0].coordinateNameX
-                //     ? Number(line.details[0].coordinateNameX)
-                //     : 0,
-                //   valueX: line.details[0].coordinateValueX
-                //     ? Number(line.details[0].coordinateValueX)
-                //     : 0,
-                // }),
               ]
             );
             elementList.push(element);
@@ -123,7 +112,7 @@ const PageView = defineComponent({
             const element = h(
               "div",
               {
-                class: ["center-item"],
+                class: ["center-items"],
                 style: {
                   "margin-top": top + "px",
                   height: globalStyle["line-height"],
@@ -196,7 +185,7 @@ const PageView = defineComponent({
             fontSize: globalStyle["font-size"],
             color: globalStyle["color"],
             letterSpacing: globalStyle["letter-spacing"],
-            // border: "#6E7C89 .5px solid",
+            border: "#6E7C89 .5px solid",
             margin: "auto",
             position: "relative",
           },
