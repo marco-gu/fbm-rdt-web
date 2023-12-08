@@ -5,10 +5,7 @@
         v-if="item.name"
         class="label-block"
         :style="{
-          flexBasis:
-            item.coordinateNameX == 1
-              ? 'auto'
-              : (1 - Number(item.coordinateNameX) / totalColums) * 100 + '%',
+          flexBasis: widthArr[index],
         }"
       >
         {{ item.name }}
@@ -17,7 +14,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { Ref, defineComponent, onMounted, ref, toRefs } from "vue";
 import * as deviceConfig from "@/assets/device/mc93.json";
 const LabelComponent = defineComponent({
   props: {
@@ -26,9 +23,41 @@ const LabelComponent = defineComponent({
     },
   },
   setup(props) {
+    const { details } = toRefs(props);
     const totalColums = deviceConfig.colunms;
+    const widthArr: Ref<any> = ref([]);
+    onMounted(() => {
+      mapRawData();
+    });
+    const mapRawData = () => {
+      if (details.value) {
+        let lengthRemain = deviceConfig.colunms + 1;
+        const reversedArr = [];
+        if (details.value.length === 1) {
+          reversedArr.push("100%");
+        } else {
+          for (let i = details.value.length - 1; i >= 0; i--) {
+            const x =
+              details.value[i].coordinateValueX ||
+              details.value[i].coordinateNameX;
+            if (x) {
+              const calcColumnNo = lengthRemain - Number(x);
+              reversedArr.push(
+                Math.floor((calcColumnNo / deviceConfig.colunms) * 100) + "%"
+              );
+              lengthRemain = x;
+            }
+          }
+        }
+        widthArr.value = reversedArr.reverse();
+        details.value.forEach((item: any) => {
+          item.value = item.value || "";
+        });
+      }
+    };
     return {
       totalColums,
+      widthArr,
     };
   },
 });
