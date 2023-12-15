@@ -200,9 +200,9 @@ export function composeScreenData(param: EngineResponse) {
     capturedValues: [],
     subTitle: "",
   };
-  screenModel.title = param.title;
+  // screenModel.title = param.title;
   // screenModel.subTitle = param.subTitle;
-  screenModel.mainRows = composeRowsData(param.fields);
+  screenModel.mainRows = composeRowsData(param.screenDto.fields);
   console.log(screenModel.mainRows);
   // screenModel.subFormRows = composeRowsData(param.subFields);
   return screenModel;
@@ -213,7 +213,7 @@ export function composeRowsData(fields: FieldDto[]) {
   const listView = {} as ListViewModel;
   fields.forEach((field: FieldDto) => {
     let type = field.attributeType;
-    if (field.attributeType.includes("list_single")) {
+    if (field.attributeType.includes("listSingle")) {
       type = "list_single";
     }
     switch (type) {
@@ -222,6 +222,12 @@ export function composeRowsData(fields: FieldDto[]) {
         break;
       case "list_single":
         parseListSingle(rows, listView, field);
+        break;
+      case "inputBox":
+        composeInputComponent(rows, field);
+        break;
+      case "password":
+        composeInputComponent(rows, field);
         break;
     }
   });
@@ -241,25 +247,25 @@ function parseListSingle(
   field: FieldDto
 ) {
   switch (field.attributeType) {
-    case "list_single_title":
+    case "listSingleTitle":
       composeLabelComponent(rows, field);
       break;
-    case "list_single_item_first":
+    case "listSingleItemFirst":
       listView.firstRow = field.coordinateY;
       break;
-    case "list_single_item_last":
+    case "listSingleItemLast":
       listView.lastRow = field.coordinateY;
       break;
-    case "list_single_value":
+    case "listSingleList":
       composeLabelComponentForList(rows, listView, field);
       break;
-    case "list_single_label":
+    case "listSingleLabel":
       composeListInputComponet(rows, field);
       break;
-    case "list_single_input":
+    case "listSingleInput":
       composeListInputComponet(rows, field);
       break;
-    case "list_single_page":
+    case "listSinglePage":
       composeListInputComponet(rows, field);
       break;
   }
@@ -296,8 +302,8 @@ function composeLabelComponentForList(
   listView: ListViewModel,
   field: FieldDto
 ) {
-  const data = field.value as ListMasterModel;
-  data.list.forEach((t) => {
+  const result = JSON.parse(field.value);
+  result.list.forEach((t: any) => {
     const screenRow = {} as ScreenRowModel;
     screenRow.type = ScreenRowComponentEnum.LABEL;
     screenRow.labelDetails = [];
@@ -328,4 +334,23 @@ function composeListInputComponet(
     screenRow.singleListInputDetails.push(field);
     rows.set(screenRow.coordinateY, screenRow);
   }
+}
+
+function composeInputComponent(
+  rows: Map<number, ScreenRowModel>,
+  field: FieldDto
+) {
+  rows.forEach((row) => {
+    if (row.coordinateY == field.coordinateY) {
+      row.type =
+        field.attributeType == "inputBox"
+          ? ScreenRowComponentEnum.INPUT
+          : ScreenRowComponentEnum.PASSWORD;
+      if (row.labelDetails.length > 0) {
+        row.labelDetails.push(field);
+        row.inputDetails = row.labelDetails;
+        row.labelDetails = [];
+      }
+    }
+  });
 }

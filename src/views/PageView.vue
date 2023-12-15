@@ -82,37 +82,44 @@ const PageView = defineComponent({
               rowNode.value = h(LabelComponent, {
                 details: row.labelDetails,
               });
-              rowsView.value = h(
-                "div",
-                {
-                  class: ["center-items"],
-                  style: {
-                    height: globalStyle["line-height"],
-                  },
-                },
-                [rowNode.value]
-              );
-              views.value.push(rowsView.value);
+              break;
+            }
+            case "input": {
+              // rowNode.value = h(InputComponent, {
+              //   details: row.labelDetails,
+              // });
+              break;
+            }
+            case "password": {
+              // rowNode.value = h(InputComponent, {
+              //   details: row.labelDetails,
+              // });
               break;
             }
             case "singlelistinput": {
-              rowNode.value = h(SingleListInput, {
-                details: row.labelDetails,
-              });
-              rowsView.value = h(
-                "div",
-                {
-                  class: ["center-items"],
-                  style: {
-                    height: globalStyle["line-height"],
-                  },
-                },
-                [rowNode.value]
-              );
-              views.value.push(rowsView.value);
+              if (row.singleListInputDetails.length > 1) {
+                rowNode.value = h(SingleListInput, {
+                  details: row.labelDetails,
+                });
+              } else {
+                rowNode.value = h(LabelComponent, {
+                  details: row.singleListInputDetails,
+                });
+              }
               break;
             }
           }
+          rowsView.value = h(
+            "div",
+            {
+              class: ["center-items"],
+              style: {
+                height: globalStyle["line-height"],
+              },
+            },
+            [rowNode.value]
+          );
+          views.value.push(rowsView.value);
         });
       }
     };

@@ -7,7 +7,8 @@ import { useRoute, useRouter } from "vue-router";
 import { get } from "./service/http";
 import { useStore } from "./store";
 import { parseXML } from "./utils/util.parse";
-import response from "./assets/mock/New_RDT_Sampe_Response.json";
+import response from "./assets/mock/New_RDT_Response.json";
+import loginResponse from "./assets/mock/New_RDT_Login_Response.json";
 import { EngineResponse } from "./entity/response.entity";
 import { composeScreenData } from "./utils/util.parse";
 
@@ -21,7 +22,8 @@ export default defineComponent({
     const router = useRouter();
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
-      const data = response as EngineResponse;
+      // const data = response as unknown as EngineResponse;
+      const data = loginResponse as unknown as EngineResponse;
       store.commit("workflowModule/saveScreenModel", composeScreenData(data));
       isShow.value = true;
       // visible.value = false;

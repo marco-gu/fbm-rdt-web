@@ -1,8 +1,15 @@
 import { ListMasterModel } from "./screen.entity";
 
 export interface EngineResponse {
+  sessionId: string;
+  resultStatus: string;
+  screenDto: ScreenDto;
+}
+
+export interface ScreenDto {
   title: string;
   functionKey: string;
+  functionKeyNameList: string[];
   rowSize: number;
   columnSize: number;
   style: string;
@@ -16,7 +23,7 @@ export interface FieldDto {
   attributeName: string;
   attributeType: string;
   dataType: string;
-  value: string | ListMasterModel;
+  value: string;
   coordinateX: number;
   coordinateY: number;
   color: string;
