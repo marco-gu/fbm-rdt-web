@@ -2,7 +2,7 @@
   <router-view v-if="isShow"></router-view>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { get } from "./service/http";
 import { useStore } from "./store";
@@ -17,17 +17,14 @@ export default defineComponent({
     const store = useStore();
     const isShow = ref(false);
     const url = "RDTEngine/GBR";
-    // const visible = ref(true);
     const route = useRoute();
     const router = useRouter();
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
       // const data = response as unknown as EngineResponse;
-      const data = loginResponse as unknown as EngineResponse;
+      const data = response as unknown as EngineResponse;
       store.commit("workflowModule/saveScreenModel", composeScreenData(data));
       isShow.value = true;
-      // visible.value = false;
-      // console.log(data);
     });
     onUnmounted(() => {
       window.removeEventListener("keyup", handleKeyDown);
@@ -85,12 +82,8 @@ export default defineComponent({
         }
       }
     };
-    // watch(store.state.workflowModule, () => {
-    //   visible.value = store.state.workflowModule.isLoadingVisible;
-    // });
     return {
       isShow,
-      // visible,
     };
   },
 });

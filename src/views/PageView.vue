@@ -14,6 +14,7 @@ import OptionsView from "@/views/options/OptionsView.vue";
 import { useRouter } from "vue-router";
 import globalStyle from "@/styles/variable/global.module.scss";
 import SingleListInput from "@/components/SingleListInput.vue";
+import MessageComponent from "@/components/MessageComponent.vue";
 
 const PageView = defineComponent({
   components: {
@@ -107,6 +108,11 @@ const PageView = defineComponent({
                 });
               }
               break;
+            }
+            case "messageBox": {
+              rowNode.value = h(MessageComponent, {
+                details: row.messageDetail,
+              });
             }
           }
           rowsView.value = h(

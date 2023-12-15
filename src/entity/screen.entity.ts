@@ -25,6 +25,7 @@ export interface ScreenRowModel {
   coordinateY: number;
   labelDetails: FieldDto[];
   inputDetails: FieldDto[];
+  messageDetail: FieldDto;
   singleListInputDetails: FieldDto[];
 }
 
@@ -90,6 +91,7 @@ export enum ScreenRowComponentEnum {
   PASSWORD = "password",
   LABEL = "label",
   MENU = "menu",
+  MESSAGEBOX = "messageBox",
 }
 
 export interface ListViewModel {

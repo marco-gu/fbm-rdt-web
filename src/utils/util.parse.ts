@@ -15,6 +15,7 @@ import {
   LabelViewModel,
 } from "@/entity/screen.entity";
 import { CapturedValue } from "@/entity/request.entity";
+import _ from "lodash";
 
 /**
  * Deprecated, For XML reponse
@@ -229,6 +230,13 @@ export function composeRowsData(fields: FieldDto[]) {
       case "password":
         composeInputComponent(rows, field);
         break;
+      case "message":
+        composeMessageComponent(rows, field);
+        break;
+      case "inputBoxMultiLine":
+        console.log(field);
+        composeInputComponent(rows, field);
+        break;
     }
   });
   const array = Array.from(rows).sort((a: any, b: any) => {
@@ -340,17 +348,63 @@ function composeInputComponent(
   rows: Map<number, ScreenRowModel>,
   field: FieldDto
 ) {
+  let existRow = false;
   rows.forEach((row) => {
     if (row.coordinateY == field.coordinateY) {
-      row.type =
-        field.attributeType == "inputBox"
-          ? ScreenRowComponentEnum.INPUT
-          : ScreenRowComponentEnum.PASSWORD;
+      existRow = true;
+      // row.type =
+      //   field.attributeType == "inputBox"
+      //     ? ScreenRowComponentEnum.INPUT
+      //     : ScreenRowComponentEnum.PASSWORD;
+      switch (field.attributeType) {
+        case "input":
+          row.type = ScreenRowComponentEnum.INPUT;
+          break;
+        case "password":
+          row.type = ScreenRowComponentEnum.PASSWORD;
+          break;
+        case "inputBoxMultiLine":
+          row.type = ScreenRowComponentEnum.INPUT;
+          break;
+      }
       if (row.labelDetails.length > 0) {
         row.labelDetails.push(field);
         row.inputDetails = row.labelDetails;
         row.labelDetails = [];
       }
     }
+  });
+  if (!existRow) {
+    const screenRow = {} as ScreenRowModel;
+    switch (field.attributeType) {
+      case "input":
+        screenRow.type = ScreenRowComponentEnum.INPUT;
+        break;
+      case "password":
+        screenRow.type = ScreenRowComponentEnum.PASSWORD;
+        break;
+      case "inputBoxMultiLine":
+        screenRow.type = ScreenRowComponentEnum.INPUT;
+        break;
+    }
+    screenRow.coordinateY = field.coordinateY;
+    screenRow.singleListInputDetails = [];
+    screenRow.singleListInputDetails.push(field);
+    rows.set(screenRow.coordinateY, screenRow);
+  }
+}
+
+function composeMessageComponent(
+  rows: Map<number, ScreenRowModel>,
+  field: FieldDto
+) {
+  const messages = JSON.parse(field.value);
+  messages.msgItems.forEach((t: any, index: number) => {
+    const screenRow = {} as ScreenRowModel;
+    screenRow.type = ScreenRowComponentEnum.MESSAGEBOX;
+    screenRow.coordinateY = field.coordinateY + index;
+    screenRow.messageDetail = _.cloneDeep(field);
+    screenRow.messageDetail.value = t;
+    rows.set(field.coordinateY + index, screenRow);
   });
 }
