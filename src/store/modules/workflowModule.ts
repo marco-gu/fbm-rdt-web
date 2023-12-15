@@ -3,30 +3,34 @@ import RootState from "../state";
 import { get } from "@/service/http";
 import { CapturedValue } from "@/entity/request.entity";
 import { composeRowData, parseXML } from "@/utils/util.parse";
-import { ScreenEntity, ScreenLineEntity } from "@/entity/screen.entity";
+import { ScreenModel, ScreenLineEntity } from "@/entity/screen.entity";
 
 export interface WorkflowState {
+  screenModel: ScreenModel;
   capturedValues: CapturedValue[];
   sessionID: number;
-  screenTitle: string;
-  screenEntity: ScreenEntity;
+  title: string;
+  screenEntity: ScreenModel;
   rowsEntity: Map<number, ScreenLineEntity>;
   isLoadingVisible: boolean;
   isRenderView: boolean;
   isOptionShow: boolean;
   country: string;
+  functionKeys: [];
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
+    screenModel: {} as ScreenModel,
     capturedValues: [],
     sessionID: -1,
-    screenTitle: "",
-    screenEntity: {} as ScreenEntity,
+    title: "",
+    screenEntity: {} as ScreenModel,
     rowsEntity: new Map() as Map<number, ScreenLineEntity>,
     isLoadingVisible: false,
     isRenderView: false,
     isOptionShow: false,
     country: "",
+    functionKeys: [],
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {
@@ -76,17 +80,17 @@ const workflowModule: Module<WorkflowState, RootState> = {
     onSubmit(state, payload) {
       state.isLoadingVisible = false;
       const screenEntity = parseXML(payload);
-      const map = composeRowData(screenEntity);
-      state.rowsEntity = map;
-      state.screenTitle = screenEntity.screenTitle;
-      state.capturedValues = screenEntity.capturedValues;
-      state.sessionID = screenEntity.sessionID;
+      // const map = composeRowData(screenEntity);
+      // state.rowsEntity = map;
+      // state.title = screenEntity.title;
+      // state.capturedValues = screenEntity.capturedValues;
+      // state.sessionID = screenEntity.sessionID;
       state.isRenderView = true;
     },
     saveScreenEntity(state, payload) {
       state.screenEntity = payload;
       state.sessionID = payload.sessionID;
-      state.screenTitle = payload.screenTitle;
+      state.title = payload.title;
       state.capturedValues = payload.capturedValues;
     },
     saveOptionsStatus(state, payload) {
@@ -97,6 +101,9 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.isOptionShow = false;
       state.capturedValues = [];
       state.sessionID = -1;
+    },
+    saveScreenModel(state, payload) {
+      state.screenModel = payload;
     },
   },
   namespaced: true,

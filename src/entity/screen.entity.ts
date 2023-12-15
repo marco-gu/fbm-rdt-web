@@ -1,22 +1,58 @@
 import { CapturedValue } from "./request.entity";
+import { FieldDto } from "./response.entity";
 
-export class ScreenEntity {
-  screenTitle: string;
-  sessionID: number;
+export interface ScreenModel {
+  title: string;
+  subTitle: string;
+  focus: string;
+  mainRows: Map<number, ScreenRowModel>;
+  subFormRows: Map<number, ScreenRowModel>;
   screenLines: any[][];
   capturedValues: CapturedValue[];
-  screenFocusName: string;
-  constructor() {
-    this.screenTitle = "";
-    this.sessionID = -1;
-    this.screenLines = [[]];
-    this.capturedValues = [];
-    this.screenFocusName = "";
-  }
+  // constructor() {
+  //   this.title = "";
+  //   this.focus = "";
+  //   this.mainRows = new Map();
+  //   this.subFormRows = new Map();
+  //   // this.sessionID = -1;
+  //   this.screenLines = [[]];
+  //   this.capturedValues = [];
+  // }
 }
 
+export interface ScreenRowModel {
+  type: ScreenRowComponentEnum;
+  coordinateY: number;
+  labelDetails: FieldDto[];
+  inputDetails: FieldDto[];
+  singleListInputDetails: FieldDto[];
+}
+
+export interface LabelViewModel {
+  attributeName?: string;
+  coordinateY: number;
+  coordinateX: number;
+  value: string;
+}
+
+// export interface ScreenRowDetailModel {
+//   attributeId: string;
+//   sequence: number;
+//   attributeName: string;
+//   attributeType: string;
+//   dataType: string;
+//   value: string | ListSingle;
+//   coordinateX: number;
+//   coordinateY: number;
+//   color: string;
+//   regexPattern: string;
+//   isHidden: boolean;
+//   isOverwritten: boolean;
+//   isHighlighed: boolean;
+//   isRequired: boolean;
+// }
 export interface ScreenLineEntity {
-  type: ScreenLineTypeEnum;
+  type: ScreenRowComponentEnum;
   // isLastLine: boolean;
   coordinateY: number;
   isFocus: boolean;
@@ -48,9 +84,40 @@ export class LineDetail {
     this.maxLength = "";
   }
 }
-export enum ScreenLineTypeEnum {
+export enum ScreenRowComponentEnum {
   INPUT = "input",
+  SINGLELISTINPUT = "singlelistinput",
   PASSWORD = "password",
   LABEL = "label",
   MENU = "menu",
+}
+
+export interface ListViewModel {
+  // title: string;
+  // titleX: number;
+  // titleY: number;
+  firstRow: number;
+  lastRow: number;
+  // label: string;
+  // labelX: number;
+  // labelY: number;
+  // inputX: number;
+  // inputY: number;
+  // page: string;
+  // pageX: number;
+  // pageY: number;
+  // list: ListMasterModel;
+}
+
+export interface ListMasterModel {
+  total: string;
+  pageSize: number;
+  currentPage: number;
+  list: ListDetailModel[];
+}
+
+export interface ListDetailModel {
+  id: string;
+  name: string;
+  sequence: number;
 }

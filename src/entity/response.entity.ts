@@ -1,33 +1,40 @@
+import { ListMasterModel } from "./screen.entity";
+
 export interface EngineResponse {
-  sessionID: number;
-  resultStatus: string;
-  screenTitle: string;
+  title: string;
+  functionKey: string;
+  rowSize: number;
+  columnSize: number;
+  style: string;
+  colorSchema: string;
   fields: FieldDto[];
-  legacyOutPutXML: string;
 }
 
 export interface FieldDto {
-  sequence: number;
   attributeId: string;
+  sequence: number;
   attributeName: string;
   attributeType: string;
   dataType: string;
-  defaultValue: string;
-  value: string;
-  isRequired: boolean;
-  maxLength: number;
-  minLength: number;
-  regexPattern: string;
-  groupName: string;
-  match: string;
+  value: string | ListMasterModel;
   coordinateX: number;
   coordinateY: number;
   color: string;
+  regexPattern: string;
+  isHidden: boolean;
+  isOverwritten: boolean;
+  isHighlighed: boolean;
+  isRequired: boolean;
 }
 
-export enum ResponseAttributeType {
-  INPUT = "input",
+export enum AttributeType {
   OUTPUT = "output",
+  INPUT = "input",
   PASSWORD = "password",
+  DATE_TIME = "data_time",
+  LIST_SINGLE = "list_single",
+  LIST_MULTI = "list_muilt",
+  SUB_BTN = "sub_btn",
+  BUTTON = "button",
   MENU = "menu",
 }
