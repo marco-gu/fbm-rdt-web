@@ -13,7 +13,7 @@
 </template>
 <script lang="ts">
 import { Ref, defineComponent, ref, toRefs } from "vue";
-const SLI = defineComponent({
+const SingleListInput = defineComponent({
   props: {
     details: {
       type: Array,
@@ -21,9 +21,22 @@ const SLI = defineComponent({
   },
   setup(props) {
     const { details } = toRefs(props);
-    const label = ref("Option:");
+    const label = ref();
+    const page = ref();
+    console.log(details.value);
+    const items = details.value;
+    items?.forEach((t: any) => {
+      console.log(t);
+      switch (t.attributeType) {
+        case "listSingleLabel":
+          label.value = t.value;
+          break;
+        case "listSinglePage":
+          page.value = t.value;
+          break;
+      }
+    });
     const value = ref();
-    const page = ref("(Page: 1)");
     return {
       label,
       page,
@@ -31,7 +44,7 @@ const SLI = defineComponent({
     };
   },
 });
-export default SLI;
+export default SingleListInput;
 </script>
 <style lang="scss" scoped>
 .inputs-container {

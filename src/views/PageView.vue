@@ -100,7 +100,7 @@ const PageView = defineComponent({
             case "singlelistinput": {
               if (row.singleListInputDetails.length > 1) {
                 rowNode.value = h(SingleListInput, {
-                  details: row.labelDetails,
+                  details: row.singleListInputDetails,
                 });
               } else {
                 rowNode.value = h(LabelComponent, {
