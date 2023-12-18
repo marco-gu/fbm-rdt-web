@@ -4,7 +4,7 @@
       {{ label }}
     </div>
     <div class="input-block">
-      <input ref="input" v-model="value" style="width: 10px" />
+      <input id="123" ref="input" v-model="value" style="width: 10px" />
     </div>
     <div class="label-block" style="margin-left: 10px">
       {{ page }}
@@ -12,8 +12,8 @@
   </div>
 </template>
 <script lang="ts">
-import { Ref, defineComponent, ref, toRefs } from "vue";
-const SingleListInput = defineComponent({
+import { Ref, defineComponent, ref, toRefs, onMounted } from "vue";
+const MenuInputComponent = defineComponent({
   props: {
     details: {
       type: Array,
@@ -22,11 +22,18 @@ const SingleListInput = defineComponent({
   setup(props) {
     const { details } = toRefs(props);
     const label = ref();
-    const page = ref();
-    console.log(details.value);
+    const input = ref();
+    const page = ref("(total 2)");
     const items = details.value;
+    onMounted(() => {
+      const element = document.getElementById("123") as any;
+      element.addEventListener("keyup", handleKeyDown);
+    });
+    const handleKeyDown = (event: any) => {
+      console.log("28");
+      event.stopPropagation();
+    };
     items?.forEach((t: any) => {
-      console.log(t);
       switch (t.attributeType) {
         case "listSingleLabel":
           label.value = t.value;
@@ -44,7 +51,7 @@ const SingleListInput = defineComponent({
     };
   },
 });
-export default SingleListInput;
+export default MenuInputComponent;
 </script>
 <style lang="scss" scoped>
 .inputs-container {

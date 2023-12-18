@@ -1,20 +1,20 @@
 <script lang="ts">
 import { defineComponent, h, onMounted, ref, watch } from "vue";
-import InputComponent from "@/components/InputComponent.vue";
 import { useStore } from "@/store";
-import { composeRowData } from "@/utils/util.parse";
 import {
-  ScreenLineEntity,
   ScreenModel,
+  ScreenRowComponentEnum,
   ScreenRowModel,
 } from "@/entity/screen.entity";
-import MenuComponent from "@/components/MenuComponent.vue";
-import LabelComponent from "@/components/LabelComponent.vue";
+import LabelComponent from "@/components/generic/LabelComponent.vue";
 import OptionsView from "@/views/options/OptionsView.vue";
 import { useRouter } from "vue-router";
 import globalStyle from "@/styles/variable/global.module.scss";
-import SingleListInput from "@/components/SingleListInput.vue";
-import MessageComponent from "@/components/MessageComponent.vue";
+import MessageComponent from "@/components/message/MessageComponent.vue";
+import InputComponentTest from "@/components/InputTest.vue";
+import MenuLabelComponent from "@/components/menu/MenuItemLabelComponent.vue";
+import MenuTitleComponent from "@/components/menu/MenuTitleComponent.vue";
+import MenuInputComponent from "@/components/menu/MenuInputComponent.vue";
 
 const PageView = defineComponent({
   components: {
@@ -78,41 +78,57 @@ const PageView = defineComponent({
     const renderMainRows = (rows: Map<number, ScreenRowModel>) => {
       if (rows.size > 0) {
         rows.forEach((row) => {
-          switch (row.type) {
-            case "label": {
+          switch (row.rowType) {
+            case ScreenRowComponentEnum.LABEL: {
               rowNode.value = h(LabelComponent, {
-                details: row.labelDetails,
+                details: row.rowDetails,
               });
               break;
             }
-            case "input": {
-              // rowNode.value = h(InputComponent, {
-              //   details: row.labelDetails,
-              // });
+            case ScreenRowComponentEnum.INPUT: {
+              rowNode.value = h(InputComponentTest, {
+                details: row.rowDetails,
+              });
               break;
             }
-            case "password": {
-              // rowNode.value = h(InputComponent, {
-              //   details: row.labelDetails,
-              // });
+            case ScreenRowComponentEnum.PASSWORD: {
+              rowNode.value = h(InputComponentTest, {
+                details: row.rowDetails,
+              });
               break;
             }
-            case "singlelistinput": {
-              if (row.singleListInputDetails.length > 1) {
-                rowNode.value = h(SingleListInput, {
-                  details: row.singleListInputDetails,
-                });
-              } else {
-                rowNode.value = h(LabelComponent, {
-                  details: row.singleListInputDetails,
-                });
-              }
+            case ScreenRowComponentEnum.MENU_INPUT: {
+              rowNode.value = h(MenuInputComponent, {
+                details: row.rowDetails,
+              });
+              // if (row.rowDetails.length > 1) {
+              //   rowNode.value = h(MenuInputComponent, {
+              //     details: row.rowDetails,
+              //   });
+              // } else {
+              //   rowNode.value = h(LabelComponent, {
+              //     details: row.rowDetails,
+              //   });
+              // }
               break;
             }
-            case "messageBox": {
+            case ScreenRowComponentEnum.MENU_TITLE: {
+              rowNode.value = h(MenuTitleComponent, {
+                details: row.rowDetails,
+              });
+              break;
+            }
+            case ScreenRowComponentEnum.MENU_ITEM: {
+              rowNode.value = h(MenuLabelComponent, {
+                details: row.rowDetails,
+              });
+              break;
+            }
+            case ScreenRowComponentEnum.MESSAGEBOX: {
               rowNode.value = h(MessageComponent, {
-                details: row.messageDetail,
+                details: row.rowDetails,
               });
+              break;
             }
           }
           rowsView.value = h(
@@ -130,9 +146,8 @@ const PageView = defineComponent({
       }
     };
     const renderSubForm = (subRows: Map<number, ScreenRowModel>) => {
-      if (subRows.size > 0) {
-        // compose
-      }
+      // if (subRows.size > 0) {
+      // }
     };
     // const renderBtn = () => {
     //   buttonView.value = h(

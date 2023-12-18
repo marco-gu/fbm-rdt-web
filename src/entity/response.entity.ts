@@ -1,5 +1,3 @@
-import { ListMasterModel } from "./screen.entity";
-
 export interface EngineResponse {
   sessionId: string;
   resultStatus: string;
@@ -35,13 +33,20 @@ export interface FieldDto {
 }
 
 export enum AttributeType {
-  OUTPUT = "output",
-  INPUT = "input",
+  LIST_SINGLE = "listSingle",
+  LABEL = "label",
+  INPUT = "inputBox",
   PASSWORD = "password",
-  DATE_TIME = "data_time",
-  LIST_SINGLE = "list_single",
-  LIST_MULTI = "list_muilt",
-  SUB_BTN = "sub_btn",
-  BUTTON = "button",
-  MENU = "menu",
+  MESSAGE = "message",
+  INPUT_MULTI = "inputBoxMultiLine",
+}
+
+export enum ListAttributeType {
+  LIST_SINGLE_TITLE = "listSingleTitle",
+  LIST_SINGLE_ITEM_FIRST = "listSingleItemFirst",
+  LIST_SINGLE_ITEM_LAST = "listSingleItemLast",
+  LIST_SINGLE_LIST = "listSingleList",
+  LIST_SINGLE_LABEL = "listSingleLabel",
+  LIST_SINGLE_INPUT = "listSingleInput",
+  LIST_SINGLE_PAGE = "listSinglePage",
 }

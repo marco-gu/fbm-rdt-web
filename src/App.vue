@@ -10,7 +10,7 @@ import { parseXML } from "./utils/util.parse";
 import response from "./assets/mock/New_RDT_Response.json";
 import loginResponse from "./assets/mock/New_RDT_Login_Response.json";
 import { EngineResponse } from "./entity/response.entity";
-import { composeScreenData } from "./utils/util.parse";
+import { composeScreenData } from "./utils/type3.parse";
 
 export default defineComponent({
   setup() {
@@ -35,6 +35,7 @@ export default defineComponent({
     //   visible.value = false;
     // });
     const handleKeyDown = (event: any) => {
+      console.log("11128");
       if (route.path == "/") {
         {
           switch (event.keyCode) {

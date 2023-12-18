@@ -2,7 +2,7 @@ import { Module } from "vuex";
 import RootState from "../state";
 import { get } from "@/service/http";
 import { CapturedValue } from "@/entity/request.entity";
-import { composeRowData, parseXML } from "@/utils/util.parse";
+import { parseXML } from "@/utils/util.parse";
 import { ScreenModel, ScreenLineEntity } from "@/entity/screen.entity";
 
 export interface WorkflowState {

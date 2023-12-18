@@ -4,8 +4,8 @@
     style="width: 100%; flex-direction: column"
   >
     <div class="label-block" style="width: 100%">
-      <span :style="{ color: messages.value.color }">
-        {{ messages.value.message }}
+      <span :style="{ color: messages[0].value.color }">
+        {{ messages[0].value.message }}
       </span>
     </div>
   </div>

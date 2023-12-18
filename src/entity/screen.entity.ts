@@ -21,12 +21,9 @@ export interface ScreenModel {
 }
 
 export interface ScreenRowModel {
-  type: ScreenRowComponentEnum;
   coordinateY: number;
-  labelDetails: FieldDto[];
-  inputDetails: FieldDto[];
-  messageDetail: FieldDto;
-  singleListInputDetails: FieldDto[];
+  rowType: ScreenRowComponentEnum;
+  rowDetails: FieldDto[];
 }
 
 export interface LabelViewModel {
@@ -87,30 +84,14 @@ export class LineDetail {
 }
 export enum ScreenRowComponentEnum {
   INPUT = "input",
-  SINGLELISTINPUT = "singlelistinput",
   PASSWORD = "password",
   LABEL = "label",
+  MENU_TITLE = "menu_title",
+  MENU_ITEM = "menu_item",
+  MENU_INPUT = "menu_input",
   MENU = "menu",
   MESSAGEBOX = "messageBox",
 }
-
-export interface ListViewModel {
-  // title: string;
-  // titleX: number;
-  // titleY: number;
-  firstRow: number;
-  lastRow: number;
-  // label: string;
-  // labelX: number;
-  // labelY: number;
-  // inputX: number;
-  // inputY: number;
-  // page: string;
-  // pageX: number;
-  // pageY: number;
-  // list: ListMasterModel;
-}
-
 export interface ListMasterModel {
   total: string;
   pageSize: number;

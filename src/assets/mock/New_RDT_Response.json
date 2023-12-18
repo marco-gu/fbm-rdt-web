@@ -164,7 +164,7 @@
         "attributeType": "inputBoxMultiLine",
         "dataType": "string",
         "defaultValue": null,
-        "value": "i am inputBoxMultiLine",
+        "value": "MultiLine",
         "isHidden": null,
         "maxLength": 0,
         "minLength": 0,

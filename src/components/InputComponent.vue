@@ -63,10 +63,10 @@ import {
   PropType,
   Ref,
 } from "vue";
-import { CapturedValue } from "../entity/request.entity";
 import { useRoute } from "vue-router";
 import { LineDetail } from "@/entity/screen.entity";
 import * as deviceConfig from "@/assets/device/mc93.json";
+import { CapturedValue } from "@/entity/request.entity";
 const InputComponent = defineComponent({
   props: {
     details: {
