@@ -1,9 +1,11 @@
 import { Module } from "vuex";
 import RootState from "../state";
-import { get } from "@/service/http";
-import { CapturedValue } from "@/entity/request.entity";
+import { get, post } from "@/service/http";
+import { CapturedValue, EngineRequset } from "@/entity/request.entity";
 import { parseXML } from "@/utils/util.parse";
 import { ScreenModel, ScreenLineEntity } from "@/entity/screen.entity";
+import { UserSettingDto } from "@/entity/response.entity";
+import { composeScreenData } from "@/utils/type3.parse";
 
 export interface WorkflowState {
   screenModel: ScreenModel;
@@ -12,7 +14,6 @@ export interface WorkflowState {
   title: string;
   screenEntity: ScreenModel;
   rowsEntity: Map<number, ScreenLineEntity>;
-  isLoadingVisible: boolean;
   isRenderView: boolean;
   isOptionShow: boolean;
   country: string;
@@ -26,7 +27,6 @@ const workflowModule: Module<WorkflowState, RootState> = {
     title: "",
     screenEntity: {} as ScreenModel,
     rowsEntity: new Map() as Map<number, ScreenLineEntity>,
-    isLoadingVisible: false,
     isRenderView: false,
     isOptionShow: false,
     country: "",
@@ -37,26 +37,39 @@ const workflowModule: Module<WorkflowState, RootState> = {
       context.commit("saveCapturedValue", payload);
     },
     onCancel(context) {
-      context.state.isLoadingVisible = true;
-      let url = context.state.country == "" ? "GBR" : context.state.country;
-      url = url + "?";
-      context.state.capturedValues.forEach((cv: CapturedValue) => {
-        url += cv.attributeName + "=" + cv.value + "&";
-      });
-      url += "type=Cancel";
-      get("RDTEngine/" + url, context.state.sessionID).then((data) => {
+      const request = {} as EngineRequset;
+      request.sessionId = localStorage.getItem("sessionId") as string;
+      request.countryAbbreviatedName = "GBR";
+      request.actionKey = "Cancel";
+      request.capturedValues = [];
+      request.userSettingDto = {} as UserSettingDto;
+      post("RDTEngine", request).then((data) => {
         context.commit("onSubmit", data);
       });
+      // let url = context.state.country == "" ? "GBR" : context.state.country;
+      // url = url + "?";
+      // context.state.capturedValues.forEach((cv: CapturedValue) => {
+      //   url += cv.attributeName + "=" + cv.value + "&";
+      // });
+      // url += "type=Cancel";
+      // get("RDTEngine/" + url, context.state.sessionID).then((data) => {
+      //   context.commit("onSubmit", data);
+      // });
     },
     onSubmit(context) {
-      context.state.isLoadingVisible = true;
-      let url = context.state.country == "" ? "GBR" : context.state.country;
-      url = url + "?";
+      const request = {} as EngineRequset;
+      request.sessionId = localStorage.getItem("sessionId") as string;
+      request.countryAbbreviatedName = "GBR";
+      request.actionKey = "Submit";
+      request.capturedValues = [];
+      request.userSettingDto = {} as UserSettingDto;
       context.state.capturedValues.forEach((cv: CapturedValue) => {
-        url += cv.attributeName + "=" + cv.value + "&";
+        const capturedValue = {} as CapturedValue;
+        capturedValue.attributeName = cv.attributeName;
+        capturedValue.value = cv.value;
+        request.capturedValues.push(capturedValue);
       });
-      url += "type=Submit";
-      get("RDTEngine/" + url, context.state.sessionID).then((data) => {
+      post("RDTEngine", request).then((data) => {
         context.commit("onSubmit", data);
       });
     },
@@ -78,14 +91,9 @@ const workflowModule: Module<WorkflowState, RootState> = {
       }
     },
     onSubmit(state, payload) {
-      state.isLoadingVisible = false;
-      const screenEntity = parseXML(payload);
-      // const map = composeRowData(screenEntity);
-      // state.rowsEntity = map;
-      // state.title = screenEntity.title;
-      // state.capturedValues = screenEntity.capturedValues;
-      // state.sessionID = screenEntity.sessionID;
       state.isRenderView = true;
+      state.capturedValues = [];
+      state.screenModel = composeScreenData(payload);
     },
     saveScreenEntity(state, payload) {
       state.screenEntity = payload;

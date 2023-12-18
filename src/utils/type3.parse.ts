@@ -13,6 +13,7 @@ import _ from "lodash";
 
 export function composeScreenData(param: EngineResponse) {
   const screenModel = {} as ScreenModel;
+  localStorage.setItem("sessionId", param.sessionId);
   screenModel.mainRows = composeRowsData(param.screenDto.fields);
   console.log(screenModel.mainRows);
   return screenModel;
@@ -116,7 +117,7 @@ function composeLabelRowsForList(
     screenRow.coordinateY = firstRow + t.sequence - 1;
     screenRow.rowDetails = [];
     const cloneField = _.cloneDeep(field);
-    cloneField.value = t.id + "." + t.name;
+    cloneField.value = t.sequence + "." + t.name;
     screenRow.rowDetails.push(cloneField);
     rows.set(screenRow.coordinateY, screenRow);
   });
@@ -165,17 +166,19 @@ function composeMessageRows(
   rows: Map<number, ScreenRowModel>,
   field: FieldDto
 ) {
-  const values = JSON.parse(field.value);
-  values.msgItems.forEach((t: any, index: number) => {
-    const screenRow = {} as ScreenRowModel;
-    screenRow.rowType = ScreenRowComponentEnum.MESSAGEBOX;
-    screenRow.coordinateY = field.coordinateY + index;
-    screenRow.rowDetails = [];
-    const rowData = _.cloneDeep(field);
-    rowData.value = t;
-    screenRow.rowDetails.push(rowData);
-    rows.set(field.coordinateY + index, screenRow);
-  });
+  if (!_.isEmpty(field.value)) {
+    const values = JSON.parse(field.value);
+    values.msgItems.forEach((t: any, index: number) => {
+      const screenRow = {} as ScreenRowModel;
+      screenRow.rowType = ScreenRowComponentEnum.MESSAGEBOX;
+      screenRow.coordinateY = field.coordinateY + index;
+      screenRow.rowDetails = [];
+      const rowData = _.cloneDeep(field);
+      rowData.value = t;
+      screenRow.rowDetails.push(rowData);
+      rows.set(field.coordinateY + index, screenRow);
+    });
+  }
 }
 
 function composeEmptyRows(rows: Map<number, ScreenRowModel>) {

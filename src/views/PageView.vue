@@ -11,7 +11,7 @@ import OptionsView from "@/views/options/OptionsView.vue";
 import { useRouter } from "vue-router";
 import globalStyle from "@/styles/variable/global.module.scss";
 import MessageComponent from "@/components/message/MessageComponent.vue";
-import InputComponent from "@/components/InputComponent.vue";
+import InputComponent from "@/components/generic/InputComponent.vue";
 import MenuLabelComponent from "@/components/menu/MenuItemLabelComponent.vue";
 import MenuTitleComponent from "@/components/menu/MenuTitleComponent.vue";
 import MenuInputComponent from "@/components/menu/MenuInputComponent.vue";
@@ -32,30 +32,19 @@ const PageView = defineComponent({
     const buttonView = ref();
     const optionView = ref();
     const views = ref([] as any[]);
-    watch(store.state.workflowModule, () => {
-      const options = document.getElementById("options") as any;
-      if (options && options.style) {
-        options.style.visibility = store.state.workflowModule.isOptionShow
-          ? "visible"
-          : "hidden";
-      }
-    });
     onMounted(() => {
-      // const rowsEntity = composeRowData(
-      //   store.state.workflowModule.screenEntity
-      // );
-      // renderView(rowsEntity);
       renderView(store.state.workflowModule.screenModel);
     });
     store.subscribe((mutation, state) => {
       if (state.workflowModule.isRenderView) {
+        views.value = [];
         store.commit("workflowModule/saveRenderStatus", false);
         renderView(state.workflowModule.screenModel);
       }
     });
     const renderView = (screenModel: ScreenModel) => {
       renderMainRows(screenModel.mainRows);
-      renderSubForm(screenModel.subFormRows);
+      // renderSubForm(screenModel.subFormRows);
       // renderBtn();
       render.value = h(
         "div",

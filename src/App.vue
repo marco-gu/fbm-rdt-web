@@ -4,7 +4,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { get } from "./service/http";
+import { get, post } from "./service/http";
 import { useStore } from "./store";
 import { parseXML } from "./utils/util.parse";
 import response from "./assets/mock/New_RDT_Response.json";
@@ -16,26 +16,26 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const isShow = ref(false);
-    const url = "RDTEngine/GBR";
+    const url = "RDTEngine";
     const route = useRoute();
     const router = useRouter();
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
+      post(url, engineRequest).then((data: any) => {
+        store.commit("workflowModule/saveScreenModel", composeScreenData(data));
+        isShow.value = true;
+      });
       // const data = response as unknown as EngineResponse;
-      const data = response as unknown as EngineResponse;
-      store.commit("workflowModule/saveScreenModel", composeScreenData(data));
-      isShow.value = true;
+      // store.commit("workflowModule/saveScreenModel", composeScreenData(data));
+      // isShow.value = true;
     });
     onUnmounted(() => {
       window.removeEventListener("keyup", handleKeyDown);
     });
-    // get(url, -1).then((data) => {
-    //   store.commit("workflowModule/saveScreenEntity", parseXML(data));
-    //   isShow.value = true;
-    //   visible.value = false;
-    // });
+    const engineRequest = {
+      countryAbbreviatedName: "gbr",
+    };
     const handleKeyDown = (event: any) => {
-      console.log("11128");
       if (route.path == "/") {
         {
           switch (event.keyCode) {

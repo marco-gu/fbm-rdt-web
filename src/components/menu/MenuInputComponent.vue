@@ -4,7 +4,14 @@
       {{ label }}
     </div>
     <div class="input-block">
-      <input id="123" ref="input" v-model="value" style="width: 10px" />
+      <input
+        id="input"
+        ref="input"
+        :autofocus="true"
+        v-model="optionValue"
+        style="width: 10px"
+        @change="onTextChange()"
+      />
     </div>
     <div class="label-block" style="margin-left: 10px">
       {{ page }}
@@ -12,26 +19,54 @@
   </div>
 </template>
 <script lang="ts">
-import { Ref, defineComponent, ref, toRefs, onMounted } from "vue";
+import { CapturedValue } from "@/entity/request.entity";
+import { useStore } from "@/store";
+import { defineComponent, ref, toRefs, onMounted } from "vue";
 const MenuInputComponent = defineComponent({
   props: {
     details: {
-      type: Array,
+      type: Array as any,
     },
   },
   setup(props) {
+    const store = useStore();
     const { details } = toRefs(props);
     const label = ref();
-    const input = ref();
     const page = ref("(total 2)");
     const items = details.value;
+    const optionValue = ref();
+    const input = ref();
+    const param = {
+      attributeName: "",
+      value: "",
+    } as CapturedValue;
     onMounted(() => {
-      const element = document.getElementById("123") as any;
-      element.addEventListener("keyup", handleKeyDown);
+      // submit empty capture value
+      details.value.forEach((t: any) => {
+        if (t.attributeType == "listSingleInput") {
+          param.attributeName = t.attributeName;
+          param.value = t.value;
+          store.dispatch("workflowModule/saveCapturedValue", param);
+        }
+      });
+      input.value.focus();
+      input.value.addEventListener("keyup", handleKeyDown);
     });
     const handleKeyDown = (event: any) => {
-      console.log("28");
+      switch (event.keyCode) {
+        case 13:
+          store.dispatch("workflowModule/onSubmit");
+          break;
+        case 27:
+          store.dispatch("workflowModule/onCancel");
+          break;
+      }
+
       event.stopPropagation();
+    };
+    const onTextChange = (detail: any) => {
+      param.value = optionValue.value;
+      store.dispatch("workflowModule/saveCapturedValue", param);
     };
     items?.forEach((t: any) => {
       switch (t.attributeType) {
@@ -43,11 +78,12 @@ const MenuInputComponent = defineComponent({
           break;
       }
     });
-    const value = ref();
     return {
       label,
       page,
-      value,
+      optionValue,
+      onTextChange,
+      input,
     };
   },
 });

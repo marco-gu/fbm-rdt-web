@@ -3,8 +3,7 @@ import axios from "axios";
 axios.defaults.baseURL = "http://localhost:8100/fbm-wms-rdt/";
 const service = axios.create({
   headers: {
-    "API-Version": "1",
-    "X-Mobile-Number": "",
+    "API-Version": "2",
   },
 });
 export const post = (url: string, requestParam: any) => {
@@ -23,7 +22,7 @@ export const post = (url: string, requestParam: any) => {
 export const get = (params: string, sessionID?: number) => {
   const config = {
     headers: {
-      "API-Version": "1",
+      "API-Version": "2",
       "X-Mobile-Number": sessionID,
     },
   };
