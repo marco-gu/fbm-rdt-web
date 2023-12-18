@@ -2,6 +2,8 @@ export interface EngineResponse {
   sessionId: string;
   resultStatus: string;
   screenDto: ScreenDto;
+  userSettingDto: UserSettingDto;
+  legacyOutPutXML: string;
 }
 
 export interface ScreenDto {
@@ -13,6 +15,11 @@ export interface ScreenDto {
   style: string;
   colorSchema: string;
   fields: FieldDto[];
+}
+
+export interface UserSettingDto {
+  soundLevel: number;
+  vibrationLevel: number;
 }
 
 export interface FieldDto {
