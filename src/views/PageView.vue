@@ -11,7 +11,7 @@ import OptionsView from "@/views/options/OptionsView.vue";
 import { useRouter } from "vue-router";
 import globalStyle from "@/styles/variable/global.module.scss";
 import MessageComponent from "@/components/message/MessageComponent.vue";
-import InputComponentTest from "@/components/InputTest.vue";
+import InputComponent from "@/components/InputComponent.vue";
 import MenuLabelComponent from "@/components/menu/MenuItemLabelComponent.vue";
 import MenuTitleComponent from "@/components/menu/MenuTitleComponent.vue";
 import MenuInputComponent from "@/components/menu/MenuInputComponent.vue";
@@ -34,9 +34,11 @@ const PageView = defineComponent({
     const views = ref([] as any[]);
     watch(store.state.workflowModule, () => {
       const options = document.getElementById("options") as any;
-      options.style.visibility = store.state.workflowModule.isOptionShow
-        ? "visible"
-        : "hidden";
+      if (options && options.style) {
+        options.style.visibility = store.state.workflowModule.isOptionShow
+          ? "visible"
+          : "hidden";
+      }
     });
     onMounted(() => {
       // const rowsEntity = composeRowData(
@@ -86,13 +88,13 @@ const PageView = defineComponent({
               break;
             }
             case ScreenRowComponentEnum.INPUT: {
-              rowNode.value = h(InputComponentTest, {
+              rowNode.value = h(InputComponent, {
                 details: row.rowDetails,
               });
               break;
             }
             case ScreenRowComponentEnum.PASSWORD: {
-              rowNode.value = h(InputComponentTest, {
+              rowNode.value = h(InputComponent, {
                 details: row.rowDetails,
               });
               break;

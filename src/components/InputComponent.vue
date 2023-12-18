@@ -2,47 +2,47 @@
   <div class="line-item inputs-container">
     <template v-for="(item, index) in details" :key="index">
       <div
-        v-if="item.name"
+        v-if="item.attributeType === 'label'"
+        v-show="!item.isHidden"
         class="label-block"
-        :class="{ 'text-focus': isFocus }"
+        :class="{ 'text-focus': isFocus, highlighted: item.highlighted }"
         :style="{
+          // color: item.color || '',
           flexBasis: widthArr[index],
         }"
       >
-        {{ item.name }}
+        {{ item.value }}
       </div>
       <div
         v-if="
-          item.attributeName &&
-          (inputType === 'password' || inputType === 'input')
+          item.attributeType === 'inputBox' || item.attributeType === 'password'
         "
+        v-show="!item.isHidden"
         class="input-block"
         :style="{
+          // color: item.color || '',
           flexBasis: widthArr[index],
         }"
       >
         <input
           ref="input"
           v-model="item.value"
-          :autofocus="index === 0 && autoFocus"
-          :type="inputType === 'password' ? 'password' : 'text'"
+          :autofocus="index === 0"
+          :type="item.attributeType === 'password' ? 'password' : 'text'"
           @change="onTextChange(item)"
-          :maxlength="
-            convertMaxLength(item.maxLength) === 0
-              ? convertMaxLength(item.maxLength) + 1
-              : convertMaxLength(item.maxLength)
-          "
-          :tabindex="tabindex"
+          :maxlength="item.maxLength"
+          :tabindex="item.sequence"
+          :required="item.required"
+          :pattern="item.regexPattern"
           @focus="onFocus()"
           @blur="onBlur()"
           :style="{
             width:
-              convertMaxLength(item.maxLength) &&
-              convertMaxLength(item.maxLength) > 0
-                ? (9.6 * convertMaxLength(item.maxLength) > screenWidth
+              item.maxLength > 0
+                ? (9.6 * item.maxLength > screenWidth
                     ? screenWidth - 30
-                    : 9.6 * convertMaxLength(item.maxLength)) + 'px'
-                : convertMaxLength(item.maxLength) === 0
+                    : 9.6 * item.maxLength) + 'px'
+                : item.maxLength === 0
                 ? '10px'
                 : 'auto',
           }"
@@ -70,20 +70,11 @@ import { CapturedValue } from "@/entity/request.entity";
 const InputComponent = defineComponent({
   props: {
     details: {
-      type: Array as PropType<LineDetail[]>,
-    },
-    tabindex: {
-      type: Number,
-    },
-    inputType: {
-      type: String,
-    },
-    autoFocus: {
-      type: Boolean,
+      type: Array as any,
     },
   },
   setup(props) {
-    const { details, tabindex, inputType, autoFocus } = toRefs(props);
+    const { details } = toRefs(props);
     const store = useStore();
     const model = ref();
     const measureTextLength = ref();
@@ -115,9 +106,7 @@ const InputComponent = defineComponent({
           reversedArr.push("100%");
         } else {
           for (let i = details.value.length - 1; i >= 0; i--) {
-            const x =
-              details.value[i].coordinateValueX ||
-              details.value[i].coordinateNameX;
+            const x = details.value[i].coordinateX;
             if (x) {
               const calcColumnNo = lengthRemain - Number(x);
               reversedArr.push(
@@ -140,19 +129,18 @@ const InputComponent = defineComponent({
       isFocus.value = false;
     };
     const focusInput = () => {
-      if (autoFocus.value) {
-        console.log(input.value);
-        if (input.value) {
-          input.value[0].focus();
-        }
+      // if (autoFocus.value) {
+      if (input.value) {
+        input.value[0].focus();
       }
+      // }
     };
     watch(route, () => {
       focusInput();
     });
-    const convertMaxLength = (maxLength: string | number | null) => {
-      return maxLength ? Number(maxLength) : 0;
-    };
+    // const convertMaxLength = (maxLength: string | number | null) => {
+    //   return maxLength ? Number(maxLength) : 0;
+    // };
 
     return {
       model,
@@ -165,7 +153,7 @@ const InputComponent = defineComponent({
       onFocus,
       onBlur,
       isFocus,
-      convertMaxLength,
+      // convertMaxLength,
       widthArr,
       screenWidth,
     };
@@ -216,5 +204,8 @@ export default InputComponent;
   opacity: 0;
   position: absolute;
   left: -1000px;
+}
+.highlighted {
+  font-weight: bold;
 }
 </style>

@@ -68,18 +68,39 @@ export interface LineDetailEntity {
 }
 export class LineDetail {
   attributeName: string;
+  attributeType: string;
   name?: string;
   value?: string;
-  coordinateNameX: number | undefined | null;
-  coordinateValueX: number | undefined | null;
-  maxLength: string | number;
+  coordinateX: number | undefined | null;
+  coordinateY: number | undefined | null;
+  maxLength: number;
+  minLength: number;
+  attributeId;
+  color: string;
+  dataType: string;
+  regexPattern: string;
+  defaultValue: string;
+  groupName: string;
+  highlighted?: boolean;
+  isHidden?: boolean;
+  overwritten?: boolean;
+  required?: boolean;
+  sequence: number;
+
   constructor() {
     this.attributeName = "";
     this.name = "";
     this.value = "";
-    this.coordinateNameX = null;
-    this.coordinateValueX = null;
-    this.maxLength = "";
+    this.attributeType = "";
+    this.maxLength = 0;
+    this.minLength = 0;
+    this.attributeId = "";
+    this.color = "";
+    this.dataType = "";
+    this.regexPattern = "";
+    this.defaultValue = "";
+    this.groupName = "";
+    this.sequence = 0;
   }
 }
 export enum ScreenRowComponentEnum {
