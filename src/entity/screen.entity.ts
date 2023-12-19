@@ -9,6 +9,7 @@ export interface ScreenModel {
   subFormRows: Map<number, ScreenRowModel>;
   screenLines: any[][];
   capturedValues: CapturedValue[];
+  list: ListMasterModel;
 }
 
 export interface ScreenRowModel {

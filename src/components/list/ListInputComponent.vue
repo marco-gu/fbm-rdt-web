@@ -9,7 +9,7 @@
         ref="input"
         :autofocus="true"
         v-model="optionValue"
-        style="width: 10px"
+        style="width: 12px"
         @change="onTextChange()"
       />
     </div>
@@ -32,7 +32,8 @@ const ListInputComponent = defineComponent({
     const store = useStore();
     const { details } = toRefs(props);
     const label = ref();
-    const page = ref("(total 2)");
+    const page =
+      "(total " + store.state.workflowModule.screenModel.list.total + ")";
     const items = details.value;
     const optionValue = ref();
     const input = ref();
@@ -72,9 +73,9 @@ const ListInputComponent = defineComponent({
         case "listSingleLabel":
           label.value = t.value;
           break;
-        case "listSinglePage":
-          page.value = t.value;
-          break;
+        // case "listSinglePage":
+        //   page.value = t.value;
+        //   break;
       }
     });
     return {

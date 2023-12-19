@@ -5,6 +5,7 @@ import {
   ListAttributeType,
 } from "@/entity/response.entity";
 import {
+  ListMasterModel,
   ScreenModel,
   ScreenRowComponentEnum,
   ScreenRowModel,
@@ -12,11 +13,13 @@ import {
 import _ from "lodash";
 
 let screenFocus = "";
+let list = {} as ListMasterModel;
 export function composeScreenData(param: EngineResponse) {
   const screenModel = {} as ScreenModel;
   localStorage.setItem("sessionId", param.sessionId);
   screenModel.mainRows = composeRowsData(param.screenDto.fields);
   screenModel.focus = screenFocus;
+  screenModel.list = list;
   console.log(screenModel.mainRows);
   return screenModel;
 }
@@ -113,6 +116,7 @@ function composeLabelRowsForList(
   screenRowComponent: ScreenRowComponentEnum
 ) {
   const values = JSON.parse(field.value);
+  list = values;
   values.list.forEach((t: any) => {
     const screenRow = {} as ScreenRowModel;
     screenRow.rowType = screenRowComponent;
