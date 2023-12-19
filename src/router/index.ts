@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import ShellView from "../views/ShellView.vue";
 import RDTView from "@/views/RDTView.vue";
-import TestView from "@/views/TestView.vue";
+import TestView from "@/views/TransView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
