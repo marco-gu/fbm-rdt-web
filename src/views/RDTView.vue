@@ -13,6 +13,7 @@ import InputComponent from "@/components/generic/InputComponent.vue";
 import ListItemLabelComponent from "@/components/list/ListItemLabelComponent.vue";
 import ListTitleLabelComponent from "@/components/list/ListTitleLabelComponent.vue";
 import ListInputComponent from "@/components/list/ListInputComponent.vue";
+import { useRouter } from "vue-router";
 
 const RDTView = defineComponent({
   setup() {
@@ -20,6 +21,7 @@ const RDTView = defineComponent({
     const render = ref();
     const rowNode = ref();
     const rowsView = ref();
+    const router = useRouter();
     const views = ref([] as any[]);
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
@@ -117,7 +119,11 @@ const RDTView = defineComponent({
             store.dispatch("workflowModule/onSubmit");
             break;
           case 27:
-            store.dispatch("workflowModule/onCancel");
+            if (store.state.workflowModule.screenModel.title == "Login") {
+              router.push("/");
+            } else {
+              store.dispatch("workflowModule/onCancel");
+            }
             break;
         }
       }

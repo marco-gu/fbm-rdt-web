@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve ----NODE_EVN=development",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "copy": "mkdir -p ../wdp-lns-mobile/app/src/main/assets/dist/ && cp -rf ./dist/. ../wdp-lns-mobile/app/src/main/assets/dist/"
