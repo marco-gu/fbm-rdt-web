@@ -85,6 +85,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.isRenderView = true;
       state.capturedValues = [];
       state.screenModel = composeScreenData(payload);
+      state.screenModel.title = payload.screenDto.title;
     },
     saveScreenEntity(state, payload) {
       state.screenEntity = payload;
@@ -103,6 +104,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
     },
     saveScreenModel(state, payload) {
       state.screenModel = payload;
+      state.screenModel.title = "Login";
     },
   },
   namespaced: true,

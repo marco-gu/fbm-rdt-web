@@ -1,5 +1,13 @@
 <script lang="ts">
-import { defineComponent, h, onMounted, ref, watch } from "vue";
+import {
+  defineComponent,
+  h,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 import { useStore } from "@/store";
 import {
   ScreenModel,
@@ -25,16 +33,21 @@ const RDTView = defineComponent({
     const views = ref([] as any[]);
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
+      console.log("onMounted");
       renderView(store.state.workflowModule.screenModel);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("keyup", handleKeyDown);
     });
     store.subscribe((mutation, state) => {
       if (state.workflowModule.isRenderView) {
         views.value = [];
+        console.log("view change");
         store.commit("workflowModule/saveRenderStatus", false);
         renderView(state.workflowModule.screenModel);
       }
     });
-    const renderView = (screenModel: ScreenModel) => {
+    const renderView = (screenModel: ScreenModel, type?: string) => {
       renderMainRows(screenModel.mainRows);
       render.value = h(
         "div",
@@ -119,6 +132,7 @@ const RDTView = defineComponent({
             store.dispatch("workflowModule/onSubmit");
             break;
           case 27:
+            localStorage.clear();
             if (store.state.workflowModule.screenModel.title == "Login") {
               router.push("/");
             } else {

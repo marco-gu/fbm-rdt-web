@@ -20,7 +20,7 @@ export function composeScreenData(param: EngineResponse) {
   screenModel.mainRows = composeRowsData(param.screenDto.fields);
   screenModel.focus = screenFocus;
   screenModel.list = list;
-  console.log(screenModel.mainRows);
+  // console.log(screenModel.mainRows);
   return screenModel;
 }
 
