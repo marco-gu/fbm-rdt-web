@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import ShellView from "../views/ShellView.vue";
 import RDTView from "@/views/RDTView.vue";
+import TestView from "@/views/TestView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -36,6 +37,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/rdt",
     name: "RDTView",
     component: RDTView,
+  },
+  {
+    path: "/test",
+    name: "TestView",
+    component: TestView,
   },
 ];
 
