@@ -9,15 +9,6 @@ export interface ScreenModel {
   subFormRows: Map<number, ScreenRowModel>;
   screenLines: any[][];
   capturedValues: CapturedValue[];
-  // constructor() {
-  //   this.title = "";
-  //   this.focus = "";
-  //   this.mainRows = new Map();
-  //   this.subFormRows = new Map();
-  //   // this.sessionID = -1;
-  //   this.screenLines = [[]];
-  //   this.capturedValues = [];
-  // }
 }
 
 export interface ScreenRowModel {
@@ -32,23 +23,6 @@ export interface LabelViewModel {
   coordinateX: number;
   value: string;
 }
-
-// export interface ScreenRowDetailModel {
-//   attributeId: string;
-//   sequence: number;
-//   attributeName: string;
-//   attributeType: string;
-//   dataType: string;
-//   value: string | ListSingle;
-//   coordinateX: number;
-//   coordinateY: number;
-//   color: string;
-//   regexPattern: string;
-//   isHidden: boolean;
-//   isOverwritten: boolean;
-//   isHighlighed: boolean;
-//   isRequired: boolean;
-// }
 export interface ScreenLineEntity {
   type: ScreenRowComponentEnum;
   // isLastLine: boolean;
@@ -107,9 +81,9 @@ export enum ScreenRowComponentEnum {
   INPUT = "input",
   PASSWORD = "password",
   LABEL = "label",
-  MENU_TITLE = "menu_title",
-  MENU_ITEM = "menu_item",
-  MENU_INPUT = "menu_input",
+  LIST_TITLE_LABEL = "list_title_label",
+  LIST_ITEM_LABEL = "list_item_label",
+  LIST_INPUT = "list_input",
   MENU = "menu",
   MESSAGEBOX = "messageBox",
 }

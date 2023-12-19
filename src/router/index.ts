@@ -1,39 +1,41 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import PageView from "../views/PageView.vue";
-import GenericSettingView from "../views/options/GenericSettingView.vue";
-import ServerSelectionView from "../views/options/ServerSelectionView.vue";
-import OptionsView from "../views/options/OptionsView.vue";
-import OptionDetailsView from "../views/options/OptionDetailsView.vue";
+import ShellView from "../views/ShellView.vue";
+import RDTView from "@/views/RDTView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "PageView",
-    component: PageView,
-    children: [
-      {
-        path: "/options/",
-        name: "OptionsView",
-        component: OptionsView,
-        children: [
-          {
-            path: "",
-            name: "OptionDetailsView",
-            component: OptionDetailsView,
-          },
-          {
-            path: "setting",
-            name: "GenericSettingView",
-            component: GenericSettingView,
-          },
-          {
-            path: "serverSelection",
-            name: "ServerSelectionView",
-            component: ServerSelectionView,
-          },
-        ],
-      },
-    ],
+    name: "Shell",
+    component: ShellView,
+    // children: [
+    //   {
+    //     path: "/options/",
+    //     name: "OptionsView",
+    //     component: OptionsView,
+    //     children: [
+    //       {
+    //         path: "",
+    //         name: "OptionDetailsView",
+    //         component: OptionDetailsView,
+    //       },
+    //       {
+    //         path: "setting",
+    //         name: "GenericSettingView",
+    //         component: GenericSettingView,
+    //       },
+    //       {
+    //         path: "serverSelection",
+    //         name: "ServerSelectionView",
+    //         component: ServerSelectionView,
+    //       },
+    //     ],
+    //   },
+    // ],
+  },
+  {
+    path: "/rdt",
+    name: "RDTView",
+    component: RDTView,
   },
 ];
 

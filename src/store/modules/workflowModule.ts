@@ -46,15 +46,6 @@ const workflowModule: Module<WorkflowState, RootState> = {
       post("RDTEngine", request).then((data) => {
         context.commit("onSubmit", data);
       });
-      // let url = context.state.country == "" ? "GBR" : context.state.country;
-      // url = url + "?";
-      // context.state.capturedValues.forEach((cv: CapturedValue) => {
-      //   url += cv.attributeName + "=" + cv.value + "&";
-      // });
-      // url += "type=Cancel";
-      // get("RDTEngine/" + url, context.state.sessionID).then((data) => {
-      //   context.commit("onSubmit", data);
-      // });
     },
     onSubmit(context) {
       const request = {} as EngineRequset;

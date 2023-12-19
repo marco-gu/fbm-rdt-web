@@ -9,7 +9,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, toRefs } from "vue";
-const MenuTitleComponent = defineComponent({
+const ListItemLabelComponent = defineComponent({
   props: {
     details: {
       type: Object,
@@ -24,5 +24,5 @@ const MenuTitleComponent = defineComponent({
     };
   },
 });
-export default MenuTitleComponent;
+export default ListItemLabelComponent;
 </script>

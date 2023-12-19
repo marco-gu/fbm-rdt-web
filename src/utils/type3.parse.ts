@@ -11,10 +11,12 @@ import {
 } from "@/entity/screen.entity";
 import _ from "lodash";
 
+let screenFocus = "";
 export function composeScreenData(param: EngineResponse) {
   const screenModel = {} as ScreenModel;
   localStorage.setItem("sessionId", param.sessionId);
   screenModel.mainRows = composeRowsData(param.screenDto.fields);
+  screenModel.focus = screenFocus;
   console.log(screenModel.mainRows);
   return screenModel;
 }
@@ -58,16 +60,16 @@ function parseListSingle(
 ) {
   switch (field.attributeType) {
     case ListAttributeType.LIST_SINGLE_TITLE:
-      composeLabelRow(rows, field, ScreenRowComponentEnum.MENU_TITLE);
+      composeLabelRow(rows, field, ScreenRowComponentEnum.LIST_TITLE_LABEL);
       break;
     case ListAttributeType.LIST_SINGLE_ITEM_FIRST:
       singleListInfo.firstRow = field.coordinateY;
       break;
     case ListAttributeType.LIST_SINGLE_LABEL:
-      composeInputRowForList(rows, field, ScreenRowComponentEnum.MENU_INPUT);
+      composeInputRowForList(rows, field, ScreenRowComponentEnum.LIST_INPUT);
       break;
     case ListAttributeType.LIST_SINGLE_INPUT:
-      composeInputRowForList(rows, field, ScreenRowComponentEnum.MENU_INPUT);
+      composeInputRowForList(rows, field, ScreenRowComponentEnum.LIST_INPUT);
       break;
     // case ListAttributeType.LIST_SINGLE_PAGE:
     //   composeInputRowForList(rows, field, ScreenRowComponentEnum.LABEL);
@@ -77,7 +79,7 @@ function parseListSingle(
         rows,
         field,
         singleListInfo.firstRow,
-        ScreenRowComponentEnum.MENU_ITEM
+        ScreenRowComponentEnum.LIST_ITEM_LABEL
       );
       break;
   }
@@ -124,6 +126,7 @@ function composeLabelRowsForList(
 }
 
 function composeInputRow(rows: Map<number, ScreenRowModel>, field: FieldDto) {
+  screenFocus = screenFocus == "" ? field.attributeName : screenFocus;
   if (rows.has(field.coordinateY)) {
     const row = rows.get(field.coordinateY) as ScreenRowModel;
     switch (field.attributeType) {

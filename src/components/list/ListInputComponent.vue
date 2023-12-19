@@ -22,7 +22,7 @@
 import { CapturedValue } from "@/entity/request.entity";
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted } from "vue";
-const MenuInputComponent = defineComponent({
+const ListInputComponent = defineComponent({
   props: {
     details: {
       type: Array as any,
@@ -41,7 +41,6 @@ const MenuInputComponent = defineComponent({
       value: "",
     } as CapturedValue;
     onMounted(() => {
-      // submit empty capture value
       details.value.forEach((t: any) => {
         if (t.attributeType == "listSingleInput") {
           param.attributeName = t.attributeName;
@@ -87,7 +86,7 @@ const MenuInputComponent = defineComponent({
     };
   },
 });
-export default MenuInputComponent;
+export default ListInputComponent;
 </script>
 <style lang="scss" scoped>
 .inputs-container {
