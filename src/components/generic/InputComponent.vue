@@ -36,7 +36,7 @@
           :tabindex="item.sequence"
           :required="item.required"
           :pattern="item.regexPattern"
-          @keydown.stop="onKeyPress($event)"
+          @keyup.prevent="onKeyPress($event)"
           @focus="onFocus()"
           @blur="onBlur()"
           :style="{
@@ -56,18 +56,9 @@
 </template>
 <script lang="ts">
 import { useStore } from "@/store";
-import {
-  defineComponent,
-  nextTick,
-  ref,
-  toRefs,
-  watch,
-  onMounted,
-  PropType,
-  Ref,
-} from "vue";
+import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
 import { useRoute } from "vue-router";
-import { LineDetail, ScreenRowComponentEnum } from "@/entity/screen.entity";
+import { LineDetail } from "@/entity/screen.entity";
 import * as deviceConfig from "@/assets/device/mc93.json";
 import { CapturedValue } from "@/entity/request.entity";
 import { AttributeType } from "@/entity/response.entity";
@@ -144,19 +135,16 @@ const InputComponent = defineComponent({
     };
 
     const onKeyPress = (event: KeyboardEvent) => {
-      console.log(event);
       const key = event.charCode || event.which || event.keyCode;
       event.stopPropagation();
-      // if (key === 13) {
-      //   console.log(111);
-      //   store.dispatch("workflowModule/onSubmit");
-      // }
+      if (key === 13) {
+        store.dispatch("workflowModule/onSubmit");
+      }
     };
     const focusInput = () => {
       const focusValue = store.state.workflowModule.screenModel.focus;
       if (input.value && input.value.length > 0) {
         let inputIndex = -1;
-        console.log(details.value);
         for (let i = 0; i < details.value.length; i++) {
           if (
             details.value[i].attributeType === AttributeType.INPUT ||
@@ -171,7 +159,6 @@ const InputComponent = defineComponent({
             break;
           }
         }
-        console.log(inputIndex);
       }
     };
     // watch(route, () => {
