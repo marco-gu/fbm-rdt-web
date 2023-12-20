@@ -5,22 +5,16 @@ import {
   ListAttributeType,
 } from "@/entity/response.entity";
 import {
-  ListMasterModel,
   ScreenModel,
   ScreenRowComponentEnum,
   ScreenRowModel,
 } from "@/entity/screen.entity";
 import _ from "lodash";
 
-let screenFocus = "";
-let list = {} as ListMasterModel;
+const screenModel = {} as ScreenModel;
 export function composeScreenData(param: EngineResponse) {
-  const screenModel = {} as ScreenModel;
-  localStorage.setItem("sessionId", param.sessionId);
-  screenModel.mainRows = composeRowsData(param.screenDto.fields);
-  screenModel.focus = screenFocus;
-  screenModel.list = list;
-  // console.log(screenModel.mainRows);
+  screenModel.screenRows = composeRowsData(param.screenDto.fields);
+  screenModel.title = param.screenDto.title;
   return screenModel;
 }
 
@@ -48,6 +42,9 @@ function composeRowsData(fields: FieldDto[]) {
           break;
         case AttributeType.INPUT_MULTI:
           composeInputRow(rows, field);
+          break;
+        case AttributeType.SUB_BUTTON:
+          composeSubButton(rows, field);
           break;
       }
     }
@@ -116,7 +113,7 @@ function composeLabelRowsForList(
   screenRowComponent: ScreenRowComponentEnum
 ) {
   const values = JSON.parse(field.value);
-  list = values;
+  screenModel.list = values;
   values.list.forEach((t: any) => {
     const screenRow = {} as ScreenRowModel;
     screenRow.rowType = screenRowComponent;
@@ -130,7 +127,9 @@ function composeLabelRowsForList(
 }
 
 function composeInputRow(rows: Map<number, ScreenRowModel>, field: FieldDto) {
-  screenFocus = screenFocus == "" ? field.attributeName : screenFocus;
+  if (_.isEmpty(screenModel.focus)) {
+    screenModel.focus = field.attributeName;
+  }
   if (rows.has(field.coordinateY)) {
     const row = rows.get(field.coordinateY) as ScreenRowModel;
     switch (field.attributeType) {
@@ -210,4 +209,12 @@ function sortRows(rows: Map<number, ScreenRowModel>) {
     result.set(t[0], t[1]);
   });
   return result;
+}
+
+function composeSubButton(rows: Map<number, ScreenRowModel>, field: FieldDto) {
+  const screenRow = {} as ScreenRowModel;
+  screenRow.coordinateY = field.coordinateY;
+  screenRow.rowType = ScreenRowComponentEnum.SUB_BUTTON;
+  screenRow.rowDetails = [];
+  rows.set(field.coordinateY, screenRow);
 }

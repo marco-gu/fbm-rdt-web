@@ -1,3 +1,4 @@
 <template>
-  <router-view></router-view>
+  <span>This is sub form page</span>
+  <!-- <router-view></router-view> -->
 </template>

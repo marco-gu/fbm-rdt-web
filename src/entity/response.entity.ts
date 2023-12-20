@@ -46,6 +46,7 @@ export enum AttributeType {
   PASSWORD = "password",
   MESSAGE = "message",
   INPUT_MULTI = "inputBoxMultiLine",
+  SUB_BUTTON = "subButton",
 }
 
 export enum ListAttributeType {

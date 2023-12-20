@@ -1,6 +1,6 @@
 import { Module } from "vuex";
 import RootState from "../state";
-import { get, post } from "@/service/http";
+import { post } from "@/service/http";
 import { CapturedValue, EngineRequset } from "@/entity/request.entity";
 import { parseXML } from "@/utils/util.parse";
 import { ScreenModel, ScreenLineEntity } from "@/entity/screen.entity";
@@ -9,28 +9,20 @@ import { composeScreenData } from "@/utils/type3.parse";
 
 export interface WorkflowState {
   screenModel: ScreenModel;
+  subFormModel: ScreenModel;
   capturedValues: CapturedValue[];
-  sessionID: number;
-  title: string;
-  screenEntity: ScreenModel;
   rowsEntity: Map<number, ScreenLineEntity>;
   isRenderView: boolean;
-  isOptionShow: boolean;
-  country: string;
-  functionKeys: [];
+  isSubFormShow: boolean;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
     screenModel: {} as ScreenModel,
+    subFormModel: {} as ScreenModel,
     capturedValues: [],
-    sessionID: -1,
-    title: "",
-    screenEntity: {} as ScreenModel,
     rowsEntity: new Map() as Map<number, ScreenLineEntity>,
     isRenderView: false,
-    isOptionShow: false,
-    country: "",
-    functionKeys: [],
+    isSubFormShow: false,
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {
@@ -85,26 +77,18 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.isRenderView = true;
       state.capturedValues = [];
       state.screenModel = composeScreenData(payload);
-      state.screenModel.title = payload.screenDto.title;
-    },
-    saveScreenEntity(state, payload) {
-      state.screenEntity = payload;
-      state.sessionID = payload.sessionID;
-      state.title = payload.title;
-      state.capturedValues = payload.capturedValues;
-    },
-    saveOptionsStatus(state, payload) {
-      state.isOptionShow = payload;
-    },
-    saveCountry(state, payload) {
-      state.country = payload;
-      state.isOptionShow = false;
-      state.capturedValues = [];
-      state.sessionID = -1;
     },
     saveScreenModel(state, payload) {
       state.screenModel = payload;
       state.screenModel.title = "Login";
+    },
+    saveSubForm(state, payload) {
+      state.subFormModel = composeScreenData(payload);
+      state.isRenderView = true;
+    },
+    clearSubForm(state, payload) {
+      state.subFormModel = {} as ScreenModel;
+      state.isRenderView = true;
     },
   },
   namespaced: true,

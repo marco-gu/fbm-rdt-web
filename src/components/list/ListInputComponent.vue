@@ -55,14 +55,14 @@ const ListInputComponent = defineComponent({
     const handleKeyDown = (event: any) => {
       switch (event.keyCode) {
         case 13:
+          console.log("list input enter");
           store.dispatch("workflowModule/onSubmit");
+          event.stopPropagation();
           break;
         case 27:
           store.dispatch("workflowModule/onCancel");
           break;
       }
-
-      event.stopPropagation();
     };
     const onTextChange = (detail: any) => {
       param.value = optionValue.value;
@@ -73,9 +73,6 @@ const ListInputComponent = defineComponent({
         case "listSingleLabel":
           label.value = t.value;
           break;
-        // case "listSinglePage":
-        //   page.value = t.value;
-        //   break;
       }
     });
     return {

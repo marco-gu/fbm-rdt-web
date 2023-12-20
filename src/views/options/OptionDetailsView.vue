@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 21.5px">SETUP & OPTIONS</div>
+  <div style="margin-bottom: 35px">SETUP & OPTIONS</div>
   <div class="line-item" v-for="item in menus" v-bind:key="item">
     <div class="label-item">
       <span>{{ item }} </span>
@@ -24,6 +24,7 @@ export default defineComponent({
     OptionInputComponent,
   },
   setup() {
+    console.log("dsdsdadasd");
     const router = useRouter();
     const menus = ["1. Generic Settings"];
     const optionValue = (value: number) => {

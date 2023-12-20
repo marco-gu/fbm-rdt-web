@@ -51,7 +51,6 @@ export default defineComponent({
   font-size: 18px;
   font-weight: 500;
   justify-content: center;
-  margin-top: 10%;
 }
 .shell-container {
   margin-top: 10%;

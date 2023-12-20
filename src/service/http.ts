@@ -10,6 +10,7 @@ export const post = (url: string, requestParam: any) => {
   return new Promise((resolve, reject) => {
     service.post(url, requestParam).then(
       (res) => {
+        localStorage.setItem("sessionId", res.data.sessionId);
         resolve(res.data);
       },
       (err) => {
