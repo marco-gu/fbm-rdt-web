@@ -76,6 +76,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
     onSubmit(state, payload) {
       state.isRenderView = true;
       state.capturedValues = [];
+      state.screenModel.focus = "";
       state.screenModel = composeScreenData(payload);
     },
     saveScreenModel(state, payload) {

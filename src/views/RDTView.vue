@@ -166,8 +166,8 @@ const RDTView = defineComponent({
             store.dispatch("workflowModule/onSubmit");
             break;
           case 27:
-            localStorage.clear();
             if (store.state.workflowModule.screenModel.title == "Login") {
+              localStorage.clear();
               router.push("/");
             } else {
               store.dispatch("workflowModule/onCancel");
