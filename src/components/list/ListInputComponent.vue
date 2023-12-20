@@ -9,6 +9,7 @@
         v-model="optionValue"
         style="width: 15px"
         @change="onTextChange()"
+        @keyup="onKeyPress($event)"
       />
     </div>
     <div class="label-block" style="margin-left: 10px">
@@ -48,10 +49,10 @@ const ListInputComponent = defineComponent({
         }
       });
       input.value.focus();
-      input.value.addEventListener("keyup", handleKeyDown);
     });
-    const handleKeyDown = (event: any) => {
-      switch (event.keyCode) {
+    const onKeyPress = (event: KeyboardEvent) => {
+      const key = event.charCode || event.which || event.keyCode;
+      switch (key) {
         case 13:
           store.dispatch("workflowModule/onSubmit");
           event.stopPropagation();
@@ -71,6 +72,8 @@ const ListInputComponent = defineComponent({
       optionValue,
       onTextChange,
       input,
+      onKeyPress,
+      store,
     };
   },
 });

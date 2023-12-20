@@ -27,6 +27,7 @@ const RDTView = defineComponent({
     const views = ref([] as any[]);
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
+      console.log("onMounted");
       // TODO initial screen background color
       const shell = document.getElementById("app") as HTMLElement;
       shell.style.backgroundColor = "#0E1925";
@@ -38,14 +39,7 @@ const RDTView = defineComponent({
     });
     store.subscribe((mutation, state) => {
       if (state.workflowModule.isRenderView) {
-        store.commit("workflowModule/saveRenderStatus", false);
         router.push("/transition");
-        // views.value = [];
-        // console.log("view change");
-        // store.commit("workflowModule/saveRenderStatus", false);
-        // const screenModel = store.state.workflowModule.screenModel;
-        // const subScreenModel = store.state.workflowModule.subFormModel;
-        // renderView(screenModel, subScreenModel);
       }
     });
     const renderView = (screenModel: ScreenModel) => {

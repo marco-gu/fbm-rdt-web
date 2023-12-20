@@ -60,16 +60,12 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.isRenderView = payload;
     },
     saveCapturedValue(state, payload: CapturedValue) {
-      // let newCapturedValue = true;
       state.screenModel.capturedValues.forEach((capturedValue) => {
         if (capturedValue.attributeName == payload.attributeName) {
           capturedValue.value = payload.value;
-          // newCapturedValue = false;
         }
       });
-      // if (newCapturedValue) {
-      //   state.screenModel.capturedValues.push(payload);
-      // }
+      state.isRenderView = false;
     },
     onSubmit(state, payload) {
       state.isRenderView = true;
