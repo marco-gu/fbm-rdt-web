@@ -15,12 +15,9 @@ import ListTitleLabelComponent from "@/components/list/ListTitleLabelComponent.v
 import ListInputComponent from "@/components/list/ListInputComponent.vue";
 import { useRouter } from "vue-router";
 import SubButtonComponent from "@/components/generic/SubButtonComponent.vue";
-import OptionsView from "@/views/options/OptionsView.vue";
+import { get } from "@/service/http";
 
 const RDTView = defineComponent({
-  components: {
-    OptionsView,
-  },
   setup() {
     const store = useStore();
     const render = ref();
@@ -28,15 +25,13 @@ const RDTView = defineComponent({
     const rowsView = ref();
     const router = useRouter();
     const views = ref([] as any[]);
-    const optionView = ref();
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
-      console.log("onMounted");
-      const shell = document.getElementById("app") as any;
+      // TODO initial screen background color
+      const shell = document.getElementById("app") as HTMLElement;
       shell.style.backgroundColor = "#0E1925";
       const screenModel = store.state.workflowModule.screenModel;
-      const subScreenModel = store.state.workflowModule.subFormModel;
-      renderView(screenModel, subScreenModel);
+      renderView(screenModel);
     });
     onUnmounted(() => {
       window.removeEventListener("keyup", handleKeyDown);
@@ -53,30 +48,27 @@ const RDTView = defineComponent({
         // renderView(screenModel, subScreenModel);
       }
     });
-    const renderView = (
-      screenModel: ScreenModel,
-      subScreenModel: ScreenModel
-    ) => {
-      renderMainRows(screenModel.screenRows);
-      if (subScreenModel.screenRows && subScreenModel.screenRows.size > 0) {
-        optionView.value = h(
-          "div",
-          {
-            id: "options",
-            class: ["options"],
-            style: {
-              width: "300px",
-              height: "460px",
-              background: globalStyle["option-background-color"],
-              fontSize: globalStyle["option-font-size"],
-              color: globalStyle["option-color"],
-              letterSpacing: globalStyle["option-letter-spacing"],
-            },
-          },
-          [h(OptionsView)]
-        );
-        views.value.push(optionView.value);
-      }
+    const renderView = (screenModel: ScreenModel) => {
+      renderRows(screenModel.screenRows);
+      // if (subScreenModel.screenRows && subScreenModel.screenRows.size > 0) {
+      //   optionView.value = h(
+      //     "div",
+      //     {
+      //       id: "options",
+      //       class: ["options"],
+      //       style: {
+      //         width: "300px",
+      //         height: "460px",
+      //         background: globalStyle["option-background-color"],
+      //         fontSize: globalStyle["option-font-size"],
+      //         color: globalStyle["option-color"],
+      //         letterSpacing: globalStyle["option-letter-spacing"],
+      //       },
+      //     },
+      //     [h(OptionsView)]
+      //   );
+      //   views.value.push(optionView.value);
+      // }
       render.value = h(
         "div",
         {
@@ -93,7 +85,7 @@ const RDTView = defineComponent({
         views.value
       );
     };
-    const renderMainRows = (rows: Map<number, ScreenRowModel>) => {
+    const renderRows = (rows: Map<number, ScreenRowModel>) => {
       if (rows.size > 0) {
         rows.forEach((row) => {
           switch (row.rowType) {
@@ -169,8 +161,13 @@ const RDTView = defineComponent({
             break;
           case 27:
             if (store.state.workflowModule.screenModel.title == "Login") {
-              localStorage.clear();
-              router.push("/");
+              // kill session
+              const url =
+                "RDTEngine/deleteSession/" + localStorage.getItem("sessionId");
+              get(url).then(() => {
+                localStorage.clear();
+                router.push("/");
+              });
             } else {
               store.dispatch("workflowModule/onCancel");
             }

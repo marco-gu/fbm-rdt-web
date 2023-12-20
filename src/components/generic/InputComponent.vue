@@ -83,15 +83,15 @@ const InputComponent = defineComponent({
     const screenWidth: Ref<number> = ref(deviceConfig.width as number);
     onMounted(() => {
       // submit empty capture value
-      details.value.forEach((t: any) => {
-        if (t.attributeType == "inputBox") {
-          const param = {
-            attributeName: t.attributeName,
-            value: t.value,
-          } as CapturedValue;
-          store.dispatch("workflowModule/saveCapturedValue", param);
-        }
-      });
+      // details.value.forEach((t: any) => {
+      //   if (t.attributeType == "inputBox") {
+      //     const param = {
+      //       attributeName: t.attributeName,
+      //       value: t.value,
+      //     } as CapturedValue;
+      //     store.dispatch("workflowModule/saveCapturedValue", param);
+      //   }
+      // });
       mapRawData();
       focusInput();
     });

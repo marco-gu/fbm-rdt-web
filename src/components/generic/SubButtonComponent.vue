@@ -30,7 +30,7 @@ const SubButtonComponent = defineComponent({
         request.countryAbbreviatedName = "GBR";
         request.actionKey = "subForm";
         request.userSettingDto = {} as UserSettingDto;
-        post("RDTEngine", request).then((data) => {
+        post(request).then((data) => {
           store.commit("workflowModule/saveSubForm", data);
         });
       } else {

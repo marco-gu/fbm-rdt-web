@@ -1,14 +1,20 @@
+import { EngineRequset } from "@/entity/request.entity";
 import axios from "axios";
-// axios.defaults.baseURL = "http://101.132.69.151:8100/fbm-wms-rdt/";
-axios.defaults.baseURL = "http://localhost:8100/fbm-wms-rdt/";
+import _ from "lodash";
+axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
 const service = axios.create({
   headers: {
     "API-Version": "2",
   },
 });
-export const post = (url: string, requestParam: any) => {
+export const post = (request: EngineRequset) => {
+  request.countryAbbreviatedName = localStorage.getItem("country") as string;
+  const prefix = process.env.VUE_APP_PREFIX_URL;
+  if (_.isUndefined(request.sessionId)) {
+    request.sessionId = localStorage.getItem("sessionId") as string;
+  }
   return new Promise((resolve, reject) => {
-    service.post(url, requestParam).then(
+    service.post(prefix, request).then(
       (res) => {
         localStorage.setItem("sessionId", res.data.sessionId);
         resolve(res.data);
@@ -21,12 +27,7 @@ export const post = (url: string, requestParam: any) => {
 };
 
 export const get = (params: string, sessionID?: number) => {
-  const config = {
-    headers: {
-      "API-Version": "2",
-      "X-Mobile-Number": sessionID,
-    },
-  };
+  const config = {};
   return new Promise((resolve, reject) => {
     service.get(params, config).then(
       (res) => {

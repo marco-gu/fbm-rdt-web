@@ -3,14 +3,17 @@ import RootState from "../state";
 import { post } from "@/service/http";
 import { CapturedValue, EngineRequset } from "@/entity/request.entity";
 import { parseXML } from "@/utils/util.parse";
-import { ScreenModel, ScreenLineEntity } from "@/entity/screen.entity";
+import {
+  ScreenModel,
+  ScreenLineEntity,
+  ActionKeyEnum,
+} from "@/entity/screen.entity";
 import { UserSettingDto } from "@/entity/response.entity";
 import { composeScreenData } from "@/utils/type3.parse";
 
 export interface WorkflowState {
   screenModel: ScreenModel;
   subFormModel: ScreenModel;
-  capturedValues: CapturedValue[];
   rowsEntity: Map<number, ScreenLineEntity>;
   isRenderView: boolean;
   isSubFormShow: boolean;
@@ -19,7 +22,6 @@ const workflowModule: Module<WorkflowState, RootState> = {
   state: {
     screenModel: {} as ScreenModel,
     subFormModel: {} as ScreenModel,
-    capturedValues: [],
     rowsEntity: new Map() as Map<number, ScreenLineEntity>,
     isRenderView: false,
     isSubFormShow: false,
@@ -30,29 +32,25 @@ const workflowModule: Module<WorkflowState, RootState> = {
     },
     onCancel(context) {
       const request = {} as EngineRequset;
-      request.sessionId = localStorage.getItem("sessionId") as string;
-      request.countryAbbreviatedName = "GBR";
-      request.actionKey = "Cancel";
+      request.actionKey = ActionKeyEnum.CANCEL;
       request.capturedValues = [];
       request.userSettingDto = {} as UserSettingDto;
-      post("RDTEngine", request).then((data) => {
+      post(request).then((data) => {
         context.commit("onSubmit", data);
       });
     },
     onSubmit(context) {
       const request = {} as EngineRequset;
-      request.sessionId = localStorage.getItem("sessionId") as string;
-      request.countryAbbreviatedName = "GBR";
-      request.actionKey = "Submit";
+      request.actionKey = ActionKeyEnum.SUBMIT;
       request.capturedValues = [];
       request.userSettingDto = {} as UserSettingDto;
-      context.state.capturedValues.forEach((cv: CapturedValue) => {
+      context.state.screenModel.capturedValues.forEach((cv: CapturedValue) => {
         const capturedValue = {} as CapturedValue;
         capturedValue.attributeName = cv.attributeName;
         capturedValue.value = cv.value;
         request.capturedValues.push(capturedValue);
       });
-      post("RDTEngine", request).then((data) => {
+      post(request).then((data) => {
         context.commit("onSubmit", data);
       });
     },
@@ -62,26 +60,22 @@ const workflowModule: Module<WorkflowState, RootState> = {
       state.isRenderView = payload;
     },
     saveCapturedValue(state, payload: CapturedValue) {
-      let newCapturedValue = true;
-      state.capturedValues.forEach((capturedValue) => {
+      // let newCapturedValue = true;
+      state.screenModel.capturedValues.forEach((capturedValue) => {
         if (capturedValue.attributeName == payload.attributeName) {
           capturedValue.value = payload.value;
-          newCapturedValue = false;
+          // newCapturedValue = false;
         }
       });
-      if (newCapturedValue) {
-        state.capturedValues.push(payload);
-      }
+      // if (newCapturedValue) {
+      //   state.screenModel.capturedValues.push(payload);
+      // }
     },
     onSubmit(state, payload) {
       state.isRenderView = true;
-      state.capturedValues = [];
       state.screenModel.focus = "";
+      state.screenModel.capturedValues = [];
       state.screenModel = composeScreenData(payload);
-    },
-    saveScreenModel(state, payload) {
-      state.screenModel = payload;
-      state.screenModel.title = "Login";
     },
     saveSubForm(state, payload) {
       state.subFormModel = composeScreenData(payload);

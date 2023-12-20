@@ -1,3 +1,4 @@
+import { CapturedValue } from "@/entity/request.entity";
 import {
   AttributeType,
   EngineResponse,
@@ -12,6 +13,7 @@ import {
 import _ from "lodash";
 
 const screenModel = {} as ScreenModel;
+screenModel.capturedValues = [];
 export function composeScreenData(param: EngineResponse) {
   screenModel.screenRows = composeRowsData(param.screenDto.fields);
   screenModel.title = param.screenDto.title;
@@ -40,9 +42,9 @@ function composeRowsData(fields: FieldDto[]) {
         case AttributeType.MESSAGE:
           composeMessageRows(rows, field);
           break;
-        case AttributeType.INPUT_MULTI:
-          composeInputRow(rows, field);
-          break;
+        // case AttributeType.INPUT_MULTI:
+        //   composeInputRow(rows, field);
+        //   break;
         case AttributeType.SUB_BUTTON:
           composeSubButton(rows, field);
           break;
@@ -149,6 +151,11 @@ function composeInputRow(rows: Map<number, ScreenRowModel>, field: FieldDto) {
     screenRow.rowDetails.push(field);
     rows.set(field.coordinateY, screenRow);
   }
+  const capturedValue = {
+    attributeName: field.attributeName,
+    value: field.value,
+  } as CapturedValue;
+  screenModel.capturedValues.push(capturedValue);
 }
 
 function composeInputRowForList(
@@ -165,6 +172,13 @@ function composeInputRowForList(
     screenRow.rowDetails = [];
     screenRow.rowDetails.push(field);
     rows.set(field.coordinateY, screenRow);
+  }
+  if (field.attributeType == ListAttributeType.LIST_SINGLE_INPUT) {
+    const capturedValue = {
+      attributeName: field.attributeName,
+      value: field.value,
+    } as CapturedValue;
+    screenModel.capturedValues.push(capturedValue);
   }
 }
 

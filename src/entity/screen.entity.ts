@@ -3,8 +3,8 @@ import { FieldDto } from "./response.entity";
 
 export interface ScreenModel {
   title: string;
-  subTitle: string;
   focus: string;
+  screenDepth: number;
   screenRows: Map<number, ScreenRowModel>;
   screenLines: any[][];
   capturedValues: CapturedValue[];
@@ -99,4 +99,9 @@ export interface ListDetailModel {
   id: string;
   name: string;
   sequence: number;
+}
+
+export enum ActionKeyEnum {
+  SUBMIT = "Submit",
+  CANCEL = "Cancel",
 }

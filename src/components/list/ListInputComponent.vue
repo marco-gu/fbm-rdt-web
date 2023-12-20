@@ -1,25 +1,24 @@
 <template>
   <div class="line-item inputs-container">
     <div class="label-block">
-      {{ label }}
+      {{ inputLabel }}
     </div>
     <div class="input-block">
       <input
-        id="input"
         ref="input"
-        :autofocus="true"
         v-model="optionValue"
         style="width: 15px"
         @change="onTextChange()"
       />
     </div>
     <div class="label-block" style="margin-left: 10px">
-      {{ page }}
+      {{ pageDesc }}
     </div>
   </div>
 </template>
 <script lang="ts">
 import { CapturedValue } from "@/entity/request.entity";
+import { ListAttributeType } from "@/entity/response.entity";
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted } from "vue";
 const ListInputComponent = defineComponent({
@@ -31,22 +30,21 @@ const ListInputComponent = defineComponent({
   setup(props) {
     const store = useStore();
     const { details } = toRefs(props);
-    const label = ref();
-    const page =
-      "(total " + store.state.workflowModule.screenModel.list.total + ")";
-    const items = details.value;
-    const optionValue = ref();
     const input = ref();
-    const param = {
-      attributeName: "",
-      value: "",
-    } as CapturedValue;
+    const inputLabel = ref();
+    const pageDesc =
+      "(total " + store.state.workflowModule.screenModel.list.total + ")";
+    const optionValue = ref();
+    const param = {} as CapturedValue;
     onMounted(() => {
       details.value.forEach((t: any) => {
-        if (t.attributeType == "listSingleInput") {
-          param.attributeName = t.attributeName;
-          param.value = t.value;
-          store.dispatch("workflowModule/saveCapturedValue", param);
+        switch (t.attributeType) {
+          case ListAttributeType.LIST_SINGLE_INPUT:
+            param.attributeName = t.attributeName;
+            param.value = t.value;
+            break;
+          case ListAttributeType.LIST_SINGLE_LABEL:
+            inputLabel.value = t.value;
         }
       });
       input.value.focus();
@@ -55,7 +53,6 @@ const ListInputComponent = defineComponent({
     const handleKeyDown = (event: any) => {
       switch (event.keyCode) {
         case 13:
-          console.log("list input enter");
           store.dispatch("workflowModule/onSubmit");
           event.stopPropagation();
           break;
@@ -64,20 +61,13 @@ const ListInputComponent = defineComponent({
           break;
       }
     };
-    const onTextChange = (detail: any) => {
+    const onTextChange = () => {
       param.value = optionValue.value;
       store.dispatch("workflowModule/saveCapturedValue", param);
     };
-    items?.forEach((t: any) => {
-      switch (t.attributeType) {
-        case "listSingleLabel":
-          label.value = t.value;
-          break;
-      }
-    });
     return {
-      label,
-      page,
+      inputLabel,
+      pageDesc,
       optionValue,
       onTextChange,
       input,
@@ -89,7 +79,6 @@ export default ListInputComponent;
 <style lang="scss" scoped>
 .inputs-container {
   width: 100%;
-  // justify-content: space-between;
   .label-block {
     text-align: left;
   }
@@ -123,11 +112,5 @@ export default ListInputComponent;
       }
     }
   }
-}
-.measure-text-length {
-  height: 0;
-  opacity: 0;
-  position: absolute;
-  left: -1000px;
 }
 </style>

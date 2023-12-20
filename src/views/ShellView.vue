@@ -18,23 +18,25 @@
 <script lang="ts">
 import { post } from "@/service/http";
 import { useStore } from "../store";
-import { composeScreenData } from "@/utils/type3.parse";
 import { defineComponent, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { EngineRequset } from "@/entity/request.entity";
 export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
     onMounted(() => {
-      const shell = document.getElementById("app") as any;
+      // TODO initial screen background color
+      const shell = document.getElementById("app") as HTMLElement;
       shell.style.backgroundColor = "#609cd4";
     });
     const clickRDT = () => {
-      const engineRequest = {
-        countryAbbreviatedName: "GBR",
-      };
-      post(process.env.VUE_APP_BASE_URL, engineRequest).then((data: any) => {
-        store.commit("workflowModule/saveScreenModel", composeScreenData(data));
+      // TODO country
+      localStorage.setItem("country", "GBR");
+      const request = {} as EngineRequset;
+      request.sessionId = "";
+      post(request).then((data: unknown) => {
+        store.commit("workflowModule/onSubmit", data);
         router.push("/rdt");
       });
     };
@@ -51,6 +53,7 @@ export default defineComponent({
   font-size: 18px;
   font-weight: 500;
   justify-content: center;
+  padding-top: 20px;
 }
 .shell-container {
   margin-top: 10%;
