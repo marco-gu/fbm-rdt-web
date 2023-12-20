@@ -44,11 +44,13 @@ const RDTView = defineComponent({
     store.subscribe((mutation, state) => {
       if (state.workflowModule.isRenderView) {
         store.commit("workflowModule/saveRenderStatus", false);
-        router.push("/test");
+        router.push("/transition");
         // views.value = [];
         // console.log("view change");
         // store.commit("workflowModule/saveRenderStatus", false);
-        // renderView(state.workflowModule.screenModel);
+        // const screenModel = store.state.workflowModule.screenModel;
+        // const subScreenModel = store.state.workflowModule.subFormModel;
+        // renderView(screenModel, subScreenModel);
       }
     });
     const renderView = (

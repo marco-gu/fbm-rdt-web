@@ -9,7 +9,7 @@
         ref="input"
         :autofocus="true"
         v-model="optionValue"
-        style="width: 12px"
+        style="width: 15px"
         @change="onTextChange()"
       />
     </div>
