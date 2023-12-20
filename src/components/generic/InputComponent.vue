@@ -36,7 +36,7 @@
           :tabindex="item.sequence"
           :required="item.required"
           :pattern="item.regexPattern"
-          @keyup.prevent="onKeyPress($event)"
+          @keyup="onKeyPress($event)"
           @focus="onFocus()"
           @blur="onBlur()"
           :style="{
@@ -136,8 +136,8 @@ const InputComponent = defineComponent({
 
     const onKeyPress = (event: KeyboardEvent) => {
       const key = event.charCode || event.which || event.keyCode;
-      event.stopPropagation();
       if (key === 13) {
+        event.stopPropagation();
         store.dispatch("workflowModule/onSubmit");
       }
     };

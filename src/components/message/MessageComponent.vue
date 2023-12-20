@@ -8,6 +8,7 @@
     <div class="label-block" style="width: 100%">
       <span class="svg-container">
         <svg
+          v-if="messages[0].value.color === 'red'"
           height="18px"
           viewBox="0 0 24 24"
           width="18px"
@@ -19,7 +20,7 @@
           />
         </svg>
         <svg
-          v-if="false"
+          v-else
           height="18px"
           viewBox="0 0 24 24"
           width="18px"
