@@ -63,7 +63,7 @@ import { LineDetail } from "@/entity/screen.entity";
 import * as deviceConfig from "@/assets/device/mc93.json";
 import { CapturedValue } from "@/entity/request.entity";
 import { AttributeType } from "@/entity/response.entity";
-const InputComponent = defineComponent({
+const MultiInputComponent = defineComponent({
   props: {
     details: {
       type: Array as any,
@@ -205,7 +205,7 @@ const InputComponent = defineComponent({
     };
   },
 });
-export default InputComponent;
+export default MultiInputComponent;
 </script>
 <style lang="scss" scoped>
 .inputs-container {

@@ -22,6 +22,7 @@ import { CapturedValue } from "@/entity/request.entity";
 import { ListAttributeType } from "@/entity/response.entity";
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted } from "vue";
+import res from "../../assets/mock/response.json";
 const ListInputComponent = defineComponent({
   props: {
     details: {
@@ -33,8 +34,9 @@ const ListInputComponent = defineComponent({
     const { details } = toRefs(props);
     const input = ref();
     const inputLabel = ref();
-    const pageDesc =
-      "(total " + store.state.workflowModule.screenModel.list.total + ")";
+    const pageDesc = ref();
+    // const pageDesc =
+    //   "(total " + store.state.workflowModule.screenModel.list.total + ")";
     const optionValue = ref();
     const param = {} as CapturedValue;
     onMounted(() => {
@@ -54,7 +56,8 @@ const ListInputComponent = defineComponent({
       const key = event.charCode || event.which || event.keyCode;
       switch (key) {
         case 13:
-          store.dispatch("workflowModule/onSubmit");
+          // store.dispatch("workflowModule/onSubmit");
+          store.commit("workflowModule/saveSubForm", res);
           event.stopPropagation();
           break;
         case 27:

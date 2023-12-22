@@ -1,30 +1,33 @@
 import { Module } from "vuex";
 import RootState from "../state";
 import { post } from "@/service/http";
-import { CapturedValue, EngineRequset } from "@/entity/request.entity";
-import { parseXML } from "@/utils/util.parse";
+import {
+  CapturedValue,
+  EngineRequset,
+  UserSettingDto,
+} from "@/entity/request.entity";
 import {
   ScreenModel,
   ScreenLineEntity,
   ActionKeyEnum,
 } from "@/entity/screen.entity";
-import { UserSettingDto } from "@/entity/response.entity";
 import { composeScreenData } from "@/utils/type3.parse";
+import _ from "lodash";
 
 export interface WorkflowState {
   screenModel: ScreenModel;
   subFormModel: ScreenModel;
   rowsEntity: Map<number, ScreenLineEntity>;
-  isRenderView: boolean;
-  isSubFormShow: boolean;
+  isViewRender: boolean;
+  isSubFormRender: boolean;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
     screenModel: {} as ScreenModel,
     subFormModel: {} as ScreenModel,
     rowsEntity: new Map() as Map<number, ScreenLineEntity>,
-    isRenderView: false,
-    isSubFormShow: false,
+    isViewRender: false,
+    isSubFormRender: false,
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {
@@ -35,6 +38,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
       request.actionKey = ActionKeyEnum.CANCEL;
       request.capturedValues = [];
       request.userSettingDto = {} as UserSettingDto;
+      request.screenDepth = 0;
       post(request).then((data) => {
         context.commit("onSubmit", data);
       });
@@ -44,6 +48,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
       request.actionKey = ActionKeyEnum.SUBMIT;
       request.capturedValues = [];
       request.userSettingDto = {} as UserSettingDto;
+      request.screenDepth = 0;
       context.state.screenModel.capturedValues.forEach((cv: CapturedValue) => {
         const capturedValue = {} as CapturedValue;
         capturedValue.attributeName = cv.attributeName;
@@ -57,7 +62,11 @@ const workflowModule: Module<WorkflowState, RootState> = {
   },
   mutations: {
     saveRenderStatus(state, payload) {
-      state.isRenderView = payload;
+      state.isViewRender = payload;
+    },
+    saveSubFormRenderStatus(state, payload) {
+      state.isSubFormRender = payload;
+      state.isViewRender = true;
     },
     saveCapturedValue(state, payload: CapturedValue) {
       state.screenModel.capturedValues.forEach((capturedValue) => {
@@ -65,21 +74,39 @@ const workflowModule: Module<WorkflowState, RootState> = {
           capturedValue.value = payload.value;
         }
       });
-      state.isRenderView = false;
+      state.isViewRender = false;
     },
     onSubmit(state, payload) {
-      state.isRenderView = true;
+      state.isViewRender = true;
       state.screenModel.focus = "";
       state.screenModel.capturedValues = [];
       state.screenModel = composeScreenData(payload);
     },
     saveSubForm(state, payload) {
+      state.isViewRender = true;
+      state.screenModel = _.cloneDeep(state.screenModel);
       state.subFormModel = composeScreenData(payload);
-      state.isRenderView = true;
     },
     clearSubForm(state, payload) {
       state.subFormModel = {} as ScreenModel;
-      state.isRenderView = true;
+      state.isViewRender = true;
+    },
+    nextFocus(state, payload) {
+      state.screenModel.capturedValues.forEach((t: any, index: number) => {
+        if (t.attributeName == payload.attributeName) {
+          if (payload.direction == "up") {
+            if (index - 1 > -1) {
+              state.screenModel.focus =
+                state.screenModel.capturedValues[index - 1].attributeName;
+            }
+          } else {
+            if (index + 1 < state.screenModel.capturedValues.length)
+              state.screenModel.focus =
+                state.screenModel.capturedValues[index + 1].attributeName;
+          }
+        }
+      });
+      state.isViewRender = true;
     },
   },
   namespaced: true,

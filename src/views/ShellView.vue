@@ -21,6 +21,7 @@ import { useStore } from "../store";
 import { defineComponent, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { EngineRequset } from "@/entity/request.entity";
+import ck65 from "../assets/mock/New_RDT_Login_Response.json";
 export default defineComponent({
   setup() {
     const store = useStore();
@@ -35,10 +36,14 @@ export default defineComponent({
       localStorage.setItem("country", "GBR");
       const request = {} as EngineRequset;
       request.sessionId = "";
-      post(request).then((data: unknown) => {
-        store.commit("workflowModule/onSubmit", data);
-        router.push("/rdt");
-      });
+      request.screenDepth = 0;
+      // post(request).then((data: unknown) => {
+      //   store.commit("workflowModule/onSubmit", data);
+      //   router.push("/rdt");
+      // });
+      const data = ck65;
+      store.commit("workflowModule/onSubmit", data);
+      router.push("/rdt");
     };
     return {
       clickRDT,
@@ -50,20 +55,20 @@ export default defineComponent({
 .shell-header {
   display: flex;
   color: white;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 500;
   justify-content: center;
-  padding-top: 20px;
+  padding-top: 20%;
 }
 .shell-container {
-  margin-top: 10%;
+  margin-top: 20%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 }
 .shell-container .my-card {
-  margin-bottom: 20px;
+  margin-bottom: 10%;
   width: 100%;
   max-width: 250px;
   background-color: #204c7c;

@@ -1,5 +1,3 @@
-import { UserSettingDto } from "./response.entity";
-
 export interface CapturedValue {
   attributeName: string;
   dataType: string;
@@ -7,9 +5,21 @@ export interface CapturedValue {
 }
 
 export interface EngineRequset {
+  screenDepth: number;
   sessionId: string;
   actionKey: string;
   countryAbbreviatedName: string;
+  subScreenDto: SubScreenDto;
   capturedValues: CapturedValue[];
   userSettingDto: UserSettingDto;
+}
+
+export interface SubScreenDto {
+  startWorkFlowId: string;
+  startWorkNodeId: string;
+}
+
+export interface UserSettingDto {
+  soundLevel: number;
+  vibrationLevel: number;
 }

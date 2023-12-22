@@ -9,33 +9,42 @@
   </div>
 </template>
 <script lang="ts">
-import { EngineRequset } from "@/entity/request.entity";
-import { UserSettingDto } from "@/entity/response.entity";
+import { EngineRequset, UserSettingDto } from "@/entity/request.entity";
 import { post } from "@/service/http";
 import { defineComponent, ref } from "vue";
 import { useStore } from "@/store";
+import New_RDT_Response from "../../assets/mock/New_RDT_Response.json";
 
 const SubButtonComponent = defineComponent({
   setup() {
-    const click = ref(true);
     const store = useStore();
-    const subForm = store.state.workflowModule.subFormModel;
-    if (subForm.screenRows && subForm.screenRows.size > 0) {
-      click.value = false;
-    }
+    const click = ref(!store.state.workflowModule.isSubFormRender);
+    // const subForm = store.state.workflowModule.subFormModel;
+    // if (subForm.screenRows && subForm.screenRows.size > 0) {
+    //   click.value = false;
+    // }
+    console.log(click.value);
     const enterSubForm = () => {
+      const flag = true;
       if (click.value) {
-        const request = {} as EngineRequset;
-        request.sessionId = localStorage.getItem("sessionId") as string;
-        request.countryAbbreviatedName = "GBR";
-        request.actionKey = "subForm";
-        request.userSettingDto = {} as UserSettingDto;
-        post(request).then((data) => {
+        click.value = false;
+        if (flag) {
+          const data = New_RDT_Response;
           store.commit("workflowModule/saveSubForm", data);
-        });
+          // const request = {} as EngineRequset;
+          // request.sessionId = localStorage.getItem("sessionId") as string;
+          // request.screenDepth = 1;
+          // request.countryAbbreviatedName = "GBR";
+          // request.actionKey = "subForm";
+          // request.userSettingDto = {} as UserSettingDto;
+          // post(request).then((data) => {
+          //   store.commit("workflowModule/saveSubForm", data);
+          // });
+        }
+        store.commit("workflowModule/saveSubFormRenderStatus", true);
       } else {
         click.value = true;
-        store.commit("workflowModule/clearSubForm");
+        store.commit("workflowModule/saveSubFormRenderStatus", false);
       }
     };
     return {

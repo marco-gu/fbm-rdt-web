@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import ShellView from "../views/ShellView.vue";
 import RDTView from "@/views/RDTView.vue";
 import TransitionView from "@/views/TransitionView.vue";
-import OptionsView from "@/views/options/OptionsView.vue";
+import SubFormViewComponent from "@/views/options/SubFormView.vue";
 import OptionDetailsView from "@/views/options/OptionDetailsView.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -17,9 +17,9 @@ const routes: Array<RouteRecordRaw> = [
     component: RDTView,
     children: [
       {
-        path: "/options/",
-        name: "OptionsView",
-        component: OptionsView,
+        path: "/subForm/",
+        name: "SubFormViewComponent",
+        component: SubFormViewComponent,
         children: [
           {
             path: "",

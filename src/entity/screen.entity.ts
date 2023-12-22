@@ -6,7 +6,6 @@ export interface ScreenModel {
   focus: string;
   screenDepth: number;
   screenRows: Map<number, ScreenRowModel>;
-  screenLines: any[][];
   capturedValues: CapturedValue[];
   list: ListMasterModel;
 }
@@ -87,6 +86,7 @@ export enum ScreenRowComponentEnum {
   MENU = "menu",
   MESSAGEBOX = "messageBox",
   SUB_BUTTON = "subButton",
+  MULTI_INPUT = "multi_input",
 }
 export interface ListMasterModel {
   total: string;

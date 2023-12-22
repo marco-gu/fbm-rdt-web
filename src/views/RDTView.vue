@@ -16,8 +16,14 @@ import ListInputComponent from "@/components/list/ListInputComponent.vue";
 import { useRouter } from "vue-router";
 import SubButtonComponent from "@/components/generic/SubButtonComponent.vue";
 import { get } from "@/service/http";
+import ck65 from "../assets/device/ck65.json";
+import SubFormViewComponent from "./options/SubFormView.vue";
+import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
 
 const RDTView = defineComponent({
+  components: {
+    SubFormViewComponent,
+  },
   setup() {
     const store = useStore();
     const render = ref();
@@ -25,6 +31,9 @@ const RDTView = defineComponent({
     const rowsView = ref();
     const router = useRouter();
     const views = ref([] as any[]);
+    const screenHeight = ck65.height as any;
+    const rowHeight = "40px";
+    // const rowHeight = globalStyle["line-height"];
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
       console.log("onMounted");
@@ -38,31 +47,37 @@ const RDTView = defineComponent({
       window.removeEventListener("keyup", handleKeyDown);
     });
     store.subscribe((mutation, state) => {
-      if (state.workflowModule.isRenderView) {
+      if (state.workflowModule.isViewRender) {
         router.push("/transition");
       }
     });
     const renderView = (screenModel: ScreenModel) => {
+      console.log(screenModel.screenRows);
       renderRows(screenModel.screenRows);
-      // if (subScreenModel.screenRows && subScreenModel.screenRows.size > 0) {
-      //   optionView.value = h(
-      //     "div",
-      //     {
-      //       id: "options",
-      //       class: ["options"],
-      //       style: {
-      //         width: "300px",
-      //         height: "460px",
-      //         background: globalStyle["option-background-color"],
-      //         fontSize: globalStyle["option-font-size"],
-      //         color: globalStyle["option-color"],
-      //         letterSpacing: globalStyle["option-letter-spacing"],
-      //       },
-      //     },
-      //     [h(OptionsView)]
-      //   );
-      //   views.value.push(optionView.value);
-      // }
+      if (store.state.workflowModule.isSubFormRender) {
+        // console.log(store.state.workflowModule.subFormModel);
+        const optionView = h(
+          "div",
+          {
+            id: "options",
+            class: ["options"],
+            style: {
+              width: globalStyle["option-width"],
+              height: globalStyle["option-height"],
+              background: globalStyle["option-background-color"],
+              fontSize: globalStyle["option-font-size"],
+              color: globalStyle["option-color"],
+              letterSpacing: globalStyle["option-letter-spacing"],
+            },
+          },
+          [
+            h(SubFormViewComponent, {
+              subForm: store.state.workflowModule.subFormModel,
+            }),
+          ]
+        );
+        views.value.push(optionView);
+      }
       render.value = h(
         "div",
         {
@@ -131,13 +146,19 @@ const RDTView = defineComponent({
               });
               break;
             }
+            case ScreenRowComponentEnum.MULTI_INPUT: {
+              rowNode.value = h(MultiInputComponent, {
+                details: row.rowDetails,
+              });
+              break;
+            }
           }
           rowsView.value = h(
             "div",
             {
               class: ["center-items"],
               style: {
-                height: globalStyle["line-height"],
+                height: rowHeight,
               },
             },
             [rowNode.value]

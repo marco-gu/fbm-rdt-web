@@ -179,6 +179,36 @@
         "format": null
       },
       {
+        "attributeId": "select_size_list",
+        "sequence": 5,
+        "attributeName": "select_size_list_label_option",
+        "attributeType": "listSingleLabel",
+        "dataType": "list",
+        "value": "Option:",
+        "coordinateX": 1,
+        "coordinateY": 13,
+        "color": "White",
+        "isHidden": false,
+        "isOverwritten": false,
+        "isHighlighed": false,
+        "isRequired": true
+      },
+      {
+        "attributeId": "select_size_list",
+        "sequence": 5,
+        "attributeName": "select_size_list_option_input",
+        "attributeType": "listSingleInput",
+        "dataType": "string",
+        "value": "",
+        "coordinateX": 9,
+        "coordinateY": 13,
+        "color": "White",
+        "isHidden": false,
+        "isOverwritten": false,
+        "isHighlighed": true,
+        "isRequired": true
+      },
+      {
         "sequence": 13,
         "attributeId": "fnLabel",
         "attributeName": "fnLabel",

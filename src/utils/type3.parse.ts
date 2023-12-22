@@ -17,6 +17,7 @@ screenModel.capturedValues = [];
 export function composeScreenData(param: EngineResponse) {
   screenModel.screenRows = composeRowsData(param.screenDto.fields);
   screenModel.title = param.screenDto.title;
+  console.log(screenModel.screenRows);
   return screenModel;
 }
 
@@ -42,9 +43,9 @@ function composeRowsData(fields: FieldDto[]) {
         case AttributeType.MESSAGE:
           composeMessageRows(rows, field);
           break;
-        // case AttributeType.INPUT_MULTI:
-        //   composeInputRow(rows, field);
-        //   break;
+        case AttributeType.INPUT_MULTI:
+          parseInputBoxMultiLine(rows, field);
+          break;
         case AttributeType.SUB_BUTTON:
           composeSubButton(rows, field);
           break;
@@ -230,5 +231,43 @@ function composeSubButton(rows: Map<number, ScreenRowModel>, field: FieldDto) {
   screenRow.coordinateY = field.coordinateY;
   screenRow.rowType = ScreenRowComponentEnum.SUB_BUTTON;
   screenRow.rowDetails = [];
-  rows.set(field.coordinateY, screenRow);
+  // rows.set(field.coordinateY, screenRow);
+  rows.set(15, screenRow);
+}
+
+function parseInputBoxMultiLine(
+  rows: Map<number, ScreenRowModel>,
+  field: FieldDto
+) {
+  const row = rows.get(field.coordinateY) as ScreenRowModel;
+  field.attributeType = "inputBox";
+  row.rowDetails.push(field);
+  row.rowType = ScreenRowComponentEnum.MULTI_INPUT;
+  rows.set(field.coordinateY, row);
+  const capturedValue = {
+    attributeName: field.attributeName,
+    value: field.value,
+  } as CapturedValue;
+  screenModel.capturedValues.push(capturedValue);
+  // hard code for 3 lines
+  for (let i = 1; i < 4; i++) {
+    const newLabelField = _.clone(row.rowDetails[0]);
+    newLabelField.value = "      ";
+    const screenRow = {} as ScreenRowModel;
+    screenRow.rowType = ScreenRowComponentEnum.MULTI_INPUT;
+    screenRow.coordinateY = field.coordinateY + i;
+    screenRow.rowDetails = [];
+    const newField = _.clone(field);
+    newField.attributeType = "inputBox";
+    newField.attributeId = field.attributeType + i;
+    newField.attributeName = field.attributeName + "_" + "multi_line_" + i;
+    screenRow.rowDetails.push(newLabelField);
+    screenRow.rowDetails.push(newField);
+    const capturedValue = {
+      attributeName: newField.attributeName,
+      value: field.value,
+    } as CapturedValue;
+    screenModel.capturedValues.push(capturedValue);
+    rows.set(screenRow.coordinateY, screenRow);
+  }
 }

@@ -1,6 +1,11 @@
+import { UserSettingDto } from "./request.entity";
+
 export interface EngineResponse {
   sessionId: string;
   resultStatus: string;
+  screenDepth: number;
+  workFlowId: string;
+  workNodeId: string;
   screenDto: ScreenDto;
   userSettingDto: UserSettingDto;
   legacyOutPutXML: string;
@@ -8,6 +13,7 @@ export interface EngineResponse {
 
 export interface ScreenDto {
   title: string;
+  screenDepth: number;
   functionKey: string;
   functionKeyNameList: string[];
   rowSize: number;
@@ -15,11 +21,6 @@ export interface ScreenDto {
   style: string;
   colorSchema: string;
   fields: FieldDto[];
-}
-
-export interface UserSettingDto {
-  soundLevel: number;
-  vibrationLevel: number;
 }
 
 export interface FieldDto {
@@ -37,6 +38,8 @@ export interface FieldDto {
   isOverwritten: boolean;
   isHighlighed: boolean;
   isRequired: boolean;
+  maxLength: number;
+  minLength: number;
 }
 
 export enum AttributeType {
@@ -58,3 +61,5 @@ export enum ListAttributeType {
   LIST_SINGLE_INPUT = "listSingleInput",
   LIST_SINGLE_PAGE = "listSinglePage",
 }
+
+export { UserSettingDto };
