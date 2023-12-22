@@ -6,19 +6,14 @@ import {
   EngineRequset,
   UserSettingDto,
 } from "@/entity/request.entity";
-import {
-  ScreenModel,
-  ScreenLineEntity,
-  ActionKeyEnum,
-} from "@/entity/screen.entity";
+import { ScreenModel, ActionKeyEnum } from "@/entity/screen.entity";
 import { composeScreenData } from "@/utils/type3.parse";
 import _ from "lodash";
 
 export interface WorkflowState {
   screenModel: ScreenModel;
   subFormModel: ScreenModel;
-  rowsEntity: Map<number, ScreenLineEntity>;
-  isViewRender: boolean;
+  isMainViewRender: boolean;
   isSubFormRender: boolean;
   subFromWorkFlowId: string;
   subFromWorkNodeId: string;
@@ -27,8 +22,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
   state: {
     screenModel: {} as ScreenModel,
     subFormModel: {} as ScreenModel,
-    rowsEntity: new Map() as Map<number, ScreenLineEntity>,
-    isViewRender: false,
+    isMainViewRender: false,
     isSubFormRender: false,
     subFromWorkFlowId: "",
     subFromWorkNodeId: "",
@@ -77,11 +71,11 @@ const workflowModule: Module<WorkflowState, RootState> = {
   },
   mutations: {
     saveRenderStatus(state, payload) {
-      state.isViewRender = payload;
+      state.isMainViewRender = payload;
     },
     saveSubFormRenderStatus(state, payload) {
       state.isSubFormRender = payload;
-      state.isViewRender = true;
+      state.isMainViewRender = true;
     },
     saveCapturedValue(state, payload: CapturedValue) {
       state.screenModel.capturedValues.forEach((capturedValue) => {
@@ -89,26 +83,24 @@ const workflowModule: Module<WorkflowState, RootState> = {
           capturedValue.value = payload.value;
         }
       });
-      state.isViewRender = false;
+      state.isMainViewRender = false;
     },
     onSubmit(state, payload) {
-      state.isViewRender = true;
+      state.isMainViewRender = true;
       state.screenModel.focus = "";
       state.screenModel.capturedValues = [];
-      state.screenModel = composeScreenData(payload);
+      state.screenModel = composeScreenData(payload, {} as ScreenModel);
     },
     saveSubForm(state, payload) {
-      state.isViewRender = true;
+      state.isMainViewRender = true;
       state.isSubFormRender = true;
-      state.screenModel = _.cloneDeep(state.screenModel);
-      console.log("104");
-      state.subFormModel = composeScreenData(payload);
+      state.subFormModel = composeScreenData(payload, {} as ScreenModel);
       state.subFromWorkFlowId = state.screenModel.workFlowId;
       state.subFromWorkNodeId = state.screenModel.workNodeId;
     },
     clearSubForm(state, payload) {
       state.subFormModel = {} as ScreenModel;
-      state.isViewRender = true;
+      state.isMainViewRender = true;
     },
     nextFocus(state, payload) {
       state.screenModel.capturedValues.forEach((t: any, index: number) => {
@@ -125,7 +117,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
           }
         }
       });
-      state.isViewRender = true;
+      state.isMainViewRender = true;
     },
   },
   namespaced: true,

@@ -12,9 +12,11 @@ import {
 } from "@/entity/screen.entity";
 import _ from "lodash";
 
-const screenModel = {} as ScreenModel;
+let screenModel = {} as ScreenModel;
 screenModel.capturedValues = [];
-export function composeScreenData(param: EngineResponse) {
+export function composeScreenData(param: EngineResponse, data: ScreenModel) {
+  screenModel = data;
+  screenModel.capturedValues = [];
   screenModel.screenRows = composeRowsData(param.screenDto.fields);
   screenModel.title = param.screenDto.title;
   screenModel.workFlowId = param.workFlowId;

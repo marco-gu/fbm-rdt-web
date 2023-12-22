@@ -47,7 +47,7 @@ const RDTView = defineComponent({
       window.removeEventListener("keyup", handleKeyDown);
     });
     store.subscribe((mutation, state) => {
-      if (state.workflowModule.isViewRender) {
+      if (state.workflowModule.isMainViewRender) {
         router.push("/transition");
       }
     });
