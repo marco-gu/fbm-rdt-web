@@ -55,11 +55,12 @@ const ListInputComponent = defineComponent({
     const onKeyPress = (event: KeyboardEvent) => {
       const key = event.charCode || event.which || event.keyCode;
       switch (key) {
-        case 13:
-          // store.dispatch("workflowModule/onSubmit");
-          store.commit("workflowModule/saveSubForm", res);
+        case 13: {
+          const payload = store.state.workflowModule.isSubFormRender ? 1 : 0;
+          store.dispatch("workflowModule/onSubmit", payload);
           event.stopPropagation();
           break;
+        }
         case 27:
           store.dispatch("workflowModule/onCancel");
           break;

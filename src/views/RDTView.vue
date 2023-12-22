@@ -13,7 +13,7 @@ import InputComponent from "@/components/generic/InputComponent.vue";
 import ListItemLabelComponent from "@/components/list/ListItemLabelComponent.vue";
 import ListTitleLabelComponent from "@/components/list/ListTitleLabelComponent.vue";
 import ListInputComponent from "@/components/list/ListInputComponent.vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import SubButtonComponent from "@/components/generic/SubButtonComponent.vue";
 import { get } from "@/service/http";
 import ck65 from "../assets/device/ck65.json";
@@ -30,13 +30,13 @@ const RDTView = defineComponent({
     const rowNode = ref();
     const rowsView = ref();
     const router = useRouter();
+    const route = useRoute();
     const views = ref([] as any[]);
     const screenHeight = ck65.height as any;
     const rowHeight = "40px";
     // const rowHeight = globalStyle["line-height"];
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
-      console.log("onMounted");
       // TODO initial screen background color
       const shell = document.getElementById("app") as HTMLElement;
       shell.style.backgroundColor = "#0E1925";
@@ -52,10 +52,9 @@ const RDTView = defineComponent({
       }
     });
     const renderView = (screenModel: ScreenModel) => {
-      console.log(screenModel.screenRows);
       renderRows(screenModel.screenRows);
       if (store.state.workflowModule.isSubFormRender) {
-        // console.log(store.state.workflowModule.subFormModel);
+        console.log(store.state.workflowModule.subFormModel);
         const optionView = h(
           "div",
           {
@@ -170,10 +169,11 @@ const RDTView = defineComponent({
     const handleKeyDown = (event: any) => {
       {
         switch (event.keyCode) {
-          case 13:
-            console.log("rdt enter");
-            store.dispatch("workflowModule/onSubmit");
+          case 13: {
+            const payload = store.state.workflowModule.isSubFormRender ? 1 : 0;
+            store.dispatch("workflowModule/onSubmit", payload);
             break;
+          }
           case 27:
             if (store.state.workflowModule.screenModel.title == "Login") {
               // kill session

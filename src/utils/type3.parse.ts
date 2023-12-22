@@ -17,7 +17,8 @@ screenModel.capturedValues = [];
 export function composeScreenData(param: EngineResponse) {
   screenModel.screenRows = composeRowsData(param.screenDto.fields);
   screenModel.title = param.screenDto.title;
-  console.log(screenModel.screenRows);
+  screenModel.workFlowId = param.workFlowId;
+  screenModel.workNodeId = param.workNodeId;
   return screenModel;
 }
 
@@ -44,7 +45,7 @@ function composeRowsData(fields: FieldDto[]) {
           composeMessageRows(rows, field);
           break;
         case AttributeType.INPUT_MULTI:
-          parseInputBoxMultiLine(rows, field);
+          // parseInputBoxMultiLine(rows, field);
           break;
         case AttributeType.SUB_BUTTON:
           composeSubButton(rows, field);
@@ -231,6 +232,10 @@ function composeSubButton(rows: Map<number, ScreenRowModel>, field: FieldDto) {
   screenRow.coordinateY = field.coordinateY;
   screenRow.rowType = ScreenRowComponentEnum.SUB_BUTTON;
   screenRow.rowDetails = [];
+  const values = field.value.split(",");
+  screenModel.subFormAction = values[0];
+  screenModel.subWorkFlowId = values[1];
+  screenModel.subWorkNodeId = values[2];
   // rows.set(field.coordinateY, screenRow);
   rows.set(15, screenRow);
 }

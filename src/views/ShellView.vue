@@ -37,13 +37,14 @@ export default defineComponent({
       const request = {} as EngineRequset;
       request.sessionId = "";
       request.screenDepth = 0;
-      // post(request).then((data: unknown) => {
-      //   store.commit("workflowModule/onSubmit", data);
-      //   router.push("/rdt");
-      // });
-      const data = ck65;
-      store.commit("workflowModule/onSubmit", data);
-      router.push("/rdt");
+      post(request).then((data: unknown) => {
+        store.commit("workflowModule/onSubmit", data);
+        router.push("/rdt");
+      });
+      // Mock data
+      // const data = ck65;
+      // store.commit("workflowModule/onSubmit", data);
+      // router.push("/rdt");
     };
     return {
       clickRDT,

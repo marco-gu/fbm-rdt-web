@@ -139,7 +139,8 @@ const MultiInputComponent = defineComponent({
       const key = event.charCode || event.which || event.keyCode;
       if (key === 13) {
         event.stopPropagation();
-        store.dispatch("workflowModule/onSubmit");
+        const payload = store.state.workflowModule.isSubFormRender ? 1 : 0;
+        store.dispatch("workflowModule/onSubmit", payload);
       }
     };
     const focusInput = () => {

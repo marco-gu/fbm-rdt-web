@@ -7,6 +7,11 @@ export interface ScreenModel {
   screenDepth: number;
   screenRows: Map<number, ScreenRowModel>;
   capturedValues: CapturedValue[];
+  workFlowId: string;
+  workNodeId: string;
+  subWorkFlowId: string;
+  subWorkNodeId: string;
+  subFormAction: string;
   list: ListMasterModel;
 }
 

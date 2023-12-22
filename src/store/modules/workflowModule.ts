@@ -20,6 +20,8 @@ export interface WorkflowState {
   rowsEntity: Map<number, ScreenLineEntity>;
   isViewRender: boolean;
   isSubFormRender: boolean;
+  subFromWorkFlowId: string;
+  subFromWorkNodeId: string;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
@@ -28,6 +30,8 @@ const workflowModule: Module<WorkflowState, RootState> = {
     rowsEntity: new Map() as Map<number, ScreenLineEntity>,
     isViewRender: false,
     isSubFormRender: false,
+    subFromWorkFlowId: "",
+    subFromWorkNodeId: "",
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {
@@ -43,18 +47,29 @@ const workflowModule: Module<WorkflowState, RootState> = {
         context.commit("onSubmit", data);
       });
     },
-    onSubmit(context) {
+
+    /**
+     * @param context
+     * @param payload: screen depth: 0: main screen; 1: sub form
+     */
+    onSubmit(context, payload) {
       const request = {} as EngineRequset;
       request.actionKey = ActionKeyEnum.SUBMIT;
       request.capturedValues = [];
       request.userSettingDto = {} as UserSettingDto;
-      request.screenDepth = 0;
-      context.state.screenModel.capturedValues.forEach((cv: CapturedValue) => {
-        const capturedValue = {} as CapturedValue;
-        capturedValue.attributeName = cv.attributeName;
-        capturedValue.value = cv.value;
-        request.capturedValues.push(capturedValue);
-      });
+      request.screenDepth = payload;
+      const capturedValues =
+        payload == 0
+          ? context.state.screenModel.capturedValues
+          : context.state.subFormModel.capturedValues;
+      if (capturedValues.length > 0) {
+        capturedValues.forEach((cv: CapturedValue) => {
+          const capturedValue = {} as CapturedValue;
+          capturedValue.attributeName = cv.attributeName;
+          capturedValue.value = cv.value;
+          request.capturedValues.push(capturedValue);
+        });
+      }
       post(request).then((data) => {
         context.commit("onSubmit", data);
       });
@@ -84,8 +99,12 @@ const workflowModule: Module<WorkflowState, RootState> = {
     },
     saveSubForm(state, payload) {
       state.isViewRender = true;
+      state.isSubFormRender = true;
       state.screenModel = _.cloneDeep(state.screenModel);
+      console.log("104");
       state.subFormModel = composeScreenData(payload);
+      state.subFromWorkFlowId = state.screenModel.workFlowId;
+      state.subFromWorkNodeId = state.screenModel.workNodeId;
     },
     clearSubForm(state, payload) {
       state.subFormModel = {} as ScreenModel;

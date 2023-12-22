@@ -38,7 +38,6 @@
           :pattern="item.regexPattern"
           @keyup="onKeyPress($event)"
           @focus="onFocus()"
-          @input="inputFocus(item)"
           @blur="onBlur()"
           :style="{
             width:
@@ -139,7 +138,8 @@ const InputComponent = defineComponent({
       const key = event.charCode || event.which || event.keyCode;
       if (key === 13) {
         event.stopPropagation();
-        store.dispatch("workflowModule/onSubmit");
+        const payload = store.state.workflowModule.isSubFormRender ? 1 : 0;
+        store.dispatch("workflowModule/onSubmit", payload);
       }
     };
     const focusInput = () => {
@@ -160,23 +160,6 @@ const InputComponent = defineComponent({
             break;
           }
         }
-      }
-    };
-    const inputFocus = (item: any) => {
-      const payload = {
-        screenDepth: 0,
-        attributeName: item.attributeName,
-        direction: "",
-      };
-      if (item.value.length == 0) {
-        // last focus
-        payload.direction = "up";
-        store.commit("workflowModule/nextFocus", payload);
-      }
-      if (item.value.length == 30) {
-        // next focus
-        payload.direction = "next";
-        store.commit("workflowModule/nextFocus", payload);
       }
     };
     // watch(route, () => {
@@ -201,7 +184,6 @@ const InputComponent = defineComponent({
       widthArr,
       screenWidth,
       onKeyPress,
-      inputFocus,
     };
   },
 });
