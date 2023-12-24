@@ -14,9 +14,7 @@
         {{ item.value }}
       </div>
       <div
-        v-if="
-          item.attributeType === 'inputBox' || item.attributeType === 'password'
-        "
+        v-if="item.attributeType === 'inputBoxMultiLine'"
         v-show="!item.isHidden"
         class="input-block"
         :style="{
@@ -24,32 +22,22 @@
           flexBasis: widthArr[index],
         }"
       >
-        <input
+        <textarea
           ref="input"
           v-model="item.value"
           :autofocus="
             store.state.workflowModule.screenModel.focus === item.attributeName
           "
-          :type="item.attributeType === 'password' ? 'password' : 'text'"
+          type="text"
           @change="onTextChange(item)"
           :maxlength="!item.maxLength ? 1 : item.maxLength"
           :tabindex="item.sequence"
           :required="item.required"
           :pattern="item.regexPattern"
-          @keyup="onKeyPress($event)"
+          :rows="item.lines"
+          @keyup="onKeyPress($event, item)"
           @focus="onFocus()"
-          @input="inputFocus(item)"
           @blur="onBlur()"
-          :style="{
-            width:
-              item.maxLength > 0
-                ? item.maxLength > 1
-                  ? (10 * item.maxLength > screenWidth
-                      ? screenWidth - 30
-                      : 10 * item.maxLength) + 'px'
-                  : '15px'
-                : 'auto',
-          }"
         />
       </div>
     </template>
@@ -62,7 +50,6 @@ import { useRoute } from "vue-router";
 import { LineDetail } from "@/entity/screen.entity";
 import * as deviceConfig from "@/assets/device/mc93.json";
 import { CapturedValue } from "@/entity/request.entity";
-import { AttributeType } from "@/entity/response.entity";
 const MultiInputComponent = defineComponent({
   props: {
     details: {
@@ -83,16 +70,6 @@ const MultiInputComponent = defineComponent({
     const widthArr: Ref<any> = ref([]);
     const screenWidth: Ref<number> = ref(deviceConfig.width as number);
     onMounted(() => {
-      // submit empty capture value
-      // details.value.forEach((t: any) => {
-      //   if (t.attributeType == "inputBox") {
-      //     const param = {
-      //       attributeName: t.attributeName,
-      //       value: t.value,
-      //     } as CapturedValue;
-      //     store.dispatch("workflowModule/saveCapturedValue", param);
-      //   }
-      // });
       mapRawData();
       focusInput();
     });
@@ -128,17 +105,19 @@ const MultiInputComponent = defineComponent({
         });
       }
     };
-    const onFocus = (item: any) => {
+    const onFocus = () => {
       isFocus.value = true;
     };
     const onBlur = () => {
       isFocus.value = false;
     };
 
-    const onKeyPress = (event: KeyboardEvent) => {
+    const onKeyPress = (event: KeyboardEvent, detail: LineDetail) => {
+      // todo enter press???
       const key = event.charCode || event.which || event.keyCode;
       if (key === 13) {
         event.stopPropagation();
+        onTextChange(detail);
         store.dispatch("workflowModule/onSubmit");
       }
     };
@@ -147,10 +126,7 @@ const MultiInputComponent = defineComponent({
       if (input.value && input.value.length > 0) {
         let inputIndex = -1;
         for (let i = 0; i < details.value.length; i++) {
-          if (
-            details.value[i].attributeType === AttributeType.INPUT ||
-            details.value[i].attributeType === AttributeType.PASSWORD
-          ) {
+          if (details.value[i].attributeType === "inputBoxMultiLine") {
             inputIndex++;
           }
           if (details.value[i].attributeName === focusValue) {
@@ -162,29 +138,6 @@ const MultiInputComponent = defineComponent({
         }
       }
     };
-    const inputFocus = (item: any) => {
-      const payload = {
-        screenDepth: 0,
-        attributeName: item.attributeName,
-        direction: "",
-      };
-      if (item.value.length == 0) {
-        // last focus
-        payload.direction = "up";
-        store.commit("workflowModule/nextFocus", payload);
-      }
-      if (item.value.length == 30) {
-        // next focus
-        payload.direction = "next";
-        store.commit("workflowModule/nextFocus", payload);
-      }
-    };
-    // watch(route, () => {
-    //   focusInput();
-    // });
-    // const convertMaxLength = (maxLength: string | number | null) => {
-    //   return maxLength ? Number(maxLength) : 0;
-    // };
 
     return {
       model,
@@ -201,7 +154,6 @@ const MultiInputComponent = defineComponent({
       widthArr,
       screenWidth,
       onKeyPress,
-      inputFocus,
     };
   },
 });
@@ -210,7 +162,7 @@ export default MultiInputComponent;
 <style lang="scss" scoped>
 .inputs-container {
   width: 100%;
-  // justify-content: space-between;
+  align-items: flex-start;
   .label-block {
     text-align: left;
   }
@@ -220,21 +172,14 @@ export default MultiInputComponent;
     padding-left: 2px;
     textarea {
       border: none;
+      color: #ffc58f;
+      background-color: #00346e;
       resize: none;
-      padding-left: 4px;
-      height: 24px;
-      line-height: 1;
-      font-size: 10px;
-      color: #ffc58f;
-      background-color: #00346e;
-      &:focus {
-        outline: none;
-      }
-    }
-    input {
-      border: none;
-      color: #ffc58f;
-      background-color: #00346e;
+      width: 100%;
+      line-height: 24px;
+      padding: 1px 2px;
+      word-break: break-all;
+      white-space: pre-wrap;
       &:focus {
         outline: none;
         background-color: blue;
