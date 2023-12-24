@@ -279,5 +279,8 @@
     "soundLevel": 1,
     "vibrationLevel": 1
   },
-  "legacyOutPutXML": null
+  "legacyOutPutXML": null,
+  "workNodeId": "10001",
+  "workFlowId": "100",
+  "screenDepth": 0
 }
