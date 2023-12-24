@@ -12,36 +12,34 @@ import {
 } from "@/entity/screen.entity";
 import _ from "lodash";
 
-let screenModel = {} as ScreenModel;
-screenModel.capturedValues = [];
-export function composeScreenData(param: EngineResponse, data: ScreenModel) {
-  screenModel = data;
+export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
   screenModel.capturedValues = [];
-  screenModel.screenRows = composeRowsData(param.screenDto.fields);
+  screenModel.singleListCollection = new Map();
+  screenModel.screenRows = composeRowsData(param.screenDto.fields, screenModel);
   screenModel.title = param.screenDto.title;
-  screenModel.workFlowId = param.workFlowId;
-  screenModel.workNodeId = param.workNodeId;
+  screenModel.workFlowCollection.workFlowId = param.workFlowId;
+  screenModel.workFlowCollection.workNodeId = param.workNodeId;
   return screenModel;
 }
 
-function composeRowsData(fields: FieldDto[]) {
+function composeRowsData(fields: FieldDto[], screenModel: ScreenModel) {
   const rows = new Map<number, ScreenRowModel>();
   const singleListInfo = {
     firstRow: 0,
   };
   fields.forEach((field: FieldDto) => {
     if (field.attributeType.includes(AttributeType.LIST_SINGLE)) {
-      parseListSingle(singleListInfo, rows, field);
+      parseListSingle(singleListInfo, rows, field, screenModel);
     } else {
       switch (field.attributeType) {
         case AttributeType.LABEL:
           composeLabelRow(rows, field);
           break;
         case AttributeType.INPUT:
-          composeInputRow(rows, field);
+          composeInputRow(rows, field, screenModel);
           break;
         case AttributeType.PASSWORD:
-          composeInputRow(rows, field);
+          composeInputRow(rows, field, screenModel);
           break;
         case AttributeType.MESSAGE:
           composeMessageRows(rows, field);
@@ -50,7 +48,7 @@ function composeRowsData(fields: FieldDto[]) {
           // parseInputBoxMultiLine(rows, field);
           break;
         case AttributeType.SUB_BUTTON:
-          composeSubButton(rows, field);
+          composeSubButton(rows, field, screenModel);
           break;
       }
     }
@@ -62,7 +60,8 @@ function composeRowsData(fields: FieldDto[]) {
 function parseListSingle(
   singleListInfo: any,
   rows: Map<number, ScreenRowModel>,
-  field: FieldDto
+  field: FieldDto,
+  screenModel: ScreenModel
 ) {
   switch (field.attributeType) {
     case ListAttributeType.LIST_SINGLE_TITLE:
@@ -72,20 +71,36 @@ function parseListSingle(
       singleListInfo.firstRow = field.coordinateY;
       break;
     case ListAttributeType.LIST_SINGLE_LABEL:
-      composeInputRowForList(rows, field, ScreenRowComponentEnum.LIST_INPUT);
+      composeInputRowForList(
+        rows,
+        field,
+        ScreenRowComponentEnum.LIST_INPUT,
+        screenModel
+      );
       break;
     case ListAttributeType.LIST_SINGLE_INPUT:
-      composeInputRowForList(rows, field, ScreenRowComponentEnum.LIST_INPUT);
+      composeInputRowForList(
+        rows,
+        field,
+        ScreenRowComponentEnum.LIST_INPUT,
+        screenModel
+      );
       break;
     // case ListAttributeType.LIST_SINGLE_PAGE:
-    //   composeInputRowForList(rows, field, ScreenRowComponentEnum.LABEL);
+    //   composeInputRowForList(
+    //     rows,
+    //     field,
+    //     ScreenRowComponentEnum.LIST_INPUT,
+    //     screenModel
+    //   );
     //   break;
     case ListAttributeType.LIST_SINGLE_LIST:
       composeLabelRowsForList(
         rows,
         field,
         singleListInfo.firstRow,
-        ScreenRowComponentEnum.LIST_ITEM_LABEL
+        ScreenRowComponentEnum.LIST_ITEM_LABEL,
+        screenModel
       );
       break;
   }
@@ -116,23 +131,31 @@ function composeLabelRowsForList(
   rows: Map<number, ScreenRowModel>,
   field: FieldDto,
   firstRow: number,
-  screenRowComponent: ScreenRowComponentEnum
+  screenRowComponent: ScreenRowComponentEnum,
+  screenModel: ScreenModel
 ) {
   const values = JSON.parse(field.value);
-  screenModel.list = values;
+  const singleList = values;
+  const id = field.attributeId;
+  screenModel.singleListCollection.set(id, singleList);
   values.list.forEach((t: any) => {
     const screenRow = {} as ScreenRowModel;
     screenRow.rowType = screenRowComponent;
-    screenRow.coordinateY = firstRow + t.sequence - 1;
+    screenRow.coordinateY = firstRow;
     screenRow.rowDetails = [];
     const cloneField = _.cloneDeep(field);
     cloneField.value = t.sequence + "." + t.name;
     screenRow.rowDetails.push(cloneField);
     rows.set(screenRow.coordinateY, screenRow);
+    firstRow++;
   });
 }
 
-function composeInputRow(rows: Map<number, ScreenRowModel>, field: FieldDto) {
+function composeInputRow(
+  rows: Map<number, ScreenRowModel>,
+  field: FieldDto,
+  screenModel: ScreenModel
+) {
   if (_.isEmpty(screenModel.focus)) {
     screenModel.focus = field.attributeName;
   }
@@ -165,7 +188,8 @@ function composeInputRow(rows: Map<number, ScreenRowModel>, field: FieldDto) {
 function composeInputRowForList(
   rows: Map<number, ScreenRowModel>,
   field: FieldDto,
-  screenRowComponent: ScreenRowComponentEnum
+  screenRowComponent: ScreenRowComponentEnum,
+  screenModel: ScreenModel
 ) {
   if (rows.has(field.coordinateY)) {
     rows.get(field.coordinateY)?.rowDetails.push(field);
@@ -178,6 +202,9 @@ function composeInputRowForList(
     rows.set(field.coordinateY, screenRow);
   }
   if (field.attributeType == ListAttributeType.LIST_SINGLE_INPUT) {
+    if (_.isEmpty(screenModel.focus)) {
+      screenModel.focus = field.attributeName;
+    }
     const capturedValue = {
       attributeName: field.attributeName,
       value: field.value,
@@ -229,52 +256,56 @@ function sortRows(rows: Map<number, ScreenRowModel>) {
   return result;
 }
 
-function composeSubButton(rows: Map<number, ScreenRowModel>, field: FieldDto) {
+function composeSubButton(
+  rows: Map<number, ScreenRowModel>,
+  field: FieldDto,
+  screenModel: ScreenModel
+) {
   const screenRow = {} as ScreenRowModel;
   screenRow.coordinateY = field.coordinateY;
   screenRow.rowType = ScreenRowComponentEnum.SUB_BUTTON;
   screenRow.rowDetails = [];
   const values = field.value.split(",");
-  screenModel.subFormAction = values[0];
-  screenModel.subWorkFlowId = values[1];
-  screenModel.subWorkNodeId = values[2];
+  screenModel.workFlowCollection.subFormAction = values[0];
+  screenModel.workFlowCollection.subWorkFlowId = values[1];
+  screenModel.workFlowCollection.subWorkNodeId = values[2];
   // rows.set(field.coordinateY, screenRow);
   rows.set(15, screenRow);
 }
 
-function parseInputBoxMultiLine(
-  rows: Map<number, ScreenRowModel>,
-  field: FieldDto
-) {
-  const row = rows.get(field.coordinateY) as ScreenRowModel;
-  field.attributeType = "inputBox";
-  row.rowDetails.push(field);
-  row.rowType = ScreenRowComponentEnum.MULTI_INPUT;
-  rows.set(field.coordinateY, row);
-  const capturedValue = {
-    attributeName: field.attributeName,
-    value: field.value,
-  } as CapturedValue;
-  screenModel.capturedValues.push(capturedValue);
-  // hard code for 3 lines
-  for (let i = 1; i < 4; i++) {
-    const newLabelField = _.clone(row.rowDetails[0]);
-    newLabelField.value = "      ";
-    const screenRow = {} as ScreenRowModel;
-    screenRow.rowType = ScreenRowComponentEnum.MULTI_INPUT;
-    screenRow.coordinateY = field.coordinateY + i;
-    screenRow.rowDetails = [];
-    const newField = _.clone(field);
-    newField.attributeType = "inputBox";
-    newField.attributeId = field.attributeType + i;
-    newField.attributeName = field.attributeName + "_" + "multi_line_" + i;
-    screenRow.rowDetails.push(newLabelField);
-    screenRow.rowDetails.push(newField);
-    const capturedValue = {
-      attributeName: newField.attributeName,
-      value: field.value,
-    } as CapturedValue;
-    screenModel.capturedValues.push(capturedValue);
-    rows.set(screenRow.coordinateY, screenRow);
-  }
-}
+// function parseInputBoxMultiLine(
+//   rows: Map<number, ScreenRowModel>,
+//   field: FieldDto
+// ) {
+//   const row = rows.get(field.coordinateY) as ScreenRowModel;
+//   field.attributeType = "inputBox";
+//   row.rowDetails.push(field);
+//   row.rowType = ScreenRowComponentEnum.MULTI_INPUT;
+//   rows.set(field.coordinateY, row);
+//   const capturedValue = {
+//     attributeName: field.attributeName,
+//     value: field.value,
+//   } as CapturedValue;
+//   screenModel.capturedValues.push(capturedValue);
+//   // hard code for 3 lines
+//   for (let i = 1; i < 4; i++) {
+//     const newLabelField = _.clone(row.rowDetails[0]);
+//     newLabelField.value = "      ";
+//     const screenRow = {} as ScreenRowModel;
+//     screenRow.rowType = ScreenRowComponentEnum.MULTI_INPUT;
+//     screenRow.coordinateY = field.coordinateY + i;
+//     screenRow.rowDetails = [];
+//     const newField = _.clone(field);
+//     newField.attributeType = "inputBox";
+//     newField.attributeId = field.attributeType + i;
+//     newField.attributeName = field.attributeName + "_" + "multi_line_" + i;
+//     screenRow.rowDetails.push(newLabelField);
+//     screenRow.rowDetails.push(newField);
+//     const capturedValue = {
+//       attributeName: newField.attributeName,
+//       value: field.value,
+//     } as CapturedValue;
+//     screenModel.capturedValues.push(capturedValue);
+//     rows.set(screenRow.coordinateY, screenRow);
+//   }
+// }

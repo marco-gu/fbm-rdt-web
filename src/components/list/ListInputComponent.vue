@@ -1,17 +1,25 @@
 <template>
   <div class="line-item inputs-container">
-    <div class="label-block">
-      {{ inputLabel }}
-    </div>
-    <div class="input-block">
-      <input
-        ref="input"
-        v-model="optionValue"
-        style="width: 15px"
-        @change="onTextChange()"
-        @keyup="onKeyPress($event)"
-      />
-    </div>
+    <template v-for="(item, index) in details" :key="index">
+      <div v-if="item.attributeType === 'listSingleLabel'" class="label-block">
+        {{ item.value }}
+      </div>
+      <div v-if="item.attributeType === 'listSingleInput'">
+        <div class="input-block">
+          <input
+            ref="input"
+            v-model="item.value"
+            :autofocus="
+              store.state.workflowModule.screenModel.focus ===
+              item.attributeName
+            "
+            style="width: 15px"
+            @change="onTextChange(item)"
+            @keyup="onKeyPress($event)"
+          />
+        </div>
+      </div>
+    </template>
     <div class="label-block" style="margin-left: 10px">
       {{ pageDesc }}
     </div>
@@ -19,10 +27,8 @@
 </template>
 <script lang="ts">
 import { CapturedValue } from "@/entity/request.entity";
-import { ListAttributeType } from "@/entity/response.entity";
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted } from "vue";
-import res from "../../assets/mock/response.json";
 const ListInputComponent = defineComponent({
   props: {
     details: {
@@ -33,47 +39,46 @@ const ListInputComponent = defineComponent({
     const store = useStore();
     const { details } = toRefs(props);
     const input = ref();
-    const inputLabel = ref();
     const pageDesc = ref();
-    // const pageDesc =
-    //   "(total " + store.state.workflowModule.screenModel.list.total + ")";
-    const optionValue = ref();
-    const param = {} as CapturedValue;
     onMounted(() => {
-      details.value.forEach((t: any) => {
-        switch (t.attributeType) {
-          case ListAttributeType.LIST_SINGLE_INPUT:
-            param.attributeName = t.attributeName;
-            param.value = t.value;
-            break;
-          case ListAttributeType.LIST_SINGLE_LABEL:
-            inputLabel.value = t.value;
+      const map = store.state.workflowModule.screenModel.singleListCollection;
+      map.forEach((val, key) => {
+        if (key == details.value[0].attributeId) {
+          const total = val.total as number;
+          const pageSize = val.pageSize as number;
+          const currentPage = val.currentPage as number;
+          if (total > pageSize * currentPage) {
+            pageDesc.value = "(+ total " + total + ")";
+          } else if (total < pageSize * currentPage) {
+            if (currentPage > 1) {
+              pageDesc.value = "(- total " + total + ")";
+            } else {
+              pageDesc.value = "(total " + total + ")";
+            }
+          }
         }
       });
-      input.value.focus();
+      input.value[0].focus();
     });
     const onKeyPress = (event: KeyboardEvent) => {
       const key = event.charCode || event.which || event.keyCode;
       switch (key) {
         case 13: {
-          const payload = store.state.workflowModule.isSubFormRender ? 1 : 0;
-          store.dispatch("workflowModule/onSubmit", payload);
+          store.dispatch("workflowModule/onSubmit");
           event.stopPropagation();
           break;
         }
-        case 27:
-          store.dispatch("workflowModule/onCancel");
-          break;
       }
     };
-    const onTextChange = () => {
-      param.value = optionValue.value;
+    const onTextChange = (item: any) => {
+      const param = {
+        attributeName: item.attributeName,
+        value: item.value,
+      } as CapturedValue;
       store.dispatch("workflowModule/saveCapturedValue", param);
     };
     return {
-      inputLabel,
       pageDesc,
-      optionValue,
       onTextChange,
       input,
       onKeyPress,

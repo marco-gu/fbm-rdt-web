@@ -1,9 +1,6 @@
 <script lang="ts">
-import { EngineRequset, UserSettingDto } from "@/entity/request.entity";
-import { post } from "@/service/http";
 import { defineComponent, ref, h, toRefs } from "vue";
 import { useStore } from "@/store";
-import New_RDT_Response from "../../assets/mock/New_RDT_Response.json";
 import { ScreenRowComponentEnum, ScreenRowModel } from "@/entity/screen.entity";
 import LabelComponent from "@/components/generic/LabelComponent.vue";
 import InputComponent from "@/components/generic/InputComponent.vue";
@@ -13,20 +10,19 @@ import ListItemLabelComponent from "@/components/list/ListItemLabelComponent.vue
 import MessageComponent from "@/components/message/MessageComponent.vue";
 import SubButtonComponent from "@/components/generic/SubButtonComponent.vue";
 
-const SubFormViewComponent = defineComponent({
+const RDTSubView = defineComponent({
   props: {
-    subForm: {
+    subScreen: {
       type: Object,
     },
   },
   setup(props) {
-    const { subForm } = toRefs(props);
+    const { subScreen } = toRefs(props);
     const store = useStore();
     const rowNode = ref();
     const rowsView = ref();
     const views = ref([] as any[]);
     const render = ref();
-    console.log(subForm.value);
     const renderView = (screenModel: any) => {
       renderRows(screenModel.screenRows);
       render.value = h(
@@ -108,9 +104,9 @@ const SubFormViewComponent = defineComponent({
         });
       }
     };
-    renderView(subForm.value);
+    renderView(subScreen.value);
     return () => render.value;
   },
 });
-export default SubFormViewComponent;
+export default RDTSubView;
 </script>

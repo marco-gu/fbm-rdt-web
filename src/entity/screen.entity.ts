@@ -7,16 +7,28 @@ export interface ScreenModel {
   screenDepth: number;
   screenRows: Map<number, ScreenRowModel>;
   capturedValues: CapturedValue[];
+  currentPage: number;
+  pageSize: number;
+  workFlowCollection: WorkFlowCollection;
+  // screenList: ListModel;
+  singleListCollection: Map<string, ListModel>;
+}
+
+export interface WorkFlowCollection {
+  preWorkFlowId: string;
+  preWorkNodeId: string;
   workFlowId: string;
   workNodeId: string;
   subWorkFlowId: string;
   subWorkNodeId: string;
   subFormAction: string;
-  list: ListMasterModel;
+  triggerByWorkFlowId: string;
+  triggerByWorkNodeId: string;
 }
 
 export interface ScreenRowModel {
   coordinateY: number;
+  rowspan: number;
   rowType: ScreenRowComponentEnum;
   rowDetails: FieldDto[];
 }
@@ -93,8 +105,8 @@ export enum ScreenRowComponentEnum {
   SUB_BUTTON = "subButton",
   MULTI_INPUT = "multi_input",
 }
-export interface ListMasterModel {
-  total: string;
+export interface ListModel {
+  total: number;
   pageSize: number;
   currentPage: number;
   list: ListDetailModel[];

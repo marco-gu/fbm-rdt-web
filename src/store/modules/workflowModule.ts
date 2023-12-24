@@ -4,28 +4,29 @@ import { post } from "@/service/http";
 import {
   CapturedValue,
   EngineRequset,
+  SubScreenDto,
   UserSettingDto,
 } from "@/entity/request.entity";
-import { ScreenModel, ActionKeyEnum } from "@/entity/screen.entity";
-import { composeScreenData } from "@/utils/type3.parse";
+import {
+  ScreenModel,
+  ActionKeyEnum,
+  WorkFlowCollection,
+} from "@/entity/screen.entity";
+import { composeScreen } from "@/utils/type3.parse";
 import _ from "lodash";
 
 export interface WorkflowState {
   screenModel: ScreenModel;
-  subFormModel: ScreenModel;
-  isMainViewRender: boolean;
-  isSubFormRender: boolean;
-  subFromWorkFlowId: string;
-  subFromWorkNodeId: string;
+  subScreenModel: ScreenModel;
+  screenDepth: number;
+  isRender: boolean;
 }
 const workflowModule: Module<WorkflowState, RootState> = {
   state: {
     screenModel: {} as ScreenModel,
-    subFormModel: {} as ScreenModel,
-    isMainViewRender: false,
-    isSubFormRender: false,
-    subFromWorkFlowId: "",
-    subFromWorkNodeId: "",
+    subScreenModel: {} as ScreenModel,
+    screenDepth: 0,
+    isRender: false,
   },
   actions: {
     saveCapturedValue(context, payload: CapturedValue) {
@@ -36,71 +37,103 @@ const workflowModule: Module<WorkflowState, RootState> = {
       request.actionKey = ActionKeyEnum.CANCEL;
       request.capturedValues = [];
       request.userSettingDto = {} as UserSettingDto;
-      request.screenDepth = 0;
+      request.screenDepth = context.state.screenDepth;
       post(request).then((data) => {
         context.commit("onSubmit", data);
       });
     },
-
-    /**
-     * @param context
-     * @param payload: screen depth: 0: main screen; 1: sub form
-     */
-    onSubmit(context, payload) {
+    onSubmit(context) {
       const request = {} as EngineRequset;
       request.actionKey = ActionKeyEnum.SUBMIT;
-      request.capturedValues = [];
       request.userSettingDto = {} as UserSettingDto;
-      request.screenDepth = payload;
-      const capturedValues =
-        payload == 0
-          ? context.state.screenModel.capturedValues
-          : context.state.subFormModel.capturedValues;
-      if (capturedValues.length > 0) {
-        capturedValues.forEach((cv: CapturedValue) => {
-          const capturedValue = {} as CapturedValue;
-          capturedValue.attributeName = cv.attributeName;
-          capturedValue.value = cv.value;
-          request.capturedValues.push(capturedValue);
-        });
+      request.capturedValues = [];
+      if (context.state.screenDepth == 0) {
+        request.screenDepth = 0;
+        request.capturedValues = context.state.screenModel.capturedValues;
+      } else {
+        request.screenDepth = 1;
+        request.capturedValues = context.state.subScreenModel.capturedValues;
+        request.subScreenDto = {} as SubScreenDto;
+        request.subScreenDto.startWorkFlowId =
+          context.state.screenModel.workFlowCollection.subWorkFlowId;
+        request.subScreenDto.startWorkNodeId =
+          context.state.screenModel.workFlowCollection.subWorkNodeId;
       }
+      post(request).then((data) => {
+        context.commit("onSubmit", data);
+      });
+    },
+    onClickSubBtn(context) {
+      const request = {} as EngineRequset;
+      request.actionKey =
+        context.state.screenModel.workFlowCollection.subFormAction;
+      request.userSettingDto = {} as UserSettingDto;
+      request.capturedValues = [];
+      request.screenDepth = 1;
+      request.capturedValues = context.state.subScreenModel.capturedValues;
+      request.subScreenDto = {} as SubScreenDto;
+      request.subScreenDto.startWorkFlowId =
+        context.state.screenModel.workFlowCollection.subWorkFlowId;
+      request.subScreenDto.startWorkNodeId =
+        context.state.screenModel.workFlowCollection.subWorkNodeId;
+      request.actionKey =
+        context.state.screenModel.workFlowCollection.subFormAction;
       post(request).then((data) => {
         context.commit("onSubmit", data);
       });
     },
   },
   mutations: {
-    saveRenderStatus(state, payload) {
-      state.isMainViewRender = payload;
+    onCloseRender(state) {
+      state.isRender = false;
     },
-    saveSubFormRenderStatus(state, payload) {
-      state.isSubFormRender = payload;
-      state.isMainViewRender = true;
+    onOpenSubScreen(state) {
+      state.screenDepth = 1;
+      state.isRender = true;
+    },
+    onCloseSubScreen(state) {
+      state.screenDepth = 0;
+      state.isRender = true;
     },
     saveCapturedValue(state, payload: CapturedValue) {
-      state.screenModel.capturedValues.forEach((capturedValue) => {
+      state.isRender = false;
+      const capturedValue =
+        state.screenDepth == 0
+          ? state.screenModel.capturedValues
+          : state.subScreenModel.capturedValues;
+      capturedValue.forEach((capturedValue) => {
         if (capturedValue.attributeName == payload.attributeName) {
           capturedValue.value = payload.value;
         }
       });
-      state.isMainViewRender = false;
     },
     onSubmit(state, payload) {
-      state.isMainViewRender = true;
-      state.screenModel.focus = "";
-      state.screenModel.capturedValues = [];
-      state.screenModel = composeScreenData(payload, {} as ScreenModel);
-    },
-    saveSubForm(state, payload) {
-      state.isMainViewRender = true;
-      state.isSubFormRender = true;
-      state.subFormModel = composeScreenData(payload, {} as ScreenModel);
-      state.subFromWorkFlowId = state.screenModel.workFlowId;
-      state.subFromWorkNodeId = state.screenModel.workNodeId;
-    },
-    clearSubForm(state, payload) {
-      state.subFormModel = {} as ScreenModel;
-      state.isMainViewRender = true;
+      state.screenDepth = payload.screenDepth;
+      const screenModel = {} as ScreenModel;
+      screenModel.workFlowCollection = {} as WorkFlowCollection;
+      if (state.screenDepth == 0) {
+        state.isRender = true;
+        if (!_.isUndefined(state.screenModel.workFlowCollection)) {
+          screenModel.workFlowCollection.preWorkFlowId =
+            state.screenModel.workFlowCollection.workFlowId;
+          screenModel.workFlowCollection.preWorkNodeId =
+            state.screenModel.workFlowCollection.workNodeId;
+        }
+        state.screenModel = composeScreen(payload, screenModel);
+      } else {
+        state.isRender = true;
+        if (!_.isUndefined(state.subScreenModel.workFlowCollection)) {
+          screenModel.workFlowCollection.preWorkFlowId =
+            state.subScreenModel.workFlowCollection.workFlowId;
+          screenModel.workFlowCollection.preWorkNodeId =
+            state.subScreenModel.workFlowCollection.workNodeId;
+        }
+        state.subScreenModel = composeScreen(payload, screenModel);
+        state.subScreenModel.workFlowCollection.triggerByWorkFlowId =
+          state.screenModel.workFlowCollection.workFlowId;
+        state.subScreenModel.workFlowCollection.triggerByWorkNodeId =
+          state.screenModel.workFlowCollection.workNodeId;
+      }
     },
     nextFocus(state, payload) {
       state.screenModel.capturedValues.forEach((t: any, index: number) => {
@@ -117,7 +150,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
           }
         }
       });
-      state.isMainViewRender = true;
+      state.isRender = true;
     },
   },
   namespaced: true,

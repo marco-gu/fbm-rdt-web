@@ -138,8 +138,7 @@ const InputComponent = defineComponent({
       const key = event.charCode || event.which || event.keyCode;
       if (key === 13) {
         event.stopPropagation();
-        const payload = store.state.workflowModule.isSubFormRender ? 1 : 0;
-        store.dispatch("workflowModule/onSubmit", payload);
+        store.dispatch("workflowModule/onSubmit");
       }
     };
     const focusInput = () => {

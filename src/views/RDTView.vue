@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, h, onMounted, onUnmounted, ref } from "vue";
+import { defineComponent, h, onMounted, onUnmounted, ref, watch } from "vue";
 import { useStore } from "@/store";
 import {
   ScreenModel,
@@ -13,16 +13,16 @@ import InputComponent from "@/components/generic/InputComponent.vue";
 import ListItemLabelComponent from "@/components/list/ListItemLabelComponent.vue";
 import ListTitleLabelComponent from "@/components/list/ListTitleLabelComponent.vue";
 import ListInputComponent from "@/components/list/ListInputComponent.vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import SubButtonComponent from "@/components/generic/SubButtonComponent.vue";
 import { get } from "@/service/http";
 import ck65 from "../assets/device/ck65.json";
-import SubFormViewComponent from "./options/SubFormView.vue";
+import RDTSubView from "./options/RDTSubView.vue";
 import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
 
 const RDTView = defineComponent({
   components: {
-    SubFormViewComponent,
+    RDTSubView,
   },
   setup() {
     const store = useStore();
@@ -30,8 +30,7 @@ const RDTView = defineComponent({
     const rowNode = ref();
     const rowsView = ref();
     const router = useRouter();
-    const route = useRoute();
-    const views = ref([] as any[]);
+    const screenView = ref([] as any[]);
     const screenHeight = ck65.height as any;
     const rowHeight = "40px";
     // const rowHeight = globalStyle["line-height"];
@@ -47,14 +46,14 @@ const RDTView = defineComponent({
       window.removeEventListener("keyup", handleKeyDown);
     });
     store.subscribe((mutation, state) => {
-      if (state.workflowModule.isMainViewRender) {
+      if (state.workflowModule.isRender) {
+        store.commit("workflowModule/onCloseRender");
         router.push("/transition");
       }
     });
     const renderView = (screenModel: ScreenModel) => {
       renderRows(screenModel.screenRows);
-      if (store.state.workflowModule.isSubFormRender) {
-        console.log(store.state.workflowModule.subFormModel);
+      if (store.state.workflowModule.screenDepth == 1) {
         const optionView = h(
           "div",
           {
@@ -70,12 +69,12 @@ const RDTView = defineComponent({
             },
           },
           [
-            h(SubFormViewComponent, {
-              subForm: store.state.workflowModule.subFormModel,
+            h(RDTSubView, {
+              subScreen: store.state.workflowModule.subScreenModel,
             }),
           ]
         );
-        views.value.push(optionView);
+        screenView.value.push(optionView);
       }
       render.value = h(
         "div",
@@ -90,7 +89,7 @@ const RDTView = defineComponent({
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
         },
-        views.value
+        screenView.value
       );
     };
     const renderRows = (rows: Map<number, ScreenRowModel>) => {
@@ -162,7 +161,7 @@ const RDTView = defineComponent({
             },
             [rowNode.value]
           );
-          views.value.push(rowsView.value);
+          screenView.value.push(rowsView.value);
         });
       }
     };
@@ -170,7 +169,7 @@ const RDTView = defineComponent({
       {
         switch (event.keyCode) {
           case 13: {
-            const payload = store.state.workflowModule.isSubFormRender ? 1 : 0;
+            const payload = store.state.workflowModule.screenDepth;
             store.dispatch("workflowModule/onSubmit", payload);
             break;
           }
@@ -184,6 +183,7 @@ const RDTView = defineComponent({
                 router.push("/");
               });
             } else {
+              console.log("onCancel");
               store.dispatch("workflowModule/onCancel");
             }
             break;
