@@ -30,7 +30,6 @@
           "
           type="text"
           @change="onTextChange(item)"
-          :maxlength="!item.maxLength ? 1 : item.maxLength"
           :tabindex="item.sequence"
           :required="item.required"
           :pattern="item.regexPattern"
@@ -39,6 +38,7 @@
           @focus="onFocus()"
           @blur="onBlur()"
         />
+        <!-- :maxlength="!item.maxLength ? 1 : item.maxLength" -->
       </div>
     </template>
   </div>

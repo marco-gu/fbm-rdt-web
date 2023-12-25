@@ -19,6 +19,7 @@ import { get } from "@/service/http";
 import ck65 from "../assets/device/ck65.json";
 import RDTSubView from "./options/RDTSubView.vue";
 import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
+import _ from "lodash";
 
 const RDTView = defineComponent({
   components: {
@@ -32,7 +33,7 @@ const RDTView = defineComponent({
     const router = useRouter();
     const screenView = ref([] as any[]);
     const screenHeight = ck65.height as any;
-    const rowHeight = "40px";
+    const rowHeight = 40;
     // const rowHeight = globalStyle["line-height"];
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
@@ -96,6 +97,7 @@ const RDTView = defineComponent({
     const renderRows = (rows: Map<number, ScreenRowModel>) => {
       if (rows.size > 0) {
         rows.forEach((row) => {
+          row.rowspan = _.isUndefined(row.rowspan) ? 1 : row.rowspan;
           switch (row.rowType) {
             case ScreenRowComponentEnum.LABEL: {
               rowNode.value = h(LabelComponent, {
@@ -157,7 +159,7 @@ const RDTView = defineComponent({
             {
               class: ["center-items"],
               style: {
-                height: rowHeight,
+                height: rowHeight * row.rowspan + "px",
               },
             },
             [rowNode.value]

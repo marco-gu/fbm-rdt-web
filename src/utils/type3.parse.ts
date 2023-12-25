@@ -19,6 +19,7 @@ export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
   screenModel.title = param.screenDto.title;
   screenModel.workFlowCollection.workFlowId = param.workFlowId;
   screenModel.workFlowCollection.workNodeId = param.workNodeId;
+  console.log(screenModel.screenRows);
   return screenModel;
 }
 
@@ -120,7 +121,6 @@ function composeLabelRow(
     } else {
       screenRow.rowType = ScreenRowComponentEnum.LABEL;
     }
-    screenRow.coordinateY = field.coordinateY;
     screenRow.rowDetails = [];
     screenRow.rowDetails.push(field);
     rows.set(field.coordinateY, screenRow);
@@ -236,11 +236,28 @@ function composeEmptyRows(rows: Map<number, ScreenRowModel>) {
   const perPageMaxLine = 15;
   for (let i = 1; i <= perPageMaxLine; i++) {
     if (!rows.has(i)) {
-      const screenRow = {} as ScreenRowModel;
-      screenRow.rowType = ScreenRowComponentEnum.LABEL;
-      screenRow.coordinateY = i;
-      screenRow.rowDetails = [];
-      rows.set(i, screenRow);
+      for (let j = i - 1; j >= 0; j--) {
+        console.log("240");
+        const rowDetails = rows.get(j)?.rowDetails;
+        if (rowDetails && rowDetails?.length > 0) {
+          const rowspan = _.isUndefined(rows.get(j)?.rowspan)
+            ? 0
+            : (rows.get(j)?.rowspan as number);
+          if (j + rowspan <= i) {
+            const screenRow = {} as ScreenRowModel;
+            screenRow.rowType = ScreenRowComponentEnum.LABEL;
+            screenRow.coordinateY = i;
+            screenRow.rowDetails = [];
+            rows.set(i, screenRow);
+          }
+          break;
+        }
+      }
+      // const screenRow = {} as ScreenRowModel;
+      // screenRow.rowType = ScreenRowComponentEnum.LABEL;
+      // screenRow.coordinateY = i;
+      // screenRow.rowDetails = [];
+      // rows.set(i, screenRow);
     }
   }
 }
@@ -282,12 +299,14 @@ function parseInputBoxMultiLine(
     const row = rows.get(field.coordinateY) as ScreenRowModel;
     row.rowType = ScreenRowComponentEnum.MULTI_INPUT;
     row.rowDetails.push(field);
+    row.rowspan = 2;
   } else {
     const screenRow = {} as ScreenRowModel;
     screenRow.rowType = ScreenRowComponentEnum.MULTI_INPUT;
     screenRow.coordinateY = field.coordinateY;
     screenRow.rowDetails = [];
     screenRow.rowDetails.push(field);
+    screenRow.rowspan = 2;
     rows.set(field.coordinateY, screenRow);
   }
   const capturedValue = {

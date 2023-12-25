@@ -10,7 +10,6 @@ export interface ScreenModel {
   currentPage: number;
   pageSize: number;
   workFlowCollection: WorkFlowCollection;
-  // screenList: ListModel;
   singleListCollection: Map<string, ListModel>;
 }
 
@@ -29,6 +28,7 @@ export interface WorkFlowCollection {
 export interface ScreenRowModel {
   coordinateY: number;
   rowspan: number;
+  rowHeight: string;
   rowType: ScreenRowComponentEnum;
   rowDetails: FieldDto[];
 }
