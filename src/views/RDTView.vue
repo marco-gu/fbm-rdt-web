@@ -16,7 +16,7 @@ import ListInputComponent from "@/components/list/ListInputComponent.vue";
 import { useRouter } from "vue-router";
 import SubButtonComponent from "@/components/generic/SubButtonComponent.vue";
 import { get } from "@/service/http";
-import ck65 from "../assets/device/ck65.json";
+import style from "../assets/device/default.json";
 import RDTSubView from "./options/RDTSubView.vue";
 import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
 import _ from "lodash";
@@ -32,8 +32,9 @@ const RDTView = defineComponent({
     const rowsView = ref();
     const router = useRouter();
     const screenView = ref([] as any[]);
-    const screenHeight = ck65.height as any;
-    const rowHeight = 40;
+    const rdtStyle = style as any;
+    console.log(rdtStyle.fontSize);
+    const rowHeight = rdtStyle.rowHeight;
     // const rowHeight = globalStyle["line-height"];
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
@@ -83,10 +84,10 @@ const RDTView = defineComponent({
         {
           style: {
             background: globalStyle["background-color"],
-            fontSize: globalStyle["font-size"],
+            fontSize: rdtStyle.fontSize,
             color: globalStyle["color"],
-            letterSpacing: globalStyle["letter-spacing"],
-            padding: "0px 10px",
+            letterSpacing: rdtStyle.letterSpacing,
+            padding: rdtStyle.padding,
           },
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,

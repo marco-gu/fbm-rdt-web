@@ -64,8 +64,4 @@ export enum ListAttributeType {
   LIST_SINGLE_PAGE = "listSinglePage",
 }
 
-export enum LegacyAttributeType {
-  INPUT = "input",
-}
-
 export { UserSettingDto };

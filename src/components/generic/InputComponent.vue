@@ -59,7 +59,7 @@ import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
 import { useRoute } from "vue-router";
 import { LineDetail } from "@/entity/screen.entity";
-import * as deviceConfig from "@/assets/device/mc93.json";
+import * as deviceConfig from "@/assets/device/default.json";
 import { CapturedValue } from "@/entity/request.entity";
 import { AttributeType } from "@/entity/response.entity";
 const InputComponent = defineComponent({

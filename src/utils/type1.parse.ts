@@ -3,19 +3,13 @@ import {
   AttributeType,
   EngineResponse,
   FieldDto,
-  LegacyAttributeType,
 } from "@/entity/response.entity";
 import { ScreenRowComponentEnum, ScreenRowModel } from "@/entity/screen.entity";
-import { CapturedValue } from "@/entity/request.entity";
 
 export function parseLegacyXML(engineResponse: EngineResponse) {
   const doc = new XmlDocument(engineResponse.legacyOutPutXML);
-  // const screenModel = {} as ScreenModel;
-  // screenModel.capturedValues = [];
-  // screenModel.focus = doc.attr.focus;
   const fields = [] as FieldDto[];
   engineResponse.screenDto.fields = [];
-
   doc.children.forEach((t: any, index: number) => {
     switch (t.name) {
       case "field": {
@@ -44,18 +38,7 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
           element.attributeName = t.attr.id;
           element.defaultValue = t.attr.default;
           element.maxLength = t.attr.length;
-          // if (element.attributeType == LegacyAttributeType.INPUT) {
-          //   const capturedValue = {} as CapturedValue;
-          //   capturedValue.attributeName = element.attributeName;
-          //   capturedValue.value = element.defaultValue
-          //     ? element.defaultValue
-          //     : "";
-          //   screenModel.capturedValues.push(capturedValue);
-          // }
           fields.push(element);
-          // response.fields.push(element);
-        } else {
-          // todo sub process&&funtion key
         }
         break;
       }

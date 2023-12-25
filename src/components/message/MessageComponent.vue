@@ -9,9 +9,9 @@
       <span class="svg-container">
         <svg
           v-if="messages[0].value.color === 'red'"
-          height="18px"
+          height="22px"
+          width="22px"
           viewBox="0 0 24 24"
-          width="18px"
           :fill="messages[0].value.color"
         >
           <path d="M0 0h24v24H0z" fill="none" />
@@ -59,7 +59,8 @@ export default MessageComponent;
 </script>
 <style lang="scss" scoped>
 .msg-box {
-  width: calc(100% - 30px);
+  // width: calc(100% - 30px);
+  width: 100%;
   flex-direction: column;
   border: 1px solid;
   text-align: center;
@@ -74,7 +75,7 @@ export default MessageComponent;
   height: 19px;
   svg {
     position: absolute;
-    top: 5px;
+    // top: 5px;
     right: 2px;
   }
 }
