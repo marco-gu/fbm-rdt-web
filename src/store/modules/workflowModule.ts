@@ -108,7 +108,10 @@ const workflowModule: Module<WorkflowState, RootState> = {
       const screenModel = {} as ScreenModel;
       screenModel.workFlowCollection = {} as WorkFlowCollection;
       if (state.screenDepth == 0) {
-        state.isRender = true;
+        state.screenDepth = 0;
+        if (!_.isEmpty(state.subScreenModel)) {
+          state.subScreenModel = {} as ScreenModel;
+        }
         if (!_.isUndefined(state.screenModel.workFlowCollection)) {
           screenModel.workFlowCollection.preWorkFlowId =
             state.screenModel.workFlowCollection.workFlowId;
@@ -117,7 +120,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
         }
         state.screenModel = composeScreen(payload, screenModel);
       } else {
-        state.isRender = true;
+        state.screenDepth = 1;
         if (!_.isUndefined(state.subScreenModel.workFlowCollection)) {
           screenModel.workFlowCollection.preWorkFlowId =
             state.subScreenModel.workFlowCollection.workFlowId;
@@ -130,6 +133,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
         state.subScreenModel.workFlowCollection.triggerByWorkNodeId =
           state.screenModel.workFlowCollection.workNodeId;
       }
+      state.isRender = true;
     },
     nextFocus(state, payload) {
       state.screenModel.capturedValues.forEach((t: any, index: number) => {

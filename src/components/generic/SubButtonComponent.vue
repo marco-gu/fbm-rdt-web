@@ -23,13 +23,7 @@ const SubButtonComponent = defineComponent({
     );
     const onClickSubScreen = () => {
       if (screenDepth.value == 0) {
-        if (
-          !_.isEmpty(subScreenModel) &&
-          subScreenModel.workFlowCollection.triggerByWorkFlowId ==
-            screenModel.workFlowCollection.workFlowId &&
-          subScreenModel.workFlowCollection.triggerByWorkNodeId ==
-            screenModel.workFlowCollection.workNodeId
-        ) {
+        if (!_.isEmpty(subScreenModel)) {
           store.commit("workflowModule/onOpenSubScreen", true);
         } else {
           store.dispatch("workflowModule/onClickSubBtn");
