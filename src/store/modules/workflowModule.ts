@@ -50,14 +50,10 @@ const workflowModule: Module<WorkflowState, RootState> = {
       if (context.state.screenDepth == 0) {
         request.screenDepth = 0;
         request.capturedValues = context.state.screenModel.capturedValues;
+        // clear sub screen model
       } else {
         request.screenDepth = 1;
         request.capturedValues = context.state.subScreenModel.capturedValues;
-        // request.subScreenDto = {} as SubScreenDto;
-        // request.subScreenDto.startWorkFlowId =
-        //   context.state.screenModel.workFlowCollection.subWorkFlowId;
-        // request.subScreenDto.startWorkNodeId =
-        //   context.state.screenModel.workFlowCollection.subWorkNodeId;
       }
       post(request).then((data) => {
         context.commit("onSubmit", data);
