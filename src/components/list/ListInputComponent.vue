@@ -9,10 +9,6 @@
           <input
             ref="input"
             v-model="item.value"
-            :autofocus="
-              store.state.workflowModule.screenModel.focus ===
-              item.attributeName
-            "
             style="width: 15px"
             @change="onTextChange(item)"
             @keyup="onKeyPress($event)"
@@ -27,6 +23,7 @@
 </template>
 <script lang="ts">
 import { CapturedValue } from "@/entity/request.entity";
+import { ListAttributeType } from "@/entity/response.entity";
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted } from "vue";
 const ListInputComponent = defineComponent({
@@ -41,6 +38,7 @@ const ListInputComponent = defineComponent({
     const input = ref();
     const pageDesc = ref();
     onMounted(() => {
+      focusInput();
       const map = store.state.workflowModule.screenModel.singleListCollection;
       map.forEach((val, key) => {
         if (key == details.value[0].attributeId) {
@@ -58,7 +56,7 @@ const ListInputComponent = defineComponent({
           }
         }
       });
-      input.value[0].focus();
+      // input.value[0].focus();
     });
     const onKeyPress = (event: KeyboardEvent) => {
       const key = event.charCode || event.which || event.keyCode;
@@ -76,6 +74,26 @@ const ListInputComponent = defineComponent({
         value: item.value,
       } as CapturedValue;
       store.dispatch("workflowModule/saveCapturedValue", param);
+    };
+    const focusInput = () => {
+      const focusValue = store.state.workflowModule.screenModel.focus;
+      if (input.value && input.value.length > 0) {
+        let inputIndex = -1;
+        for (let i = 0; i < details.value.length; i++) {
+          if (
+            details.value[i].attributeType ===
+            ListAttributeType.LIST_SINGLE_INPUT
+          ) {
+            inputIndex++;
+          }
+          if (details.value[i].attributeName === focusValue) {
+            if (inputIndex > -1) {
+              input.value[inputIndex].focus();
+            }
+            break;
+          }
+        }
+      }
     };
     return {
       pageDesc,
