@@ -66,6 +66,7 @@ const RDTView = defineComponent({
               fontSize: globalStyle["option-font-size"],
               color: globalStyle["option-color"],
               letterSpacing: globalStyle["option-letter-spacing"],
+              padding: "30px 10px",
             },
           },
           [
