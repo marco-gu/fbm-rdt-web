@@ -14,6 +14,7 @@ import {
 } from "@/entity/screen.entity";
 import { composeScreen } from "@/utils/type3.parse";
 import _ from "lodash";
+import { composeEmptyRowsForLegacy, parseLegacyXML } from "@/utils/type1.parse";
 
 export interface WorkflowState {
   screenModel: ScreenModel;
@@ -104,36 +105,45 @@ const workflowModule: Module<WorkflowState, RootState> = {
       });
     },
     onSubmit(state, payload) {
-      state.screenDepth = payload.screenDepth;
       const screenModel = {} as ScreenModel;
       screenModel.workFlowCollection = {} as WorkFlowCollection;
-      if (state.screenDepth == 0) {
-        state.screenDepth = 0;
-        if (!_.isEmpty(state.subScreenModel)) {
-          state.subScreenModel = {} as ScreenModel;
-        }
-        if (!_.isUndefined(state.screenModel.workFlowCollection)) {
-          screenModel.workFlowCollection.preWorkFlowId =
+      if (!_.isEmpty(payload.legacyOutPutXML)) {
+        console.log(payload);
+        state.screenModel = composeScreen(parseLegacyXML(payload), screenModel);
+        // const screenRows = _.cloneDeep(state.screenModel.screenRows);
+        composeEmptyRowsForLegacy(state.screenModel.screenRows);
+
+        state.isRender = true;
+      } else {
+        state.screenDepth = payload.screenDepth;
+        if (state.screenDepth == 0) {
+          state.screenDepth = 0;
+          if (!_.isEmpty(state.subScreenModel)) {
+            state.subScreenModel = {} as ScreenModel;
+          }
+          if (!_.isUndefined(state.screenModel.workFlowCollection)) {
+            screenModel.workFlowCollection.preWorkFlowId =
+              state.screenModel.workFlowCollection.workFlowId;
+            screenModel.workFlowCollection.preWorkNodeId =
+              state.screenModel.workFlowCollection.workNodeId;
+          }
+          state.screenModel = composeScreen(payload, screenModel);
+        } else {
+          state.screenDepth = 1;
+          if (!_.isUndefined(state.subScreenModel.workFlowCollection)) {
+            screenModel.workFlowCollection.preWorkFlowId =
+              state.subScreenModel.workFlowCollection.workFlowId;
+            screenModel.workFlowCollection.preWorkNodeId =
+              state.subScreenModel.workFlowCollection.workNodeId;
+          }
+          state.subScreenModel = composeScreen(payload, screenModel);
+          state.subScreenModel.workFlowCollection.triggerByWorkFlowId =
             state.screenModel.workFlowCollection.workFlowId;
-          screenModel.workFlowCollection.preWorkNodeId =
+          state.subScreenModel.workFlowCollection.triggerByWorkNodeId =
             state.screenModel.workFlowCollection.workNodeId;
         }
-        state.screenModel = composeScreen(payload, screenModel);
-      } else {
-        state.screenDepth = 1;
-        if (!_.isUndefined(state.subScreenModel.workFlowCollection)) {
-          screenModel.workFlowCollection.preWorkFlowId =
-            state.subScreenModel.workFlowCollection.workFlowId;
-          screenModel.workFlowCollection.preWorkNodeId =
-            state.subScreenModel.workFlowCollection.workNodeId;
-        }
-        state.subScreenModel = composeScreen(payload, screenModel);
-        state.subScreenModel.workFlowCollection.triggerByWorkFlowId =
-          state.screenModel.workFlowCollection.workFlowId;
-        state.subScreenModel.workFlowCollection.triggerByWorkNodeId =
-          state.screenModel.workFlowCollection.workNodeId;
+        state.isRender = true;
       }
-      state.isRender = true;
     },
     nextFocus(state, payload) {
       state.screenModel.capturedValues.forEach((t: any, index: number) => {

@@ -40,6 +40,8 @@ export interface FieldDto {
   isRequired: boolean;
   maxLength: number;
   minLength: number;
+  // for legacy xml
+  defaultValue: string;
 }
 
 export enum AttributeType {
@@ -60,6 +62,10 @@ export enum ListAttributeType {
   LIST_SINGLE_LABEL = "listSingleLabel",
   LIST_SINGLE_INPUT = "listSingleInput",
   LIST_SINGLE_PAGE = "listSinglePage",
+}
+
+export enum LegacyAttributeType {
+  INPUT = "input",
 }
 
 export { UserSettingDto };

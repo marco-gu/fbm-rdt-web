@@ -19,7 +19,6 @@ export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
   screenModel.title = param.screenDto.title;
   screenModel.workFlowCollection.workFlowId = param.workFlowId;
   screenModel.workFlowCollection.workNodeId = param.workNodeId;
-  console.log(screenModel.screenRows);
   return screenModel;
 }
 
@@ -234,16 +233,18 @@ function composeMessageRows(
 
 function composeEmptyRows(rows: Map<number, ScreenRowModel>) {
   const perPageMaxLine = 15;
+  console.log("236");
+  console.log(rows);
   for (let i = 1; i <= perPageMaxLine; i++) {
     if (!rows.has(i)) {
       for (let j = i - 1; j >= 0; j--) {
-        console.log("240");
         const rowDetails = rows.get(j)?.rowDetails;
         if (rowDetails && rowDetails?.length > 0) {
           const rowspan = _.isUndefined(rows.get(j)?.rowspan)
             ? 0
             : (rows.get(j)?.rowspan as number);
           if (j + rowspan <= i) {
+            console.log("245");
             const screenRow = {} as ScreenRowModel;
             screenRow.rowType = ScreenRowComponentEnum.LABEL;
             screenRow.coordinateY = i;
@@ -253,11 +254,6 @@ function composeEmptyRows(rows: Map<number, ScreenRowModel>) {
           break;
         }
       }
-      // const screenRow = {} as ScreenRowModel;
-      // screenRow.rowType = ScreenRowComponentEnum.LABEL;
-      // screenRow.coordinateY = i;
-      // screenRow.rowDetails = [];
-      // rows.set(i, screenRow);
     }
   }
 }
