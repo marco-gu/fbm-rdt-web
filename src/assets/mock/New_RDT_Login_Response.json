@@ -272,7 +272,28 @@
         "lines": 4,
         "color": "Cyan",
         "format": null
+      },
+      {
+        "sequence": 1,
+        "attributeId": "ipLabel",
+        "attributeName": "ipLabel",
+        "attributeType": "label",
+        "dataType": "string",
+        "defaultValue": "IP: 172.16.96.5",
+        "value": "IP: 172.25.234.194",
+        "isHidden": null,
+        "maxLength": 0,
+        "minLength": 0,
+        "regexPattern": "",
+        "groupName": "",
+        "coordinateX": 1,
+        "coordinateY": 21,
+        "color": "white",
+        "required": false,
+        "overwritten": false,
+        "highlighted": false
       }
+      
     ]
   },
   "userSettingDto": {
