@@ -36,7 +36,7 @@
           :tabindex="item.sequence"
           :required="item.required"
           :pattern="item.regexPattern"
-          @keyup="onKeyPress($event)"
+          @keyup="onKeyPress($event, item)"
           @focus="onFocus()"
           @blur="onBlur()"
           :style="{
@@ -127,17 +127,18 @@ const InputComponent = defineComponent({
         });
       }
     };
-    const onFocus = (item: any) => {
+    const onFocus = () => {
       isFocus.value = true;
     };
     const onBlur = () => {
       isFocus.value = false;
     };
 
-    const onKeyPress = (event: KeyboardEvent) => {
+    const onKeyPress = (event: KeyboardEvent, detail: LineDetail) => {
       const key = event.charCode || event.which || event.keyCode;
       if (key === 13) {
         event.stopPropagation();
+        onTextChange(detail);
         store.dispatch("workflowModule/onSubmit");
       }
     };
@@ -161,12 +162,6 @@ const InputComponent = defineComponent({
         }
       }
     };
-    // watch(route, () => {
-    //   focusInput();
-    // });
-    // const convertMaxLength = (maxLength: string | number | null) => {
-    //   return maxLength ? Number(maxLength) : 0;
-    // };
 
     return {
       model,
