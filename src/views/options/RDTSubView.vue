@@ -29,7 +29,7 @@ const RDTSubView = defineComponent({
         "div",
         {
           style: {
-            padding: "0px 10px",
+            padding: "0px 15px",
           },
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,

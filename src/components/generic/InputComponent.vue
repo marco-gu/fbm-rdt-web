@@ -43,10 +43,10 @@
             width:
               item.maxLength > 0
                 ? item.maxLength > 1
-                  ? (10 * item.maxLength > screenWidth
+                  ? (11.2 * item.maxLength > screenWidth
                       ? screenWidth - 30
-                      : 10 * item.maxLength) + 'px'
-                  : '15px'
+                      : 11.2 * item.maxLength) + 'px'
+                  : '17px'
                 : 'auto',
           }"
         />

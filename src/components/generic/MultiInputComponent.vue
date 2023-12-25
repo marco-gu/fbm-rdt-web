@@ -117,8 +117,10 @@ const MultiInputComponent = defineComponent({
       const key = event.charCode || event.which || event.keyCode;
       if (key === 13) {
         event.stopPropagation();
-        onTextChange(detail);
-        store.dispatch("workflowModule/onSubmit");
+        if (!event.shiftKey) {
+          onTextChange(detail);
+          store.dispatch("workflowModule/onSubmit");
+        }
       }
     };
     const focusInput = () => {
@@ -176,7 +178,7 @@ export default MultiInputComponent;
       background-color: #00346e;
       resize: none;
       width: 100%;
-      line-height: 24px;
+      line-height: 26px;
       padding: 1px 2px;
       word-break: break-all;
       white-space: pre-wrap;
