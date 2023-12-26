@@ -16,9 +16,9 @@
               width:
                 item.maxLength > 0
                   ? item.maxLength > 1
-                    ? (15 * item.maxLength > screenWidth
+                    ? (14.4 * item.maxLength > screenWidth
                         ? screenWidth - 30
-                        : 15 * item.maxLength) + 'px'
+                        : 14.4 * item.maxLength) + 'px'
                     : '20px'
                   : 'auto',
             }"
@@ -35,7 +35,8 @@
 import { CapturedValue } from "@/entity/request.entity";
 import { ListAttributeType } from "@/entity/response.entity";
 import { useStore } from "@/store";
-import { defineComponent, ref, toRefs, onMounted } from "vue";
+import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
+import * as deviceConfig from "@/assets/device/default.json";
 const ListInputComponent = defineComponent({
   props: {
     details: {
@@ -47,6 +48,7 @@ const ListInputComponent = defineComponent({
     const { details } = toRefs(props);
     const input = ref();
     const pageDesc = ref();
+    const screenWidth: Ref<number> = ref(deviceConfig.width as number);
     onMounted(() => {
       focusInput();
       const map = store.state.workflowModule.screenModel.singleListCollection;
@@ -111,6 +113,7 @@ const ListInputComponent = defineComponent({
       input,
       onKeyPress,
       store,
+      screenWidth,
     };
   },
 });
