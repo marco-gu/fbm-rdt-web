@@ -178,7 +178,7 @@ export default MultiInputComponent;
       background-color: #00346e;
       resize: none;
       width: 100%;
-      line-height: 26px;
+      line-height: 30px;
       padding: 1px 2px;
       word-break: break-all;
       white-space: pre-wrap;
