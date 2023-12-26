@@ -1,5 +1,5 @@
 <template>
-  <div class="line-item label-container" style="width: 100%; overflow: hidden">
+  <div class="line-item label-container" style="width: 100%">
     <template v-for="(item, index) in details" :key="index">
       <div
         v-if="item.value"
@@ -8,7 +8,7 @@
           flexBasis: widthArr[index],
         }"
       >
-        {{ item.value }}
+        {{ item.value.substring(0, 25) }}
       </div>
     </template>
   </div>

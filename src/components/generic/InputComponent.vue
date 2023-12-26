@@ -143,7 +143,12 @@ const InputComponent = defineComponent({
       }
     };
     const focusInput = () => {
-      const focusValue = store.state.workflowModule.screenModel.focus;
+      let focusValue = "";
+      if (store.state.workflowModule.screenDepth == 0) {
+        focusValue = store.state.workflowModule.screenModel.focus;
+      } else {
+        focusValue = store.state.workflowModule.subScreenModel.focus;
+      }
       if (input.value && input.value.length > 0) {
         let inputIndex = -1;
         for (let i = 0; i < details.value.length; i++) {
