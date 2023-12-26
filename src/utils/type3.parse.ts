@@ -232,7 +232,7 @@ function composeMessageRows(
 }
 
 function composeEmptyRows(rows: Map<number, ScreenRowModel>) {
-  const perPageMaxLine = 16;
+  const perPageMaxLine = 15;
   for (let i = 1; i <= perPageMaxLine; i++) {
     if (!rows.has(i)) {
       for (let j = i - 1; j >= 0; j--) {
@@ -280,7 +280,7 @@ function composeSubButton(
   screenModel.workFlowCollection.subWorkFlowId = values[1];
   screenModel.workFlowCollection.subWorkNodeId = values[2];
   // rows.set(field.coordinateY, screenRow);
-  rows.set(16, screenRow);
+  rows.set(15, screenRow);
 }
 
 function parseInputBoxMultiLine(

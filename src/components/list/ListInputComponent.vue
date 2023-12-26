@@ -12,6 +12,16 @@
             style="width: 15px"
             @change="onTextChange(item)"
             @keyup="onKeyPress($event)"
+            :style="{
+              width:
+                item.maxLength > 0
+                  ? item.maxLength > 1
+                    ? (15 * item.maxLength > screenWidth
+                        ? screenWidth - 30
+                        : 15 * item.maxLength) + 'px'
+                    : '20px'
+                  : 'auto',
+            }"
           />
         </div>
       </div>

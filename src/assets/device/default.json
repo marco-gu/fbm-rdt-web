@@ -1,10 +1,10 @@
 {
-  "height": "534px",
+  "height": "529px",
   "width": 360,
   "rows": 16,
   "colunms": 32,
   "fontSize": "24px",
   "letterSpacing": "-1px",
-  "padding": "0px 10px",
+  "padding": "10px 10px",
   "rowHeight": 34
 }

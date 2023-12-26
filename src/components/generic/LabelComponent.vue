@@ -1,5 +1,5 @@
 <template>
-  <div class="line-item label-container" style="width: 100%">
+  <div class="line-item label-container" style="width: 100%; overflow: hidden">
     <template v-for="(item, index) in details" :key="index">
       <div
         v-if="item.value"
