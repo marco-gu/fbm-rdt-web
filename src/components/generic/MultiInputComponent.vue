@@ -93,7 +93,7 @@ const MultiInputComponent = defineComponent({
             if (x) {
               const calcColumnNo = lengthRemain - Number(x);
               reversedArr.push(
-                Math.floor((calcColumnNo / deviceConfig.colunms) * 100) + "%"
+                Math.round((calcColumnNo / deviceConfig.colunms) * 100) + "%"
               );
               lengthRemain = x;
             }
@@ -178,7 +178,7 @@ export default MultiInputComponent;
       background-color: #00346e;
       resize: none;
       width: 100%;
-      line-height: 30px;
+      // line-height: 30px;
       padding: 1px 2px;
       word-break: break-all;
       white-space: pre-wrap;

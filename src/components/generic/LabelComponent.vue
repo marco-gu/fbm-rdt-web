@@ -8,7 +8,7 @@
           flexBasis: widthArr[index],
         }"
       >
-        {{ item.value.substring(0, 25) }}
+        {{ item.value }}
       </div>
     </template>
   </div>
@@ -43,7 +43,7 @@ const LabelComponent = defineComponent({
             if (x) {
               const calcColumnNo = lengthRemain - Number(x);
               reversedArr.push(
-                Math.floor((calcColumnNo / deviceConfig.colunms) * 100) + "%"
+                Math.round((calcColumnNo / deviceConfig.colunms) * 100) + "%"
               );
               lengthRemain = x;
             }

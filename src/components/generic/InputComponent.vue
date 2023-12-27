@@ -115,7 +115,7 @@ const InputComponent = defineComponent({
             if (x) {
               const calcColumnNo = lengthRemain - Number(x);
               reversedArr.push(
-                Math.floor((calcColumnNo / deviceConfig.colunms) * 100) + "%"
+                Math.round((calcColumnNo / deviceConfig.colunms) * 100) + "%"
               );
               lengthRemain = x;
             }
