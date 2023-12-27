@@ -9,8 +9,10 @@ export interface ScreenModel {
   capturedValues: CapturedValue[];
   currentPage: number;
   pageSize: number;
+  totalPage: number;
   workFlowCollection: WorkFlowCollection;
   singleListCollection: Map<string, ListModel>;
+  selectedItem: SelectedItem;
 }
 
 export interface WorkFlowCollection {
@@ -121,4 +123,9 @@ export interface ListDetailModel {
 export enum ActionKeyEnum {
   SUBMIT = "Submit",
   CANCEL = "Cancel",
+}
+
+export interface SelectedItem {
+  attributeId: string;
+  sequence: number;
 }

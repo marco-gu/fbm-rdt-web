@@ -11,6 +11,7 @@
             v-model="item.value"
             style="width: 15px"
             @change="onTextChange(item)"
+            @input="onInput(item)"
             @keyup="onKeyPress($event)"
             :style="{
               width:
@@ -37,6 +38,7 @@ import { ListAttributeType } from "@/entity/response.entity";
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
 import * as deviceConfig from "@/assets/device/default.json";
+import { SelectedItem } from "@/entity/screen.entity";
 const ListInputComponent = defineComponent({
   props: {
     details: {
@@ -68,7 +70,6 @@ const ListInputComponent = defineComponent({
           }
         }
       });
-      // input.value[0].focus();
     });
     const onKeyPress = (event: KeyboardEvent) => {
       const key = event.charCode || event.which || event.keyCode;
@@ -112,6 +113,12 @@ const ListInputComponent = defineComponent({
         }
       }
     };
+    const onInput = (item: any) => {
+      const payload = {} as SelectedItem;
+      payload.attributeId = item.attributeId;
+      payload.sequence = item.value;
+      store.commit("workflowModule/saveSelectedItem", payload);
+    };
     return {
       pageDesc,
       onTextChange,
@@ -119,6 +126,7 @@ const ListInputComponent = defineComponent({
       onKeyPress,
       store,
       screenWidth,
+      onInput,
     };
   },
 });

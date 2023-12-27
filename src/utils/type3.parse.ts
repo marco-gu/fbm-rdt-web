@@ -13,8 +13,13 @@ import {
 import _ from "lodash";
 
 export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
-  screenModel.capturedValues = [];
-  screenModel.singleListCollection = new Map();
+  const screenStyle = localStorage.getItem("screenStyle") as string;
+  const row = JSON.parse(screenStyle).rows;
+  screenModel.currentPage = 1;
+  screenModel.pageSize = row;
+  screenModel.totalPage = Math.ceil(
+    param.screenDto.fields[param.screenDto.fields.length - 1].coordinateY / row
+  );
   screenModel.screenRows = composeRowsData(param.screenDto.fields, screenModel);
   screenModel.title = param.screenDto.title;
   screenModel.workFlowCollection.workFlowId = param.workFlowId;
@@ -144,6 +149,7 @@ function composeLabelRowsForList(
     screenRow.rowDetails = [];
     const cloneField = _.cloneDeep(field);
     cloneField.value = t.sequence + "." + t.name;
+    cloneField.sequence = t.sequence;
     screenRow.rowDetails.push(cloneField);
     rows.set(screenRow.coordinateY, screenRow);
     firstRow++;

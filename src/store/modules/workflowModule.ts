@@ -11,10 +11,12 @@ import {
   ScreenModel,
   ActionKeyEnum,
   WorkFlowCollection,
+  SelectedItem,
 } from "@/entity/screen.entity";
 import { composeScreen } from "@/utils/type3.parse";
 import _ from "lodash";
 import { composeEmptyRowsForLegacy, parseLegacyXML } from "@/utils/type1.parse";
+import { EngineResponse } from "@/entity/response.entity";
 
 export interface WorkflowState {
   screenModel: ScreenModel;
@@ -36,8 +38,8 @@ const workflowModule: Module<WorkflowState, RootState> = {
     onCancel(context) {
       const request = {} as EngineRequset;
       request.actionKey = ActionKeyEnum.CANCEL;
-      request.capturedValues = [];
       request.userSettingDto = {} as UserSettingDto;
+      request.capturedValues = [];
       request.screenDepth = context.state.screenDepth;
       post(request).then((data) => {
         context.commit("onSubmit", data);
@@ -47,27 +49,20 @@ const workflowModule: Module<WorkflowState, RootState> = {
       const request = {} as EngineRequset;
       request.actionKey = ActionKeyEnum.SUBMIT;
       request.userSettingDto = {} as UserSettingDto;
-      request.capturedValues = [];
-      if (context.state.screenDepth == 0) {
-        request.screenDepth = 0;
-        request.capturedValues = context.state.screenModel.capturedValues;
-        // clear sub screen model
-      } else {
-        request.screenDepth = 1;
-        request.capturedValues = context.state.subScreenModel.capturedValues;
-      }
+      request.screenDepth = context.state.screenDepth;
+      request.capturedValues =
+        context.state.screenDepth == 0
+          ? context.state.screenModel.capturedValues
+          : context.state.subScreenModel.capturedValues;
       post(request).then((data) => {
         context.commit("onSubmit", data);
       });
     },
     onClickSubBtn(context) {
       const request = {} as EngineRequset;
-      request.actionKey =
-        context.state.screenModel.workFlowCollection.subFormAction;
       request.userSettingDto = {} as UserSettingDto;
       request.capturedValues = [];
       request.screenDepth = 1;
-      request.capturedValues = context.state.subScreenModel.capturedValues;
       request.subScreenDto = {} as SubScreenDto;
       request.subScreenDto.startWorkFlowId =
         context.state.screenModel.workFlowCollection.subWorkFlowId;
@@ -81,6 +76,13 @@ const workflowModule: Module<WorkflowState, RootState> = {
     },
   },
   mutations: {
+    saveSelectedItem(state, payload: SelectedItem) {
+      if (state.screenDepth == 0) {
+        state.screenModel.selectedItem = payload;
+      } else {
+        state.subScreenModel.selectedItem = payload;
+      }
+    },
     onCloseRender(state) {
       state.isRender = false;
     },
@@ -104,20 +106,18 @@ const workflowModule: Module<WorkflowState, RootState> = {
         }
       });
     },
-    onSubmit(state, payload) {
+    onSubmit(state, payload: EngineResponse) {
       const screenModel = {} as ScreenModel;
       screenModel.workFlowCollection = {} as WorkFlowCollection;
+      screenModel.capturedValues = [] as CapturedValue[];
+      screenModel.singleListCollection = new Map();
+      screenModel.selectedItem = {} as SelectedItem;
       if (!_.isEmpty(payload.legacyOutPutXML)) {
-        console.log(payload);
         state.screenModel = composeScreen(parseLegacyXML(payload), screenModel);
-        // const screenRows = _.cloneDeep(state.screenModel.screenRows);
         composeEmptyRowsForLegacy(state.screenModel.screenRows);
-
-        state.isRender = true;
       } else {
         state.screenDepth = payload.screenDepth;
         if (state.screenDepth == 0) {
-          state.screenDepth = 0;
           if (!_.isEmpty(state.subScreenModel)) {
             state.subScreenModel = {} as ScreenModel;
           }
@@ -129,7 +129,6 @@ const workflowModule: Module<WorkflowState, RootState> = {
           }
           state.screenModel = composeScreen(payload, screenModel);
         } else {
-          state.screenDepth = 1;
           if (!_.isUndefined(state.subScreenModel.workFlowCollection)) {
             screenModel.workFlowCollection.preWorkFlowId =
               state.subScreenModel.workFlowCollection.workFlowId;
@@ -142,8 +141,8 @@ const workflowModule: Module<WorkflowState, RootState> = {
           state.subScreenModel.workFlowCollection.triggerByWorkNodeId =
             state.screenModel.workFlowCollection.workNodeId;
         }
-        state.isRender = true;
       }
+      state.isRender = true;
     },
     nextFocus(state, payload) {
       state.screenModel.capturedValues.forEach((t: any, index: number) => {

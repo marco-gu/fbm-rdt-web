@@ -33,7 +33,6 @@ const RDTView = defineComponent({
     const router = useRouter();
     const screenView = ref([] as any[]);
     const rdtStyle = style as any;
-    console.log(rdtStyle.fontSize);
     const rowHeight = rdtStyle.rowHeight;
     // const rowHeight = globalStyle["line-height"];
     onMounted(() => {
