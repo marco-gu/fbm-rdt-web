@@ -8,7 +8,7 @@
           flexBasis: widthArr[index],
         }"
       >
-        {{ item.value.substring(0, 25) }}
+        {{ item.value }}
       </div>
     </template>
   </div>
