@@ -173,22 +173,12 @@ export default MultiInputComponent;
     align-items: center;
     padding-left: 2px;
     textarea {
-      border: none;
-      color: #ffc58f;
-      background-color: #00346e;
       resize: none;
       width: 100%;
       // line-height: 30px;
       padding: 1px 2px;
       word-break: break-all;
       white-space: pre-wrap;
-      &:focus {
-        outline: none;
-        background-color: blue;
-      }
-      &:active {
-        background-color: blue;
-      }
     }
   }
 }

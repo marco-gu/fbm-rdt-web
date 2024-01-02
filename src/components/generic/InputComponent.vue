@@ -43,8 +43,8 @@
             width:
               item.maxLength > 0
                 ? item.maxLength > 1
-                  ? (14.4 * item.maxLength > screenWidth
-                      ? screenWidth - 30
+                  ? (14.4 * item.maxLength >= screenWidth
+                      ? screenWidth
                       : 14.4 * item.maxLength) + 'px'
                   : '18px'
                 : 'auto',
@@ -80,7 +80,7 @@ const InputComponent = defineComponent({
     const isFocus = ref(false);
     const route = useRoute();
     const widthArr: Ref<any> = ref([]);
-    const screenWidth: Ref<number> = ref(deviceConfig.width as number);
+    const screenWidth: Ref<number> = ref(deviceConfig.width - 20);
     onMounted(() => {
       // submit empty capture value
       // details.value.forEach((t: any) => {
@@ -212,19 +212,6 @@ export default InputComponent;
     //     outline: none;
     //   }
     // }
-    input {
-      border: none;
-      color: #ffc58f;
-      background-color: #00346e;
-      max-height: 32px;
-      &:focus {
-        outline: none;
-        background-color: blue;
-      }
-      &:active {
-        background-color: blue;
-      }
-    }
   }
 }
 .measure-text-length {

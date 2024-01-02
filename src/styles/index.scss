@@ -18,7 +18,19 @@ textarea {
     font-family: monospace;
     font-size: $fontSize;
     letter-spacing: $letter-spacing;
-    font-weight: 100;
+    font-weight: 100;color: #ffc58f;
+    background-color:#00346E;
+    border: none;
+    // &:focus {
+    //     outline: none;
+    //     background-color: blue;
+    //   }
+    //   &:active {
+    //     background-color: blue;
+    //   }
+}
+input {
+    max-height: 32px;
 }
 
 .line-item {
