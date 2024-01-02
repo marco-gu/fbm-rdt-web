@@ -3,12 +3,18 @@ import ShellView from "../views/ShellView.vue";
 import RDTView from "@/views/RDTView.vue";
 import TransitionView from "@/views/TransitionView.vue";
 import RDTSubView from "@/views/options/RDTSubView.vue";
+import RDTShellView from "@/views/RDTShellView.vue";
 
 const routes: Array<RouteRecordRaw> = [
+  // {
+  //   path: "/",
+  //   name: "Shell",
+  //   component: ShellView,
+  // },
   {
     path: "/",
     name: "Shell",
-    component: ShellView,
+    component: RDTShellView,
   },
   {
     path: "/rdt",
