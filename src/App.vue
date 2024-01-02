@@ -1,5 +1,9 @@
 <template>
-  <ul v-if="isAndroidSimulator" class="nav x android_top top-border">
+  <ul
+    v-if="isAndroidSimulator"
+    class="nav x android_top"
+    :class="{ 'top-border': route.path === '/' }"
+  >
     <li class="left">
       {{ showTime() }}
     </li>
@@ -24,10 +28,12 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { setShellStyle } from "./utils/screen.utils";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
   setup() {
     const isAndroidSimulator = ref(false);
+    const route = useRoute();
     onMounted(() => {
       // TODO get device's style
       const screenStyle = {
@@ -53,6 +59,7 @@ export default defineComponent({
     return {
       showTime,
       isAndroidSimulator,
+      route,
     };
   },
 });
