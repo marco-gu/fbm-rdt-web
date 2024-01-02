@@ -1,33 +1,15 @@
 <template>
-  <ul
-    v-if="isAndroidSimulator"
-    class="nav x android_top"
-    :style="{
-      backgroundColor:
-        route.path === '/' ? 'rgb(96, 156, 212)' : 'rgb(0, 23, 51)',
-      color: route.path === '/' ? 'rgb(96, 156, 212)' : 'rgb(0, 23, 51)',
-    }"
-  >
-    <li
-      class="left"
-      :style="{
-        color: route.path === '/' ? '#ffffff' : '#ffeead',
-      }"
-    >
+  <ul v-if="isAndroidSimulator" class="nav x android_top top-border">
+    <li class="left">
       {{ showTime() }}
     </li>
-    <li
-      class="right"
-      :style="{
-        color: route.path === '/' ? '#ffffff' : '#ffeead',
-      }"
-    >
+    <li class="right">
       <i class="fa-solid fa-battery-half"></i>
     </li>
   </ul>
 
   <router-view></router-view>
-  <ul v-if="isAndroidSimulator" class="nav x android_bottom">
+  <ul v-if="isAndroidSimulator" class="nav x top-border android_bottom">
     <li>
       <span class="nav_button"><i class="fa-solid fa-angle-left"></i></span>
     </li>
@@ -42,12 +24,10 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { setShellStyle } from "./utils/screen.utils";
-import { useRoute } from "vue-router";
 
 export default defineComponent({
   setup() {
     const isAndroidSimulator = ref(false);
-    const route = useRoute();
     onMounted(() => {
       // TODO get device's style
       const screenStyle = {
@@ -73,7 +53,6 @@ export default defineComponent({
     return {
       showTime,
       isAndroidSimulator,
-      route,
     };
   },
 });
