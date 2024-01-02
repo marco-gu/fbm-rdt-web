@@ -1,12 +1,53 @@
 <template>
+  <ul
+    v-if="isAndroidSimulator"
+    class="nav x android_top"
+    :style="{
+      backgroundColor:
+        route.path === '/' ? 'rgb(96, 156, 212)' : 'rgb(0, 23, 51)',
+      color: route.path === '/' ? 'rgb(96, 156, 212)' : 'rgb(0, 23, 51)',
+    }"
+  >
+    <li
+      class="left"
+      :style="{
+        color: route.path === '/' ? '#ffffff' : '#ffeead',
+      }"
+    >
+      {{ showTime() }}
+    </li>
+    <li
+      class="right"
+      :style="{
+        color: route.path === '/' ? '#ffffff' : '#ffeead',
+      }"
+    >
+      <i class="fa-solid fa-battery-half"></i>
+    </li>
+  </ul>
+
   <router-view></router-view>
+  <ul v-if="isAndroidSimulator" class="nav x android_bottom">
+    <li>
+      <span class="nav_button"><i class="fa-solid fa-angle-left"></i></span>
+    </li>
+    <li>
+      <span class="nav_button"><i class="fa-regular fa-square"></i></span>
+    </li>
+    <li>
+      <span class="nav_button"><i class="fa-regular fa-circle"></i></span>
+    </li>
+  </ul>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { setShellStyle } from "./utils/screen.utils";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
   setup() {
+    const isAndroidSimulator = ref(false);
+    const route = useRoute();
     onMounted(() => {
       // TODO get device's style
       const screenStyle = {
@@ -15,7 +56,25 @@ export default defineComponent({
       localStorage.setItem("screenStyle", JSON.stringify(screenStyle));
       const shell = document.getElementById("app") as HTMLElement;
       setShellStyle(shell);
+      isAndroidSimulator.value =
+        process.env.VUE_APP_IS_ANDROID_SIMULATOR === "true" || false;
     });
+    const showTime = () => {
+      const time = new Date();
+      const hour = time.getHours();
+      const minutes = time.getMinutes();
+      return (
+        (hour < 10 ? "0" + hour : hour) +
+        ":" +
+        (minutes < 10 ? "0" + minutes : minutes)
+      );
+    };
+
+    return {
+      showTime,
+      isAndroidSimulator,
+      route,
+    };
   },
 });
 </script>
