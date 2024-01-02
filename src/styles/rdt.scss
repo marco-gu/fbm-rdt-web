@@ -1,0 +1,102 @@
+ul.nav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+ul.nav li {
+  display: inline-block;
+}
+ul.nav a {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+}
+ul.nav.x .left {
+  float: left;
+}
+ul.nav.x .right {
+  float: right;
+}
+
+ul.nav.x.s {
+  height: 20px;
+  padding: 0 0 10px;
+  font-size: 10px;
+}
+ul.nav.x.s li {
+  margin: 0 0 0 5px;
+}
+ul.nav.x.m {
+  height: 30px;
+  width: 336px;
+  font-size: 16px;
+  margin: 0 auto 4px;
+  padding: 2px 6px 12px 0;
+  /* border-bottom: 1px solid #00346E; */
+}
+ul.nav.x.m li {
+  margin: 0;
+}
+
+ul.nav.x.l {
+  height: 50px;
+  margin: 25px auto 0;
+  text-align: center;
+}
+
+ul.nav.x.l .nav_button {
+  display: block;
+  height: 46px;
+  width: 46px;
+  font-size: 12px;
+  margin: 2px 0;
+  padding: 17px 0;
+  text-align: center;
+  background-color: #00346e;
+  border-radius: 3px;
+}
+ul.nav.x.l .nav_button:hover {
+  cursor: pointer;
+  font-size: 16px;
+  padding: 14px 0;
+  color: #ffc58f;
+}
+
+.android_top {
+  height: 37px;
+  width: 100%;
+  font-size: 16px;
+  margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.android_top li {
+  color: #eeeeee;
+  padding: 0 15px;
+}
+.android_bottom {
+  width: 100%;
+  height: 43px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.android_bottom li {
+  height: 43px;
+  margin: 0 30px;
+  padding-top: 8px;
+  font-size: 20px;
+  color: #eeeeee;
+}
+.android_bottom li:hover {
+  cursor: pointer;
+  color: #ffffff;
+}

@@ -1,8 +1,10 @@
 @import './variable/variable.module.scss';
+@import './rdt.scss';
 html {
     background-color: #0E1925;
     body {
         margin: 0px;
+        position: relative;
     }
 }
 
