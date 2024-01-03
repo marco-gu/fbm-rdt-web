@@ -2,7 +2,7 @@ const { configs } = require("@typescript-eslint/eslint-plugin");
 const { defineConfig } = require("@vue/cli-service");
 
 module.exports = defineConfig({
-    transpileDependencies: ["quasar"],
+    transpileDependencies: [],
     pluginOptions: {
         quasar: {
             importStrategy: "kebab",
