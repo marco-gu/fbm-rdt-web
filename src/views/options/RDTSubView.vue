@@ -9,6 +9,7 @@ import ListTitleLabelComponent from "@/components/list/ListTitleLabelComponent.v
 import ListItemLabelComponent from "@/components/list/ListItemLabelComponent.vue";
 import MessageComponent from "@/components/message/MessageComponent.vue";
 import SubButtonComponent from "@/components/generic/SubButtonComponent.vue";
+import style from "../../assets/device/default.json";
 
 const RDTSubView = defineComponent({
   props: {
@@ -23,14 +24,13 @@ const RDTSubView = defineComponent({
     const rowsView = ref();
     const views = ref([] as any[]);
     const render = ref();
+    const rdtStyle = style as any;
+    const rowHeight = rdtStyle.rowHeight;
     const renderView = (screenModel: any) => {
       renderRows(screenModel.screenRows);
       render.value = h(
         "div",
         {
-          style: {
-            padding: "5px 6px 5px 12px",
-          },
           key:
             new Date().getMilliseconds() + Math.floor(Math.random() * 10) + 1,
         },
@@ -95,7 +95,8 @@ const RDTSubView = defineComponent({
             {
               class: ["center-items"],
               style: {
-                height: "25px",
+                // height: "34px",
+                height: rowHeight + "px",
               },
             },
             [rowNode.value]

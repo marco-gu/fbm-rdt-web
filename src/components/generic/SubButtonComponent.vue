@@ -40,10 +40,10 @@ export default SubButtonComponent;
 <style lang="scss" scoped>
 .pop_btn {
   display: inline-block;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   position: absolute;
-  bottom: 11px;
+  bottom: 40px;
   right: 12px;
   text-align: center;
   color: #ffeead;

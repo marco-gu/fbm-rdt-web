@@ -67,7 +67,8 @@ const RDTView = defineComponent({
               fontSize: globalStyle["option-font-size"],
               color: globalStyle["option-color"],
               letterSpacing: globalStyle["option-letter-spacing"],
-              margin: "15px 0px 0px 0px",
+              margin: "31px 0px 0px 5px",
+              padding: "6px 0px 0px 4px",
             },
           },
           [
@@ -182,7 +183,9 @@ const RDTView = defineComponent({
               const url =
                 "RDTEngine/deleteSession/" + localStorage.getItem("sessionId");
               get(url).then(() => {
-                localStorage.clear();
+                // localStorage.clear();
+                localStorage.removeItem("sessionId");
+                localStorage.removeItem("country");
                 router.push("/");
               });
             } else {
