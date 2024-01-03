@@ -1,9 +1,9 @@
 <template>
   <div class="line-item label-container" style="width: 100%; overflow: hidden">
-    <div class="label-block">
+    <div :class="isSelected == true ? 'selected-label' : 'label-block'">
       {{ label }}
     </div>
-    <div v-if="isSelected" style="margin-left: 10px">
+    <div v-if="isSelected" class="selected-icon">
       <i class="fa-solid fa-check-double"></i>
     </div>
   </div>
@@ -61,3 +61,15 @@ const ListItemLabelComponent = defineComponent({
 });
 export default ListItemLabelComponent;
 </script>
+<style lang="scss" scoped>
+.selected-icon {
+  position: relative;
+  left: 3px;
+  top: -8px;
+  font-size: 14px;
+  color: #ffc58f;
+}
+.selected-label {
+  color: #ffc58f;
+}
+</style>
