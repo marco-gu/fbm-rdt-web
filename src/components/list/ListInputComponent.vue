@@ -142,31 +142,6 @@ export default ListInputComponent;
     display: flex;
     align-items: center;
     padding-left: 2px;
-    textarea {
-      border: none;
-      resize: none;
-      padding-left: 4px;
-      height: 24px;
-      line-height: 1;
-      font-size: 10px;
-      color: #ffc58f;
-      background-color: #00346e;
-      &:focus {
-        outline: none;
-      }
-    }
-    input {
-      border: none;
-      color: #ffc58f;
-      background-color: #00346e;
-      &:focus {
-        outline: none;
-        background-color: blue;
-      }
-      &:active {
-        background-color: blue;
-      }
-    }
   }
 }
 </style>

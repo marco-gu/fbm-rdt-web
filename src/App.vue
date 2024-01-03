@@ -8,7 +8,7 @@
       {{ showTime() }}
     </li>
     <li class="right">
-      <i class="fa-solid fa-battery-half"></i>
+      <i class="fa fa-solid fa-battery-half"></i>
     </li>
   </ul>
 
@@ -21,7 +21,7 @@
       <span class="nav_button"><i class="fa-regular fa-square"></i></span>
     </li>
     <li>
-      <span class="nav_button"><i class="fa-regular fa-circle"></i></span>
+      <span class="nav_button"><i class="fa fa-regular fa-circle"></i></span>
     </li>
   </ul>
 </template>

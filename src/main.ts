@@ -3,6 +3,16 @@ import App from "./App.vue";
 import router from "./router";
 import store, { key } from "./store";
 import "./styles/index.scss";
+import "./styles/fontawesome-free-6.5.1-web/scss/fontawesome.scss";
+import "./styles/fontawesome-free-6.5.1-web/scss/solid.scss";
+import "./styles/fontawesome-free-6.5.1-web/scss/regular.scss";
+// import "font-awesome/css/font-awesome.min.css";
+// import "font-awesome/scss/font-awesome.scss";
+
+// our project needs Solid + Brands
+// import "font-awesome/scss/solid.scss";
+// import "font-awesome/scss/brands.scss";
+// import "font-awesome/scss/font-awesome.scss";
 // import { Quasar } from "quasar";
 // import "./styles/quasar.scss";
 // import "@quasar/extras/material-icons/material-icons.css";
