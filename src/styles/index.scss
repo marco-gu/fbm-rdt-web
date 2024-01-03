@@ -2,86 +2,86 @@
 @import "./rdt.scss";
 $fa-font-path: "../fontawesome-free-6.5.1-web/webfonts";
 html {
-    background-color: #0e1925;
-    body {
-        margin: 0px;
-        position: relative;
-        // font-smoothing: auto;
-        -webkit-font-smoothing: auto;
-    }
+  background-color: #0e1925;
+  body {
+    margin: 0px;
+    position: relative;
+    // font-smoothing: auto;
+    -webkit-font-smoothing: auto;
+  }
 }
 
 #app {
-    font-family: monospace;
-    font-weight: 100;
+  font-family: monospace;
+  font-weight: 100;
 }
 
 input,
 textarea {
-    font-family: monospace;
-    font-size: $fontSize;
-    letter-spacing: $letter-spacing;
-    font-weight: 100;
-    color: #ffc58f;
-    background-color: #00346e;
-    border: none;
-    // &:focus {
-    //     outline: none;
-    //     background-color: blue;
-    //   }
-    &:active {
-        background-color: blue;
-    }
+  font-family: monospace;
+  font-size: $fontSize;
+  letter-spacing: $letter-spacing;
+  font-weight: 100;
+  color: #ffc58f;
+  background-color: #00346e;
+  border: none;
+  // &:focus {
+  //     outline: none;
+  //     background-color: blue;
+  //   }
+  &:active {
+    background-color: blue;
+  }
 }
 
 input {
-    max-height: 32px;
+  max-height: 32px;
 }
 
 .line-item {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    // height: $line-height;
-    // min-height: 24px;
-    // padding: 3px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  // height: $line-height;
+  // min-height: 24px;
+  // padding: 3px;
 }
 
 .center-items {
-    display: flex;
-    align-items: center;
-    // padding: 0px 12px;
+  display: flex;
+  align-items: center;
+  // padding: 0px 12px;
 }
 
 .last-item {
-    position: absolute;
-    bottom: 0;
-    background-color: inherit;
-    width: 100%;
+  position: absolute;
+  bottom: 0;
+  background-color: inherit;
+  width: 100%;
 }
 
 .bg-white {
-    background-color: #ffffff;
+  background-color: #ffffff;
 }
 
 .options {
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin: auto;
-    // left: 50%;
-    // top: 22%;
-    // transform: translate(-50%, -50%);
-    z-index: 2;
-    background-color: #00346e;
-    height: calc(100% - 60px);
-    top: 0;
-    margin: 0 auto;
-    // padding: 6px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  // left: 50%;
+  // top: 22%;
+  // transform: translate(-50%, -50%);
+  z-index: 2;
+  background-color: #00346e;
+  height: calc(100% - 60px);
+  top: 0;
+  margin: 0 auto;
+  // padding: 6px;
 }
 
 .plus-icon-container {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 }
