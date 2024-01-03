@@ -13,7 +13,7 @@
     </p>
     <p
       class="rdt row5 center"
-      style="font-size: 24px; cursor: pointer"
+      style="font-size: 24px; cursor: default"
       @click="clickRDT"
     >
       Enter to Start

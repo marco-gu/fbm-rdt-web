@@ -56,11 +56,11 @@ export default SubButtonComponent;
 }
 .pop_btn:hover {
   cursor: pointer;
-  width: 34px;
-  height: 34px;
-  right: 6px;
+  width: 32px;
+  height: 32px;
+  right: 10px;
   color: #ffc58f;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 900;
 }
 </style>

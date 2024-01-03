@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, h, onMounted, onUnmounted, ref, watch } from "vue";
+import { defineComponent, h, onMounted, onUnmounted, ref } from "vue";
 import { useStore } from "@/store";
 import {
   ScreenModel,
@@ -34,7 +34,6 @@ const RDTView = defineComponent({
     const screenView = ref([] as any[]);
     const rdtStyle = style as any;
     const rowHeight = rdtStyle.rowHeight;
-    // const rowHeight = globalStyle["line-height"];
     onMounted(() => {
       window.addEventListener("keyup", handleKeyDown);
       // TODO initial screen background color

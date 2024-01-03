@@ -95,7 +95,6 @@ const RDTSubView = defineComponent({
             {
               class: ["center-items"],
               style: {
-                // height: "34px",
                 height: rowHeight + "px",
               },
             },
