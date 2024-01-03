@@ -37,9 +37,7 @@ const LabelComponent = defineComponent({
           reversedArr.push("100%");
         } else {
           for (let i = details.value.length - 1; i >= 0; i--) {
-            const x =
-              details.value[i].coordinateValueX ||
-              details.value[i].coordinateNameX;
+            const x = details.value[i].coordinateX;
             if (x) {
               const calcColumnNo = lengthRemain - Number(x);
               reversedArr.push(
