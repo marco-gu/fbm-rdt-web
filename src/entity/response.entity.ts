@@ -21,6 +21,7 @@ export interface ScreenDto {
   style: string;
   colorSchema: string;
   fields: FieldDto[];
+  screenFieldEvent: ScreenFieldEventDto[];
 }
 
 export interface FieldDto {
@@ -42,6 +43,12 @@ export interface FieldDto {
   minLength: number;
   // for legacy xml
   defaultValue: string;
+}
+
+export interface ScreenFieldEventDto {
+  screenFieldId: number;
+  type: string;
+  value: string;
 }
 
 export enum AttributeType {

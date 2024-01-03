@@ -1,9 +1,5 @@
 <template>
-  <ul
-    v-if="isAndroidSimulator"
-    class="nav x android_top"
-    :class="{ 'top-border': route.path === '/' }"
-  >
+  <ul v-if="isAndroidSimulator" class="nav x android_top">
     <li class="left">
       {{ showTime() }}
     </li>
@@ -43,7 +39,9 @@ export default defineComponent({
       const shell = document.getElementById("app") as HTMLElement;
       setShellStyle(shell);
       isAndroidSimulator.value =
-        process.env.VUE_APP_IS_ANDROID_SIMULATOR === "true" || false;
+        process.env.VUE_APP_IS_ANDROID_SIMULATOR === "true" ||
+        process.env.VUE_APP_IS_SIMULATOR === "true" ||
+        false;
     });
     const showTime = () => {
       const time = new Date();
