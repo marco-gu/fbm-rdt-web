@@ -1,9 +1,10 @@
 <template>
-  <div class="pop_btn" style="margin-left: auto; padding: 0px">
-    <i
-      :class="screenDepth == 0 ? 'fa-solid fa-plus' : 'fa-solid fa-minus'"
-      @click="onClickSubScreen"
-    ></i>
+  <div
+    class="pop_btn"
+    @click="onClickSubScreen"
+    style="margin-left: auto; padding: 0px"
+  >
+    <i :class="screenDepth == 0 ? 'fa-solid fa-plus' : 'fa-solid fa-minus'"></i>
   </div>
 </template>
 <script lang="ts">
@@ -43,21 +44,23 @@ export default SubButtonComponent;
   width: 30px;
   height: 30px;
   position: absolute;
-  bottom: 40px;
+  bottom: 54px;
   right: 12px;
   text-align: center;
   color: #ffeead;
   background-color: #00346e;
-  font-size: 24px;
+  font-size: 26px;
   border-radius: 3px;
+  z-index: 10;
+  cursor: pointer;
 }
 .pop_btn:hover {
   cursor: pointer;
-  width: 51px;
-  height: 51px;
+  width: 34px;
+  height: 34px;
   right: 6px;
   color: #ffc58f;
-  font-size: 36px;
+  font-size: 30px;
   font-weight: 900;
 }
 </style>
