@@ -14,6 +14,10 @@
             @input="onInput(item)"
             @keyup="onKeyPress($event)"
             :style="{
+              backgroundColor:
+                store.state.workflowModule.screenDepth == 0
+                  ? '#00346e'
+                  : '#0E1925',
               width:
                 item.maxLength > 0
                   ? item.maxLength > 1

@@ -1,6 +1,5 @@
 <script lang="ts">
 import { defineComponent, ref, h, toRefs } from "vue";
-import { useStore } from "@/store";
 import { ScreenRowComponentEnum, ScreenRowModel } from "@/entity/screen.entity";
 import LabelComponent from "@/components/generic/LabelComponent.vue";
 import InputComponent from "@/components/generic/InputComponent.vue";
@@ -19,7 +18,6 @@ const RDTSubView = defineComponent({
   },
   setup(props) {
     const { subScreen } = toRefs(props);
-    const store = useStore();
     const rowNode = ref();
     const rowsView = ref();
     const views = ref([] as any[]);

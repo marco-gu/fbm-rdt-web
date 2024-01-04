@@ -40,6 +40,10 @@
           @focus="onFocus()"
           @blur="onBlur()"
           :style="{
+            backgroundColor:
+              store.state.workflowModule.screenDepth == 0
+                ? '#00346e'
+                : '#0E1925',
             width:
               item.maxLength > 0
                 ? item.maxLength > 1
@@ -72,26 +76,13 @@ const InputComponent = defineComponent({
     const { details } = toRefs(props);
     const store = useStore();
     const model = ref();
-    const measureTextLength = ref();
     const input = ref();
     const textarea = ref();
     const textLength = ref(0);
-    const TEXT_MAX_LENGTH = ref(170);
     const isFocus = ref(false);
-    const route = useRoute();
     const widthArr: Ref<any> = ref([]);
     const screenWidth: Ref<number> = ref(deviceConfig.width - 20);
     onMounted(() => {
-      // submit empty capture value
-      // details.value.forEach((t: any) => {
-      //   if (t.attributeType == "inputBox") {
-      //     const param = {
-      //       attributeName: t.attributeName,
-      //       value: t.value,
-      //     } as CapturedValue;
-      //     store.dispatch("workflowModule/saveCapturedValue", param);
-      //   }
-      // });
       mapRawData();
       focusInput();
     });
@@ -171,11 +162,9 @@ const InputComponent = defineComponent({
     return {
       model,
       onTextChange,
-      measureTextLength,
       textLength,
       input,
       textarea,
-      TEXT_MAX_LENGTH,
       onFocus,
       onBlur,
       isFocus,
