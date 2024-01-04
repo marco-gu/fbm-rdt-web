@@ -1,15 +1,30 @@
 html {
-  body {
-    height: 1400px;
-    width: 100vw;
-    background-image: url("@/assets/mc33.png");
-    background-position: 50% 10px;
-    background-repeat: no-repeat;
-    background-size: 620px;
-    background-color: rgb(40, 40, 40);
-  }
+    body {
+        height: 1400px;
+        width: 100vw;
+        background-image: url("@/assets/mc33.png");
+        background-position: 50% 10px;
+        background-repeat: no-repeat;
+        background-size: 600px;
+        background-color: rgb(40, 40, 40);
+    }
 }
 
 #app {
-  top: 175px;
+    top: 155px;
+    right: 5px;
+    // box-shadow: 1px 1px 1px 1px;
+    // border: 3px solid inset #322a2b;
+    // border: 1.5px inset #140202;
+    // filter: drop-shadow( 1px 1px 5px black);
+    // filter: drop-shadow( 1px 1px 10px #6E7C89);
+    border-right: 3px solid #000000c2;
+    border-bottom: 3px solid #000000c2;
+    border-left: 2px solid #000000c2;
+    border-top: 2px solid #000000c2;
+    // border: 3px solid #000000c2;
+    // border-right-style: inset;
+    // border-bottom-style: inset;
+    border-style: groove;
+    // border-top-style: groove;
 }
