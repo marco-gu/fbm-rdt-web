@@ -1,5 +1,9 @@
 <template>
-  <ul v-if="isAndroidSimulator" class="nav x android_top">
+  <ul
+    v-if="isAndroidSimulator"
+    class="nav x android_top"
+    style="border-radius: 5px"
+  >
     <li class="left">
       {{ showTime() }}
     </li>
@@ -9,7 +13,11 @@
   </ul>
 
   <router-view></router-view>
-  <ul v-if="isAndroidSimulator" class="nav x android_bottom">
+  <ul
+    v-if="isAndroidSimulator"
+    class="nav x android_bottom"
+    style="border-radius: 5px"
+  >
     <li>
       <span class="nav_button"><i class="fa-solid fa-angle-left"></i></span>
     </li>

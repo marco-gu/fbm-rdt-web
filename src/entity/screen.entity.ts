@@ -101,6 +101,7 @@ export enum ScreenRowComponentEnum {
   LABEL = "label",
   LIST_TITLE_LABEL = "list_title_label",
   LIST_ITEM_LABEL = "list_item_label",
+  LIST_PAGE_LABEL = "list_page_label",
   LIST_INPUT = "list_input",
   MENU = "menu",
   MESSAGEBOX = "messageBox",

@@ -91,14 +91,9 @@ function parseListSingle(
         screenModel
       );
       break;
-    // case ListAttributeType.LIST_SINGLE_PAGE:
-    //   composeInputRowForList(
-    //     rows,
-    //     field,
-    //     ScreenRowComponentEnum.LIST_INPUT,
-    //     screenModel
-    //   );
-    //   break;
+    case ListAttributeType.LIST_SINGLE_PAGE:
+      composeLabelRow(rows, field, ScreenRowComponentEnum.LIST_PAGE_LABEL);
+      break;
     case ListAttributeType.LIST_SINGLE_LIST:
       composeLabelRowsForList(
         rows,

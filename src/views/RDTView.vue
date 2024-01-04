@@ -20,6 +20,7 @@ import style from "../assets/device/default.json";
 import RDTSubView from "./options/RDTSubView.vue";
 import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
 import _ from "lodash";
+import ListPageLabelComponent from "@/components/list/ListPageLabelComponent.vue";
 
 const RDTView = defineComponent({
   components: {
@@ -125,6 +126,12 @@ const RDTView = defineComponent({
             }
             case ScreenRowComponentEnum.LIST_TITLE_LABEL: {
               rowNode.value = h(ListTitleLabelComponent, {
+                details: row.rowDetails,
+              });
+              break;
+            }
+            case ScreenRowComponentEnum.LIST_PAGE_LABEL: {
+              rowNode.value = h(ListPageLabelComponent, {
                 details: row.rowDetails,
               });
               break;
