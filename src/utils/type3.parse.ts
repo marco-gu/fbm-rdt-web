@@ -213,13 +213,15 @@ const composeListComponents = (
   screenRow.coordinateY = calculateY + 1;
   screenRow.rowDetails = [];
   const inputLabel = {} as FieldDto;
-  inputLabel.value = "Option:";
   inputLabel.attributeType = AttributeType.LABEL;
+  inputLabel.value = "OPTION:";
+  inputLabel.coordinateX = 1;
   screenRow.rowDetails.push(inputLabel);
   const inputValue = {} as FieldDto;
   inputValue.attributeType = AttributeType.INPUT;
-  inputValue.attributeName = "option";
+  inputValue.attributeName = field.attributeName;
   inputValue.maxLength = 3;
+  inputValue.coordinateX = 9;
   screenRow.rowDetails.push(inputValue);
   rows.set(screenRow.coordinateY, screenRow);
   if (_.isUndefined(screenModel.focus)) {
@@ -292,101 +294,3 @@ function sortRows(rows: Map<number, ScreenRowModel>) {
   });
   return result;
 }
-
-// function composeInputRowForList(
-//   rows: Map<number, ScreenRowModel>,
-//   field: FieldDto,
-//   screenRowComponent: ScreenRowComponentEnum,
-//   screenModel: ScreenModel
-// ) {
-//   if (rows.has(field.coordinateY)) {
-//     rows.get(field.coordinateY)?.rowDetails.push(field);
-//   } else {
-//     const screenRow = {} as ScreenRowModel;
-//     screenRow.rowType = screenRowComponent;
-//     screenRow.coordinateY = field.coordinateY;
-//     screenRow.rowDetails = [];
-//     screenRow.rowDetails.push(field);
-//     rows.set(field.coordinateY, screenRow);
-//   }
-//   if (field.attributeType == ListAttributeType.LIST_SINGLE_INPUT) {
-//     if (_.isEmpty(screenModel.focus)) {
-//       screenModel.focus = field.attributeName;
-//     }
-//     const capturedValue = {
-//       attributeName: field.attributeName,
-//       value: field.value,
-//     } as CapturedValue;
-//     screenModel.capturedValues.push(capturedValue);
-//   }
-// }
-
-// function composeLabelRowsForList(
-//   rows: Map<number, ScreenRowModel>,
-//   field: FieldDto,
-//   firstRow: number,
-//   screenRowComponent: ScreenRowComponentEnum,
-//   screenModel: ScreenModel
-// ) {
-//   const values = JSON.parse(field.value);
-//   const singleList = values;
-//   const id = field.attributeId;
-//   screenModel.singleListCollection.set(id, singleList);
-//   values.list.forEach((t: any) => {
-//     const screenRow = {} as ScreenRowModel;
-//     screenRow.rowType = screenRowComponent;
-//     screenRow.coordinateY = firstRow;
-//     screenRow.rowDetails = [];
-//     const cloneField = _.cloneDeep(field);
-//     cloneField.value = t.sequence + "." + t.name;
-//     cloneField.sequence = t.sequence;
-//     screenRow.rowDetails.push(cloneField);
-//     rows.set(screenRow.coordinateY, screenRow);
-//     firstRow++;
-//   });
-// }
-
-// function parseListSingle(
-//   singleListInfo: any,
-//   rows: Map<number, ScreenRowModel>,
-//   field: FieldDto,
-//   screenModel: ScreenModel
-// ) {
-//   switch (field.attributeType) {
-//     case ListAttributeType.LIST_SINGLE_TITLE:
-//       composeLabelRow(rows, field, ScreenRowComponentEnum.LIST_TITLE_LABEL);
-//       break;
-//     case ListAttributeType.LIST_SINGLE_ITEM_FIRST:
-//       singleListInfo.firstRow = field.coordinateY;
-//       break;
-//     case ListAttributeType.LIST_SINGLE_LABEL:
-//       composeInputRowForList(
-//         rows,
-//         field,
-//         ScreenRowComponentEnum.LIST_INPUT,
-//         screenModel
-//       );
-//       break;
-//     case ListAttributeType.LIST_SINGLE_INPUT:
-//       composeInputRowForList(
-//         rows,
-//         field,
-//         ScreenRowComponentEnum.LIST_INPUT,
-//         screenModel
-//       );
-//       break;
-//     case ListAttributeType.LIST_SINGLE_PAGE:
-//       field.coordinateY = 8;
-//       composeLabelRow(rows, field, ScreenRowComponentEnum.LIST_PAGE_LABEL);
-//       break;
-//     case ListAttributeType.LIST_SINGLE_LIST:
-//       composeLabelRowsForList(
-//         rows,
-//         field,
-//         singleListInfo.firstRow,
-//         ScreenRowComponentEnum.LIST_ITEM_LABEL,
-//         screenModel
-//       );
-//       break;
-//   }
-// }

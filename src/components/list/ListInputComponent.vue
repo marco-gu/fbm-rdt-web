@@ -1,10 +1,21 @@
 <template>
   <div class="line-item inputs-container">
     <template v-for="(item, index) in details" :key="index">
-      <div v-if="item.attributeType === 'label'" class="label-block">
+      <div
+        v-if="item.attributeType === 'label'"
+        class="label-block"
+        :style="{
+          flexBasis: widthArr[index],
+        }"
+      >
         {{ item.value }}
       </div>
-      <div v-if="item.attributeType === 'inputBox'">
+      <div
+        v-if="item.attributeType === 'inputBox'"
+        :style="{
+          flexBasis: widthArr[index],
+        }"
+      >
         <div class="input-block">
           <input
             ref="input"
@@ -29,9 +40,9 @@
 <script lang="ts">
 import { CapturedValue } from "@/entity/request.entity";
 import { useStore } from "@/store";
-import { defineComponent, ref, toRefs, onMounted } from "vue";
+import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
 import { SelectedItem } from "@/entity/screen.entity";
-import { inputLength } from "@/utils/screen.utils";
+import { calculateWidthItems, inputLength } from "@/utils/screen.utils";
 import { AttributeType } from "@/entity/response.entity";
 
 const ListInputComponent = defineComponent({
@@ -44,9 +55,19 @@ const ListInputComponent = defineComponent({
     const store = useStore();
     const { details } = toRefs(props);
     const input = ref();
+    const widthArr: Ref<any> = ref([]);
     onMounted(() => {
       focusInput();
+      mapRawData();
     });
+    const mapRawData = () => {
+      if (details.value) {
+        widthArr.value = calculateWidthItems(details);
+        details.value.forEach((item: any) => {
+          item.value = item.value || "";
+        });
+      }
+    };
     const onKeyPress = (event: KeyboardEvent) => {
       const key = event.charCode || event.which || event.keyCode;
       switch (key) {
@@ -99,6 +120,7 @@ const ListInputComponent = defineComponent({
       store,
       onInput,
       inputLength,
+      widthArr,
     };
   },
 });
