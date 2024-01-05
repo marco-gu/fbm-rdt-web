@@ -11,15 +11,14 @@ import {
   ScreenRowModel,
 } from "@/entity/screen.entity";
 import _ from "lodash";
-
 export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
   const screenStyle = localStorage.getItem("screenStyle") as string;
   const row = JSON.parse(screenStyle).rows;
-  // screenModel.currentPage = 1;
-  // screenModel.pageSize = row;
-  // screenModel.totalPage = Math.ceil(
-  //   param.screenDto.fields[param.screenDto.fields.length - 1].coordinateY / row
-  // );
+  screenModel.currentPage = 1;
+  screenModel.pageSize = row;
+  screenModel.totalPage = Math.ceil(
+    param.screenDto.fields[param.screenDto.fields.length - 1].coordinateY / row
+  );
   screenModel.screenRows = composeRowsData(param.screenDto.fields, screenModel);
   screenModel.title = param.screenDto.title;
   screenModel.workFlowCollection.workFlowId = param.workFlowId;
@@ -29,14 +28,24 @@ export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
 
 function composeRowsData(fields: FieldDto[], screenModel: ScreenModel) {
   const rows = new Map<number, ScreenRowModel>();
+  fields.filter((value) => {
+    if (value.attributeType == AttributeType.HEADER) {
+      screenModel.header = true;
+    }
+  });
   fields.forEach((field: FieldDto) => {
+    if (screenModel.header) {
+      field.coordinateY += 1;
+    }
     switch (field.attributeType) {
+      case AttributeType.HEADER:
+        field.coordinateY = 1;
+        composeLabelRow(rows, field);
+        break;
       case AttributeType.LABEL:
         composeLabelRow(rows, field);
         break;
       case AttributeType.INPUT:
-        composeInputRow(rows, field, screenModel);
-        break;
       case AttributeType.PASSWORD:
         composeInputRow(rows, field, screenModel);
         break;
@@ -51,6 +60,12 @@ function composeRowsData(fields: FieldDto[], screenModel: ScreenModel) {
         break;
       case AttributeType.LIST_SINGLE:
         composeListComponents(rows, field, screenModel);
+        break;
+      case AttributeType.FOOTER:
+        // TODO page > 1
+        field.coordinateY = screenModel.pageSize;
+        composeLabelRow(rows, field);
+        break;
     }
   });
   composeEmptyRows(rows);

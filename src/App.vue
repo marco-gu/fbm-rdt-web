@@ -42,6 +42,7 @@ export default defineComponent({
       // TODO get device's style
       const screenStyle = {
         rows: 15,
+        fontSize: 24,
       };
       localStorage.setItem("screenStyle", JSON.stringify(screenStyle));
       const shell = document.getElementById("app") as HTMLElement;

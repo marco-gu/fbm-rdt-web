@@ -3,6 +3,8 @@ import { FieldDto } from "./response.entity";
 
 export interface ScreenModel {
   title: string;
+  header: boolean;
+  footer: boolean;
   focus: string;
   screenDepth: number;
   screenRows: Map<number, ScreenRowModel>;

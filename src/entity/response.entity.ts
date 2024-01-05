@@ -42,6 +42,7 @@ export interface FieldDto {
   maxLength: number;
   minLength: number;
   defaultValue: string;
+  fontSize: number;
   screenFieldEvent: ScreenFieldEventDto[];
 }
 
@@ -59,6 +60,8 @@ export enum AttributeType {
   MESSAGE = "message",
   INPUT_MULTI = "inputBoxMultiLine",
   SUB_BUTTON = "subButton",
+  HEADER = "header",
+  FOOTER = "footer",
 }
 
 export enum EventType {

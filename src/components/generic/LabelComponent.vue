@@ -6,6 +6,7 @@
         class="label-block"
         :style="{
           flexBasis: widthArr[index],
+          fontSize: calcFontSize(item),
         }"
       >
         {{ item.value }}
@@ -16,6 +17,7 @@
 <script lang="ts">
 import { Ref, defineComponent, onMounted, ref, toRefs } from "vue";
 import { calculateWidthItems } from "@/utils/screen.utils";
+import { FieldDto } from "@/entity/response.entity";
 const LabelComponent = defineComponent({
   props: {
     details: {
@@ -36,8 +38,14 @@ const LabelComponent = defineComponent({
         });
       }
     };
+    const calcFontSize = (item: FieldDto) => {
+      const screenStyle = localStorage.getItem("screenStyle") as string;
+      const fontSize = JSON.parse(screenStyle).fontSize;
+      return fontSize + item.fontSize + "px";
+    };
     return {
       widthArr,
+      calcFontSize,
     };
   },
 });
