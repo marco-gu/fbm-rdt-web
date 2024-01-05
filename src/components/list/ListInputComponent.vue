@@ -18,14 +18,7 @@
                 store.state.workflowModule.screenDepth == 0
                   ? '#00346e'
                   : '#0E1925',
-              width:
-                item.maxLength > 0
-                  ? item.maxLength > 1
-                    ? (14.4 * item.maxLength > screenWidth
-                        ? screenWidth - 30
-                        : 14.4 * item.maxLength) + 'px'
-                    : '20px'
-                  : 'auto',
+              width: inputLength(item.maxLength),
             }"
           />
         </div>
@@ -41,8 +34,9 @@ import { CapturedValue } from "@/entity/request.entity";
 import { ListAttributeType } from "@/entity/response.entity";
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
-import * as deviceConfig from "@/assets/device/default.json";
 import { SelectedItem } from "@/entity/screen.entity";
+import { inputLength } from "@/utils/screen.utils";
+
 const ListInputComponent = defineComponent({
   props: {
     details: {
@@ -54,7 +48,7 @@ const ListInputComponent = defineComponent({
     const { details } = toRefs(props);
     const input = ref();
     const pageDesc = ref();
-    const screenWidth: Ref<number> = ref(deviceConfig.width as number);
+
     onMounted(() => {
       focusInput();
       const map = store.state.workflowModule.screenModel.singleListCollection;
@@ -129,8 +123,8 @@ const ListInputComponent = defineComponent({
       input,
       onKeyPress,
       store,
-      screenWidth,
       onInput,
+      inputLength,
     };
   },
 });
@@ -145,7 +139,6 @@ export default ListInputComponent;
   .input-block {
     display: flex;
     align-items: center;
-    padding-left: 2px;
   }
 }
 </style>

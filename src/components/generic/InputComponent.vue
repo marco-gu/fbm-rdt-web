@@ -44,14 +44,7 @@
               store.state.workflowModule.screenDepth == 0
                 ? '#00346e'
                 : '#0E1925',
-            width:
-              item.maxLength > 0
-                ? item.maxLength > 1
-                  ? (14.4 * item.maxLength >= screenWidth
-                      ? screenWidth
-                      : 14.4 * item.maxLength) + 'px'
-                  : '18px'
-                : 'auto',
+            width: inputLength(item.maxLength),
           }"
         />
       </div>
@@ -61,11 +54,10 @@
 <script lang="ts">
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
-import { useRoute } from "vue-router";
 import { LineDetail } from "@/entity/screen.entity";
-import * as deviceConfig from "@/assets/device/default.json";
 import { CapturedValue } from "@/entity/request.entity";
 import { AttributeType } from "@/entity/response.entity";
+import { calculateWidthItems, inputLength } from "@/utils/screen.utils";
 const InputComponent = defineComponent({
   props: {
     details: {
@@ -81,7 +73,6 @@ const InputComponent = defineComponent({
     const textLength = ref(0);
     const isFocus = ref(false);
     const widthArr: Ref<any> = ref([]);
-    const screenWidth: Ref<number> = ref(deviceConfig.width - 20);
     onMounted(() => {
       mapRawData();
       focusInput();
@@ -96,23 +87,7 @@ const InputComponent = defineComponent({
     };
     const mapRawData = () => {
       if (details.value) {
-        let lengthRemain = deviceConfig.colunms + 1;
-        const reversedArr = [];
-        if (details.value.length === 1) {
-          reversedArr.push("100%");
-        } else {
-          for (let i = details.value.length - 1; i >= 0; i--) {
-            const x = details.value[i].coordinateX;
-            if (x) {
-              const calcColumnNo = lengthRemain - Number(x);
-              reversedArr.push(
-                Math.round((calcColumnNo / deviceConfig.colunms) * 100) + "%"
-              );
-              lengthRemain = x;
-            }
-          }
-        }
-        widthArr.value = reversedArr.reverse();
+        widthArr.value = calculateWidthItems(details);
         details.value.forEach((item: any) => {
           item.value = item.value || "";
         });
@@ -170,8 +145,8 @@ const InputComponent = defineComponent({
       isFocus,
       store,
       widthArr,
-      screenWidth,
       onKeyPress,
+      inputLength,
     };
   },
 });
@@ -187,20 +162,6 @@ export default InputComponent;
   .input-block {
     display: flex;
     align-items: center;
-    padding-left: 2px;
-    // textarea {
-    //   border: none;
-    //   resize: none;
-    //   padding-left: 4px;
-    //   height: 24px;
-    //   line-height: 1;
-    //   font-size: 10px;
-    //   color: #ffc58f;
-    //   background-color: #00346e;
-    //   &:focus {
-    //     outline: none;
-    //   }
-    // }
   }
 }
 .measure-text-length {
