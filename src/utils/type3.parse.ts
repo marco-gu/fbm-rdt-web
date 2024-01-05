@@ -31,6 +31,8 @@ function composeRowsData(fields: FieldDto[], screenModel: ScreenModel) {
   fields.filter((value) => {
     if (value.attributeType == AttributeType.HEADER) {
       screenModel.header = true;
+    } else if (value.attributeType == AttributeType.FOOTER) {
+      screenModel.footer = true;
     }
   });
   fields.forEach((field: FieldDto) => {
@@ -53,7 +55,7 @@ function composeRowsData(fields: FieldDto[], screenModel: ScreenModel) {
         composeMessageRows(rows, field);
         break;
       case AttributeType.INPUT_MULTI:
-        parseInputBoxMultiLine(rows, field, screenModel);
+        composeMultiInputRow(rows, field, screenModel);
         break;
       case AttributeType.SUB_BUTTON:
         composeSubButton(rows, field, screenModel);
@@ -72,11 +74,11 @@ function composeRowsData(fields: FieldDto[], screenModel: ScreenModel) {
   return sortRows(rows);
 }
 
-function composeLabelRow(
+const composeLabelRow = (
   rows: Map<number, ScreenRowModel>,
   field: FieldDto,
   screenRowComponent?: ScreenRowComponentEnum
-) {
+) => {
   if (rows.has(field.coordinateY)) {
     rows.get(field.coordinateY)?.rowDetails.push(field);
   } else {
@@ -90,13 +92,18 @@ function composeLabelRow(
     screenRow.rowDetails.push(field);
     rows.set(field.coordinateY, screenRow);
   }
-}
+};
 
-function composeInputRow(
+const composeInputRow = (
   rows: Map<number, ScreenRowModel>,
   field: FieldDto,
   screenModel: ScreenModel
-) {
+) => {
+  const capturedValue = {
+    attributeName: field.attributeName,
+    value: field.value,
+  } as CapturedValue;
+  screenModel.capturedValues.push(capturedValue);
   if (_.isEmpty(screenModel.focus)) {
     screenModel.focus = field.attributeName;
   }
@@ -119,17 +126,13 @@ function composeInputRow(
     screenRow.rowDetails.push(field);
     rows.set(field.coordinateY, screenRow);
   }
-  const capturedValue = {
-    attributeName: field.attributeName,
-    value: field.value,
-  } as CapturedValue;
-  screenModel.capturedValues.push(capturedValue);
-}
+};
 
-function composeMessageRows(
+const composeMessageRows = (
   rows: Map<number, ScreenRowModel>,
   field: FieldDto
-) {
+) => {
+  // TODO design message
   if (!_.isEmpty(field.value)) {
     const values = JSON.parse(field.value);
     values.msgItems.forEach((t: any, index: number) => {
@@ -143,48 +146,13 @@ function composeMessageRows(
       rows.set(field.coordinateY + index, screenRow);
     });
   }
-}
+};
 
-function composeEmptyRows(rows: Map<number, ScreenRowModel>) {
-  const perPageMaxLine = 15;
-  for (let i = 1; i <= perPageMaxLine; i++) {
-    if (!rows.has(i)) {
-      for (let j = i - 1; j >= 0; j--) {
-        const rowDetails = rows.get(j)?.rowDetails;
-        if (rowDetails && rowDetails?.length > 0) {
-          const rowspan = _.isUndefined(rows.get(j)?.rowspan)
-            ? 0
-            : (rows.get(j)?.rowspan as number);
-          if (j + rowspan <= i) {
-            const screenRow = {} as ScreenRowModel;
-            screenRow.rowType = ScreenRowComponentEnum.LABEL;
-            screenRow.coordinateY = i;
-            screenRow.rowDetails = [];
-            rows.set(i, screenRow);
-          }
-          break;
-        }
-      }
-    }
-  }
-}
-
-function sortRows(rows: Map<number, ScreenRowModel>) {
-  const array = Array.from(rows).sort((a: any, b: any) => {
-    return a[0] - b[0];
-  });
-  const result = new Map<number, ScreenRowModel>();
-  array.forEach((t) => {
-    result.set(t[0], t[1]);
-  });
-  return result;
-}
-
-function composeSubButton(
+const composeSubButton = (
   rows: Map<number, ScreenRowModel>,
   field: FieldDto,
   screenModel: ScreenModel
-) {
+) => {
   const screenRow = {} as ScreenRowModel;
   screenRow.coordinateY = field.coordinateY;
   screenRow.rowType = ScreenRowComponentEnum.SUB_BUTTON;
@@ -193,41 +161,14 @@ function composeSubButton(
   screenModel.workFlowCollection.subFormAction = values[0];
   screenModel.workFlowCollection.subWorkFlowId = values[1];
   screenModel.workFlowCollection.subWorkNodeId = values[2];
-  // rows.set(field.coordinateY, screenRow);
-  rows.set(15, screenRow);
-}
+  rows.set(screenModel.pageSize, screenRow);
+};
 
-function parseInputBoxMultiLine(
+const composeListComponents = (
   rows: Map<number, ScreenRowModel>,
   field: FieldDto,
   screenModel: ScreenModel
-) {
-  if (rows.has(field.coordinateY)) {
-    const row = rows.get(field.coordinateY) as ScreenRowModel;
-    row.rowType = ScreenRowComponentEnum.MULTI_INPUT;
-    row.rowDetails.push(field);
-    row.rowspan = 2;
-  } else {
-    const screenRow = {} as ScreenRowModel;
-    screenRow.rowType = ScreenRowComponentEnum.MULTI_INPUT;
-    screenRow.coordinateY = field.coordinateY;
-    screenRow.rowDetails = [];
-    screenRow.rowDetails.push(field);
-    screenRow.rowspan = 2;
-    rows.set(field.coordinateY, screenRow);
-  }
-  const capturedValue = {
-    attributeName: field.attributeName,
-    value: field.value,
-  } as CapturedValue;
-  screenModel.capturedValues.push(capturedValue);
-}
-
-function composeListComponents(
-  rows: Map<number, ScreenRowModel>,
-  field: FieldDto,
-  screenModel: ScreenModel
-) {
+) => {
   const values = JSON.parse(field.value) as ListModel;
   let calculateY = field.coordinateY;
   // Compose title
@@ -277,13 +218,79 @@ function composeListComponents(
   screenRow.rowDetails.push(inputLabel);
   const inputValue = {} as FieldDto;
   inputValue.attributeType = AttributeType.INPUT;
-  inputValue.attributeName = field.attributeName;
+  inputValue.attributeName = "option";
   inputValue.maxLength = 3;
   screenRow.rowDetails.push(inputValue);
   rows.set(screenRow.coordinateY, screenRow);
   if (_.isUndefined(screenModel.focus)) {
     screenModel.focus = inputValue.attributeName;
   }
+  const capturedValue = {
+    attributeName: inputValue.attributeName,
+    value: field.value,
+  } as CapturedValue;
+  screenModel.capturedValues.push(capturedValue);
+};
+
+const composeMultiInputRow = (
+  rows: Map<number, ScreenRowModel>,
+  field: FieldDto,
+  screenModel: ScreenModel
+) => {
+  if (rows.has(field.coordinateY)) {
+    const row = rows.get(field.coordinateY) as ScreenRowModel;
+    row.rowType = ScreenRowComponentEnum.MULTI_INPUT;
+    row.rowDetails.push(field);
+    row.rowspan = 2;
+  } else {
+    const screenRow = {} as ScreenRowModel;
+    screenRow.rowType = ScreenRowComponentEnum.MULTI_INPUT;
+    screenRow.coordinateY = field.coordinateY;
+    screenRow.rowDetails = [];
+    screenRow.rowDetails.push(field);
+    screenRow.rowspan = 2;
+    rows.set(field.coordinateY, screenRow);
+  }
+  const capturedValue = {
+    attributeName: field.attributeName,
+    value: field.value,
+  } as CapturedValue;
+  screenModel.capturedValues.push(capturedValue);
+};
+
+function composeEmptyRows(rows: Map<number, ScreenRowModel>) {
+  const perPageMaxLine = 15;
+  for (let i = 1; i <= perPageMaxLine; i++) {
+    if (!rows.has(i)) {
+      for (let j = i - 1; j >= 0; j--) {
+        const rowDetails = rows.get(j)?.rowDetails;
+        if (rowDetails && rowDetails?.length > 0) {
+          const rowspan = _.isUndefined(rows.get(j)?.rowspan)
+            ? 0
+            : (rows.get(j)?.rowspan as number);
+          if (j + rowspan <= i) {
+            const screenRow = {} as ScreenRowModel;
+            screenRow.rowType = ScreenRowComponentEnum.LABEL;
+            screenRow.coordinateY = i;
+            screenRow.rowDetails = [];
+            rows.set(i, screenRow);
+          }
+          break;
+        }
+      }
+    }
+  }
+}
+
+function sortRows(rows: Map<number, ScreenRowModel>) {
+  const array = Array.from(rows).sort((a: any, b: any) => {
+    return a[0] - b[0];
+  });
+  const result = new Map<number, ScreenRowModel>();
+  array.forEach((t) => {
+    result.set(t[0], t[1]);
+  });
+  return result;
 }
 
 // function composeInputRowForList(
