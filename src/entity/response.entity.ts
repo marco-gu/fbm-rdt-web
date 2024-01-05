@@ -21,7 +21,6 @@ export interface ScreenDto {
   style: string;
   colorSchema: string;
   fields: FieldDto[];
-  screenFieldEvent: ScreenFieldEventDto[];
 }
 
 export interface FieldDto {
@@ -30,6 +29,7 @@ export interface FieldDto {
   attributeName: string;
   attributeType: string;
   dataType: string;
+  style: string;
   value: string;
   coordinateX: number;
   coordinateY: number;
@@ -41,8 +41,8 @@ export interface FieldDto {
   isRequired: boolean;
   maxLength: number;
   minLength: number;
-  // for legacy xml
   defaultValue: string;
+  screenFieldEvent: ScreenFieldEventDto[];
 }
 
 export interface ScreenFieldEventDto {
@@ -61,14 +61,12 @@ export enum AttributeType {
   SUB_BUTTON = "subButton",
 }
 
-export enum ListAttributeType {
-  LIST_SINGLE_TITLE = "listSingleTitle",
-  LIST_SINGLE_ITEM_FIRST = "listSingleItemFirst",
-  LIST_SINGLE_ITEM_LAST = "listSingleItemLast",
-  LIST_SINGLE_LIST = "listSingleList",
-  LIST_SINGLE_LABEL = "listSingleLabel",
-  LIST_SINGLE_INPUT = "listSingleInput",
-  LIST_SINGLE_PAGE = "listSinglePage",
+export enum EventType {
+  TAB = "tab",
+  SUBMIT = "submit",
+  SUBFORM = "subform",
+  SUBMIT_OR_TAB_NONE_BLANK = "submitOrTabNoneBlank",
+  SUBFORM_OR_TAB_NONE_BLANK = "subFormOrTabNoneBlank",
 }
 
 export { UserSettingDto };

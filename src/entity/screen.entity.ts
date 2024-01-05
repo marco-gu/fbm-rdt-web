@@ -41,23 +41,7 @@ export interface LabelViewModel {
   coordinateX: number;
   value: string;
 }
-export interface ScreenLineEntity {
-  type: ScreenRowComponentEnum;
-  // isLastLine: boolean;
-  coordinateY: number;
-  isFocus: boolean;
-  color: string;
-  details: LineDetailEntity[];
-}
 
-export interface LineDetailEntity {
-  attributeName: string;
-  name?: string;
-  value: string;
-  coordinateNameX: number;
-  coordinateValueX: number;
-  maxLength: string | number;
-}
 export class LineDetail {
   attributeName: string;
   attributeType: string;
@@ -109,6 +93,7 @@ export enum ScreenRowComponentEnum {
   MULTI_INPUT = "multi_input",
 }
 export interface ListModel {
+  title: string;
   total: number;
   pageSize: number;
   currentPage: number;

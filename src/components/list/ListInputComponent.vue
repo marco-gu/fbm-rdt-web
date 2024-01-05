@@ -1,10 +1,10 @@
 <template>
   <div class="line-item inputs-container">
     <template v-for="(item, index) in details" :key="index">
-      <div v-if="item.attributeType === 'listSingleLabel'" class="label-block">
+      <div v-if="item.attributeType === 'label'" class="label-block">
         {{ item.value }}
       </div>
-      <div v-if="item.attributeType === 'listSingleInput'">
+      <div v-if="item.attributeType === 'inputBox'">
         <div class="input-block">
           <input
             ref="input"
@@ -31,18 +31,15 @@
         </div>
       </div>
     </template>
-    <div class="label-block" style="margin-left: 10px">
-      {{ pageDesc }}
-    </div>
   </div>
 </template>
 <script lang="ts">
 import { CapturedValue } from "@/entity/request.entity";
-import { ListAttributeType } from "@/entity/response.entity";
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
 import * as deviceConfig from "@/assets/device/default.json";
 import { SelectedItem } from "@/entity/screen.entity";
+import { AttributeType } from "@/entity/response.entity";
 const ListInputComponent = defineComponent({
   props: {
     details: {
@@ -53,27 +50,10 @@ const ListInputComponent = defineComponent({
     const store = useStore();
     const { details } = toRefs(props);
     const input = ref();
-    const pageDesc = ref();
     const screenWidth: Ref<number> = ref(deviceConfig.width as number);
+    console.log(details.value);
     onMounted(() => {
       focusInput();
-      const map = store.state.workflowModule.screenModel.singleListCollection;
-      map.forEach((val, key) => {
-        if (key == details.value[0].attributeId) {
-          const total = val.total as number;
-          const pageSize = val.pageSize as number;
-          const currentPage = val.currentPage as number;
-          if (total > pageSize * currentPage) {
-            pageDesc.value = "(+ total " + total + ")";
-          } else if (total < pageSize * currentPage) {
-            if (currentPage > 1) {
-              pageDesc.value = "(- total " + total + ")";
-            } else {
-              pageDesc.value = "(total " + total + ")";
-            }
-          }
-        }
-      });
     });
     const onKeyPress = (event: KeyboardEvent) => {
       const key = event.charCode || event.which || event.keyCode;
@@ -102,10 +82,7 @@ const ListInputComponent = defineComponent({
       if (input.value && input.value.length > 0) {
         let inputIndex = -1;
         for (let i = 0; i < details.value.length; i++) {
-          if (
-            details.value[i].attributeType ===
-            ListAttributeType.LIST_SINGLE_INPUT
-          ) {
+          if (details.value[i].attributeType === AttributeType.INPUT) {
             inputIndex++;
           }
           if (details.value[i].attributeName === focusValue) {
@@ -124,7 +101,6 @@ const ListInputComponent = defineComponent({
       store.commit("workflowModule/saveSelectedItem", payload);
     };
     return {
-      pageDesc,
       onTextChange,
       input,
       onKeyPress,
