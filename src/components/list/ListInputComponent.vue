@@ -18,14 +18,7 @@
                 store.state.workflowModule.screenDepth == 0
                   ? '#00346e'
                   : '#0E1925',
-              width:
-                item.maxLength > 0
-                  ? item.maxLength > 1
-                    ? (14.4 * item.maxLength > screenWidth
-                        ? screenWidth - 30
-                        : 14.4 * item.maxLength) + 'px'
-                    : '20px'
-                  : 'auto',
+              width: inputLength(item.maxLength),
             }"
           />
         </div>
@@ -36,10 +29,11 @@
 <script lang="ts">
 import { CapturedValue } from "@/entity/request.entity";
 import { useStore } from "@/store";
-import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
-import * as deviceConfig from "@/assets/device/default.json";
+import { defineComponent, ref, toRefs, onMounted } from "vue";
 import { SelectedItem } from "@/entity/screen.entity";
+import { inputLength } from "@/utils/screen.utils";
 import { AttributeType } from "@/entity/response.entity";
+
 const ListInputComponent = defineComponent({
   props: {
     details: {
@@ -50,8 +44,6 @@ const ListInputComponent = defineComponent({
     const store = useStore();
     const { details } = toRefs(props);
     const input = ref();
-    const screenWidth: Ref<number> = ref(deviceConfig.width as number);
-    console.log(details.value);
     onMounted(() => {
       focusInput();
     });
@@ -105,8 +97,8 @@ const ListInputComponent = defineComponent({
       input,
       onKeyPress,
       store,
-      screenWidth,
       onInput,
+      inputLength,
     };
   },
 });
@@ -121,7 +113,6 @@ export default ListInputComponent;
   .input-block {
     display: flex;
     align-items: center;
-    padding-left: 2px;
   }
 }
 </style>

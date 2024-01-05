@@ -37,6 +37,12 @@
           @keyup="onKeyPress($event, item)"
           @focus="onFocus()"
           @blur="onBlur()"
+          :style="{
+            backgroundColor:
+              store.state.workflowModule.screenDepth == 0
+                ? '#00346e'
+                : '#0E1925',
+          }"
         />
         <!-- :maxlength="!item.maxLength ? 1 : item.maxLength" -->
       </div>
@@ -46,10 +52,10 @@
 <script lang="ts">
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
-import { useRoute } from "vue-router";
 import { LineDetail } from "@/entity/screen.entity";
 import * as deviceConfig from "@/assets/device/mc93.json";
 import { CapturedValue } from "@/entity/request.entity";
+import { calculateWidthItems } from "@/utils/screen.utils";
 const MultiInputComponent = defineComponent({
   props: {
     details: {
@@ -66,7 +72,6 @@ const MultiInputComponent = defineComponent({
     const textLength = ref(0);
     const TEXT_MAX_LENGTH = ref(170);
     const isFocus = ref(false);
-    const route = useRoute();
     const widthArr: Ref<any> = ref([]);
     const screenWidth: Ref<number> = ref(deviceConfig.width as number);
     onMounted(() => {
@@ -83,23 +88,7 @@ const MultiInputComponent = defineComponent({
     };
     const mapRawData = () => {
       if (details.value) {
-        let lengthRemain = deviceConfig.colunms + 1;
-        const reversedArr = [];
-        if (details.value.length === 1) {
-          reversedArr.push("100%");
-        } else {
-          for (let i = details.value.length - 1; i >= 0; i--) {
-            const x = details.value[i].coordinateX;
-            if (x) {
-              const calcColumnNo = lengthRemain - Number(x);
-              reversedArr.push(
-                Math.round((calcColumnNo / deviceConfig.colunms) * 100) + "%"
-              );
-              lengthRemain = x;
-            }
-          }
-        }
-        widthArr.value = reversedArr.reverse();
+        widthArr.value = calculateWidthItems(details);
         details.value.forEach((item: any) => {
           item.value = item.value || "";
         });
@@ -171,12 +160,11 @@ export default MultiInputComponent;
   .input-block {
     display: flex;
     align-items: center;
-    padding-left: 2px;
     textarea {
       resize: none;
       width: 100%;
       // line-height: 30px;
-      padding: 1px 2px;
+      // padding: 1px 2px;
       word-break: break-all;
       white-space: pre-wrap;
     }

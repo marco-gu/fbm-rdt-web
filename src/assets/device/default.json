@@ -1,8 +1,9 @@
 {
     "height": 529,
     "width": 360,
+    "content_width": 340,
     "rows": 15,
-    "colunms": 32,
+    "columns": 25,
     "fontSize": "24px",
     "letterSpacing": "-1px",
     "padding": "10px 10px",
