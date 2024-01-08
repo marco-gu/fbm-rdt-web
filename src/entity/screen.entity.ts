@@ -93,3 +93,9 @@ export interface FocusItem {
   sequence: number;
   pageNumer: number;
 }
+
+export interface MsgInfo {
+  color: string;
+  message: string;
+  y?: number;
+}

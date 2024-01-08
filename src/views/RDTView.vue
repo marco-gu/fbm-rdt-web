@@ -8,7 +8,7 @@ import {
 } from "@/entity/screen.entity";
 import LabelComponent from "@/components/generic/LabelComponent.vue";
 import globalStyle from "@/styles/variable/global.module.scss";
-import MessageComponent from "@/components/message/MessageComponent.vue";
+// import MessageComponent from "@/components/message/MessageComponent.vue";
 import InputComponent from "@/components/generic/InputComponent.vue";
 import ListItemLabelComponent from "@/components/list/ListItemLabelComponent.vue";
 import ListTitleLabelComponent from "@/components/list/ListTitleLabelComponent.vue";
@@ -104,8 +104,17 @@ const RDTView = defineComponent({
         const subBtn = h(SubButtonComponent);
         screenView.value.push(subBtn);
       }
+      console.log(screenModel.showMessage);
       if (screenModel.showMessage) {
-        //
+        const messageContent = screenModel.msgField.value;
+        if (messageContent) {
+          const content = {
+            message: JSON.parse(messageContent).msgItems[0].message,
+            color: JSON.parse(messageContent).msgItems[0].color,
+          };
+          store.dispatch("screenModule/setMessageContent", content);
+          store.dispatch("screenModule/showMessageAutoDismiss");
+        }
       }
       if (screenModel.screenRows.size > 0) {
         for (var i = start; i <= end; i++) {
@@ -153,12 +162,12 @@ const RDTView = defineComponent({
               });
               break;
             }
-            case ScreenRowComponentEnum.MESSAGEBOX: {
-              rowNode.value = h(MessageComponent, {
-                details: row.rowDetails,
-              });
-              break;
-            }
+            // case ScreenRowComponentEnum.MESSAGEBOX: {
+            //   rowNode.value = h(MessageComponent, {
+            //     details: row.rowDetails,
+            //   });
+            //   break;
+            // }
             case ScreenRowComponentEnum.SUB_BUTTON: {
               rowNode.value = h(SubButtonComponent, {
                 details: row.rowDetails,
