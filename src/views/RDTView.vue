@@ -15,7 +15,7 @@ import ListTitleLabelComponent from "@/components/list/ListTitleLabelComponent.v
 import ListInputComponent from "@/components/list/ListInputComponent.vue";
 import { useRouter } from "vue-router";
 import SubButtonComponent from "@/components/generic/SubButtonComponent.vue";
-import { get } from "@/service/http";
+import { _delete } from "@/service/http";
 import style from "../assets/device/default.json";
 import RDTSubView from "./options/RDTSubView.vue";
 import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
@@ -196,14 +196,13 @@ const RDTView = defineComponent({
           case 27:
             if (store.state.workflowModule.screenModel.title == "Login") {
               const url =
-                "RDTEngine/deleteSession/" + localStorage.getItem("sessionId");
-              get(url).then(() => {
+                "RDTEngine/sessions/" + localStorage.getItem("sessionId");
+              _delete(url).then(() => {
                 localStorage.removeItem("sessionId");
                 localStorage.removeItem("country");
                 router.push("/");
               });
             } else {
-              console.log("onCancel");
               store.dispatch("workflowModule/onCancel");
             }
             break;
