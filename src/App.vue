@@ -28,13 +28,16 @@
       <span class="nav_button"><i class="fa fa-regular fa-circle"></i></span>
     </li>
   </ul>
+  <MessageComponent />
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { setShellStyle } from "./utils/screen.utils";
 import { useRoute } from "vue-router";
+import MessageComponent from "./components/message/MessageComponent.vue";
 
 export default defineComponent({
+  components: { MessageComponent },
   setup() {
     const isAndroidSimulator = ref(false);
     const route = useRoute();

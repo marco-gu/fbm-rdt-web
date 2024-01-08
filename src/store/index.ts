@@ -7,6 +7,7 @@ import {
 } from "vuex";
 import RootState, { State } from "./state";
 import workflowModule from "./modules/workflowModule";
+import screenModule from "./modules/screenModule";
 
 const debug = process.env.NODE_ENV !== "production";
 export default createStore({
@@ -15,6 +16,7 @@ export default createStore({
   actions: {},
   modules: {
     workflowModule,
+    screenModule,
   },
   // strict: debug,
   // plugins: debug ? [createLogger()] : [],

@@ -1,3 +1,4 @@
+import { ScreenState } from "./modules/screenModule";
 import { WorkflowState } from "./modules/workflowModule";
 
 export default interface RootState {
@@ -6,4 +7,5 @@ export default interface RootState {
 
 export interface State extends RootState {
   workflowModule: WorkflowState;
+  screenModule: ScreenState;
 }

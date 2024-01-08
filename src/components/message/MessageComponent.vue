@@ -1,18 +1,22 @@
 <template>
   <div
     class="line-item label-container msg-box"
-    :style="{
-      borderColor: messages[0].value.color,
-    }"
+    @click="hideMsgBox"
+    :class="{ show: store.state.screenModule.showMessage }"
   >
-    <div class="label-block">
+    <div
+      class="label-block"
+      :style="{
+        borderColor: store.state.screenModule.messageContent.color,
+      }"
+    >
       <span class="svg-container">
         <svg
-          v-if="messages[0].value.color === 'red'"
+          v-if="store.state.screenModule.messageContent.color === 'red'"
           height="22px"
           width="22px"
           viewBox="0 0 24 24"
-          :fill="messages[0].value.color"
+          :fill="store.state.screenModule.messageContent.color"
         >
           <path d="M0 0h24v24H0z" fill="none" />
           <path
@@ -24,7 +28,7 @@
           height="18px"
           viewBox="0 0 24 24"
           width="18px"
-          :fill="messages[0].value.color"
+          :fill="store.state.screenModule.messageContent.color"
         >
           <path d="M0 0h24v24H0z" fill="none" />
           <path
@@ -32,56 +36,75 @@
           />
         </svg>
       </span>
-      <!-- <img src="../../assets/icons/error.svg" /> -->
-      <span :style="{ color: messages[0].value.color }">
-        {{ messages[0].value.message }}
+      <span :style="{ color: store.state.screenModule.messageContent.color }">
+        {{ store.state.screenModule.messageContent.message }}
       </span>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, toRefs } from "vue";
+import { useStore } from "@/store";
+import { defineComponent, reactive, ref, toRefs } from "vue";
 const MessageComponent = defineComponent({
-  props: {
-    details: {
-      type: Object,
-    },
-  },
-  setup(props) {
-    const { details } = toRefs(props);
-    const messages = details.value as any;
+  setup() {
+    const store = useStore();
+
+    const hideMsgBox = () => {
+      store.dispatch("screenModule/showMessage", false);
+    };
     return {
-      messages,
+      hideMsgBox,
+      store,
     };
   },
 });
 export default MessageComponent;
 </script>
 <style lang="scss" scoped>
-.label-block {
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  width: 100%;
-}
 .msg-box {
-  // width: calc(100% - 30px);
-  width: 100%;
-  flex-direction: column;
-  border: 1px solid;
-  text-align: center;
+  position: absolute;
   margin: 0 auto;
-  padding: 3px 0px;
+  bottom: 43px;
+  height: 532px;
+  align-items: flex-start;
+  display: none;
+  width: 100%;
+  .label-block {
+    padding: 10px;
+    border: 1px solid;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    width: 100%;
+    background-color: #001733;
+    margin-top: 20px;
+  }
+  &.show {
+    display: flex;
+    visibility: visible;
+    animation: fadein 0.5s;
+  }
 }
 .svg-container {
   margin-right: 10px;
   display: inline-block;
   position: relative;
-  width: 19px;
-  height: 19px;
+  width: 15px;
+  height: 15px;
   svg {
     position: absolute;
     // top: 5px;
     right: 2px;
+  }
+}
+@keyframes fadein {
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  to {
+    top: 26px;
+    opacity: 1;
   }
 }
 </style>
