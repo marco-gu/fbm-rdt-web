@@ -42,9 +42,10 @@ export default defineComponent({
       // TODO get device's style
       const screenStyle = {
         rows: 15,
+        subRows: 13,
         fontSize: 24,
       };
-      localStorage.setItem("screenStyle", JSON.stringify(screenStyle));
+      localStorage.setItem("screen", JSON.stringify(screenStyle));
       const shell = document.getElementById("app") as HTMLElement;
       setShellStyle(shell);
       isAndroidSimulator.value =

@@ -5,8 +5,9 @@ export interface ScreenModel {
   title: string;
   header: boolean;
   footer: boolean;
+  footerDto: FieldDto;
   focus: string;
-  screenDepth: number;
+  // screenDepth: number;
   screenRows: Map<number, ScreenRowModel>;
   capturedValues: CapturedValue[];
   currentPage: number;
@@ -15,6 +16,7 @@ export interface ScreenModel {
   workFlowCollection: WorkFlowCollection;
   singleListCollection: Map<string, ListModel>;
   selectedItem: SelectedItem;
+  existSubBtn: boolean;
 }
 
 export interface WorkFlowCollection {
@@ -44,43 +46,43 @@ export interface LabelViewModel {
   value: string;
 }
 
-export class LineDetail {
-  attributeName: string;
-  attributeType: string;
-  name?: string;
-  value?: string;
-  coordinateX: number | undefined | null;
-  coordinateY: number | undefined | null;
-  maxLength: number;
-  minLength: number;
-  attributeId;
-  color: string;
-  dataType: string;
-  regexPattern: string;
-  defaultValue: string;
-  groupName: string;
-  highlighted?: boolean;
-  isHidden?: boolean;
-  overwritten?: boolean;
-  required?: boolean;
-  sequence: number;
+// export class LineDetail {
+//   attributeName: string;
+//   attributeType: string;
+//   name?: string;
+//   value?: string;
+//   coordinateX: number | undefined | null;
+//   coordinateY: number | undefined | null;
+//   maxLength: number;
+//   minLength: number;
+//   attributeId;
+//   color: string;
+//   dataType: string;
+//   regexPattern: string;
+//   defaultValue: string;
+//   groupName: string;
+//   highlighted?: boolean;
+//   isHidden?: boolean;
+//   overwritten?: boolean;
+//   required?: boolean;
+//   sequence: number;
 
-  constructor() {
-    this.attributeName = "";
-    this.name = "";
-    this.value = "";
-    this.attributeType = "";
-    this.maxLength = 0;
-    this.minLength = 0;
-    this.attributeId = "";
-    this.color = "";
-    this.dataType = "";
-    this.regexPattern = "";
-    this.defaultValue = "";
-    this.groupName = "";
-    this.sequence = 0;
-  }
-}
+//   constructor() {
+//     this.attributeName = "";
+//     this.name = "";
+//     this.value = "";
+//     this.attributeType = "";
+//     this.maxLength = 0;
+//     this.minLength = 0;
+//     this.attributeId = "";
+//     this.color = "";
+//     this.dataType = "";
+//     this.regexPattern = "";
+//     this.defaultValue = "";
+//     this.groupName = "";
+//     this.sequence = 0;
+//   }
+// }
 export enum ScreenRowComponentEnum {
   INPUT = "input",
   PASSWORD = "password",

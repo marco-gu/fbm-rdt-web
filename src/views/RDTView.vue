@@ -21,6 +21,7 @@ import RDTSubView from "./options/RDTSubView.vue";
 import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
 import _ from "lodash";
 import ListPageLabelComponent from "@/components/list/ListPageLabelComponent.vue";
+import ScrollBarComponent from "@/components/generic/ScrollBarComponent.vue";
 
 const RDTView = defineComponent({
   components: {
@@ -53,7 +54,9 @@ const RDTView = defineComponent({
       }
     });
     const renderView = (screenModel: ScreenModel) => {
-      renderRows(screenModel.screenRows);
+      const scrollBar = h(ScrollBarComponent);
+      screenView.value.push(scrollBar);
+      renderRows(screenModel);
       if (store.state.workflowModule.screenDepth == 1) {
         const optionView = h(
           "div",
@@ -67,8 +70,8 @@ const RDTView = defineComponent({
               fontSize: globalStyle["option-font-size"],
               color: globalStyle["option-color"],
               letterSpacing: globalStyle["option-letter-spacing"],
-              margin: "31px 0px 0px 5px",
-              padding: "6px 0px 0px 4px",
+              margin: globalStyle["option-margin"],
+              padding: globalStyle["option-padding"],
             },
           },
           [
@@ -95,10 +98,16 @@ const RDTView = defineComponent({
         screenView.value
       );
     };
-    const renderRows = (rows: Map<number, ScreenRowModel>) => {
-      if (rows.size > 0) {
-        rows.forEach((row) => {
-          row.rowspan = _.isUndefined(row.rowspan) ? 1 : row.rowspan;
+    const renderRows = (screenModel: ScreenModel) => {
+      const start = (screenModel.currentPage - 1) * screenModel.pageSize + 1;
+      const end = screenModel.currentPage * screenModel.pageSize;
+      if (screenModel.existSubBtn) {
+        const subBtn = h(SubButtonComponent);
+        screenView.value.push(subBtn);
+      }
+      if (screenModel.screenRows.size > 0) {
+        for (var i = start; i <= end; i++) {
+          const row = screenModel.screenRows.get(i) as ScreenRowModel;
           switch (row.rowType) {
             case ScreenRowComponentEnum.LABEL: {
               rowNode.value = h(LabelComponent, {
@@ -149,6 +158,7 @@ const RDTView = defineComponent({
               break;
             }
             case ScreenRowComponentEnum.SUB_BUTTON: {
+              console.log("12121212121212");
               rowNode.value = h(SubButtonComponent, {
                 details: row.rowDetails,
               });
@@ -172,15 +182,14 @@ const RDTView = defineComponent({
             [rowNode.value]
           );
           screenView.value.push(rowsView.value);
-        });
+        }
       }
     };
     const handleKeyDown = (event: any) => {
       {
         switch (event.keyCode) {
           case 13: {
-            const payload = store.state.workflowModule.screenDepth;
-            store.dispatch("workflowModule/onSubmit", payload);
+            store.dispatch("workflowModule/onSubmit");
             break;
           }
           case 27:
@@ -189,7 +198,6 @@ const RDTView = defineComponent({
               const url =
                 "RDTEngine/deleteSession/" + localStorage.getItem("sessionId");
               get(url).then(() => {
-                // localStorage.clear();
                 localStorage.removeItem("sessionId");
                 localStorage.removeItem("country");
                 router.push("/");
@@ -198,6 +206,12 @@ const RDTView = defineComponent({
               console.log("onCancel");
               store.dispatch("workflowModule/onCancel");
             }
+            break;
+          case 38:
+            store.commit("workflowModule/onPreviousPage");
+            break;
+          case 40:
+            store.commit("workflowModule/onNextPage");
             break;
         }
       }

@@ -54,10 +54,10 @@
 <script lang="ts">
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
-import { LineDetail } from "@/entity/screen.entity";
 import { CapturedValue } from "@/entity/request.entity";
-import { AttributeType } from "@/entity/response.entity";
+import { AttributeType, EventType, FieldDto } from "@/entity/response.entity";
 import { calculateWidthItems, inputLength } from "@/utils/screen.utils";
+import _ from "lodash";
 const InputComponent = defineComponent({
   props: {
     details: {
@@ -78,7 +78,7 @@ const InputComponent = defineComponent({
       focusInput();
     });
 
-    const onTextChange = (detail: LineDetail) => {
+    const onTextChange = (detail: FieldDto) => {
       const param = {
         attributeName: detail.attributeName,
         value: detail.value,
@@ -100,12 +100,32 @@ const InputComponent = defineComponent({
       isFocus.value = false;
     };
 
-    const onKeyPress = (event: KeyboardEvent, detail: LineDetail) => {
+    const onKeyPress = (event: KeyboardEvent, detail: FieldDto) => {
       const key = event.charCode || event.which || event.keyCode;
       if (key === 13) {
         event.stopPropagation();
-        onTextChange(detail);
-        store.dispatch("workflowModule/onSubmit");
+        if (
+          !_.isUndefined(detail.screenFieldEvent) &&
+          detail.screenFieldEvent.length > 0
+        ) {
+          detail.screenFieldEvent.forEach((t) => {
+            switch (t.type) {
+              case EventType.TAB:
+                break;
+              case EventType.SUBMIT:
+                store.dispatch("workflowModule/onSubmit");
+                break;
+              case EventType.SUBFORM:
+                break;
+              case EventType.SUBFORM_OR_TAB_NONE_BLANK:
+                break;
+              case EventType.SUBMIT_OR_TAB_NONE_BLANK:
+                break;
+            }
+          });
+        } else {
+          store.dispatch("workflowModule/onSubmit");
+        }
       }
     };
     const focusInput = () => {

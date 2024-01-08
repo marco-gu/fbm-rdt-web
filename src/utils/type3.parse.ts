@@ -12,75 +12,102 @@ import {
 } from "@/entity/screen.entity";
 import _ from "lodash";
 export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
-  const screenStyle = localStorage.getItem("screenStyle") as string;
-  const row = JSON.parse(screenStyle).rows;
   screenModel.currentPage = 1;
-  screenModel.pageSize = row;
-  screenModel.totalPage = Math.ceil(
-    param.screenDto.fields[param.screenDto.fields.length - 1].coordinateY / row
-  );
-  screenModel.screenRows = composeRowsData(param.screenDto.fields, screenModel);
+  screenModel.totalPage = 1;
+  if (param.screenDepth == 0) {
+    screenModel.pageSize = JSON.parse(
+      localStorage.getItem("screen") as any
+    ).rows;
+  } else {
+    screenModel.pageSize = JSON.parse(
+      localStorage.getItem("screen") as any
+    ).subRows;
+  }
+  screenModel.screenRows = new Map<number, ScreenRowModel>();
+  screenModel.screenRows = composeRowsData(param, screenModel);
   screenModel.title = param.screenDto.title;
   screenModel.workFlowCollection.workFlowId = param.workFlowId;
   screenModel.workFlowCollection.workNodeId = param.workNodeId;
   return screenModel;
 }
 
-function composeRowsData(fields: FieldDto[], screenModel: ScreenModel) {
-  const rows = new Map<number, ScreenRowModel>();
-  fields.filter((value) => {
-    if (value.attributeType == AttributeType.HEADER) {
-      screenModel.header = true;
-    } else if (value.attributeType == AttributeType.FOOTER) {
-      screenModel.footer = true;
-    }
-  });
+function composeRowsData(param: EngineResponse, screenModel: ScreenModel) {
+  const fields = param.screenDto.fields;
   fields.forEach((field: FieldDto) => {
-    if (screenModel.header) {
-      field.coordinateY += 1;
-    }
-    switch (field.attributeType) {
-      case AttributeType.HEADER:
-        field.coordinateY = 1;
-        composeLabelRow(rows, field);
-        break;
-      case AttributeType.LABEL:
-        composeLabelRow(rows, field);
-        break;
-      case AttributeType.INPUT:
-      case AttributeType.PASSWORD:
-        composeInputRow(rows, field, screenModel);
-        break;
-      case AttributeType.MESSAGE:
-        composeMessageRows(rows, field);
-        break;
-      case AttributeType.INPUT_MULTI:
-        composeMultiInputRow(rows, field, screenModel);
-        break;
-      case AttributeType.SUB_BUTTON:
-        composeSubButton(rows, field, screenModel);
-        break;
-      case AttributeType.LIST_SINGLE:
-        composeListComponents(rows, field, screenModel);
-        break;
-      case AttributeType.FOOTER:
-        // TODO page > 1
-        field.coordinateY = screenModel.pageSize;
-        composeLabelRow(rows, field);
-        break;
+    if (
+      field.attributeType != AttributeType.MESSAGE ||
+      (field.attributeType == AttributeType.MESSAGE &&
+        param.resultStatus == "error")
+    ) {
+      if (screenModel.header) {
+        field.coordinateY += 1;
+      }
+      // check previous row span
+      if (screenModel.screenRows.size > 0) {
+        const preRow = screenModel.screenRows.get(
+          screenModel.screenRows.size - 1
+        );
+        if (!_.isUndefined(preRow)) {
+          field.coordinateY += preRow.rowspan - 1;
+        }
+      }
+      // Calculate total page
+      if (!_.isNull(field.coordinateY)) {
+        screenModel.totalPage =
+          Math.floor(field.coordinateY / screenModel.pageSize) + 1;
+      }
+      switch (field.attributeType) {
+        case AttributeType.HEADER:
+          field.coordinateY = 1;
+          screenModel.header = true;
+          composeLabelRow(screenModel, field);
+          break;
+        case AttributeType.LABEL:
+          composeLabelRow(screenModel, field);
+          break;
+        case AttributeType.INPUT:
+        case AttributeType.PASSWORD:
+          composeInputRow(screenModel, field);
+          break;
+        case AttributeType.MESSAGE:
+          composeMessageRows(screenModel, field);
+          break;
+        case AttributeType.INPUT_MULTI:
+          composeMultiInputRow(screenModel, field);
+          break;
+        case AttributeType.SUB_BUTTON: {
+          screenModel.existSubBtn = true;
+          const values = field.value.split(",");
+          screenModel.workFlowCollection.subFormAction = values[0];
+          screenModel.workFlowCollection.subWorkFlowId = values[1];
+          screenModel.workFlowCollection.subWorkNodeId = values[2];
+          break;
+        }
+        case AttributeType.LIST_SINGLE:
+          composeListComponents(screenModel, field);
+          break;
+        case AttributeType.FOOTER:
+          screenModel.footerDto = field;
+          break;
+      }
     }
   });
-  composeEmptyRows(rows);
-  return sortRows(rows);
+  if (!_.isUndefined(screenModel.footerDto)) {
+    screenModel.footerDto.coordinateY =
+      screenModel.totalPage * screenModel.pageSize;
+    composeLabelRow(screenModel, screenModel.footerDto);
+  }
+  composeAdjustRows(screenModel);
+  return sortRows(screenModel);
 }
 
 const composeLabelRow = (
-  rows: Map<number, ScreenRowModel>,
+  screenModel: ScreenModel,
   field: FieldDto,
   screenRowComponent?: ScreenRowComponentEnum
 ) => {
-  if (rows.has(field.coordinateY)) {
-    rows.get(field.coordinateY)?.rowDetails.push(field);
+  if (screenModel.screenRows.has(field.coordinateY)) {
+    screenModel.screenRows.get(field.coordinateY)?.rowDetails.push(field);
   } else {
     const screenRow = {} as ScreenRowModel;
     if (screenRowComponent) {
@@ -90,15 +117,12 @@ const composeLabelRow = (
     }
     screenRow.rowDetails = [];
     screenRow.rowDetails.push(field);
-    rows.set(field.coordinateY, screenRow);
+    screenRow.rowspan = 1;
+    screenModel.screenRows.set(field.coordinateY, screenRow);
   }
 };
 
-const composeInputRow = (
-  rows: Map<number, ScreenRowModel>,
-  field: FieldDto,
-  screenModel: ScreenModel
-) => {
+const composeInputRow = (screenModel: ScreenModel, field: FieldDto) => {
   const capturedValue = {
     attributeName: field.attributeName,
     value: field.value,
@@ -107,8 +131,8 @@ const composeInputRow = (
   if (_.isEmpty(screenModel.focus)) {
     screenModel.focus = field.attributeName;
   }
-  if (rows.has(field.coordinateY)) {
-    const row = rows.get(field.coordinateY) as ScreenRowModel;
+  if (screenModel.screenRows.has(field.coordinateY)) {
+    const row = screenModel.screenRows.get(field.coordinateY) as ScreenRowModel;
     switch (field.attributeType) {
       case AttributeType.INPUT:
         row.rowType = ScreenRowComponentEnum.INPUT;
@@ -123,15 +147,13 @@ const composeInputRow = (
     screenRow.rowType = ScreenRowComponentEnum.INPUT;
     screenRow.coordinateY = field.coordinateY;
     screenRow.rowDetails = [];
+    screenRow.rowspan = 1;
     screenRow.rowDetails.push(field);
-    rows.set(field.coordinateY, screenRow);
+    screenModel.screenRows.set(field.coordinateY, screenRow);
   }
 };
 
-const composeMessageRows = (
-  rows: Map<number, ScreenRowModel>,
-  field: FieldDto
-) => {
+const composeMessageRows = (screenModel: ScreenModel, field: FieldDto) => {
   // TODO design message
   if (!_.isEmpty(field.value)) {
     const values = JSON.parse(field.value);
@@ -143,39 +165,20 @@ const composeMessageRows = (
       const rowData = _.cloneDeep(field);
       rowData.value = t;
       screenRow.rowDetails.push(rowData);
-      rows.set(field.coordinateY + index, screenRow);
+      screenRow.rowspan = 1;
+      screenModel.screenRows.set(field.coordinateY + index, screenRow);
     });
   }
 };
 
-const composeSubButton = (
-  rows: Map<number, ScreenRowModel>,
-  field: FieldDto,
-  screenModel: ScreenModel
-) => {
-  const screenRow = {} as ScreenRowModel;
-  screenRow.coordinateY = field.coordinateY;
-  screenRow.rowType = ScreenRowComponentEnum.SUB_BUTTON;
-  screenRow.rowDetails = [];
-  const values = field.value.split(",");
-  screenModel.workFlowCollection.subFormAction = values[0];
-  screenModel.workFlowCollection.subWorkFlowId = values[1];
-  screenModel.workFlowCollection.subWorkNodeId = values[2];
-  rows.set(screenModel.pageSize, screenRow);
-};
-
-const composeListComponents = (
-  rows: Map<number, ScreenRowModel>,
-  field: FieldDto,
-  screenModel: ScreenModel
-) => {
+const composeListComponents = (screenModel: ScreenModel, field: FieldDto) => {
   const values = JSON.parse(field.value) as ListModel;
   let calculateY = field.coordinateY;
   // Compose title
   const title = {} as FieldDto;
   title.value = values.title;
   title.coordinateY = field.coordinateY;
-  composeLabelRow(rows, title, ScreenRowComponentEnum.LIST_TITLE_LABEL);
+  composeLabelRow(screenModel, title, ScreenRowComponentEnum.LIST_TITLE_LABEL);
   calculateY = _.isUndefined(title.value) ? calculateY : calculateY + 1;
   // Compose items
   screenModel.singleListCollection.set(field.attributeId, values);
@@ -189,7 +192,8 @@ const composeListComponents = (
     item.value = t.sequence + "." + t.name;
     item.sequence = t.sequence;
     screenRow.rowDetails.push(item);
-    rows.set(screenRow.coordinateY, screenRow);
+    screenRow.rowspan = 1;
+    screenModel.screenRows.set(screenRow.coordinateY, screenRow);
   });
   if (_.isUndefined(field.style)) {
     field.style = "1";
@@ -205,7 +209,8 @@ const composeListComponents = (
     page.attributeId = field.attributeId;
     page.style = field.style;
     screenRow.rowDetails.push(page);
-    rows.set(screenRow.coordinateY, screenRow);
+    screenRow.rowspan = 1;
+    screenModel.screenRows.set(screenRow.coordinateY, screenRow);
   }
   // Compose input
   const screenRow = {} as ScreenRowModel;
@@ -222,8 +227,9 @@ const composeListComponents = (
   inputValue.attributeName = field.attributeName;
   inputValue.maxLength = 3;
   inputValue.coordinateX = 9;
+  screenRow.rowspan = 1;
   screenRow.rowDetails.push(inputValue);
-  rows.set(screenRow.coordinateY, screenRow);
+  screenModel.screenRows.set(screenRow.coordinateY, screenRow);
   if (_.isUndefined(screenModel.focus)) {
     screenModel.focus = inputValue.attributeName;
   }
@@ -234,16 +240,11 @@ const composeListComponents = (
   screenModel.capturedValues.push(capturedValue);
 };
 
-const composeMultiInputRow = (
-  rows: Map<number, ScreenRowModel>,
-  field: FieldDto,
-  screenModel: ScreenModel
-) => {
-  if (rows.has(field.coordinateY)) {
-    const row = rows.get(field.coordinateY) as ScreenRowModel;
+const composeMultiInputRow = (screenModel: ScreenModel, field: FieldDto) => {
+  if (screenModel.screenRows.has(field.coordinateY)) {
+    const row = screenModel.screenRows.get(field.coordinateY) as ScreenRowModel;
     row.rowType = ScreenRowComponentEnum.MULTI_INPUT;
     row.rowDetails.push(field);
-    row.rowspan = 2;
   } else {
     const screenRow = {} as ScreenRowModel;
     screenRow.rowType = ScreenRowComponentEnum.MULTI_INPUT;
@@ -251,7 +252,7 @@ const composeMultiInputRow = (
     screenRow.rowDetails = [];
     screenRow.rowDetails.push(field);
     screenRow.rowspan = 2;
-    rows.set(field.coordinateY, screenRow);
+    screenModel.screenRows.set(field.coordinateY, screenRow);
   }
   const capturedValue = {
     attributeName: field.attributeName,
@@ -260,22 +261,22 @@ const composeMultiInputRow = (
   screenModel.capturedValues.push(capturedValue);
 };
 
-function composeEmptyRows(rows: Map<number, ScreenRowModel>) {
-  const perPageMaxLine = 15;
-  for (let i = 1; i <= perPageMaxLine; i++) {
-    if (!rows.has(i)) {
+function composeAdjustRows(screenModel: ScreenModel) {
+  for (let i = 1; i <= screenModel.totalPage * screenModel.pageSize; i++) {
+    if (!screenModel.screenRows.has(i)) {
       for (let j = i - 1; j >= 0; j--) {
-        const rowDetails = rows.get(j)?.rowDetails;
+        const rowDetails = screenModel.screenRows.get(j)?.rowDetails;
         if (rowDetails && rowDetails?.length > 0) {
-          const rowspan = _.isUndefined(rows.get(j)?.rowspan)
+          const rowspan = _.isUndefined(screenModel.screenRows.get(j)?.rowspan)
             ? 0
-            : (rows.get(j)?.rowspan as number);
+            : (screenModel.screenRows.get(j)?.rowspan as number);
           if (j + rowspan <= i) {
             const screenRow = {} as ScreenRowModel;
             screenRow.rowType = ScreenRowComponentEnum.LABEL;
             screenRow.coordinateY = i;
             screenRow.rowDetails = [];
-            rows.set(i, screenRow);
+            screenRow.rowspan = 1;
+            screenModel.screenRows.set(i, screenRow);
           }
           break;
         }
@@ -284,8 +285,8 @@ function composeEmptyRows(rows: Map<number, ScreenRowModel>) {
   }
 }
 
-function sortRows(rows: Map<number, ScreenRowModel>) {
-  const array = Array.from(rows).sort((a: any, b: any) => {
+function sortRows(screenModel: ScreenModel) {
+  const array = Array.from(screenModel.screenRows).sort((a: any, b: any) => {
     return a[0] - b[0];
   });
   const result = new Map<number, ScreenRowModel>();

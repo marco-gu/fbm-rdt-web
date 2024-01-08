@@ -5,7 +5,7 @@ $width: 320px;
 $height: 534px;
 $line-height: 35.6px;
 $letter-spacing: -1px;
-$option-height:461px;
+$option-height:450px;
 $option-width:348px;
 $option-background-color:#00346E;
 $option-margin:31px 0px 0px 5px;
@@ -24,4 +24,6 @@ $option-padding:6px 0px 0px 4px;
     option-font-size: $fontSize;
     option-color: $color;
     option-letter-spacing: $letter-spacing;
+    option-margin: $option-margin;
+    option-padding: $option-padding;
 }

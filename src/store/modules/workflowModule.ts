@@ -45,7 +45,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
         context.commit("onSubmit", data);
       });
     },
-    onSubmit(context) {
+    onSubmit(context, actionKey: string) {
       const request = {} as EngineRequset;
       request.actionKey = ActionKeyEnum.SUBMIT;
       request.userSettingDto = {} as UserSettingDto;
@@ -160,6 +160,22 @@ const workflowModule: Module<WorkflowState, RootState> = {
         }
       });
       state.isRender = true;
+    },
+    onNextPage(state) {
+      if (state.screenDepth == 0) {
+        if (state.screenModel.currentPage < state.screenModel.totalPage) {
+          state.screenModel.currentPage++;
+          state.isRender = true;
+        }
+      }
+    },
+    onPreviousPage(state) {
+      if (state.screenDepth == 0) {
+        if (state.screenModel.currentPage > 1) {
+          state.screenModel.currentPage--;
+          state.isRender = true;
+        }
+      }
     },
   },
   namespaced: true,

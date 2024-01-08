@@ -1,4 +1,17 @@
 <template>
+  <!-- <div class="line-item label-container" style="width: 100%">
+    <template v-for="(item, index) in details" :key="index">
+      <div
+        v-if="item.value"
+        class="label-block"
+        :style="{
+          fontSize: calcFontSize(item),
+        }"
+      >
+        {{ item.value }}
+      </div>
+    </template>
+  </div> -->
   <div
     class="pop_btn"
     @click="onClickSubScreen"
@@ -8,12 +21,14 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, toRefs } from "vue";
 import { useStore } from "@/store";
 import _ from "lodash";
+import { FieldDto } from "@/entity/response.entity";
 
 const SubButtonComponent = defineComponent({
-  setup() {
+  setup(props) {
+    // const { details } = toRefs(props);
     const store = useStore();
     const screenDepth = ref(store.state.workflowModule.screenDepth);
     const subScreenModel = _.cloneDeep(
@@ -30,9 +45,15 @@ const SubButtonComponent = defineComponent({
         store.commit("workflowModule/onCloseSubScreen", false);
       }
     };
+    // const calcFontSize = (item: FieldDto) => {
+    //   const screenStyle = localStorage.getItem("screenStyle") as string;
+    //   const fontSize = JSON.parse(screenStyle).fontSize;
+    //   return fontSize + item.fontSize + "px";
+    // };
     return {
       onClickSubScreen,
       screenDepth,
+      // calcFontSize,
     };
   },
 });
@@ -41,11 +62,11 @@ export default SubButtonComponent;
 <style lang="scss" scoped>
 .pop_btn {
   display: inline-block;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   position: absolute;
-  bottom: 54px;
-  right: 12px;
+  bottom: 50px;
+  right: 4px;
   text-align: center;
   color: #ffeead;
   background-color: #00346e;
@@ -58,7 +79,7 @@ export default SubButtonComponent;
   cursor: pointer;
   width: 32px;
   height: 32px;
-  right: 10px;
+  right: 4px;
   color: #ffc58f;
   font-size: 28px;
   font-weight: 900;
