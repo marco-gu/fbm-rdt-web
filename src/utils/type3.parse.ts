@@ -76,7 +76,7 @@ function composeRowsData(param: EngineResponse, screenModel: ScreenModel) {
           composeMultiInputRow(screenModel, field);
           break;
         case AttributeType.SUB_BUTTON: {
-          screenModel.existSubBtn = true;
+          screenModel.showSubBtn = true;
           const values = field.value.split(",");
           screenModel.workFlowCollection.subFormAction = values[0];
           screenModel.workFlowCollection.subWorkFlowId = values[1];

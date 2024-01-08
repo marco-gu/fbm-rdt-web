@@ -16,7 +16,9 @@ export interface ScreenModel {
   workFlowCollection: WorkFlowCollection;
   singleListCollection: Map<string, ListModel>;
   selectedItem: SelectedItem;
-  existSubBtn: boolean;
+  showSubBtn: boolean;
+  showMessage: boolean;
+  message: string;
 }
 
 export interface WorkFlowCollection {

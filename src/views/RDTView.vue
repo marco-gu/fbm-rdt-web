@@ -101,9 +101,12 @@ const RDTView = defineComponent({
     const renderRows = (screenModel: ScreenModel) => {
       const start = (screenModel.currentPage - 1) * screenModel.pageSize + 1;
       const end = screenModel.currentPage * screenModel.pageSize;
-      if (screenModel.existSubBtn) {
+      if (screenModel.showSubBtn) {
         const subBtn = h(SubButtonComponent);
         screenView.value.push(subBtn);
+      }
+      if (screenModel.showMessage) {
+        //
       }
       if (screenModel.screenRows.size > 0) {
         for (var i = start; i <= end; i++) {
