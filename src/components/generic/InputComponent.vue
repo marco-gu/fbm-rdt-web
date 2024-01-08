@@ -103,8 +103,13 @@ const InputComponent = defineComponent({
     };
     const onFocus = () => {
       isFocus.value = true;
-      console.log("1");
-      store.commit("workflowModule/setCurrentFocus", attributeName.value);
+      const focus =
+        store.state.workflowModule.screenDepth == 0
+          ? store.state.workflowModule.screenModel.focus
+          : store.state.workflowModule.subScreenModel.focus;
+      if (focus !== attributeName.value) {
+        store.commit("workflowModule/setCurrentFocus", attributeName.value);
+      }
     };
     const onBlur = () => {
       isFocus.value = false;
@@ -138,6 +143,18 @@ const InputComponent = defineComponent({
         }
       }
     };
+    watch(
+      () =>
+        store.state.workflowModule.screenDepth == 0
+          ? store.state.workflowModule.screenModel.focus
+          : store.state.workflowModule.subScreenModel.focus,
+      () => {
+        focusInput();
+      },
+      {
+        deep: true,
+      }
+    );
     const focusInput = () => {
       let focusValue = "";
       if (store.state.workflowModule.screenDepth == 0) {

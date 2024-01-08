@@ -161,7 +161,6 @@ const RDTView = defineComponent({
               break;
             }
             case ScreenRowComponentEnum.SUB_BUTTON: {
-              console.log("12121212121212");
               rowNode.value = h(SubButtonComponent, {
                 details: row.rowDetails,
               });
@@ -211,10 +210,10 @@ const RDTView = defineComponent({
             }
             break;
           case 38:
-            store.commit("workflowModule/onPreviousPage");
+            store.commit("workflowModule/moveToPreviousPage");
             break;
           case 40:
-            store.commit("workflowModule/onNextPage");
+            store.commit("workflowModule/moveToNextPage");
             break;
         }
       }

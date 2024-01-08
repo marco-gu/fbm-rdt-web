@@ -144,24 +144,24 @@ const workflowModule: Module<WorkflowState, RootState> = {
       }
       state.isRender = true;
     },
-    nextFocus(state, payload) {
-      state.screenModel.capturedValues.forEach((t: any, index: number) => {
-        if (t.attributeName == payload.attributeName) {
-          if (payload.direction == "up") {
-            if (index - 1 > -1) {
-              state.screenModel.focus =
-                state.screenModel.capturedValues[index - 1].attributeName;
-            }
-          } else {
-            if (index + 1 < state.screenModel.capturedValues.length)
-              state.screenModel.focus =
-                state.screenModel.capturedValues[index + 1].attributeName;
-          }
-        }
-      });
-      state.isRender = true;
-    },
-    onNextPage(state) {
+    // nextFocus(state, payload) {
+    //   state.screenModel.capturedValues.forEach((t: any, index: number) => {
+    //     if (t.attributeName == payload.attributeName) {
+    //       if (payload.direction == "up") {
+    //         if (index - 1 > -1) {
+    //           state.screenModel.focus =
+    //             state.screenModel.capturedValues[index - 1].attributeName;
+    //         }
+    //       } else {
+    //         if (index + 1 < state.screenModel.capturedValues.length)
+    //           state.screenModel.focus =
+    //             state.screenModel.capturedValues[index + 1].attributeName;
+    //       }
+    //     }
+    //   });
+    //   state.isRender = true;
+    // },
+    moveToNextPage(state) {
       if (state.screenDepth == 0) {
         if (state.screenModel.currentPage < state.screenModel.totalPage) {
           state.screenModel.currentPage++;
@@ -169,7 +169,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
         }
       }
     },
-    onPreviousPage(state) {
+    moveToPreviousPage(state) {
       if (state.screenDepth == 0) {
         if (state.screenModel.currentPage > 1) {
           state.screenModel.currentPage--;
@@ -186,7 +186,15 @@ const workflowModule: Module<WorkflowState, RootState> = {
         if (t[1].attributeName == payload) {
           if (state.screenDepth == 0) {
             if (index + 1 < sortFocus.length) {
-              state.screenModel.focus = sortFocus[index + 1][1].attributeName;
+              const currentPage = t[1].pageNumer;
+              const nextFocusPage = sortFocus[index + 1][1].pageNumer;
+              if (currentPage == nextFocusPage) {
+                state.screenModel.focus = sortFocus[index + 1][1].attributeName;
+              } else {
+                // TODO move on next focus
+              }
+            } else {
+              state.screenModel.focus = sortFocus[0][1].attributeName;
             }
           }
         }
@@ -194,7 +202,6 @@ const workflowModule: Module<WorkflowState, RootState> = {
     },
     setCurrentFocus(state, payload) {
       if (state.screenDepth == 0) {
-        console.log(payload);
         state.screenModel.focus = payload;
       } else {
         state.subScreenModel.focus = payload;
