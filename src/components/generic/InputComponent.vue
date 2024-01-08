@@ -39,6 +39,7 @@
           @keyup="onKeyPress($event, item)"
           @focus="onFocus()"
           @blur="onBlur()"
+          @keydown.tab="onTab($event)"
           :style="{
             backgroundColor:
               store.state.workflowModule.screenDepth == 0
@@ -53,7 +54,7 @@
 </template>
 <script lang="ts">
 import { useStore } from "@/store";
-import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
+import { defineComponent, ref, toRefs, onMounted, Ref, watch } from "vue";
 import { CapturedValue } from "@/entity/request.entity";
 import { AttributeType, EventType, FieldDto } from "@/entity/response.entity";
 import { calculateWidthItems, inputLength } from "@/utils/screen.utils";
@@ -73,6 +74,7 @@ const InputComponent = defineComponent({
     const textLength = ref(0);
     const isFocus = ref(false);
     const widthArr: Ref<any> = ref([]);
+    const attributeName = ref();
     onMounted(() => {
       mapRawData();
       focusInput();
@@ -89,12 +91,20 @@ const InputComponent = defineComponent({
       if (details.value) {
         widthArr.value = calculateWidthItems(details);
         details.value.forEach((item: any) => {
+          if (
+            item.attributeType === "inputBox" ||
+            item.attributeType === "password"
+          ) {
+            attributeName.value = item.attributeName;
+          }
           item.value = item.value || "";
         });
       }
     };
     const onFocus = () => {
       isFocus.value = true;
+      console.log("1");
+      store.commit("workflowModule/setCurrentFocus", attributeName.value);
     };
     const onBlur = () => {
       isFocus.value = false;
@@ -153,7 +163,10 @@ const InputComponent = defineComponent({
         }
       }
     };
-
+    const onTab = (event: KeyboardEvent) => {
+      event.preventDefault();
+      store.commit("workflowModule/moveToNextFocus", attributeName.value);
+    };
     return {
       model,
       onTextChange,
@@ -167,6 +180,7 @@ const InputComponent = defineComponent({
       widthArr,
       onKeyPress,
       inputLength,
+      onTab,
     };
   },
 });

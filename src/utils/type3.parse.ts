@@ -5,6 +5,7 @@ import {
   FieldDto,
 } from "@/entity/response.entity";
 import {
+  FocusItem,
   ListModel,
   ScreenModel,
   ScreenRowComponentEnum,
@@ -12,18 +13,13 @@ import {
 } from "@/entity/screen.entity";
 import _ from "lodash";
 export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
+  screenModel.screenRows = new Map<number, ScreenRowModel>();
+  screenModel.focusCollection = new Map<number, FocusItem>();
   screenModel.currentPage = 1;
   screenModel.totalPage = 1;
-  if (param.screenDepth == 0) {
-    screenModel.pageSize = JSON.parse(
-      localStorage.getItem("screen") as any
-    ).rows;
-  } else {
-    screenModel.pageSize = JSON.parse(
-      localStorage.getItem("screen") as any
-    ).subRows;
-  }
-  screenModel.screenRows = new Map<number, ScreenRowModel>();
+  screenModel.additionalY = 0;
+  const screen = JSON.parse(localStorage.getItem("screen") as any);
+  screenModel.pageSize = param.screenDepth == 0 ? screen.rows : screen.subRows;
   screenModel.screenRows = composeRowsData(param, screenModel);
   screenModel.title = param.screenDto.title;
   screenModel.workFlowCollection.workFlowId = param.workFlowId;
@@ -31,35 +27,40 @@ export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
   return screenModel;
 }
 
-function composeRowsData(param: EngineResponse, screenModel: ScreenModel) {
+const composeRowsData = (param: EngineResponse, screenModel: ScreenModel) => {
   const fields = param.screenDto.fields;
   fields.forEach((field: FieldDto) => {
     if (field.attributeType == AttributeType.MESSAGE) {
       screenModel.showMessage = param.resultStatus == "error" ? true : false;
       screenModel.msgField = field;
     } else {
-      if (screenModel.header) {
-        field.coordinateY += 1;
-      }
-      // check previous row span
-      if (screenModel.screenRows.size > 0) {
-        const preRow = screenModel.screenRows.get(
-          screenModel.screenRows.size - 1
-        );
-        if (!_.isUndefined(preRow)) {
-          field.coordinateY += preRow.rowspan - 1;
-        }
-      }
-      // Calculate total page
       if (!_.isNull(field.coordinateY)) {
+        // calculate total page
         screenModel.totalPage =
           Math.floor(field.coordinateY / screenModel.pageSize) + 1;
+        // calculate next coordinateY
+        if (screenModel.header) {
+          field.coordinateY += screenModel.totalPage;
+        }
+        field.coordinateY += screenModel.additionalY;
+        if (field.coordinateY % screenModel.pageSize == 0) {
+          screenModel.additionalY++;
+          field.coordinateY++;
+        }
+        // TODO span row logic
+        if (screenModel.screenRows.size > 0) {
+          const preRow = screenModel.screenRows.get(
+            screenModel.screenRows.size - 1
+          );
+          if (!_.isUndefined(preRow)) {
+            field.coordinateY += preRow.rowspan - 1;
+          }
+        }
       }
       switch (field.attributeType) {
         case AttributeType.HEADER:
-          field.coordinateY = 1;
           screenModel.header = true;
-          composeLabelRow(screenModel, field);
+          screenModel.headerField = field;
           break;
         case AttributeType.LABEL:
           composeLabelRow(screenModel, field);
@@ -67,9 +68,6 @@ function composeRowsData(param: EngineResponse, screenModel: ScreenModel) {
         case AttributeType.INPUT:
         case AttributeType.PASSWORD:
           composeInputRow(screenModel, field);
-          break;
-        case AttributeType.MESSAGE:
-          composeMessageRows(screenModel, field);
           break;
         case AttributeType.INPUT_MULTI:
           composeMultiInputRow(screenModel, field);
@@ -86,19 +84,16 @@ function composeRowsData(param: EngineResponse, screenModel: ScreenModel) {
           composeListComponents(screenModel, field);
           break;
         case AttributeType.FOOTER:
-          screenModel.footerDto = field;
+          screenModel.footer = true;
+          screenModel.footerField = field;
           break;
       }
     }
   });
-  if (!_.isUndefined(screenModel.footerDto)) {
-    screenModel.footerDto.coordinateY =
-      screenModel.totalPage * screenModel.pageSize;
-    composeLabelRow(screenModel, screenModel.footerDto);
-  }
-  composeAdjustRows(screenModel);
+  setFocus(param, screenModel);
+  adjustRows(screenModel);
   return sortRows(screenModel);
-}
+};
 
 const composeLabelRow = (
   screenModel: ScreenModel,
@@ -116,20 +111,13 @@ const composeLabelRow = (
     }
     screenRow.rowDetails = [];
     screenRow.rowDetails.push(field);
-    screenRow.rowspan = 1;
+    screenRow.rowspan = _.isNull(field.showLines) ? 1 : field.showLines;
     screenModel.screenRows.set(field.coordinateY, screenRow);
   }
 };
 
 const composeInputRow = (screenModel: ScreenModel, field: FieldDto) => {
-  const capturedValue = {
-    attributeName: field.attributeName,
-    value: field.value,
-  } as CapturedValue;
-  screenModel.capturedValues.push(capturedValue);
-  if (_.isEmpty(screenModel.focus)) {
-    screenModel.focus = field.attributeName;
-  }
+  collectInputAttribute(screenModel, field);
   if (screenModel.screenRows.has(field.coordinateY)) {
     const row = screenModel.screenRows.get(field.coordinateY) as ScreenRowModel;
     switch (field.attributeType) {
@@ -152,23 +140,23 @@ const composeInputRow = (screenModel: ScreenModel, field: FieldDto) => {
   }
 };
 
-const composeMessageRows = (screenModel: ScreenModel, field: FieldDto) => {
-  // TODO design message
-  if (!_.isEmpty(field.value)) {
-    const values = JSON.parse(field.value);
-    values.msgItems.forEach((t: any, index: number) => {
-      const screenRow = {} as ScreenRowModel;
-      screenRow.rowType = ScreenRowComponentEnum.MESSAGEBOX;
-      screenRow.coordinateY = field.coordinateY + index;
-      screenRow.rowDetails = [];
-      const rowData = _.cloneDeep(field);
-      rowData.value = t;
-      screenRow.rowDetails.push(rowData);
-      screenRow.rowspan = 1;
-      screenModel.screenRows.set(field.coordinateY + index, screenRow);
-    });
-  }
-};
+// const composeMessageRows = (screenModel: ScreenModel, field: FieldDto) => {
+//   // TODO design message
+//   if (!_.isEmpty(field.value)) {
+//     const values = JSON.parse(field.value);
+//     values.msgItems.forEach((t: any, index: number) => {
+//       const screenRow = {} as ScreenRowModel;
+//       screenRow.rowType = ScreenRowComponentEnum.MESSAGEBOX;
+//       screenRow.coordinateY = field.coordinateY + index;
+//       screenRow.rowDetails = [];
+//       const rowData = _.cloneDeep(field);
+//       rowData.value = t;
+//       screenRow.rowDetails.push(rowData);
+//       screenRow.rowspan = 1;
+//       screenModel.screenRows.set(field.coordinateY + index, screenRow);
+//     });
+//   }
+// };
 
 const composeListComponents = (screenModel: ScreenModel, field: FieldDto) => {
   const values = JSON.parse(field.value) as ListModel;
@@ -194,9 +182,7 @@ const composeListComponents = (screenModel: ScreenModel, field: FieldDto) => {
     screenRow.rowspan = 1;
     screenModel.screenRows.set(screenRow.coordinateY, screenRow);
   });
-  if (_.isUndefined(field.style)) {
-    field.style = "1";
-  }
+  field.style = _.isUndefined(field.style) ? "1" : field.style;
   // Compose page description
   if (field.style != "3") {
     const screenRow = {} as ScreenRowModel;
@@ -229,14 +215,7 @@ const composeListComponents = (screenModel: ScreenModel, field: FieldDto) => {
   screenRow.rowspan = 1;
   screenRow.rowDetails.push(inputValue);
   screenModel.screenRows.set(screenRow.coordinateY, screenRow);
-  if (_.isUndefined(screenModel.focus)) {
-    screenModel.focus = inputValue.attributeName;
-  }
-  const capturedValue = {
-    attributeName: inputValue.attributeName,
-    value: field.value,
-  } as CapturedValue;
-  screenModel.capturedValues.push(capturedValue);
+  collectInputAttribute(screenModel, inputValue);
 };
 
 const composeMultiInputRow = (screenModel: ScreenModel, field: FieldDto) => {
@@ -250,7 +229,7 @@ const composeMultiInputRow = (screenModel: ScreenModel, field: FieldDto) => {
     screenRow.coordinateY = field.coordinateY;
     screenRow.rowDetails = [];
     screenRow.rowDetails.push(field);
-    screenRow.rowspan = 2;
+    screenRow.rowspan = field.showLines;
     screenModel.screenRows.set(field.coordinateY, screenRow);
   }
   const capturedValue = {
@@ -260,8 +239,19 @@ const composeMultiInputRow = (screenModel: ScreenModel, field: FieldDto) => {
   screenModel.capturedValues.push(capturedValue);
 };
 
-function composeAdjustRows(screenModel: ScreenModel) {
-  for (let i = 1; i <= screenModel.totalPage * screenModel.pageSize; i++) {
+function adjustRows(screenModel: ScreenModel) {
+  const end = screenModel.totalPage * screenModel.pageSize;
+  for (let i = 1; i <= end; i++) {
+    if (screenModel.header) {
+      if (i == 1 || (i - 1) % screenModel.pageSize == 0) {
+        screenModel.headerField.coordinateY = i;
+        composeLabelRow(screenModel, screenModel.headerField);
+      }
+    }
+    if (screenModel.footer && i % screenModel.pageSize == 0) {
+      screenModel.footerField.coordinateY = i;
+      composeLabelRow(screenModel, screenModel.footerField);
+    }
     if (!screenModel.screenRows.has(i)) {
       for (let j = i - 1; j >= 0; j--) {
         const rowDetails = screenModel.screenRows.get(j)?.rowDetails;
@@ -294,3 +284,30 @@ function sortRows(screenModel: ScreenModel) {
   });
   return result;
 }
+
+const collectInputAttribute = (screenModel: ScreenModel, field: FieldDto) => {
+  const focusItem = {} as FocusItem;
+  focusItem.pageNumer = screenModel.totalPage;
+  focusItem.sequence = field.sequence;
+  focusItem.attributeName = field.attributeName;
+  screenModel.focusCollection.set(focusItem.sequence, focusItem);
+  const capturedValue = {
+    attributeName: field.attributeName,
+    value: field.value,
+  } as CapturedValue;
+  screenModel.capturedValues.push(capturedValue);
+};
+
+const setFocus = (param: EngineResponse, screenModel: ScreenModel) => {
+  if (_.isNull(param.screenDto.focus)) {
+    if (screenModel.focusCollection.size > 0) {
+      const array = Array.from(screenModel.focusCollection).sort(
+        (a: any, b: any) => {
+          return a[0] - b[0];
+        }
+      );
+      screenModel.sortFocus = array;
+      screenModel.focus = array[0][1].attributeName;
+    }
+  }
+};

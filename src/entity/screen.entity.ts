@@ -4,11 +4,14 @@ import { FieldDto } from "./response.entity";
 export interface ScreenModel {
   title: string;
   header: boolean;
+  headerField: FieldDto;
   footer: boolean;
-  footerDto: FieldDto;
+  footerField: FieldDto;
   focus: string;
   screenRows: Map<number, ScreenRowModel>;
   capturedValues: CapturedValue[];
+  focusCollection: Map<number, FocusItem>;
+  sortFocus: [number, FocusItem][];
   currentPage: number;
   pageSize: number;
   totalPage: number;
@@ -18,6 +21,7 @@ export interface ScreenModel {
   showSubBtn: boolean;
   showMessage: boolean;
   msgField: FieldDto;
+  additionalY: number;
 }
 
 export interface WorkFlowCollection {
@@ -47,43 +51,6 @@ export interface LabelViewModel {
   value: string;
 }
 
-// export class LineDetail {
-//   attributeName: string;
-//   attributeType: string;
-//   name?: string;
-//   value?: string;
-//   coordinateX: number | undefined | null;
-//   coordinateY: number | undefined | null;
-//   maxLength: number;
-//   minLength: number;
-//   attributeId;
-//   color: string;
-//   dataType: string;
-//   regexPattern: string;
-//   defaultValue: string;
-//   groupName: string;
-//   highlighted?: boolean;
-//   isHidden?: boolean;
-//   overwritten?: boolean;
-//   required?: boolean;
-//   sequence: number;
-
-//   constructor() {
-//     this.attributeName = "";
-//     this.name = "";
-//     this.value = "";
-//     this.attributeType = "";
-//     this.maxLength = 0;
-//     this.minLength = 0;
-//     this.attributeId = "";
-//     this.color = "";
-//     this.dataType = "";
-//     this.regexPattern = "";
-//     this.defaultValue = "";
-//     this.groupName = "";
-//     this.sequence = 0;
-//   }
-// }
 export enum ScreenRowComponentEnum {
   INPUT = "input",
   PASSWORD = "password",
@@ -119,4 +86,10 @@ export enum ActionKeyEnum {
 export interface SelectedItem {
   attributeId: string;
   sequence: number;
+}
+
+export interface FocusItem {
+  attributeName: string;
+  sequence: number;
+  pageNumer: number;
 }

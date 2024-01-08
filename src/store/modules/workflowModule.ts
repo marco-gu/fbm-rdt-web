@@ -177,6 +177,29 @@ const workflowModule: Module<WorkflowState, RootState> = {
         }
       }
     },
+    moveToNextFocus(state, payload) {
+      const sortFocus =
+        state.screenDepth == 0
+          ? state.screenModel.sortFocus
+          : state.subScreenModel.sortFocus;
+      sortFocus.forEach((t, index) => {
+        if (t[1].attributeName == payload) {
+          if (state.screenDepth == 0) {
+            if (index + 1 < sortFocus.length) {
+              state.screenModel.focus = sortFocus[index + 1][1].attributeName;
+            }
+          }
+        }
+      });
+    },
+    setCurrentFocus(state, payload) {
+      if (state.screenDepth == 0) {
+        console.log(payload);
+        state.screenModel.focus = payload;
+      } else {
+        state.subScreenModel.focus = payload;
+      }
+    },
   },
   namespaced: true,
 };

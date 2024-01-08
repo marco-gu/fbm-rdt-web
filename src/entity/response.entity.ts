@@ -21,6 +21,7 @@ export interface ScreenDto {
   style: string;
   colorSchema: string;
   fields: FieldDto[];
+  focus: string;
 }
 
 export interface FieldDto {
@@ -44,6 +45,8 @@ export interface FieldDto {
   defaultValue: string;
   fontSize: number;
   screenFieldEvent: ScreenFieldEventDto[];
+  showLines: number;
+  showLinesMax: number;
 }
 
 export interface ScreenFieldEventDto {
