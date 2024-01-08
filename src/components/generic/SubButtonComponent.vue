@@ -1,17 +1,4 @@
 <template>
-  <!-- <div class="line-item label-container" style="width: 100%">
-    <template v-for="(item, index) in details" :key="index">
-      <div
-        v-if="item.value"
-        class="label-block"
-        :style="{
-          fontSize: calcFontSize(item),
-        }"
-      >
-        {{ item.value }}
-      </div>
-    </template>
-  </div> -->
   <div
     class="pop_btn"
     @click="onClickSubScreen"
@@ -21,14 +8,12 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, toRefs } from "vue";
+import { defineComponent, ref } from "vue";
 import { useStore } from "@/store";
 import _ from "lodash";
-import { FieldDto } from "@/entity/response.entity";
 
 const SubButtonComponent = defineComponent({
-  setup(props) {
-    // const { details } = toRefs(props);
+  setup() {
     const store = useStore();
     const screenDepth = ref(store.state.workflowModule.screenDepth);
     const subScreenModel = _.cloneDeep(
@@ -39,21 +24,15 @@ const SubButtonComponent = defineComponent({
         if (!_.isEmpty(subScreenModel)) {
           store.commit("workflowModule/onOpenSubScreen", true);
         } else {
-          store.dispatch("workflowModule/onClickSubBtn");
+          store.dispatch("workflowModule/onSubmitSubForm");
         }
       } else {
         store.commit("workflowModule/onCloseSubScreen", false);
       }
     };
-    // const calcFontSize = (item: FieldDto) => {
-    //   const screenStyle = localStorage.getItem("screenStyle") as string;
-    //   const fontSize = JSON.parse(screenStyle).fontSize;
-    //   return fontSize + item.fontSize + "px";
-    // };
     return {
       onClickSubScreen,
       screenDepth,
-      // calcFontSize,
     };
   },
 });

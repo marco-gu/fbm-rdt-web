@@ -47,7 +47,11 @@ const workflowModule: Module<WorkflowState, RootState> = {
     },
     onSubmit(context, actionKey: string) {
       const request = {} as EngineRequset;
-      request.actionKey = ActionKeyEnum.SUBMIT;
+      if (_.isUndefined(actionKey)) {
+        request.actionKey = ActionKeyEnum.SUBMIT;
+      } else {
+        request.actionKey = actionKey;
+      }
       request.userSettingDto = {} as UserSettingDto;
       request.screenDepth = context.state.screenDepth;
       request.capturedValues =
@@ -58,7 +62,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
         context.commit("onSubmit", data);
       });
     },
-    onClickSubBtn(context) {
+    onSubmitSubForm(context, actionKey: string) {
       const request = {} as EngineRequset;
       request.userSettingDto = {} as UserSettingDto;
       request.capturedValues = [];
@@ -68,8 +72,12 @@ const workflowModule: Module<WorkflowState, RootState> = {
         context.state.screenModel.workFlowCollection.subWorkFlowId;
       request.subScreenDto.startWorkNodeId =
         context.state.screenModel.workFlowCollection.subWorkNodeId;
-      request.actionKey =
-        context.state.screenModel.workFlowCollection.subFormAction;
+      if (_.isUndefined(actionKey)) {
+        request.actionKey =
+          context.state.screenModel.workFlowCollection.subFormAction;
+      } else {
+        request.actionKey = actionKey;
+      }
       post(request).then((data) => {
         context.commit("onSubmit", data);
       });
@@ -144,23 +152,6 @@ const workflowModule: Module<WorkflowState, RootState> = {
       }
       state.isRender = true;
     },
-    // nextFocus(state, payload) {
-    //   state.screenModel.capturedValues.forEach((t: any, index: number) => {
-    //     if (t.attributeName == payload.attributeName) {
-    //       if (payload.direction == "up") {
-    //         if (index - 1 > -1) {
-    //           state.screenModel.focus =
-    //             state.screenModel.capturedValues[index - 1].attributeName;
-    //         }
-    //       } else {
-    //         if (index + 1 < state.screenModel.capturedValues.length)
-    //           state.screenModel.focus =
-    //             state.screenModel.capturedValues[index + 1].attributeName;
-    //       }
-    //     }
-    //   });
-    //   state.isRender = true;
-    // },
     moveToNextPage(state) {
       if (state.screenDepth == 0) {
         if (state.screenModel.currentPage < state.screenModel.totalPage) {
@@ -177,22 +168,22 @@ const workflowModule: Module<WorkflowState, RootState> = {
         }
       }
     },
-    moveToNextFocus(state, payload) {
+    moveToNextFocus(state, attributeName) {
       const sortFocus =
         state.screenDepth == 0
           ? state.screenModel.sortFocus
           : state.subScreenModel.sortFocus;
       sortFocus.forEach((t, index) => {
-        if (t[1].attributeName == payload) {
+        if (t[1].attributeName == attributeName) {
           if (state.screenDepth == 0) {
             if (index + 1 < sortFocus.length) {
               const currentPage = t[1].pageNumer;
               const nextFocusPage = sortFocus[index + 1][1].pageNumer;
-              if (currentPage == nextFocusPage) {
-                state.screenModel.focus = sortFocus[index + 1][1].attributeName;
-              } else {
-                // TODO move on next focus
+              if (currentPage !== nextFocusPage) {
+                state.screenModel.currentPage = nextFocusPage;
+                state.isRender = true;
               }
+              state.screenModel.focus = sortFocus[index + 1][1].attributeName;
             } else {
               state.screenModel.focus = sortFocus[0][1].attributeName;
             }
@@ -200,11 +191,11 @@ const workflowModule: Module<WorkflowState, RootState> = {
         }
       });
     },
-    setCurrentFocus(state, payload) {
+    setCurrentFocus(state, focus) {
       if (state.screenDepth == 0) {
-        state.screenModel.focus = payload;
+        state.screenModel.focus = focus;
       } else {
-        state.subScreenModel.focus = payload;
+        state.subScreenModel.focus = focus;
       }
     },
   },

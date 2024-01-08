@@ -126,15 +126,30 @@ const InputComponent = defineComponent({
           detail.screenFieldEvent.forEach((t) => {
             switch (t.type) {
               case EventType.TAB:
+                onTab(event);
                 break;
-              case EventType.SUBMIT:
-                store.dispatch("workflowModule/onSubmit");
+              case EventType.SUBMIT: {
+                const actionkey = detail.attributeName + "Event" + "Submit";
+                store.dispatch("workflowModule/onSubmit", actionkey);
                 break;
+              }
               case EventType.SUBFORM:
                 break;
               case EventType.SUBFORM_OR_TAB_NONE_BLANK:
+                if (_.isNull(detail.value)) {
+                  const actionkey = detail.attributeName + "Event" + "Submit";
+                  store.dispatch("workflowModule/onSubmit", actionkey);
+                } else {
+                  onTab(event);
+                }
                 break;
               case EventType.SUBMIT_OR_TAB_NONE_BLANK:
+                if (_.isNull(detail.value)) {
+                  const actionkey = detail.attributeName + "Event" + "SubForm";
+                  store.dispatch("workflowModule/onSubmitSubForm", actionkey);
+                } else {
+                  onTab(event);
+                }
                 break;
             }
           });

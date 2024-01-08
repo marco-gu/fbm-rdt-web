@@ -10,7 +10,7 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
   const doc = new XmlDocument(engineResponse.legacyOutPutXML);
   const fields = [] as FieldDto[];
   engineResponse.screenDto.fields = [];
-  doc.children.forEach((t: any, index: number) => {
+  doc.children.forEach((t: any) => {
     switch (t.name) {
       case "field": {
         if (t.attr.typ != "funcKey") {
@@ -73,7 +73,7 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
       }
     }
   });
-  rows.forEach((row, index) => {
+  rows.forEach((row) => {
     if (row && row.length > 0) {
       row.forEach((t) => {
         engineResponse.screenDto.fields.push(t);
@@ -100,83 +100,6 @@ export function composeEmptyRowsForLegacy(rows: Map<number, ScreenRowModel>) {
     }
   }
 }
-
-// export function composeRowData(
-//   screenEntity: ScreenEntity
-// ): Map<number, ScreenLineEntity> {
-//   const map: Map<number, any> = new Map();
-//   screenEntity.screenLines.forEach((screenRow: any[]) => {
-//     if (screenRow.length > 0) {
-//       const line = {} as ScreenLineEntity;
-//       line.details = [] as LineDetailEntity[];
-//       screenRow.forEach((column: FieldDto) => {
-//         const detail = {} as LineDetailEntity;
-//         if (column) {
-//           switch (column.attributeType) {
-//             case ResponseAttributeType.OUTPUT:
-//               if (
-//                 !line.type ||
-//                 (line.type && line.type == ScreenLineTypeEnum.LABEL)
-//               ) {
-//                 line.type = ScreenLineTypeEnum.LABEL;
-//               }
-//               detail.name = column.value;
-//               detail.coordinateNameX = column.coordinateX;
-//               line.color = column.color;
-//               // if (line.detail && !line.detail.name) {
-//               //   line.detail.name = column.value;
-//               //   line.detail.coordinateNameX = column.coordinateX;
-//               // } else {
-//               //   line.detail.value = column.value;
-//               //   line.detail.coordinateValueX = column.coordinateX;
-//               // }
-//               // line.detail.color = column.color;
-//               line.details.push(detail);
-//               break;
-//             case ResponseAttributeType.INPUT:
-//               line.type = ScreenLineTypeEnum.INPUT;
-//               detail.attributeName = column.attributeName;
-//               detail.coordinateValueX = column.coordinateX;
-//               detail.maxLength = column.maxLength;
-//               detail.value =
-//                 column.defaultValue == undefined ? "" : column.defaultValue;
-//               // line.detail.attributeName = column.attributeName;
-//               // line.detail.coordinateValueX = column.coordinateX;
-//               // line.detail.maxLength = column.maxLength;
-//               // line.detail.value =
-//               //   column.defaultValue == undefined ? "" : column.defaultValue;
-//               if (screenEntity.screenFocusName == column.attributeName) {
-//                 line.isFocus = true;
-//               }
-//               line.details.push(detail);
-//               break;
-//             case ResponseAttributeType.PASSWORD:
-//               line.type = ScreenLineTypeEnum.PASSWORD;
-//               // line.detail.attributeName = column.attributeName;
-//               // line.detail.maxLength = column.maxLength;
-//               // line.detail.coordinateValueX = column.coordinateX;
-//               detail.attributeName = column.attributeName;
-//               detail.maxLength = column.maxLength;
-//               detail.coordinateValueX = column.coordinateX;
-//               line.details.push(detail);
-//               break;
-//             case ResponseAttributeType.MENU:
-//               line.type = ScreenLineTypeEnum.MENU;
-//               // line.detail.name = column.value;
-//               // line.detail.coordinateNameX = column.coordinateX;
-//               detail.name = column.value;
-//               detail.coordinateNameX = column.coordinateX;
-//               line.details.push(detail);
-//               break;
-//           }
-//         }
-//       });
-//       map.set(screenRow[0].coordinateY, line);
-//     }
-//   });
-//   console.log(map);
-//   return map;
-// }
 
 function sortArray(array: any) {
   let temp = null;

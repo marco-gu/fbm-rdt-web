@@ -74,5 +74,3 @@ export enum EventType {
   SUBMIT_OR_TAB_NONE_BLANK = "submitOrTabNoneBlank",
   SUBFORM_OR_TAB_NONE_BLANK = "subFormOrTabNoneBlank",
 }
-
-export { UserSettingDto };

@@ -19,7 +19,6 @@ import { get } from "@/service/http";
 import style from "../assets/device/default.json";
 import RDTSubView from "./options/RDTSubView.vue";
 import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
-import _ from "lodash";
 import ListPageLabelComponent from "@/components/list/ListPageLabelComponent.vue";
 import ScrollBarComponent from "@/components/generic/ScrollBarComponent.vue";
 
@@ -196,7 +195,6 @@ const RDTView = defineComponent({
           }
           case 27:
             if (store.state.workflowModule.screenModel.title == "Login") {
-              // kill session
               const url =
                 "RDTEngine/deleteSession/" + localStorage.getItem("sessionId");
               get(url).then(() => {

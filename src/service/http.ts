@@ -26,7 +26,7 @@ export const post = (request: EngineRequset) => {
   });
 };
 
-export const get = (params: string, sessionID?: number) => {
+export const get = (params: string) => {
   const config = {};
   return new Promise((resolve, reject) => {
     service.get(params, config).then(
