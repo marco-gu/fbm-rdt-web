@@ -7,7 +7,6 @@ export interface ScreenModel {
   footer: boolean;
   footerDto: FieldDto;
   focus: string;
-  // screenDepth: number;
   screenRows: Map<number, ScreenRowModel>;
   capturedValues: CapturedValue[];
   currentPage: number;
@@ -18,7 +17,7 @@ export interface ScreenModel {
   selectedItem: SelectedItem;
   showSubBtn: boolean;
   showMessage: boolean;
-  message: string;
+  msgField: FieldDto;
 }
 
 export interface WorkFlowCollection {

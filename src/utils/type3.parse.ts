@@ -34,11 +34,10 @@ export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
 function composeRowsData(param: EngineResponse, screenModel: ScreenModel) {
   const fields = param.screenDto.fields;
   fields.forEach((field: FieldDto) => {
-    if (
-      field.attributeType != AttributeType.MESSAGE ||
-      (field.attributeType == AttributeType.MESSAGE &&
-        param.resultStatus == "error")
-    ) {
+    if (field.attributeType == AttributeType.MESSAGE) {
+      screenModel.showMessage = param.resultStatus == "error" ? true : false;
+      screenModel.msgField = field;
+    } else {
       if (screenModel.header) {
         field.coordinateY += 1;
       }
