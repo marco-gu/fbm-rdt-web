@@ -5,7 +5,7 @@
       borderColor: messages[0].value.color,
     }"
   >
-    <div class="label-block" style="width: 100%">
+    <div class="label-block">
       <span class="svg-container">
         <svg
           v-if="messages[0].value.color === 'red'"
@@ -58,6 +58,11 @@ const MessageComponent = defineComponent({
 export default MessageComponent;
 </script>
 <style lang="scss" scoped>
+.label-block {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  width: 100%;
+}
 .msg-box {
   // width: calc(100% - 30px);
   width: 100%;
