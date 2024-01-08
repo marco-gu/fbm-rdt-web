@@ -39,3 +39,16 @@ export const get = (params: string) => {
     );
   });
 };
+
+export const _delete = (params: string) => {
+  return new Promise((resolve, reject) => {
+    service.delete(params).then(
+      (res) => {
+        resolve(res.data);
+      },
+      (err) => {
+        reject(err);
+      }
+    );
+  });
+};
