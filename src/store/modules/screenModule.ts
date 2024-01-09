@@ -5,8 +5,9 @@ import RootState from "../state";
 const emptyMsgContent: MsgInfo = {
   message: "",
   color: "",
+  y: 0,
 };
-const MSG_DISMISS_TIME = 2000;
+const MSG_DISMISS_TIME = 3000;
 export interface ScreenState {
   showMessage: boolean;
   messageContent: MsgInfo;

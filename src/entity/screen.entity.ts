@@ -97,5 +97,5 @@ export interface FocusItem {
 export interface MsgInfo {
   color: string;
   message: string;
-  y?: number;
+  y: number;
 }

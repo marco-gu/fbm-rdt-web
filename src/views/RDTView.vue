@@ -104,13 +104,13 @@ const RDTView = defineComponent({
         const subBtn = h(SubButtonComponent);
         screenView.value.push(subBtn);
       }
-      console.log(screenModel.showMessage);
       if (screenModel.showMessage) {
         const messageContent = screenModel.msgField.value;
         if (messageContent) {
           const content = {
             message: JSON.parse(messageContent).msgItems[0].message,
             color: JSON.parse(messageContent).msgItems[0].color,
+            y: screenModel.msgField.coordinateY || 0,
           };
           store.dispatch("screenModule/setMessageContent", content);
           store.dispatch("screenModule/showMessageAutoDismiss");

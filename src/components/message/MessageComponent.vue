@@ -7,17 +7,21 @@
     <div
       class="label-block"
       :style="{
-        borderColor: store.state.screenModule.messageContent.color,
+        marginTop: store.state.screenModule.messageContent.y * rowHeight + 'px',
       }"
     >
+      <!-- :style="{
+        borderColor: store.state.screenModule.messageContent.color,
+      }" -->
       <span class="svg-container">
         <svg
           v-if="store.state.screenModule.messageContent.color === 'red'"
           height="22px"
           width="22px"
           viewBox="0 0 24 24"
-          :fill="store.state.screenModule.messageContent.color"
+          fill="#ffc58f"
         >
+          <!-- :fill="store.state.screenModule.messageContent.color" -->
           <path d="M0 0h24v24H0z" fill="none" />
           <path
             d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
@@ -28,7 +32,7 @@
           height="18px"
           viewBox="0 0 24 24"
           width="18px"
-          :fill="store.state.screenModule.messageContent.color"
+          fill="#ffc58f"
         >
           <path d="M0 0h24v24H0z" fill="none" />
           <path
@@ -36,7 +40,8 @@
           />
         </svg>
       </span>
-      <span :style="{ color: store.state.screenModule.messageContent.color }">
+      <!-- :style="{ color: store.state.screenModule.messageContent.color }" -->
+      <span>
         {{ store.state.screenModule.messageContent.message }}
       </span>
     </div>
@@ -44,17 +49,19 @@
 </template>
 <script lang="ts">
 import { useStore } from "@/store";
-import { defineComponent, reactive, ref, toRefs } from "vue";
+import { defineComponent, ref } from "vue";
+import defaultStyle from "@/assets/device/default.json";
 const MessageComponent = defineComponent({
   setup() {
     const store = useStore();
-
+    const rowHeight = ref(defaultStyle.rowHeight);
     const hideMsgBox = () => {
       store.dispatch("screenModule/showMessage", false);
     };
     return {
       hideMsgBox,
       store,
+      rowHeight,
     };
   },
 });
@@ -70,14 +77,16 @@ export default MessageComponent;
   display: none;
   width: 100%;
   .label-block {
+    font-size: 24px;
     padding: 10px;
     border: 1px solid;
     text-align: center;
     word-wrap: break-word;
     white-space: pre-wrap;
     width: 100%;
-    background-color: #001733;
-    margin-top: 20px;
+    color: #ffc58f;
+    background-color: #007acc;
+    border: 1px solid #ffc58f;
   }
   &.show {
     display: flex;
@@ -86,11 +95,11 @@ export default MessageComponent;
   }
 }
 .svg-container {
-  margin-right: 10px;
+  margin-right: 5px;
   display: inline-block;
   position: relative;
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
   svg {
     position: absolute;
     // top: 5px;
@@ -99,11 +108,11 @@ export default MessageComponent;
 }
 @keyframes fadein {
   from {
-    top: 0;
+    // top: 0;
     opacity: 0;
   }
   to {
-    top: 26px;
+    // top: 26px;
     opacity: 1;
   }
 }
