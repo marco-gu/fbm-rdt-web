@@ -162,12 +162,6 @@ const RDTView = defineComponent({
               });
               break;
             }
-            // case ScreenRowComponentEnum.MESSAGEBOX: {
-            //   rowNode.value = h(MessageComponent, {
-            //     details: row.rowDetails,
-            //   });
-            //   break;
-            // }
             case ScreenRowComponentEnum.SUB_BUTTON: {
               rowNode.value = h(SubButtonComponent, {
                 details: row.rowDetails,

@@ -41,7 +41,6 @@ const LabelComponent = defineComponent({
     const calcFontSize = (item: FieldDto) => {
       const screen = localStorage.getItem("screen") as string;
       const fontSize = JSON.parse(screen).fontSize;
-      console.log(fontSize);
       return fontSize + item.fontSize + "px";
     };
     return {

@@ -44,15 +44,16 @@ export interface FieldDto {
   minLength: number;
   defaultValue: string;
   fontSize: number;
-  screenFieldEvent: ScreenFieldEventDto[];
+  events: ScreenFieldEventDto[];
   showLines: number;
   showLinesMax: number;
 }
 
 export interface ScreenFieldEventDto {
   screenFieldId: number;
-  type: string;
-  value: string;
+  eventType: string;
+  eventValue: string;
+  triggeredBy: string;
 }
 
 export enum AttributeType {

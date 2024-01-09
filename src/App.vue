@@ -11,7 +11,6 @@
       <i class="fa fa-solid fa-battery-half"></i>
     </li>
   </ul>
-
   <router-view></router-view>
   <ul
     v-if="isAndroidSimulator"
@@ -47,6 +46,7 @@ export default defineComponent({
         rows: 15,
         subRows: 13,
         fontSize: 24,
+        backgroundColor: "#0E1925",
       };
       localStorage.setItem("screen", JSON.stringify(screenStyle));
       const shell = document.getElementById("app") as HTMLElement;

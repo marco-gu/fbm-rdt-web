@@ -27,7 +27,10 @@ const ListPageLabelComponent = defineComponent({
     const store = useStore();
     const pageDesc = ref();
     onMounted(() => {
-      const map = store.state.workflowModule.screenModel.singleListCollection;
+      const map =
+        store.state.workflowModule.screenDepth == 0
+          ? store.state.workflowModule.screenModel.singleListCollection
+          : store.state.workflowModule.subScreenModel.singleListCollection;
       map.forEach((val, key) => {
         if (
           !_.isUndefined(details.value) &&

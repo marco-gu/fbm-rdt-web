@@ -56,7 +56,12 @@
 import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted, Ref, watch } from "vue";
 import { CapturedValue } from "@/entity/request.entity";
-import { AttributeType, EventType, FieldDto } from "@/entity/response.entity";
+import {
+  AttributeType,
+  EventType,
+  FieldDto,
+  ScreenFieldEventDto,
+} from "@/entity/response.entity";
 import { calculateWidthItems, inputLength } from "@/utils/screen.utils";
 import _ from "lodash";
 const InputComponent = defineComponent({
@@ -117,42 +122,52 @@ const InputComponent = defineComponent({
 
     const onKeyPress = (event: KeyboardEvent, detail: FieldDto) => {
       const key = event.charCode || event.which || event.keyCode;
+      const events = {
+        enterEvent: {} as ScreenFieldEventDto,
+      };
+      if (!_.isUndefined(detail.events) && detail.events.length > 0) {
+        detail.events.forEach((t) => {
+          if (t.triggeredBy == "enter") {
+            events.enterEvent = t;
+          }
+        });
+      }
       if (key === 13) {
         event.stopPropagation();
-        if (
-          !_.isUndefined(detail.screenFieldEvent) &&
-          detail.screenFieldEvent.length > 0
-        ) {
-          detail.screenFieldEvent.forEach((t) => {
-            switch (t.type) {
-              case EventType.TAB:
-                onTab(event);
-                break;
-              case EventType.SUBMIT: {
-                const actionkey = detail.attributeName + "Event" + "Submit";
-                store.dispatch("workflowModule/onSubmit", actionkey);
-                break;
-              }
-              case EventType.SUBFORM:
-                break;
-              case EventType.SUBFORM_OR_TAB_NONE_BLANK:
-                if (_.isNull(detail.value)) {
-                  const actionkey = detail.attributeName + "Event" + "Submit";
-                  store.dispatch("workflowModule/onSubmit", actionkey);
-                } else {
-                  onTab(event);
-                }
-                break;
-              case EventType.SUBMIT_OR_TAB_NONE_BLANK:
-                if (_.isNull(detail.value)) {
-                  const actionkey = detail.attributeName + "Event" + "SubForm";
-                  store.dispatch("workflowModule/onSubmitSubForm", actionkey);
-                } else {
-                  onTab(event);
-                }
-                break;
+        if (!_.isEmpty(events.enterEvent)) {
+          // detail.events.forEach((t) => {
+          switch (events.enterEvent.eventType) {
+            case EventType.TAB:
+              onTab(event);
+              break;
+            case EventType.SUBMIT: {
+              const actionkey = detail.attributeName + "Enter" + "Submit";
+              store.dispatch("workflowModule/onSubmit", actionkey);
+              break;
             }
-          });
+            case EventType.SUBFORM: {
+              const actionkey = detail.attributeName + "Enter" + "SubForm";
+              store.dispatch("workflowModule/onSubmitSubForm", actionkey);
+              break;
+            }
+            case EventType.SUBMIT_OR_TAB_NONE_BLANK:
+              if (_.isEmpty(detail.value)) {
+                const actionkey = detail.attributeName + "Enter" + "Submit";
+                store.dispatch("workflowModule/onSubmit", actionkey);
+              } else {
+                onTab(event);
+              }
+              break;
+            case EventType.SUBFORM_OR_TAB_NONE_BLANK:
+              if (_.isEmpty(detail.value)) {
+                const actionkey = detail.attributeName + "Enter" + "SubForm";
+                store.dispatch("workflowModule/onSubmitSubForm", actionkey);
+              } else {
+                onTab(event);
+              }
+              break;
+          }
+          // });
         } else {
           store.dispatch("workflowModule/onSubmit");
         }
