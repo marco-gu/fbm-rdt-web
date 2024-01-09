@@ -4,46 +4,43 @@
     @click="hideMsgBox"
     :class="{ show: store.state.screenModule.showMessage }"
   >
-    <div
-      class="label-block"
-      :style="{
-        marginTop: store.state.screenModule.messageContent.y * rowHeight + 'px',
-      }"
-    >
-      <!-- :style="{
+    <div class="label-block">
+      <div style="padding: 6px">
+        <!-- :style="{
         borderColor: store.state.screenModule.messageContent.color,
       }" -->
-      <span class="svg-container">
-        <svg
-          v-if="store.state.screenModule.messageContent.color === 'red'"
-          height="22px"
-          width="22px"
-          viewBox="0 0 24 24"
-          fill="#ffc58f"
-        >
-          <!-- :fill="store.state.screenModule.messageContent.color" -->
-          <path d="M0 0h24v24H0z" fill="none" />
-          <path
-            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
-          />
-        </svg>
-        <svg
-          v-else
-          height="18px"
-          viewBox="0 0 24 24"
-          width="18px"
-          fill="#ffc58f"
-        >
-          <path d="M0 0h24v24H0z" fill="none" />
-          <path
-            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-          />
-        </svg>
-      </span>
-      <!-- :style="{ color: store.state.screenModule.messageContent.color }" -->
-      <span>
-        {{ store.state.screenModule.messageContent.message }}
-      </span>
+        <span class="svg-container">
+          <svg
+            v-if="store.state.screenModule.messageContent.color === 'red'"
+            height="22px"
+            width="22px"
+            viewBox="0 0 24 24"
+            fill="#ffc58f"
+          >
+            <!-- :fill="store.state.screenModule.messageContent.color" -->
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+            />
+          </svg>
+          <svg
+            v-else
+            height="18px"
+            viewBox="0 0 24 24"
+            width="18px"
+            fill="#ffc58f"
+          >
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+            />
+          </svg>
+        </span>
+        <!-- :style="{ color: store.state.screenModule.messageContent.color }" -->
+        <span>
+          {{ store.state.screenModule.messageContent.message }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -78,12 +75,13 @@ export default MessageComponent;
   width: 100%;
   .label-block {
     font-size: 24px;
-    padding: 10px;
+    // padding: 6px;
     border: 1px solid;
     text-align: center;
     word-wrap: break-word;
     white-space: pre-wrap;
-    width: 100%;
+    // width: 100%;
+    width: 329px;
     color: #ffc58f;
     background-color: #007acc;
     border: 1px solid #ffc58f;
@@ -91,7 +89,11 @@ export default MessageComponent;
   &.show {
     display: flex;
     visibility: visible;
-    animation: fadein 0.5s;
+    // animation: fadein 0.5s;
+    justify-content: center;
+    align-items: center;
+    background-color: #001733;
+    opacity: 0.95;
   }
 }
 .svg-container {

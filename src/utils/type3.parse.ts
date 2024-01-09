@@ -204,7 +204,7 @@ const composeListComponents = (screenModel: ScreenModel, field: FieldDto) => {
   screenRow.rowDetails = [];
   const inputLabel = {} as FieldDto;
   inputLabel.attributeType = AttributeType.LABEL;
-  inputLabel.value = "OPTION:";
+  inputLabel.value = "CHOICE:";
   inputLabel.coordinateX = 1;
   screenRow.rowDetails.push(inputLabel);
   const inputValue = {} as FieldDto;
@@ -299,7 +299,6 @@ const collectInputAttribute = (screenModel: ScreenModel, field: FieldDto) => {
 };
 
 const setScreenFocus = (param: EngineResponse, screenModel: ScreenModel) => {
-  // if (_.isNull(param.screenDto.focus)) {
   if (screenModel.focusCollection.size > 0) {
     const array = Array.from(screenModel.focusCollection).sort(
       (a: any, b: any) => {
@@ -307,9 +306,7 @@ const setScreenFocus = (param: EngineResponse, screenModel: ScreenModel) => {
       }
     );
     screenModel.sortFocus = array;
-    // screenModel.focus = array[0][1].attributeName;
   }
-  // }
   if (_.isNull(param.screenDto.focus)) {
     screenModel.focus = screenModel.sortFocus[0][1].attributeName;
   }

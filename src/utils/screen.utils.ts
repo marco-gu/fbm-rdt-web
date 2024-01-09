@@ -46,8 +46,9 @@ export function inputLength(maxLength: number) {
   const eachLength = defaultScreen.content_width / defaultScreen.columns;
   const calcWidth =
     eachLength * maxLength >= screenWidth
-      ? screenWidth - 30
+      ? screenWidth
       : eachLength * maxLength;
+  console.log(calcWidth);
   if (maxLength > 0) {
     if (maxLength > 1) {
       return calcWidth + "px";
