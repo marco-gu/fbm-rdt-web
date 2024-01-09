@@ -10,6 +10,7 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
   const doc = new XmlDocument(engineResponse.legacyOutPutXML);
   const fields = [] as FieldDto[];
   engineResponse.screenDto.fields = [];
+  engineResponse.screenDto.focus = doc.attr.focus;
   doc.children.forEach((t: any) => {
     switch (t.name) {
       case "field": {
@@ -18,20 +19,13 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
           element.color = t.attr.color;
           element.coordinateX = parseInt(t.attr.x);
           element.coordinateY = parseInt(t.attr.y);
-          // if (
-          //   screenModel.title.includes("Menu") &&
-          //   index < doc.children.length - 1
-          // ) {
-          //   element.attributeType = ScreenLineTypeEnum.MENU;
-          // } else {
-          //   element.attributeType = t.attr.typ;
-          // }
           switch (t.attr.typ) {
             case "output":
               element.attributeType = AttributeType.LABEL;
               break;
             case "input":
               element.attributeType = AttributeType.INPUT;
+              console.log(element.coordinateY);
               break;
           }
           element.value = t.attr.value;
@@ -87,8 +81,6 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
 
 export function composeEmptyRowsForLegacy(rows: Map<number, ScreenRowModel>) {
   const perPageMaxLine = 15;
-  console.log("236");
-  console.log(rows);
   for (let i = 1; i <= perPageMaxLine; i++) {
     console.log(rows.has(i));
     if (!rows.has(i)) {

@@ -21,6 +21,7 @@ export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
   const screen = JSON.parse(localStorage.getItem("screen") as any);
   screenModel.pageSize = param.screenDepth == 0 ? screen.rows : screen.subRows;
   screenModel.screenRows = composeRowsData(param, screenModel);
+  console.log(screenModel.screenRows);
   screenModel.title = param.screenDto.title;
   screenModel.workFlowCollection.workFlowId = param.workFlowId;
   screenModel.workFlowCollection.workNodeId = param.workNodeId;
@@ -34,28 +35,32 @@ const composeRowsData = (param: EngineResponse, screenModel: ScreenModel) => {
       screenModel.showMessage = param.resultStatus == "error" ? true : false;
       screenModel.msgField = field;
     } else {
-      if (!_.isNull(field.coordinateY)) {
-        // calculate total page
-        screenModel.totalPage =
-          Math.floor(field.coordinateY / screenModel.pageSize) + 1;
-        // calculate next coordinateY
-        if (screenModel.header) {
-          field.coordinateY += screenModel.totalPage;
-        }
-        field.coordinateY += screenModel.additionalY;
-        if (field.coordinateY % screenModel.pageSize == 0) {
-          screenModel.additionalY++;
-          field.coordinateY++;
-        }
-        // TODO span row logic
-        if (screenModel.screenRows.size > 0) {
-          const preRow = screenModel.screenRows.get(
-            screenModel.screenRows.size - 1
-          );
-          if (!_.isUndefined(preRow)) {
-            field.coordinateY += preRow.rowspan - 1;
+      if (_.isNull(param.legacyOutPutXML)) {
+        if (!_.isNull(field.coordinateY)) {
+          // calculate total page
+          screenModel.totalPage =
+            Math.floor(field.coordinateY / screenModel.pageSize) + 1;
+          // calculate next coordinateY
+          if (screenModel.header) {
+            field.coordinateY += screenModel.totalPage;
+          }
+          field.coordinateY += screenModel.additionalY;
+          if (field.coordinateY % screenModel.pageSize == 0) {
+            screenModel.additionalY++;
+            field.coordinateY++;
+          }
+          // TODO span row logic
+          if (screenModel.screenRows.size > 0) {
+            const preRow = screenModel.screenRows.get(
+              screenModel.screenRows.size - 1
+            );
+            if (!_.isUndefined(preRow)) {
+              field.coordinateY += preRow.rowspan - 1;
+            }
           }
         }
+      } else {
+        screenModel.focus = param.screenDto.focus;
       }
       switch (field.attributeType) {
         case AttributeType.HEADER:
@@ -111,7 +116,11 @@ const composeLabelRow = (
     }
     screenRow.rowDetails = [];
     screenRow.rowDetails.push(field);
-    screenRow.rowspan = _.isNull(field.showLines) ? 1 : field.showLines;
+    if (_.isNull(field.showLines) || _.isUndefined(field.showLines)) {
+      screenRow.rowspan = 1;
+    } else {
+      screenRow.rowspan = field.showLines;
+    }
     screenModel.screenRows.set(field.coordinateY, screenRow);
   }
 };
@@ -128,13 +137,22 @@ const composeInputRow = (screenModel: ScreenModel, field: FieldDto) => {
         row.rowType = ScreenRowComponentEnum.PASSWORD;
         break;
     }
+    if (_.isNull(field.showLines) || _.isUndefined(field.showLines)) {
+      row.rowspan = 1;
+    } else {
+      row.rowspan = field.showLines;
+    }
     row.rowDetails.push(field);
   } else {
     const screenRow = {} as ScreenRowModel;
     screenRow.rowType = ScreenRowComponentEnum.INPUT;
     screenRow.coordinateY = field.coordinateY;
     screenRow.rowDetails = [];
-    screenRow.rowspan = 1;
+    if (_.isNull(field.showLines) || _.isUndefined(field.showLines)) {
+      screenRow.rowspan = 1;
+    } else {
+      screenRow.rowspan = field.showLines;
+    }
     screenRow.rowDetails.push(field);
     screenModel.screenRows.set(field.coordinateY, screenRow);
   }
@@ -143,7 +161,6 @@ const composeInputRow = (screenModel: ScreenModel, field: FieldDto) => {
 const composeListComponents = (screenModel: ScreenModel, field: FieldDto) => {
   const values = JSON.parse(field.value) as ListModel;
   let calculateY = field.coordinateY;
-  console.log("146");
   // Compose title
   const title = {} as FieldDto;
   title.value = values.title;
@@ -165,7 +182,6 @@ const composeListComponents = (screenModel: ScreenModel, field: FieldDto) => {
     screenRow.rowspan = 1;
     screenModel.screenRows.set(screenRow.coordinateY, screenRow);
   });
-  console.log(field.style);
   field.style = _.isNull(field.style) ? "1" : field.style;
   // Compose page description
   if (field.style != "3") {
