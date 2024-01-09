@@ -299,15 +299,18 @@ const collectInputAttribute = (screenModel: ScreenModel, field: FieldDto) => {
 };
 
 const setScreenFocus = (param: EngineResponse, screenModel: ScreenModel) => {
+  // if (_.isNull(param.screenDto.focus)) {
+  if (screenModel.focusCollection.size > 0) {
+    const array = Array.from(screenModel.focusCollection).sort(
+      (a: any, b: any) => {
+        return a[0] - b[0];
+      }
+    );
+    screenModel.sortFocus = array;
+    // screenModel.focus = array[0][1].attributeName;
+  }
+  // }
   if (_.isNull(param.screenDto.focus)) {
-    if (screenModel.focusCollection.size > 0) {
-      const array = Array.from(screenModel.focusCollection).sort(
-        (a: any, b: any) => {
-          return a[0] - b[0];
-        }
-      );
-      screenModel.sortFocus = array;
-      screenModel.focus = array[0][1].attributeName;
-    }
+    screenModel.focus = screenModel.sortFocus[0][1].attributeName;
   }
 };

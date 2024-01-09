@@ -7,6 +7,8 @@ import {
 import { ScreenRowComponentEnum, ScreenRowModel } from "@/entity/screen.entity";
 
 export function parseLegacyXML(engineResponse: EngineResponse) {
+  const data = engineResponse.legacyOutPutXML;
+  engineResponse.legacyOutPutXML = data.replace("&", "&amp;");
   const doc = new XmlDocument(engineResponse.legacyOutPutXML);
   const fields = [] as FieldDto[];
   engineResponse.screenDto.fields = [];
@@ -25,6 +27,7 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
               break;
             case "input":
               element.attributeType = AttributeType.INPUT;
+              element.sequence = parseInt(t.attr.y);
               console.log(element.coordinateY);
               break;
           }
@@ -76,7 +79,6 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
   });
   console.log(engineResponse);
   return engineResponse;
-  // screenEntity.screenLines = rows;
 }
 
 export function composeEmptyRowsForLegacy(rows: Map<number, ScreenRowModel>) {
