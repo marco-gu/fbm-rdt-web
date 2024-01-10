@@ -48,7 +48,6 @@ export function inputLength(maxLength: number) {
     eachLength * maxLength >= screenWidth
       ? screenWidth
       : eachLength * maxLength;
-  console.log(calcWidth);
   if (maxLength > 0) {
     if (maxLength > 1) {
       return calcWidth + "px";

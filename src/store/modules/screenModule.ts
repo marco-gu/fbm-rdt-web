@@ -7,7 +7,7 @@ const emptyMsgContent: MsgInfo = {
   color: "",
   y: 0,
 };
-const MSG_DISMISS_TIME = 300000000;
+const MSG_DISMISS_TIME = 3000;
 export interface ScreenState {
   showMessage: boolean;
   messageContent: MsgInfo;
@@ -32,6 +32,10 @@ const screenModule: Module<ScreenState, RootState> = {
     },
     setMessageContent(context, payload: MsgInfo) {
       context.commit("setMessageContent", payload);
+    },
+    hideMessage(context) {
+      context.commit("toggleMessage", false);
+      context.commit("setMessageContent", emptyMsgContent);
     },
   },
   mutations: {

@@ -134,42 +134,44 @@ const InputComponent = defineComponent({
       }
       if (key === 13) {
         event.stopPropagation();
-        if (!_.isEmpty(events.enterEvent)) {
-          // detail.events.forEach((t) => {
-          switch (events.enterEvent.eventType) {
-            case EventType.TAB:
-              onTab(event);
-              break;
-            case EventType.SUBMIT: {
-              const actionkey = detail.attributeName + "Enter" + "Submit";
-              store.dispatch("workflowModule/onSubmit", actionkey);
-              break;
-            }
-            case EventType.SUBFORM: {
-              const actionkey = detail.attributeName + "Enter" + "SubForm";
-              store.dispatch("workflowModule/onSubmitSubForm", actionkey);
-              break;
-            }
-            case EventType.SUBMIT_OR_TAB_NONE_BLANK:
-              if (_.isEmpty(detail.value)) {
+        if (store.state.screenModule.showMessage) {
+          store.dispatch("screenModule/hideMessage");
+        } else {
+          if (!_.isEmpty(events.enterEvent)) {
+            switch (events.enterEvent.eventType) {
+              case EventType.TAB:
+                onTab(event);
+                break;
+              case EventType.SUBMIT: {
                 const actionkey = detail.attributeName + "Enter" + "Submit";
                 store.dispatch("workflowModule/onSubmit", actionkey);
-              } else {
-                onTab(event);
+                break;
               }
-              break;
-            case EventType.SUBFORM_OR_TAB_NONE_BLANK:
-              if (_.isEmpty(detail.value)) {
+              case EventType.SUBFORM: {
                 const actionkey = detail.attributeName + "Enter" + "SubForm";
                 store.dispatch("workflowModule/onSubmitSubForm", actionkey);
-              } else {
-                onTab(event);
+                break;
               }
-              break;
+              case EventType.SUBMIT_OR_TAB_NONE_BLANK:
+                if (_.isEmpty(detail.value)) {
+                  const actionkey = detail.attributeName + "Enter" + "Submit";
+                  store.dispatch("workflowModule/onSubmit", actionkey);
+                } else {
+                  onTab(event);
+                }
+                break;
+              case EventType.SUBFORM_OR_TAB_NONE_BLANK:
+                if (_.isEmpty(detail.value)) {
+                  const actionkey = detail.attributeName + "Enter" + "SubForm";
+                  store.dispatch("workflowModule/onSubmitSubForm", actionkey);
+                } else {
+                  onTab(event);
+                }
+                break;
+            }
+          } else {
+            store.dispatch("workflowModule/onSubmit");
           }
-          // });
-        } else {
-          store.dispatch("workflowModule/onSubmit");
         }
       }
     };

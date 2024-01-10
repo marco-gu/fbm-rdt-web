@@ -113,7 +113,7 @@ const RDTView = defineComponent({
             y: screenModel.msgField.coordinateY || 0,
           };
           store.dispatch("screenModule/setMessageContent", content);
-          store.dispatch("screenModule/showMessageAutoDismiss");
+          store.dispatch("screenModule/showMessage", true);
         }
       }
       if (screenModel.screenRows.size > 0) {
@@ -190,23 +190,32 @@ const RDTView = defineComponent({
       }
     };
     const handleKeyDown = (event: any) => {
+      console.log(event.keyCode);
       {
         switch (event.keyCode) {
           case 13: {
-            store.dispatch("workflowModule/onSubmit");
+            if (store.state.screenModule.showMessage) {
+              store.dispatch("screenModule/hideMessage");
+            } else {
+              store.dispatch("workflowModule/onSubmit");
+            }
             break;
           }
           case 27:
-            if (store.state.workflowModule.screenModel.title == "Login") {
-              const url =
-                "RDTEngine/sessions/" + localStorage.getItem("sessionId");
-              _delete(url).then(() => {
-                localStorage.removeItem("sessionId");
-                localStorage.removeItem("country");
-                router.push("/");
-              });
+            if (store.state.screenModule.showMessage) {
+              store.dispatch("screenModule/hideMessage");
             } else {
-              store.dispatch("workflowModule/onCancel");
+              if (store.state.workflowModule.screenModel.title == "Login") {
+                const url =
+                  "RDTEngine/sessions/" + localStorage.getItem("sessionId");
+                _delete(url).then(() => {
+                  localStorage.removeItem("sessionId");
+                  localStorage.removeItem("country");
+                  router.push("/");
+                });
+              } else {
+                store.dispatch("workflowModule/onCancel");
+              }
             }
             break;
           case 38:
