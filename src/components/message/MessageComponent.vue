@@ -84,8 +84,9 @@ export default MessageComponent;
     // width: 100%;
     width: 329px;
     color: #ffc58f;
-    background-color: #007acc;
-    border: 1px solid #ffc58f;
+    background-color: #00346e;
+    border: 2px solid #ffc58f;
+    border-radius: 5px;
   }
   &.show {
     display: flex;
@@ -93,8 +94,7 @@ export default MessageComponent;
     // animation: fadein 0.5s;
     justify-content: center;
     align-items: center;
-    background-color: #001733;
-    opacity: 0.95;
+    background-color: rgb(0 23 51 / 90%);
   }
 }
 .svg-container {
