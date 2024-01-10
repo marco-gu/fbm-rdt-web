@@ -313,5 +313,7 @@ const setScreenFocus = (param: EngineResponse, screenModel: ScreenModel) => {
   screenModel.sortFocus = array;
   if (_.isNull(param.screenDto.focus)) {
     screenModel.focus = screenModel.sortFocus[0][1].attributeName;
+  } else {
+    screenModel.focus = param.screenDto.focus;
   }
 };
