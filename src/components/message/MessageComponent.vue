@@ -73,6 +73,7 @@ export default MessageComponent;
   align-items: flex-start;
   display: none;
   width: 100%;
+  z-index: 100;
   .label-block {
     font-size: 24px;
     // padding: 6px;

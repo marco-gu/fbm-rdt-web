@@ -29,6 +29,7 @@ const SubButtonComponent = defineComponent({
       } else {
         store.commit("workflowModule/onCloseSubScreen", false);
       }
+      store.dispatch("screenModule/hideMessage");
     };
     return {
       onClickSubScreen,

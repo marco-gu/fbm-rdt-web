@@ -16,7 +16,7 @@ import {
 import { composeScreen } from "@/utils/type3.parse";
 import _ from "lodash";
 import { composeEmptyRowsForLegacy, parseLegacyXML } from "@/utils/type1.parse";
-import { EngineResponse } from "@/entity/response.entity";
+import { EngineResponse, FieldDto } from "@/entity/response.entity";
 
 export interface WorkflowState {
   screenModel: ScreenModel;
@@ -197,6 +197,10 @@ const workflowModule: Module<WorkflowState, RootState> = {
       } else {
         state.subScreenModel.focus = focus;
       }
+    },
+    clearMsgInfo(state) {
+      state.screenModel.showMessage = false;
+      state.screenModel.msgField = {} as FieldDto;
     },
   },
   namespaced: true,
