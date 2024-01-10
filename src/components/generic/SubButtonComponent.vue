@@ -45,7 +45,6 @@ export default SubButtonComponent;
   width: 26px;
   height: 26px;
   position: absolute;
-  bottom: 50px;
   right: 4px;
   text-align: center;
   color: #ffeead;

@@ -18,7 +18,9 @@ export default defineComponent({
         } else {
           scrollRef.value.style.height = scrollHeight + "px";
           scrollRef.value.style.top =
-            50 + scrollHeight * (currentPage - 1) + "px";
+            (process.env.VUE_APP_IS_ANDROID_SIMULATOR === "true" ? 50 : 10) +
+            scrollHeight * (currentPage - 1) +
+            "px";
         }
       } else {
         scrollRef.value.style.display = "none";
@@ -37,7 +39,6 @@ export default defineComponent({
   height: 500px;
   position: absolute;
   right: 3px;
-  top: 50px;
   overflow-y: auto;
   background: #ffeead;
   border: 0.5px solid #ffeead;
