@@ -32,7 +32,11 @@ const composeRowsData = (param: EngineResponse, screenModel: ScreenModel) => {
   const fields = param.screenDto.fields;
   fields.forEach((field: FieldDto) => {
     if (field.attributeType == AttributeType.MESSAGE) {
-      screenModel.showMessage = param.resultStatus == "error" ? true : false;
+      if (_.isUndefined(field.value) || _.isNull(field.value)) {
+        screenModel.showMessage = false;
+      } else {
+        screenModel.showMessage = true;
+      }
       screenModel.msgField = field;
     } else {
       if (_.isNull(param.legacyOutPutXML)) {
@@ -95,7 +99,9 @@ const composeRowsData = (param: EngineResponse, screenModel: ScreenModel) => {
       }
     }
   });
-  setScreenFocus(param, screenModel);
+  if (screenModel.focusCollection.size > 0) {
+    setScreenFocus(param, screenModel);
+  }
   adjustRows(screenModel);
   return sortRows(screenModel);
 };
@@ -299,15 +305,13 @@ const collectInputAttribute = (screenModel: ScreenModel, field: FieldDto) => {
 };
 
 const setScreenFocus = (param: EngineResponse, screenModel: ScreenModel) => {
-  if (screenModel.focusCollection.size > 0) {
-    const array = Array.from(screenModel.focusCollection).sort(
-      (a: any, b: any) => {
-        return a[0] - b[0];
-      }
-    );
-    screenModel.sortFocus = array;
-  }
-  if (_.isNull(param.screenDto.focus) && screenModel.focusCollection.size > 0) {
+  const array = Array.from(screenModel.focusCollection).sort(
+    (a: any, b: any) => {
+      return a[0] - b[0];
+    }
+  );
+  screenModel.sortFocus = array;
+  if (_.isNull(param.screenDto.focus)) {
     screenModel.focus = screenModel.sortFocus[0][1].attributeName;
   }
 };
