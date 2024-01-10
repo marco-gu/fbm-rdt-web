@@ -1,6 +1,7 @@
 import { MsgInfo } from "@/entity/screen.entity";
 import { Module } from "vuex";
 import RootState from "../state";
+import store from "..";
 
 const emptyMsgContent: MsgInfo = {
   message: "",
@@ -36,6 +37,7 @@ const screenModule: Module<ScreenState, RootState> = {
     hideMessage(context) {
       context.commit("toggleMessage", false);
       context.commit("setMessageContent", emptyMsgContent);
+      store.commit("workflowModule/clearMsgInfo");
     },
   },
   mutations: {

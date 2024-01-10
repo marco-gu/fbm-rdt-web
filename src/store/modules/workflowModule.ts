@@ -198,6 +198,10 @@ const workflowModule: Module<WorkflowState, RootState> = {
         state.subScreenModel.focus = focus;
       }
     },
+    clearMsgInfo(state) {
+      state.screenModel.showMessage = false;
+      state.screenModel.msgField = {} as FieldDto;
+    },
   },
   namespaced: true,
 };
