@@ -74,4 +74,5 @@ export enum EventType {
   SUBFORM = "subform",
   SUBMIT_OR_TAB_NONE_BLANK = "submitOrTabNoneBlank",
   SUBFORM_OR_TAB_NONE_BLANK = "subFormOrTabNoneBlank",
+  SUBFORM_OR_ENTIRE_FORM_SUBMIT = "submitOrEntireFormSubmitNoneBlank",
 }

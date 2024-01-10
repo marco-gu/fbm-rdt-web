@@ -168,6 +168,14 @@ const InputComponent = defineComponent({
                   onTab(event);
                 }
                 break;
+              case EventType.SUBFORM_OR_ENTIRE_FORM_SUBMIT:
+                if (_.isEmpty(detail.value)) {
+                  const actionkey = detail.attributeName + "Enter" + "Submit";
+                  store.dispatch("workflowModule/onSubmit", actionkey);
+                } else {
+                  store.dispatch("workflowModule/onSubmit");
+                }
+                break;
             }
           } else {
             store.dispatch("workflowModule/onSubmit");
