@@ -68,8 +68,8 @@ export default MessageComponent;
 .msg-box {
   position: absolute;
   margin: 0 auto;
-  bottom: 43px;
-  height: 532px;
+  top: 0;
+  height: 100%;
   align-items: flex-start;
   display: none;
   width: 100%;
