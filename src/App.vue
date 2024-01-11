@@ -12,11 +12,7 @@
     </li>
   </ul>
   <router-view></router-view>
-  <ul
-    v-if="isAndroidSimulator"
-    class="nav x android_bottom"
-    style="border-radius: 5px"
-  >
+  <ul v-if="isAndroidSimulator" class="nav x android_bottom">
     <li>
       <span class="nav_button"><i class="fa-solid fa-angle-left"></i></span>
     </li>

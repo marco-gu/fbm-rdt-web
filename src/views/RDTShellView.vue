@@ -7,17 +7,8 @@
     </p>
     <p class="rdt row3 center" style="font-size: 24px">EMULATOR</p>
     <div class="rdt line"></div>
-    <p class="rdt row4 center" style="font-size: 14px">Welcome to NEW RDT</p>
-    <p class="rdt row4 center" style="font-size: 14px">
-      Version 3.0 Alpha, Januarary 2024
-    </p>
-    <p
-      class="rdt row5 center"
-      style="font-size: 24px; cursor: default"
-      @click="clickRDT"
-    >
-      Enter to Start
-    </p>
+    <p class="rdt row4 center font36 cursor--pointer" @click="clickRDT">3</p>
+    <p class="rdt row5 center font16">Version 3.0 alpha - Janurary 2024</p>
   </div>
 </template>
 <script lang="ts">
