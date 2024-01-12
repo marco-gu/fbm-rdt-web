@@ -65,7 +65,7 @@ const workflowModule: Module<WorkflowState, RootState> = {
     onSubmitSubForm(context, actionKey: string) {
       const request = {} as EngineRequset;
       request.userSettingDto = {} as UserSettingDto;
-      request.capturedValues = [];
+      request.capturedValues = context.state.screenModel.capturedValues;
       request.screenDepth = 1;
       request.subScreenDto = {} as SubScreenDto;
       request.subScreenDto.startWorkFlowId =
