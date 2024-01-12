@@ -20,7 +20,6 @@
           <input
             ref="input"
             v-model="item.value"
-            type="number"
             style="width: 15px"
             @change="onTextChange(item)"
             @input="onInput(item)"

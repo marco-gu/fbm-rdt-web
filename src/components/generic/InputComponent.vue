@@ -55,7 +55,15 @@
 </template>
 <script lang="ts">
 import { useStore } from "@/store";
-import { defineComponent, ref, toRefs, onMounted, Ref, watch } from "vue";
+import {
+  defineComponent,
+  ref,
+  toRefs,
+  onMounted,
+  Ref,
+  watch,
+  onUpdated,
+} from "vue";
 import { CapturedValue } from "@/entity/request.entity";
 import {
   AttributeType,
@@ -84,6 +92,9 @@ const InputComponent = defineComponent({
     const type = ref();
     onMounted(() => {
       mapRawData();
+      // focusInput();
+    });
+    onUpdated(() => {
       focusInput();
     });
     const onInput = (detail: FieldDto) => {

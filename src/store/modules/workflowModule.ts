@@ -86,7 +86,6 @@ const workflowModule: Module<WorkflowState, RootState> = {
   mutations: {
     saveFormulaParam(state, payload) {
       if (state.screenDepth == 0) {
-        console.log(payload);
         state.screenModel.formulaParam = payload;
       } else {
         state.subScreenModel.formulaParam = payload;

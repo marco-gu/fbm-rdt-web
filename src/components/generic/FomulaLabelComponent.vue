@@ -63,7 +63,7 @@ const FomulaLabelComponent = defineComponent({
           if (item.style == "formula") {
             attributeName.value = item.attributeName;
             attributeValue.value = item.value;
-            viewResult.value = item;
+            viewResult.value = _.cloneDeep(item);
           }
         });
       }
@@ -114,8 +114,6 @@ const FomulaLabelComponent = defineComponent({
         formula.forEach((t: any) => {
           formulaResult.value += t;
         });
-        // result.value = _.cloneDeep(attributeValue.value);
-        // result.value = result.value.replace(t.key, eval(formulaResult.value));
         const result = _.cloneDeep(attributeValue.value);
         viewResult.value.value = result.replace(
           t.key,
@@ -129,7 +127,6 @@ const FomulaLabelComponent = defineComponent({
           ? store.state.workflowModule.screenModel
           : store.state.workflowModule.subScreenModel,
       (newValue) => {
-        console.log("132");
         if (!_.isUndefined(newValue.formulaParam)) {
           if (newValue.formulaParam.eventValue == attributeName.value) {
             formulaList.value.forEach((t) => {

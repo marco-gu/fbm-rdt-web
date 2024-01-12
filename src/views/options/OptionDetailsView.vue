@@ -24,7 +24,6 @@ export default defineComponent({
     OptionInputComponent,
   },
   setup() {
-    console.log("dsdsdadasd");
     const router = useRouter();
     const menus = ["1. Generic Settings"];
     const optionValue = (value: number) => {

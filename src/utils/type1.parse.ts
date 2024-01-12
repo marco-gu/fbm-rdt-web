@@ -46,7 +46,6 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
   });
   const rows: any[][] = [[]];
   let j = 0;
-  console.log(fields);
   fields.forEach((t: FieldDto) => {
     if (t.coordinateX == 1) {
       if (rows[t.coordinateY]) {
@@ -77,14 +76,12 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
       });
     }
   });
-  console.log(engineResponse);
   return engineResponse;
 }
 
 export function composeEmptyRowsForLegacy(rows: Map<number, ScreenRowModel>) {
   const perPageMaxLine = 15;
   for (let i = 1; i <= perPageMaxLine; i++) {
-    console.log(rows.has(i));
     if (!rows.has(i)) {
       const screenRow = {} as ScreenRowModel;
       screenRow.rowType = ScreenRowComponentEnum.LABEL;

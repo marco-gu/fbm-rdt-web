@@ -23,7 +23,6 @@ export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
   const screen = JSON.parse(localStorage.getItem("screen") as any);
   screenModel.pageSize = param.screenDepth == 0 ? screen.rows : screen.subRows;
   screenModel.screenRows = composeRowsData(param, screenModel);
-  console.log(screenModel.screenRows);
   screenModel.title = param.screenDto.title;
   screenModel.workFlowCollection.workFlowId = param.workFlowId;
   screenModel.workFlowCollection.workNodeId = param.workNodeId;
