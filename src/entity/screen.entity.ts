@@ -24,6 +24,7 @@ export interface ScreenModel {
   additionalY: number;
   fields: FieldDto[];
   formulaParam: any;
+  screenDepth: number;
 }
 
 export interface WorkFlowCollection {

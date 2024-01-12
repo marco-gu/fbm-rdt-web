@@ -19,6 +19,7 @@ export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
   screenModel.totalPage = 1;
   screenModel.additionalY = 0;
   screenModel.fields = param.screenDto.fields;
+  screenModel.screenDepth = param.screenDepth;
   const screen = JSON.parse(localStorage.getItem("screen") as any);
   screenModel.pageSize = param.screenDepth == 0 ? screen.rows : screen.subRows;
   screenModel.screenRows = composeRowsData(param, screenModel);
@@ -311,6 +312,7 @@ const collectInputAttribute = (screenModel: ScreenModel, field: FieldDto) => {
   const capturedValue = {
     attributeName: field.attributeName,
     value: field.value,
+    screenDepth: screenModel.screenDepth,
   } as CapturedValue;
   screenModel.capturedValues.push(capturedValue);
 };

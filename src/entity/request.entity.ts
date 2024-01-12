@@ -2,6 +2,7 @@ export interface CapturedValue {
   attributeName: string;
   dataType: string;
   value: string;
+  screenDepth: number;
 }
 
 export interface EngineRequset {
