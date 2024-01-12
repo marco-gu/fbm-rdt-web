@@ -32,6 +32,7 @@
           "
           :type="item.attributeType === 'password' ? 'password' : 'text'"
           @change="onTextChange(item)"
+          @input="onInput(item)"
           :maxlength="!item.maxLength ? 1 : item.maxLength"
           :tabindex="item.sequence"
           :required="item.required"
@@ -84,7 +85,20 @@ const InputComponent = defineComponent({
       mapRawData();
       focusInput();
     });
-
+    const onInput = (detail: FieldDto) => {
+      if (detail.events)
+        detail.events.forEach((event) => {
+          if (event.triggeredBy == "inputChange") {
+            const param = {
+              eventValue: event.eventValue,
+              attributeName: detail.attributeName,
+              value: detail.value,
+              screenDepth: store.state.workflowModule.screenDepth,
+            };
+            store.commit("workflowModule/saveFormulaParam", param);
+          }
+        });
+    };
     const onTextChange = (detail: FieldDto) => {
       const param = {
         attributeName: detail.attributeName,
@@ -238,6 +252,7 @@ const InputComponent = defineComponent({
       onKeyPress,
       inputLength,
       onTab,
+      onInput,
     };
   },
 });

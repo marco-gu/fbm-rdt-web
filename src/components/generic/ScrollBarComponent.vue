@@ -9,7 +9,7 @@ export default defineComponent({
   setup() {
     const scrollRef = ref();
     const store = useStore();
-    const scrollHeight = 500 / store.state.workflowModule.screenModel.totalPage;
+    const scrollHeight = 460 / store.state.workflowModule.screenModel.totalPage;
     const currentPage = store.state.workflowModule.screenModel.currentPage;
     onMounted(() => {
       if (store.state.workflowModule.screenDepth == 0) {

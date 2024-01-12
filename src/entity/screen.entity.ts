@@ -22,6 +22,8 @@ export interface ScreenModel {
   showMessage: boolean;
   msgField: FieldDto;
   additionalY: number;
+  fields: FieldDto[];
+  formulaParam: any;
 }
 
 export interface WorkFlowCollection {
@@ -55,6 +57,7 @@ export enum ScreenRowComponentEnum {
   INPUT = "input",
   PASSWORD = "password",
   LABEL = "label",
+  FORMULA_LABEL = "formula_label",
   LIST_TITLE_LABEL = "list_title_label",
   LIST_ITEM_LABEL = "list_item_label",
   LIST_PAGE_LABEL = "list_page_label",

@@ -6,7 +6,6 @@ import InputComponent from "@/components/generic/InputComponent.vue";
 import ListInputComponent from "@/components/list/ListInputComponent.vue";
 import ListTitleLabelComponent from "@/components/list/ListTitleLabelComponent.vue";
 import ListItemLabelComponent from "@/components/list/ListItemLabelComponent.vue";
-import MessageComponent from "@/components/message/MessageComponent.vue";
 import SubButtonComponent from "@/components/generic/SubButtonComponent.vue";
 import style from "../../assets/device/default.json";
 import ListPageLabelComponent from "@/components/list/ListPageLabelComponent.vue";
@@ -82,12 +81,6 @@ const RDTSubView = defineComponent({
               });
               break;
             }
-            // case ScreenRowComponentEnum.MESSAGEBOX: {
-            //   rowNode.value = h(MessageComponent, {
-            //     details: row.rowDetails,
-            //   });
-            //   break;
-            // }
             case ScreenRowComponentEnum.SUB_BUTTON: {
               rowNode.value = h(SubButtonComponent, {
                 details: row.rowDetails,

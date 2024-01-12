@@ -18,6 +18,7 @@ export function composeScreen(param: EngineResponse, screenModel: ScreenModel) {
   screenModel.currentPage = 1;
   screenModel.totalPage = 1;
   screenModel.additionalY = 0;
+  screenModel.fields = param.screenDto.fields;
   const screen = JSON.parse(localStorage.getItem("screen") as any);
   screenModel.pageSize = param.screenDepth == 0 ? screen.rows : screen.subRows;
   screenModel.screenRows = composeRowsData(param, screenModel);
@@ -72,7 +73,17 @@ const composeRowsData = (param: EngineResponse, screenModel: ScreenModel) => {
           screenModel.headerField = field;
           break;
         case AttributeType.LABEL:
-          composeLabelRow(screenModel, field);
+          if (field.style != "hidden") {
+            if (field.style == "formula") {
+              composeLabelRow(
+                screenModel,
+                field,
+                ScreenRowComponentEnum.FORMULA_LABEL
+              );
+            } else {
+              composeLabelRow(screenModel, field);
+            }
+          }
           break;
         case AttributeType.INPUT:
         case AttributeType.PASSWORD:
@@ -311,7 +322,7 @@ const setScreenFocus = (param: EngineResponse, screenModel: ScreenModel) => {
     }
   );
   screenModel.sortFocus = array;
-  if (_.isNull(param.screenDto.focus)) {
+  if (_.isNull(param.screenDto.focus) || _.isUndefined(param.screenDto.focus)) {
     screenModel.focus = screenModel.sortFocus[0][1].attributeName;
   } else {
     screenModel.focus = param.screenDto.focus;

@@ -15,7 +15,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Ref, defineComponent, onMounted, ref, toRefs } from "vue";
+import { Ref, defineComponent, onMounted, ref, toRefs, watch } from "vue";
 import { calculateWidthItems } from "@/utils/screen.utils";
 import { FieldDto } from "@/entity/response.entity";
 const LabelComponent = defineComponent({

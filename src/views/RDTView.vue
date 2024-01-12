@@ -21,6 +21,7 @@ import RDTSubView from "./options/RDTSubView.vue";
 import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
 import ListPageLabelComponent from "@/components/list/ListPageLabelComponent.vue";
 import ScrollBarComponent from "@/components/generic/ScrollBarComponent.vue";
+import FomulaLabelComponent from "@/components/generic/FomulaLabelComponent.vue";
 
 const RDTView = defineComponent({
   components: {
@@ -126,6 +127,12 @@ const RDTView = defineComponent({
               });
               break;
             }
+            case ScreenRowComponentEnum.FORMULA_LABEL: {
+              rowNode.value = h(FomulaLabelComponent, {
+                details: row.rowDetails,
+              });
+              break;
+            }
             case ScreenRowComponentEnum.INPUT: {
               rowNode.value = h(InputComponent, {
                 details: row.rowDetails,
@@ -190,7 +197,6 @@ const RDTView = defineComponent({
       }
     };
     const handleKeyDown = (event: any) => {
-      console.log(event.keyCode);
       {
         switch (event.keyCode) {
           case 13: {

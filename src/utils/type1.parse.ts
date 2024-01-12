@@ -24,14 +24,14 @@ export function parseLegacyXML(engineResponse: EngineResponse) {
           switch (t.attr.typ) {
             case "output":
               element.attributeType = AttributeType.LABEL;
+              element.value = t.attr.value;
               break;
             case "input":
               element.attributeType = AttributeType.INPUT;
               element.sequence = parseInt(t.attr.y);
-              console.log(element.coordinateY);
+              element.value = t.attr.default;
               break;
           }
-          element.value = t.attr.value;
           element.attributeName = t.attr.id;
           element.defaultValue = t.attr.default;
           element.maxLength = t.attr.length;
