@@ -30,7 +30,7 @@
           :autofocus="
             store.state.workflowModule.screenModel.focus === item.attributeName
           "
-          :type="item.attributeType === 'password' ? 'password' : 'text'"
+          :type="type"
           @change="onTextChange(item)"
           @input="onInput(item)"
           :maxlength="!item.maxLength ? 1 : item.maxLength"
@@ -81,6 +81,7 @@ const InputComponent = defineComponent({
     const isFocus = ref(false);
     const widthArr: Ref<any> = ref([]);
     const attributeName = ref();
+    const type = ref();
     onMounted(() => {
       mapRawData();
       focusInput();
@@ -115,6 +116,15 @@ const InputComponent = defineComponent({
             item.attributeType === "password"
           ) {
             attributeName.value = item.attributeName;
+            if (item.attributeType == "password") {
+              type.value = "password";
+            } else {
+              if (item.dataType == "int") {
+                type.value = "number";
+              } else {
+                type.value = "text";
+              }
+            }
           }
           item.value = item.value || "";
         });
@@ -253,6 +263,7 @@ const InputComponent = defineComponent({
       inputLength,
       onTab,
       onInput,
+      type,
     };
   },
 });
