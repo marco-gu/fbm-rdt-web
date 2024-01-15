@@ -1,10 +1,9 @@
 <template>
-  <div
-    class="pop_btn"
-    @click="onClickSubScreen"
-    style="margin-left: auto; padding: 0px"
-  >
-    <i :class="screenDepth == 0 ? 'fa-solid fa-plus' : 'fa-solid fa-minus'"></i>
+  <div class="pop_btn" @click="onClickSubScreen" style="margin-left: auto">
+    <i
+      :class="screenDepth == 0 ? 'fa-solid fa-plus' : 'fa-solid fa-minus'"
+      style="margin-top: 10px"
+    ></i>
   </div>
 </template>
 <script lang="ts">
@@ -42,25 +41,26 @@ export default SubButtonComponent;
 <style lang="scss" scoped>
 .pop_btn {
   display: inline-block;
-  width: 26px;
-  height: 26px;
+  width: 34px;
+  height: 34px;
   position: absolute;
-  right: 4px;
+  right: 10px;
   text-align: center;
   color: #ffeead;
   background-color: #00346e;
-  font-size: 26px;
+  font-size: 16px;
   border-radius: 3px;
   z-index: 10;
   cursor: pointer;
+  vertical-align: middle;
 }
-.pop_btn:hover {
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  right: 4px;
-  color: #ffc58f;
-  font-size: 28px;
-  font-weight: 900;
-}
+// .pop_btn:hover {
+//   cursor: pointer;
+//   width: 32px;
+//   height: 32px;
+//   right: 4px;
+//   color: #ffc58f;
+//   font-size: 28px;
+//   font-weight: 900;
+// }
 </style>

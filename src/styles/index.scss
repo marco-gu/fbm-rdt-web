@@ -38,6 +38,11 @@ textarea {
 
 input {
     max-height: 32px;
+    outline-style: none;
+}
+
+input:focus {
+    border: 1.5px solid rgb(255, 238, 173);
 }
 
 input::-webkit-outer-spin-button,
