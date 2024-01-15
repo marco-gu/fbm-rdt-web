@@ -5,7 +5,6 @@
         v-if="item.attributeType === 'label'"
         v-show="!item.isHidden"
         class="label-block"
-        :class="{ 'text-focus': isFocus, highlighted: item.highlighted }"
         :style="{
           // color: item.color || '',
           flexBasis: widthArr[index],
