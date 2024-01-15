@@ -23,7 +23,7 @@
             style="width: 15px"
             @change="onTextChange(item)"
             @input="onInput(item)"
-            @keyup="onKeyPress($event)"
+            @keyup="onKeyPress($event, item)"
             :style="{
               backgroundColor:
                 store.state.workflowModule.screenDepth == 0
@@ -43,7 +43,7 @@ import { useStore } from "@/store";
 import { defineComponent, ref, toRefs, onMounted, Ref } from "vue";
 import { SelectedItem } from "@/entity/screen.entity";
 import { calculateWidthItems, inputLength } from "@/utils/screen.utils";
-import { AttributeType } from "@/entity/response.entity";
+import { AttributeType, FieldDto } from "@/entity/response.entity";
 
 const ListInputComponent = defineComponent({
   props: {
@@ -68,13 +68,42 @@ const ListInputComponent = defineComponent({
         });
       }
     };
-    const onKeyPress = (event: KeyboardEvent) => {
+    const onKeyPress = (event: KeyboardEvent, item: FieldDto) => {
       const key = event.charCode || event.which || event.keyCode;
+      console.log(key);
       switch (key) {
         case 13: {
           if (store.state.screenModule.showMessage) {
             store.dispatch("screenModule/hideMessage");
           } else {
+            store.dispatch("workflowModule/onSubmit");
+          }
+          event.stopPropagation();
+          break;
+        }
+        case 119: {
+          if (store.state.screenModule.showMessage) {
+            store.dispatch("screenModule/hideMessage");
+          } else {
+            const param = {
+              attributeName: item.attributeName,
+              value: "-",
+            } as CapturedValue;
+            store.dispatch("workflowModule/saveCapturedValue", param);
+            store.dispatch("workflowModule/onSubmit");
+          }
+          event.stopPropagation();
+          break;
+        }
+        case 118: {
+          if (store.state.screenModule.showMessage) {
+            store.dispatch("screenModule/hideMessage");
+          } else {
+            const param = {
+              attributeName: item.attributeName,
+              value: "+",
+            } as CapturedValue;
+            store.dispatch("workflowModule/saveCapturedValue", param);
             store.dispatch("workflowModule/onSubmit");
           }
           event.stopPropagation();

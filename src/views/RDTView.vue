@@ -22,6 +22,7 @@ import MultiInputComponent from "@/components/generic/MultiInputComponent.vue";
 import ListPageLabelComponent from "@/components/list/ListPageLabelComponent.vue";
 import ScrollBarComponent from "@/components/generic/ScrollBarComponent.vue";
 import FomulaLabelComponent from "@/components/generic/FomulaLabelComponent.vue";
+import _ from "lodash";
 
 const RDTView = defineComponent({
   components: {
@@ -230,6 +231,17 @@ const RDTView = defineComponent({
           case 40:
             store.commit("workflowModule/moveToNextPage");
             break;
+          case 113:
+            if (store.state.workflowModule.screenDepth == 0) {
+              if (!_.isEmpty(store.state.workflowModule.subScreenModel)) {
+                store.commit("workflowModule/onOpenSubScreen", true);
+              } else {
+                store.dispatch("workflowModule/onSubmitSubForm");
+              }
+            } else {
+              store.commit("workflowModule/onCloseSubScreen", false);
+            }
+            store.dispatch("screenModule/hideMessage");
         }
       }
     };
