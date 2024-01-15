@@ -193,6 +193,10 @@ const workflowModule: Module<WorkflowState, RootState> = {
               state.screenModel.focus = sortFocus[index + 1][1].attributeName;
             } else {
               state.screenModel.focus = sortFocus[0][1].attributeName;
+              if (state.screenModel.currentPage > 1) {
+                state.screenModel.currentPage = 1;
+                state.isRender = true;
+              }
             }
           }
         }
