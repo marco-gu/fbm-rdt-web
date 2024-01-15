@@ -186,19 +186,21 @@ const composeListComponents = (screenModel: ScreenModel, field: FieldDto) => {
   calculateY = _.isUndefined(title.value) ? calculateY : calculateY + 1;
   // Compose items
   screenModel.singleListCollection.set(field.attributeId, values);
-  values.list.forEach((t: any, index: number) => {
-    const screenRow = {} as ScreenRowModel;
-    screenRow.rowType = ScreenRowComponentEnum.LIST_ITEM_LABEL;
-    calculateY = index == 0 ? calculateY : calculateY + 1;
-    screenRow.coordinateY = calculateY;
-    screenRow.rowDetails = [];
-    const item = {} as FieldDto;
-    item.value = t.sequence + "." + t.name;
-    item.sequence = t.sequence;
-    screenRow.rowDetails.push(item);
-    screenRow.rowspan = 1;
-    screenModel.screenRows.set(screenRow.coordinateY, screenRow);
-  });
+  if (!_.isUndefined(values.list) && values.list.length > 0) {
+    values.list.forEach((t: any, index: number) => {
+      const screenRow = {} as ScreenRowModel;
+      screenRow.rowType = ScreenRowComponentEnum.LIST_ITEM_LABEL;
+      calculateY = index == 0 ? calculateY : calculateY + 1;
+      screenRow.coordinateY = calculateY;
+      screenRow.rowDetails = [];
+      const item = {} as FieldDto;
+      item.value = t.sequence + "." + t.name;
+      item.sequence = t.sequence;
+      screenRow.rowDetails.push(item);
+      screenRow.rowspan = 1;
+      screenModel.screenRows.set(screenRow.coordinateY, screenRow);
+    });
+  }
   field.style = _.isNull(field.style) ? "1" : field.style;
   // Compose page description
   if (field.style != "3") {
