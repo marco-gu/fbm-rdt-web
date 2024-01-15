@@ -72,7 +72,11 @@ const ListInputComponent = defineComponent({
       const key = event.charCode || event.which || event.keyCode;
       switch (key) {
         case 13: {
-          store.dispatch("workflowModule/onSubmit");
+          if (store.state.screenModule.showMessage) {
+            store.dispatch("screenModule/hideMessage");
+          } else {
+            store.dispatch("workflowModule/onSubmit");
+          }
           event.stopPropagation();
           break;
         }
